@@ -1,0 +1,18 @@
+<svg width="99" height="67" xmlns="http://www.w3.org/2000/svg">
+ <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+ <title>Combined Shape</title>
+ <desc>Created with Sketch.</desc>
+ <defs>
+  <filter height="200%" width="200%" y="-50%" x="-50%" id="svg_1_blur">
+   <feGaussianBlur stdDeviation="0" in="SourceGraphic"/>
+  </filter>
+ </defs>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <text opacity="0.77" filter="url(#svg_1_blur)" font-style="italic" font-weight="bold" xml:space="preserve" text-anchor="start" font-family="Euphoria, sans-serif" font-size="39" id="svg_1" y="45.5" x="8.5" stroke-width="0" stroke="#000" fill="#7f3f00">J.W.</text>
+ </g>
+</svg>
