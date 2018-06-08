@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stay hungry, stay foolish - 敬维</title>
+    <title>如果你想搭建一个很随意的博客 - 敬维</title>
     <meta name="author"  content="敬维">
-    <meta name="description" content="Stay hungry, stay foolish">
-    <meta name="keywords"  content="认真, 自己">
+    <meta name="description" content="如果你想搭建一个很随意的博客">
+    <meta name="keywords"  content="经验, 实用">
     <!-- Open Graph -->
-    <meta property="og:title" content="Stay hungry, stay foolish - 敬维">
+    <meta property="og:title" content="如果你想搭建一个很随意的博客 - 敬维">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jingwei.link/2018/06/05/stay-hungry-stay-foolish.html">
+    <meta property="og:url" content="https://jingwei.link/2018/06/09/how-to-build-a-blog-web.html">
     <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
     <meta property="og:site_name" content="敬维">
     <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
@@ -113,16 +113,16 @@ Author: Ray-Eldath
       <div class="post-tags">
         
           
-            <a href="https://jingwei.link/tags#%E8%AE%A4%E7%9C%9F" class="post-tag">认真</a>
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
           
-            <a href="https://jingwei.link/tags#%E8%87%AA%E5%B7%B1" class="post-tag">自己</a>
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
           
         
       </div>
-      <h1>Stay hungry, stay foolish</h1>
+      <h1>如果你想搭建一个很随意的博客</h1>
       <div class="post-meta">
         <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
-        <time class="post-meta-item" datetime="18-06-05"><i class="iconfont icon-date"></i>05 Jun 2018</time>
+        <time class="post-meta-item" datetime="18-06-09"><i class="iconfont icon-date"></i>09 Jun 2018</time>
       </div>
     </div>
     
@@ -133,31 +133,40 @@ Author: Ray-Eldath
 
   <div class="post-content visible">
     
-    <h2 class="post-subtitle">以认真的态度做完美的事情</h2>
+    <h2 class="post-subtitle">本博客搭建的几个关键选择点</h2>
     
 
     <article class="markdown-body">
-      <h2 id="stay-hungry-stay-foolish">Stay hungry, stay foolish.</h2>
+      <h3 id="起源">起源</h3>
+<p>很早就想搭建一个属于自己的博客，毕竟作为一个开发人员，毕竟作为一个对技术有所追求的人；可是迟迟没有落地。</p>
 
-<p>这是我最喜欢的一句话，我想以这种态度做完美的事情。</p>
+<p>这中间有很多原因。比如用哪个域名？要自己购买一个主机吗？自己写还是直接使用已有的工具？要使用哪个工具（<a href="http://gohugo.io/">Hugo</a> 还是<a href="https://jekyllrb.com/">Jekyll</a>）？要使用哪个主题模板呢？主题模板好像不能满足自己的需求怎么办……很多的理由。</p>
 
-<p>希望这是一个好的开始吧。</p>
+<p>一直拖到最后才想明白一个道理：博客的形式不重要，坚持更新才重要。</p>
 
-<h2 id="关于我">关于我</h2>
-<h3 id="我是一个喜欢涂涂画画的人">我是一个喜欢涂涂画画的人。</h3>
-<p>涂鸦是我的一个爱好。从2012年到现在也有几年了，高峰时期是在2014-2015年，后来2016年毕业参加工作以后就渐渐走心不走量了。</p>
+<p>于是，拼凑成现在的博客。</p>
 
-<p>如果读者观察过画画的过程，其实很容易发现一点，就是作画者画笔的轨迹看似是很随意的，但是最终的作品是规整漂亮的（当然和画风也有关）。</p>
+<p>那么如何搭建一个很随意的博客呢？</p>
 
-<p>我的这份博客可能会采用这种随意点缀的方式。</p>
+<h3 id="域名--jingweilink">域名 —— jingwei.link</h3>
+<p>域名是个很普通的东西，比如<strong>jingwei.link</strong>这个域名，在当前（2018年6月）只需要58元/年。</p>
 
-<h3 id="我是一个rubist">我是一个Rubist</h3>
-<p>我有过一年半写Ruby的工作经验（2016年下半年到2018年初）。</p>
+<p>有很多平台提供域名注册，<a href="https://www.aliyun.com/">阿里云</a>和<a href="https://cloud.tencent.com/">腾讯云</a>都可以作为选择项。想一个个性的名字，去搜索框查找一下，只要是没有被人注册过且自己比较满意，就可以购买了。</p>
 
-<p>最开始是二次开发项目管理系统 <a href="http://www.redmine.org/">Redmine</a>，主要接受了<a href="https://rubyonrails.org/">Rails</a>的开发思想（比如测试驱动开发）。后来参与到一个社交应用的后台开发，技术栈是Rails和<a href="https://github.com/ruby-grape/grape">Grape</a>，主要Ruby技能的提升是在这个团队。</p>
+<p>域名买好以后，平台一般都会提供解析的服务。所谓解析，就是把域名和自己的服务绑定，这样在浏览器里输入域名浏览器就知道去哪里请求页面了。</p>
 
-<h3 id="我是一个cicd的践行者">我是一个CICD的践行者</h3>
-<p>因为工作变动的原因，在2018年初开始接触Golang、kubernetes、ISTIO、gitlab_ci、gRPC等技术栈。主要负责架构设计，期望通过ServiceMesh的技术解决多语言多系统共生导致的开发缓慢运维困难的问题。</p>
+<h3 id="工具--jekyii">工具 —— JekyII</h3>
+<p>假如世上只有一种型号的手机，在购买手机的时候会干脆很多，反而因为有太多型号的手机，大大增加了选择的困难。是用<a href="http://gohugo.io/">Hugo</a> 还是<a href="https://jekyllrb.com/">Jekyll</a>呢？我临时选择了JekyII。</p>
+
+<p>理由我也说不清楚，或许因为找到现在博客的主题<a href="https://github.com/kaeyleo/jekyll-theme-H2O">jekyll-theme-H2O</a>，而这个主题是用在JekyII的。</p>
+
+<h3 id="把静态页面放到网络上">把静态页面放到网络上</h3>
+<p>无论是JekyII还是Hugo，二者都能根据主题模板把Markdown文件转换成静态页面。但是如何部署呢？</p>
+
+<p>可能因为职业原因，我曾把这件事情想的略复杂，总想着在云上购买一台主机部署自己的服务。现在来看也不必执着，完全可以使用第三方提供的服务，比如当前使用的<a href="https://coding.net/">coding.net</a>，所提供的服务完全够用了。</p>
+
+<p>那么，假如第三方的服务挂掉了怎么办？等博客写到那一天再说不迟😆。</p>
+
 
     </article>
 
@@ -191,19 +200,19 @@ Author: Ray-Eldath
     </section>
     <section class="post-footer-item read-next">
       
-      <div class="read-next-item">
-        <a href="/2018/06/09/how-to-build-a-blog-web.html" class="read-next-link"></a>
-        <section>
-          <span>如果你想搭建一个很随意的博客</span>
-          <p>起源很早就想搭建一个属于自己的博客，毕竟作为一个开发人员，毕竟作为一个对技术有所追求的人；可是迟迟没有落地。</p>
-        </section>
-        
-        <div class="filter"></div>
-        <img src="" alt="">
-        
-     </div>
-      
 
+      
+      <div class="read-next-item">
+        <a href="/2018/06/05/stay-hungry-stay-foolish.html" class="read-next-link"></a>
+          <section>
+            <span>Stay hungry, stay foolish</span>
+            <p>Stay hungry, stay foolish.</p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
       
     </section>
     <section class="post-footer-item comment">
