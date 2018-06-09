@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang中的反射 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Golang中的反射">
+    <meta name="keywords"  content="golang">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Golang中的反射 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/06/09/reflection-of-golang-foundation.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+        
+      </div>
+      <h1>Golang中的反射</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-06-09"><i class="iconfont icon-date"></i>09 Jun 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">简单理解golang中的反射机制</h2>
+    
+
+    <article class="markdown-body">
+      <h2 id="假如把语言的运行时环境看做集市">假如把语言的运行时环境看做集市</h2>
+<p>假如把语言的运行时环境看做集市，在Ruby语言里，你能够在这个集市里认清楚所有的角色。这是Ruby作为动态语言的一个特性，在运行时环境，Ruby保存了对象的所有元数据，所以开发人员能清楚地列出对象的属性、方法等。</p>
+
+<p>那么，Golang作为一种类C语言的静态语言，通过什么样的机制来识别运行时集市中的角色的呢？</p>
+
+<h2 id="角色信息必然保存在某个地方">角色信息必然保存在某个地方</h2>
+<p>如果想识别运行时集市中的角色，其角色信息必然保存在某个地方。有了这个信念，问题就变成了：如何在运行时的集市中拿到角色信息。</p>
+
+<h2 id="代码运行环境">代码运行环境</h2>
+<ul>
+  <li>MacOS：10.13.4</li>
+  <li>Golang： version go1.10.1 darwin/amd64</li>
+  <li>IDE：VSCode 1.24.0</li>
+</ul>
+
+<h2 id="代码原型">代码原型</h2>
+<p>仿照<a href="https://www.cnblogs.com/rojas/p/4389389.html">golang 反射</a>中的做法，我们先给出一个代码约定，后面的代码都是基于下面的代码运行得出的结果：</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"reflect"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">type</span><span class="x"> </span><span class="n">boy</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">Name</span><span class="x"> </span><span class="kt">string</span><span class="x">
+	</span><span class="n">age</span><span class="x">  </span><span class="kt">int</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">type</span><span class="x"> </span><span class="n">human</span><span class="x"> </span><span class="k">interface</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">SayName</span><span class="p">()</span><span class="x">
+	</span><span class="n">SayAge</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">b</span><span class="x"> </span><span class="o">*</span><span class="n">boy</span><span class="p">)</span><span class="x"> </span><span class="n">SayName</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">b</span><span class="x"> </span><span class="o">*</span><span class="n">boy</span><span class="p">)</span><span class="x"> </span><span class="n">SayAge</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">age</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="c">// 定义接口变量</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="n">human</span><span class="x">
+	</span><span class="c">// 初始化对象，jingwei持有对象指针。</span><span class="x">
+	</span><span class="n">jingwei</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="o">&amp;</span><span class="n">boy</span><span class="p">{</span><span class="x">
+		</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"Jingwei"</span><span class="p">,</span><span class="x">
+		</span><span class="n">age</span><span class="o">:</span><span class="x">  </span><span class="m">28</span><span class="p">,</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+
+	</span><span class="c">// 因为boy实现了human的两个方法，因此可以把jingwei指给接口变量</span><span class="x">
+	</span><span class="n">i</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">jingwei</span><span class="x">
+
+	</span><span class="c">// 通过反射获取接口i 的类型和所持有的值。</span><span class="x">
+	</span><span class="n">t</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">reflect</span><span class="o">.</span><span class="n">TypeOf</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="x">
+	</span><span class="n">v</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">reflect</span><span class="o">.</span><span class="n">ValueOf</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="x">
+
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">Kind</span><span class="p">())</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="x">
+
+	</span><span class="c">//后续操作</span><span class="x">
+	</span><span class="c">//...</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h2 id="代码原型中t和v的打印结果">代码原型中t和v的打印结果</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span>main.boy
+ptr
+&amp;<span class="o">{</span>Jingwei 28<span class="o">}</span>
+</code></pre></div></div>
+<p>从上面的打印结果来看，<strong>t</strong>被识别为 *main.boy 的类型，<strong>v</strong>则打印出了内容值，总结来看就是：</p>
+
+<ol>
+  <li>t 表示<strong>i</strong>接口的当前类型，它指向main包下struct boy的指针类型；</li>
+  <li>v 表示<strong>i</strong>接口目前的所存储值，它指向main包下struct boy的指针。</li>
+</ol>
+
+<p>如果进一步追究可以发现，<strong>reflect.TypeOf(i)</strong>所返回的依然是一个接口（interface），且这个接口所对应的底层数据是<strong>rtype</strong>，它的数据结构如下（即 rtype 实现了reflect.Type接口）：</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// rtype is the common implementation of most values.</span><span class="x">
+</span><span class="c">// It is embedded in other, public struct types, but always</span><span class="x">
+</span><span class="c">// with a unique tag like `reflect:"array"` or `reflect:"ptr"`</span><span class="x">
+</span><span class="c">// so that code cannot convert from, say, *arrayType to *ptrType.</span><span class="x">
+</span><span class="c">//</span><span class="x">
+</span><span class="c">// rtype must be kept in sync with ../runtime/type.go:/^type._type.</span><span class="x">
+</span><span class="k">type</span><span class="x"> </span><span class="n">rtype</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">size</span><span class="x">       </span><span class="kt">uintptr</span><span class="x">
+	</span><span class="n">ptrdata</span><span class="x">    </span><span class="kt">uintptr</span><span class="x">  </span><span class="c">// number of bytes in the type that can contain pointers</span><span class="x">
+	</span><span class="n">hash</span><span class="x">       </span><span class="kt">uint32</span><span class="x">   </span><span class="c">// hash of type; avoids computation in hash tables</span><span class="x">
+	</span><span class="n">tflag</span><span class="x">      </span><span class="n">tflag</span><span class="x">    </span><span class="c">// extra type information flags</span><span class="x">
+	</span><span class="n">align</span><span class="x">      </span><span class="kt">uint8</span><span class="x">    </span><span class="c">// alignment of variable with this type</span><span class="x">
+	</span><span class="n">fieldAlign</span><span class="x"> </span><span class="kt">uint8</span><span class="x">    </span><span class="c">// alignment of struct field with this type</span><span class="x">
+	</span><span class="n">kind</span><span class="x">       </span><span class="kt">uint8</span><span class="x">    </span><span class="c">// enumeration for C</span><span class="x">
+	</span><span class="n">alg</span><span class="x">        </span><span class="o">*</span><span class="n">typeAlg</span><span class="x"> </span><span class="c">// algorithm table</span><span class="x">
+	</span><span class="n">gcdata</span><span class="x">     </span><span class="o">*</span><span class="kt">byte</span><span class="x">    </span><span class="c">// garbage collection data</span><span class="x">
+	</span><span class="n">str</span><span class="x">        </span><span class="n">nameOff</span><span class="x">  </span><span class="c">// string form</span><span class="x">
+	</span><span class="n">ptrToThis</span><span class="x">  </span><span class="n">typeOff</span><span class="x">  </span><span class="c">// type for pointer to this type, may be zero</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>因此在<strong>t</strong>上面的调用的所有的 reflect.Type 的方法，其接收方都是一个 ** rtype** 的实例。</p>
+
+<h2 id="获取t指针所指向的对象">获取t指针所指向的对象</h2>
+<p>上面的<strong>t</strong>归根到底是一个指针，如果我们想获取<strong>t</strong>所指向的对象的属性，需要再调用一个函数<code class="highlighter-rouge">reflect.Elem()</code>把指针所指向的对象解析出来。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="c">// 获取i所指向的对象的类型</span><span class="x">
+	</span><span class="n">e</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">t</span><span class="o">.</span><span class="n">Elem</span><span class="p">()</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">Kind</span><span class="p">())</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">Name</span><span class="p">())</span><span class="x">
+</span></code></pre></div></div>
+
+<p>相应的输出如下，这个时候<strong>e</strong>的底层结构（rtype）所代表的是真正的<strong>boy</strong>结构了，所调用的方法（reflect.Name()，reflect.Name()）返回值也都是这个结构的属性了。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>main.boy
+struct
+boy
+</code></pre></div></div>
+
+<h2 id="获取t指针所指向对象的方法">获取t指针所指向对象的方法</h2>
+<p>在golang中，Method也有自己的数据结构，如下</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Method represents a single method.</span><span class="x">
+</span><span class="k">type</span><span class="x"> </span><span class="n">Method</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="c">// Name is the method name.</span><span class="x">
+	</span><span class="c">// PkgPath is the package path that qualifies a lower case (unexported)</span><span class="x">
+	</span><span class="c">// method name. It is empty for upper case (exported) method names.</span><span class="x">
+	</span><span class="c">// The combination of PkgPath and Name uniquely identifies a method</span><span class="x">
+	</span><span class="c">// in a method set.</span><span class="x">
+	</span><span class="c">// See https://golang.org/ref/spec#Uniqueness_of_identifiers</span><span class="x">
+	</span><span class="n">Name</span><span class="x">    </span><span class="kt">string</span><span class="x">
+	</span><span class="n">PkgPath</span><span class="x"> </span><span class="kt">string</span><span class="x">
+
+	</span><span class="n">Type</span><span class="x">  </span><span class="n">Type</span><span class="x">  </span><span class="c">// method type</span><span class="x">
+	</span><span class="n">Func</span><span class="x">  </span><span class="n">Value</span><span class="x"> </span><span class="c">// func with receiver as first argument</span><span class="x">
+	</span><span class="n">Index</span><span class="x"> </span><span class="kt">int</span><span class="x">   </span><span class="c">// index for Type.Method</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>如果要获取指针<strong>t</strong>中的方法，可以通过reflect.Type接口中的 <code class="highlighter-rouge">Method(int) Method</code> 获取。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"method"</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">Method</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">NumMethod</span><span class="p">()</span><span class="x"> </span><span class="o">-</span><span class="x"> </span><span class="m">1</span><span class="p">))</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">NumMethod</span><span class="p">())</span><span class="x">
+</span></code></pre></div></div>
+
+<p>上面的代码输出为：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>method
+<span class="o">{</span>SayName  func<span class="o">(</span><span class="k">*</span>main.boy<span class="o">)</span> &lt;func<span class="o">(</span><span class="k">*</span>main.boy<span class="o">)</span> Value&gt; 1<span class="o">}</span>
+0
+</code></pre></div></div>
+
+<p>如果要获取接口中所有暴露的方法，可以通过便利的方式（首先通过NumMethod()获取方法数量，然后遍历即可）很容易就可以做到。</p>
+
+<p><strong>fmt.Println(e.NumMethod())</strong>输入为0，说明到了<strong>boy</strong>这一层，方法列表的信息已经丢失。</p>
+
+<h2 id="相对于t来说v是什么">相对于t来说v是什么</h2>
+<p><strong>v</strong>代表<strong>reflect.Value</strong>类型。比较有意思的是，通过查看其源码，我们可以看到<strong>reflect.Value</strong>几乎把<strong>reflect.Type</strong>的方法重新实现了一遍（比如 NumMethod、Method、NumField）等，只不过其返回不同，在<strong>reflect.Value</strong>中能返回值为<strong>reflect.Value</strong>类型，在<strong>reflect.Type</strong>中能返回值为<strong>reflect.Type</strong>类型。</p>
+
+<h2 id="获取v所指向对象的方法">获取v所指向对象的方法</h2>
+<p>通过上面的描述我们可以知道，可以通过与t相似的方法获取v所指向对象的方法，如下：</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"value about"</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">NumMethod</span><span class="p">())</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">Method</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">NumMethod</span><span class="p">()</span><span class="x"> </span><span class="o">-</span><span class="x"> </span><span class="m">1</span><span class="p">))</span><span class="x">
+</span></code></pre></div></div>
+
+<p>相应的输出如下：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>value about
+2
+0x1099f60
+</code></pre></div></div>
+
+<p>需要注意，这里的<code class="highlighter-rouge">0x1099f60</code>只是输入了方法的<strong>reflect.Value</strong>类型的地址（因为v.Method(v.NumMethod() - 1))）返回的是一个 <strong>reflect.Value</strong>类型实例。</p>
+
+<h2 id="动态方法调用">动态方法调用</h2>
+<p>通过t或者v获取到了方法以后，可以通过显示调用<code class="highlighter-rouge">Call()</code>函数进行调用，如下：</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="c">//无输入参数的方法调用， 构造zero value</span><span class="x">
+	</span><span class="n">args</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">([]</span><span class="n">reflect</span><span class="o">.</span><span class="n">Value</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="x">
+	</span><span class="n">v</span><span class="o">.</span><span class="n">MethodByName</span><span class="p">(</span><span class="s">"SayName"</span><span class="p">)</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x">
+</span></code></pre></div></div>
+
+<p>对应的输出为：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Jingwei
+</code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+<p>根据网络上的内容，本文对golang的反射机制进行了简单的探究。对比Ruby中的运行时，golang在运行时各对象角色的获取稍显得复杂。从分析可以简单知道，Golang只能对已有的结构进行反射，无法在运行时创建新的结构；换句话说，Golang语言中的结构在代码编写时便已经决定，无法动态生成，这一点Ruby表现要灵活一些。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://www.cnblogs.com/rojas/p/4389389.html">golang 反射</a></li>
+  <li><a href="https://blog.golang.org/laws-of-reflection">The Laws of Reflection - The Go Blog</a> Golang官方对反射的解释</li>
+  <li><a href="https://studygolang.com/articles/5834">The Laws of Reflection(Go语言反射定律)</a> 同上，但是容易访问</li>
+  <li><a href="https://book.douban.com/subject/7056800/">Ruby元编程</a> 介绍Ruby元编程很经典的著作</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/06/08/how-to-build-a-blog-web.html" class="read-next-link"></a>
+          <section>
+            <span>如果你想搭建一个很随意的博客</span>
+            <p>起源很早就想搭建一个属于自己的博客，毕竟作为一个开发人员，毕竟作为一个对技术有所追求的人；可是迟迟没有落地。</p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
