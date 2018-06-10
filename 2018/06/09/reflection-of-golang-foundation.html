@@ -135,7 +135,24 @@ Author: Ray-Eldath
     
 
     <article class="markdown-body">
-      <h2 id="假如把语言的运行时环境看做集市">假如把语言的运行时环境看做集市</h2>
+      <ul id="markdown-toc">
+  <li><a href="#假如把语言的运行时环境看做集市" id="markdown-toc-假如把语言的运行时环境看做集市">假如把语言的运行时环境看做集市</a></li>
+  <li><a href="#角色信息必然保存在某个地方" id="markdown-toc-角色信息必然保存在某个地方">角色信息必然保存在某个地方</a></li>
+  <li><a href="#代码运行环境" id="markdown-toc-代码运行环境">代码运行环境</a></li>
+  <li><a href="#代码原型" id="markdown-toc-代码原型">代码原型</a>    <ul>
+      <li><a href="#代码原型中t和v的打印结果" id="markdown-toc-代码原型中t和v的打印结果">代码原型中t和v的打印结果</a></li>
+      <li><a href="#获取t指针所指向的对象" id="markdown-toc-获取t指针所指向的对象">获取t指针所指向的对象</a></li>
+      <li><a href="#获取t指针所指向对象的方法" id="markdown-toc-获取t指针所指向对象的方法">获取t指针所指向对象的方法</a></li>
+      <li><a href="#相对于t来说v是什么" id="markdown-toc-相对于t来说v是什么">相对于t来说v是什么</a></li>
+      <li><a href="#获取v所指向对象的方法" id="markdown-toc-获取v所指向对象的方法">获取v所指向对象的方法</a></li>
+      <li><a href="#动态方法调用" id="markdown-toc-动态方法调用">动态方法调用</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="假如把语言的运行时环境看做集市">假如把语言的运行时环境看做集市</h2>
 <p>假如把语言的运行时环境看做集市，在Ruby语言里，你能够在这个集市里认清楚所有的角色。这是Ruby作为动态语言的一个特性，在运行时环境，Ruby保存了对象的所有元数据，所以开发人员能清楚地列出对象的属性、方法等。</p>
 
 <p>那么，Golang作为一种类C语言的静态语言，通过什么样的机制来识别运行时集市中的角色的呢？</p>
@@ -203,7 +220,7 @@ Author: Ray-Eldath
 </span><span class="p">}</span><span class="x">
 </span></code></pre></div></div>
 
-<h2 id="代码原型中t和v的打印结果">代码原型中t和v的打印结果</h2>
+<h3 id="代码原型中t和v的打印结果">代码原型中t和v的打印结果</h3>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span>main.boy
 ptr
 &amp;<span class="o">{</span>Jingwei 28<span class="o">}</span>
@@ -240,7 +257,7 @@ ptr
 
 <p>因此在<strong>t</strong>上面的调用的所有的 reflect.Type 的方法，其接收方都是一个 ** rtype** 的实例。</p>
 
-<h2 id="获取t指针所指向的对象">获取t指针所指向的对象</h2>
+<h3 id="获取t指针所指向的对象">获取t指针所指向的对象</h3>
 <p>上面的<strong>t</strong>归根到底是一个指针，如果我们想获取<strong>t</strong>所指向的对象的属性，需要再调用一个函数<code class="highlighter-rouge">reflect.Elem()</code>把指针所指向的对象解析出来。</p>
 
 <div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="c">// 获取i所指向的对象的类型</span><span class="x">
@@ -256,7 +273,7 @@ struct
 boy
 </code></pre></div></div>
 
-<h2 id="获取t指针所指向对象的方法">获取t指针所指向对象的方法</h2>
+<h3 id="获取t指针所指向对象的方法">获取t指针所指向对象的方法</h3>
 <p>在golang中，Method也有自己的数据结构，如下</p>
 
 <div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Method represents a single method.</span><span class="x">
@@ -294,10 +311,10 @@ boy
 
 <p><strong>fmt.Println(e.NumMethod())</strong>输入为0，说明到了<strong>boy</strong>这一层，方法列表的信息已经丢失。</p>
 
-<h2 id="相对于t来说v是什么">相对于t来说v是什么</h2>
+<h3 id="相对于t来说v是什么">相对于t来说v是什么</h3>
 <p><strong>v</strong>代表<strong>reflect.Value</strong>类型。比较有意思的是，通过查看其源码，我们可以看到<strong>reflect.Value</strong>几乎把<strong>reflect.Type</strong>的方法重新实现了一遍（比如 NumMethod、Method、NumField）等，只不过其返回不同，在<strong>reflect.Value</strong>中能返回值为<strong>reflect.Value</strong>类型，在<strong>reflect.Type</strong>中能返回值为<strong>reflect.Type</strong>类型。</p>
 
-<h2 id="获取v所指向对象的方法">获取v所指向对象的方法</h2>
+<h3 id="获取v所指向对象的方法">获取v所指向对象的方法</h3>
 <p>通过上面的描述我们可以知道，可以通过与t相似的方法获取v所指向对象的方法，如下：</p>
 
 <div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"value about"</span><span class="p">)</span><span class="x">
@@ -314,7 +331,7 @@ boy
 
 <p>需要注意，这里的<code class="highlighter-rouge">0x1099f60</code>只是输入了方法的<strong>reflect.Value</strong>类型的地址（因为v.Method(v.NumMethod() - 1))）返回的是一个 <strong>reflect.Value</strong>类型实例。</p>
 
-<h2 id="动态方法调用">动态方法调用</h2>
+<h3 id="动态方法调用">动态方法调用</h3>
 <p>通过t或者v获取到了方法以后，可以通过显示调用<code class="highlighter-rouge">Call()</code>函数进行调用，如下：</p>
 
 <div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="c">//无输入参数的方法调用， 构造zero value</span><span class="x">
@@ -374,7 +391,7 @@ boy
         <a href="/2018/06/10/golang-defer-panic-recover.html" class="read-next-link"></a>
         <section>
           <span>Golang中的异常处理</span>
-          <p>代码测试环境  MacOS：10.13.4  Golang： version go1.10.1 darwin/am...</p>
+          <p></p>
         </section>
         
         <div class="filter"></div>
@@ -388,7 +405,7 @@ boy
         <a href="/2018/06/08/how-to-build-a-blog-web.html" class="read-next-link"></a>
           <section>
             <span>如果你想搭建一个很随意的博客</span>
-            <p>起源很早就想搭建一个属于自己的博客，毕竟作为一个开发人员，毕竟作为一个对技术有所追求的人；可是迟迟没有落地。</p>
+            <p></p>
           </section>
           
           <div class="filter"></div>
