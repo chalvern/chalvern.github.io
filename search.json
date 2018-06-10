@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Golang中的异常处理",
+      "tags"     : "golang",
+      "url"      : "/2018/06/10/golang-defer-panic-recover.html"
+    } ,
+  
+    {
       "title"    : "Golang中的反射",
       "tags"     : "golang",
       "url"      : "/2018/06/09/reflection-of-golang-foundation.html"
