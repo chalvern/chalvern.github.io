@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps最小文档实践 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="DevOps最小文档实践">
+    <meta name="keywords"  content="管理, 规范">
+    <!-- Open Graph -->
+    <meta property="og:title" content="DevOps最小文档实践 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/06/15/devops-document-practice.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%AE%A1%E7%90%86" class="post-tag">管理</a>
+          
+            <a href="https://jingwei.link/tags#%E8%A7%84%E8%8C%83" class="post-tag">规范</a>
+          
+        
+      </div>
+      <h1>DevOps最小文档实践</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-06-15"><i class="iconfont icon-date"></i>15 Jun 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">DevOps中文档的最小编写规范</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#背景" id="markdown-toc-背景">背景</a></li>
+  <li><a href="#主要暴露的问题" id="markdown-toc-主要暴露的问题">主要暴露的问题</a>    <ul>
+      <li><a href="#搭建的环境不一致" id="markdown-toc-搭建的环境不一致">搭建的环境不一致</a></li>
+      <li><a href="#出现问题时追溯困难" id="markdown-toc-出现问题时追溯困难">出现问题时追溯困难</a></li>
+      <li><a href="#交接困难寻找backup人选困难" id="markdown-toc-交接困难寻找backup人选困难">交接困难（寻找backup人选困难）</a></li>
+      <li><a href="#增加自动化实践的成本" id="markdown-toc-增加自动化实践的成本">增加自动化实践的成本</a></li>
+      <li><a href="#其他问题" id="markdown-toc-其他问题">其他问题</a></li>
+    </ul>
+  </li>
+  <li><a href="#最小文档实践" id="markdown-toc-最小文档实践">最小文档实践</a>    <ul>
+      <li><a href="#最小文档5要素" id="markdown-toc-最小文档5要素">最小文档5要素</a></li>
+      <li><a href="#最小文档维护工具" id="markdown-toc-最小文档维护工具">最小文档维护工具</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="背景">背景</h2>
+<p>近来DevOps在开发界和运维届大行其道，尤其适用于持续交付的场景。可以在满足最小需求的条件下快速上线应用，得到用户反馈后持续迭代功能，直至达到理想中的效果。</p>
+
+<p>DevOps存在大量的开源项目，比如<a href="https://jenkins.io/">Jenkins</a>、<a href="https://about.gitlab.com/features/gitlab-ci-cd/">GitLab CI/CD</a>、<a href="https://www.docker.com/">Docker</a>、<a href="https://kubernetes.io/">Kubernetes</a>、<a href="https://istio.io/">Istio</a>，等等；虽然有了这么多的工具，但是若想实现DevOps，依然不是一件容易的事情。把各个工具搭建起来形成一个可用的体系，是一个很复杂的过程；这里面会涉及到各个工具的版本选择、协同工作，以及很多的权限设置，等等。</p>
+
+<p>在实际的工作过程中，发现团队中的文档储存量聊胜于无，导致了一系列问题。</p>
+
+<h2 id="主要暴露的问题">主要暴露的问题</h2>
+<p>这里就几个比较明显的问题做一下简单的描述：</p>
+<h3 id="搭建的环境不一致">搭建的环境不一致</h3>
+<p>因为没有文档的约束，各个工程师（甚至同一个工程师在不同的时间段）在搭建环境时会根据自己的喜好搭建工具，比如：安装软件到不同的位置；使用不同版本的依赖库；选择不同的插件列表进行安装；选择不同的权限配置，等等。</p>
+
+<h3 id="出现问题时追溯困难">出现问题时追溯困难</h3>
+<p>主要包括两种问题：1）线上bug或性能问题，当出现bug或者性能遇到瓶颈时，需要从各方面排查问题，如果没有安装文档，则很难追溯bug出现的原因；假如遇到性能问题进行调优，从宏观层面也无法快速断定调优的边界，只能由当事人（环境搭建者）人肉诊断。2）升级的问题，有些工具的升级至涉及到核心程序的升级，对依赖库的版本没有要求，如果没有文档，无法界定核心程序与其依赖库的边界，容易造成冗余的操作或升级失败。</p>
+
+<h3 id="交接困难寻找backup人选困难">交接困难（寻找backup人选困难）</h3>
+<p>搭建环境的当事人不可能24小时在线，更甚者在岗位变动或人员变动时，如果没有好的文档储备，会大大增加其他人对环境的运维。</p>
+
+<h3 id="增加自动化实践的成本">增加自动化实践的成本</h3>
+<p>DevOps中的很多环节可以通过代码逻辑实现自动化，包括环境搭建、持续集成、应用部署等，尽可能减少沟通成本。这种自动化的实现是一个漫长的过程，这就更需要一份好的文档作为基础的规范材料，把其中的步骤抽象成代码逻辑，既能追溯实现，又能保证速度。</p>
+
+<h3 id="其他问题">其他问题</h3>
+<p>比如新技术推广材料、新人培训材料等的编写缺少可靠的参考材料。</p>
+
+<h2 id="最小文档实践">最小文档实践</h2>
+<h3 id="最小文档5要素">最小文档5要素</h3>
+<p>由于DevOps技术栈繁杂，每个工具都很新且包含搭建、配置、定制化等方面的使用。一个新工具的引入一般会首先由一个小的团队进行技术预研，首先在测试环境搭建一套服务进行试用，而在试用过程中如果发现功能未达到预期，可能会放弃对此工具的使用。这种情况下不可能要求预研团队编写完备的文档，但是为了保证能顺利完成新技术从预研到投入使用（或者淘汰使用）的过程，需有一个最小文档的支撑，根据经验，包含下面几项：</p>
+
+<ol>
+  <li>搭建环境的选择记录，并说明为什么选择这种配置（比如机器性能、网络等）；</li>
+  <li>选用工具的版本，并简单说明选择的依据；</li>
+  <li>搭建的基本步骤，包含基本的资源创建操作命令（如 <code class="highlighter-rouge">useradd; mkdir</code> ）、搭建路径、搭建过程中所使用脚本或配置文件；</li>
+  <li>配置文件，简单说明每个配置项的含义及设置值的考量初衷；</li>
+  <li>后期运维（包括事故、小范围升级、配置修改等）的记录。</li>
+</ol>
+
+<h3 id="最小文档维护工具">最小文档维护工具</h3>
+<p>考虑到时间和精力问题，在整个过程中可以不必考虑文档的质量，完全可以考虑以“流水账”的形式记录。而为了能便于维护，推荐使用<a href="https://git-scm.com/">Git</a>进行这些文档的管理。</p>
+
+<p>为了便于展示和分享最小文档，建议使用<a href="https://baike.baidu.com/item/markdown/3245829">markdown</a>编写文档，这样便很容易使用<a href="https://about.gitlab.com/">GitLab</a>把文档通过web页面的形式进行查看，且能够查看每一次文档修改的记录，免去文档更新后老版本内容丢失的风险。</p>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/06/10/golang-defer-panic-recover.html" class="read-next-link"></a>
+          <section>
+            <span>Golang中的异常处理</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

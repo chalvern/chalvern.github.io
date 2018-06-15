@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "DevOps最小文档实践",
+      "tags"     : "管理 规范",
+      "url"      : "/2018/06/15/devops-document-practice.html"
+    } ,
+  
+    {
       "title"    : "Golang中的异常处理",
       "tags"     : "golang",
       "url"      : "/2018/06/10/golang-defer-panic-recover.html"
