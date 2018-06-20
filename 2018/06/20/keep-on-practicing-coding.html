@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>让人爱上Coding的坚持与实践 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="让人爱上Coding的坚持与实践">
+    <meta name="keywords"  content="经验, 实用, 碎碎念, 自己">
+    <!-- Open Graph -->
+    <meta property="og:title" content="让人爱上Coding的坚持与实践 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/06/20/keep-on-practicing-coding.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E7%A2%8E%E7%A2%8E%E5%BF%B5" class="post-tag">碎碎念</a>
+          
+            <a href="https://jingwei.link/tags#%E8%87%AA%E5%B7%B1" class="post-tag">自己</a>
+          
+        
+      </div>
+      <h1>让人爱上Coding的坚持与实践</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-06-20"><i class="iconfont icon-date"></i>20 Jun 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">一个喜欢coding学长的碎碎念</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#本文适应群体" id="markdown-toc-本文适应群体">本文适应群体</a></li>
+  <li><a href="#序言" id="markdown-toc-序言">序言</a></li>
+  <li><a href="#坚持与爱好" id="markdown-toc-坚持与爱好">坚持与爱好</a></li>
+  <li><a href="#实践无可避免" id="markdown-toc-实践无可避免">实践无可避免</a>    <ul>
+      <li><a href="#应该实践哪些东西" id="markdown-toc-应该实践哪些东西">应该实践哪些东西</a></li>
+    </ul>
+  </li>
+  <li><a href="#书和课程在什么时候能起作用" id="markdown-toc-书和课程在什么时候能起作用">书和课程在什么时候能起作用</a></li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+</ul>
+
+<h2 id="本文适应群体">本文适应群体</h2>
+<p>主要针对大学生、职场新人，学业负担较轻的高中生（还是有的）；对有工作经验的职场老人可能也会有一定启发。</p>
+
+<h2 id="序言">序言</h2>
+<p>我算是有两个爱好：一个是涂涂写写，一个是Coding（写代码）。其中”涂涂写写“增强了我的观察能力，Coding则渐渐增强了我的消费能力（比如才又换了一个iPad）。</p>
+
+<h2 id="坚持与爱好">坚持与爱好</h2>
+
+<p>若想培养”涂涂写写“的爱好，或者从中寻找一些乐趣，皆是非常简单的，只需<strong>坚持</strong>每周内涂些东西或写些东西就可以了。道理之简单不再赘述。</p>
+
+<p>但是若想培养<strong>“Coding”</strong>的爱好，除去“坚持”之外，还需要一些其他的认知。</p>
+
+<h2 id="实践无可避免">实践无可避免</h2>
+<p>“书山有路勤为径，学海无涯苦作舟”。如果想在某个领域有突出的表现，大量的实践无可避免。这里的实践包含两个层面的意思：1）亲自动手推演（多次）而不只是看一遍想一遍，2）刻意找机会动手推演（多次），而不是打游戏消磨时光。</p>
+
+<p>在Coding这件事情上，看书的效果远不及动手实践的效果。但无论在学生生涯还是到了职场，总能看到追求书籍或课程的小伙伴；可能攒了很多书（各种从入门到精通），或者浏览过很多在线课程，但是起到的效果十分有限。之所以这样，我认为主要还是因为在动手实践上面做的功夫不到。</p>
+
+<h3 id="应该实践哪些东西">应该实践哪些东西</h3>
+<p>这里非常建议还在读大学的小伙伴们能够多动手实践一些东西。实践的东西我个人比较推荐：</p>
+
+<ol>
+  <li>安装双系统（推荐Windows+Ubuntu，主要针对windows用户；MacOS用户可忽略)</li>
+  <li><a href="http://www.linuxfromscratch.org/">搭建一个操作系统</a></li>
+  <li>探索<a href="https://www.vim.org/">Vim</a>或<a href="https://neovim.io/">Neovim</a></li>
+  <li>学会使用<a href="https://git-scm.com/">Git</a></li>
+  <li>使用<a href="https://github.com">Github</a>并查看几个项目的源码</li>
+  <li>搭建一个博客（可参考我的<a href="https://github.com/chalvern/jingwei.link">源码</a>）</li>
+  <li>待完善</li>
+</ol>
+
+<p>上面的实践列表基于这么一个原则：减少对windows的依赖，了解什么是真正的操作系统，了解什么是真正的程序，了解真实的代码，最后了解代码的部署与使用。</p>
+
+<p>当然，课堂上的知识不能落下，比如编译原理、计算机原理、计算机网络、数据结构、算法、设计模式等等；这些理论上的知识能大大提升自己Coding的天花板。</p>
+
+<h2 id="书和课程在什么时候能起作用">书和课程在什么时候能起作用</h2>
+<p>书和课程是有价值的，但是我认为它的价值主要在这两个方面：<strong>1）解答已有的问题，2）开阔眼界，了解别人在做什么、怎么做的、做到了什么程度。</strong></p>
+
+<p>当脑子里有未解的问题，而所读书刊包含了相关范畴的内容甚至包含了答案，这时读书的效率最高。所以有时候会发现，同样一本书，有的人读完像是吃了一个西瓜，而有的人读完则像是舔到一颗芝麻。</p>
+
+<p>书和课程的另一个价值是开阔眼界，主要了解别人如何做成了一件什么事情。这里要注意的是，对于此类书或课程，不应该花费太多时间和精力，而是尽可能快地消化，转而投入到对其中内容的实践中去。比如《Ruby元编程》这本书，只消一周的时间快速过一遍，而后就可以投入到<a href="https://www.ruby-lang.org/">Ruby</a>和<a href="https://rubyonrails.org">Rails</a>的实践中去了。</p>
+
+<p>（这里的书不代表教科书，教科书还是要多花些时间的。。）</p>
+
+<h2 id="小结">小结</h2>
+<p>本文主要碎碎念了学习Coding的两个基本方法：坚持与实践；再准确点，应该是<strong>刻意地坚持和刻意地实践</strong>。相对地，认为在读书和观看课程方面应尽量节俭时间，把节省的时间用在实践上面。</p>
+
+<p>在实践（60%-70%占比）中发现问题，通过看书或课程（30%-40%占比）解决问题，然后再投入实践发现问题，如此形成良性循环。尽量避免用60%-70%的时间看书或课程，只用30%-40%的时间实践，这个比例不是Coding的时间配比，这个是涂涂画画的时间配比。</p>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/06/15/devops-document-practice.html" class="read-next-link"></a>
+          <section>
+            <span>DevOps最小文档实践</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
