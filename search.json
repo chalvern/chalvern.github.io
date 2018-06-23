@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Golang测试用例的困境与最佳实践",
+      "tags"     : "golang 最佳实践",
+      "url"      : "/2018/06/23/golang-testcase-best-practices.html"
+    } ,
+  
+    {
       "title"    : "让人爱上Coding的坚持与实践",
       "tags"     : "经验 实用 碎碎念 自己",
       "url"      : "/2018/06/20/keep-on-practicing-coding.html"
@@ -8,7 +14,7 @@
   
     {
       "title"    : "DevOps最小文档实践",
-      "tags"     : "管理 规范 DevOps",
+      "tags"     : "管理 最佳实践 DevOps",
       "url"      : "/2018/06/15/devops-document-practice.html"
     } ,
   

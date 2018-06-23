@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang测试用例的困境与最佳实践 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Golang测试用例的困境与最佳实践">
+    <meta name="keywords"  content="golang, 最佳实践">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Golang测试用例的困境与最佳实践 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/06/23/golang-testcase-best-practices.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="post-tag">最佳实践</a>
+          
+        
+      </div>
+      <h1>Golang测试用例的困境与最佳实践</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-06-23"><i class="iconfont icon-date"></i>23 Jun 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">Golang的测试用例不好写怎么办啊啊啊。。。</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#背景" id="markdown-toc-背景">背景</a></li>
+  <li><a href="#测试用例的场景" id="markdown-toc-测试用例的场景">测试用例的场景</a>    <ul>
+      <li><a href="#理想中的测试" id="markdown-toc-理想中的测试">理想中的测试</a></li>
+      <li><a href="#实际中的测试用例" id="markdown-toc-实际中的测试用例">实际中的测试用例</a></li>
+      <li><a href="#ruby-vs-golang" id="markdown-toc-ruby-vs-golang">Ruby V.S. Golang</a></li>
+    </ul>
+  </li>
+  <li><a href="#据说有个测试覆盖率100的代码库" id="markdown-toc-据说有个测试覆盖率100的代码库">据说有个测试覆盖率100%的代码库</a></li>
+  <li><a href="#可测试代码最佳实践" id="markdown-toc-可测试代码最佳实践">可测试代码最佳实践</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="背景">背景</h2>
+<p>最近工作中使用Golang开发了一个从主业务中拆分的微服务。业务逻辑不是很复杂，代码量也不是很多。主要涉及到三个SDK的整合，外加一些很基础的处理逻辑。</p>
+
+<p>因为之前有过很长一段时间使用<a href="https://rubyonrails.org">Ruby on Rails</a>进行开发，习惯了测试驱动开发的模式，习惯用测试用例保证自己代码的质量；因此在使用Golang进行业务开发时，总想着为业务代码编写出完备的测试用例，一来保证代码的正确性，方便代码进行回归测试；二来通过测试用例展示业务代码的正确使用方式。</p>
+
+<p>于是想探究一番，Golang中测试用例的正确编写姿势到底是什么样子。</p>
+
+<h2 id="测试用例的场景">测试用例的场景</h2>
+<h3 id="理想中的测试">理想中的测试</h3>
+<p>理想中，测试用例场景应该是这样的：我们编写了一个A函数，为了确保A的正确性，我们写了一个ATest函数，专门对A进行测试；ATest函数PASS了，说明A函数是按照期望运行的。</p>
+
+<p>比如下面的<code class="highlighter-rouge">MyLoveAge</code>函数，我们假设固定返回<strong>18</strong>岁，为了保证<code class="highlighter-rouge">MyLoveAge</code>的正确性，再写一个<code class="highlighter-rouge">TestMyLoveAge</code>的函数。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// MyLoveAge returns mylover's age</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">MyLoveAge</span><span class="p">()</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="m">18</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>下面的<code class="highlighter-rouge">TestMyLoveAge</code>断言了<code class="highlighter-rouge">MyLoveAge</code>函数的输出，如果是<strong>18</strong>岁测试用例就通过，否则就失败。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"testing"</span><span class="x">
+	</span><span class="s">"github.com/stretchr/testify/assert"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">TestMyLoveAge</span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">assert</span><span class="o">.</span><span class="n">Equal</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="x"> </span><span class="m">18</span><span class="p">,</span><span class="x"> </span><span class="n">MyLoveAge</span><span class="p">())</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h3 id="实际中的测试用例">实际中的测试用例</h3>
+
+<p>真实场景应该是这样的：我们写了一个M函数，M调用了N方法；为了确保M的正确性，我们写一个MTest函数，专门对M进行测试；但是因为N是带状态的，为了编写MTest函数，我们需要想办法仿造（Mock）一个假的N，来保证MTest能运行通过。</p>
+
+<p>但是，造一个假的N往往没那么容易。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="x"> </span><span class="s">"math/rand"</span><span class="x">
+
+</span><span class="c">// MyLoveAge2 returns mylover's age</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">MyLoveAge2</span><span class="p">()</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="m">18</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="n">TimeFlying</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="c">// TimeFlying returns the Time flying.</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">TimeFlying</span><span class="p">()</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">rand</span><span class="o">.</span><span class="n">Intn</span><span class="p">(</span><span class="m">10</span><span class="p">)</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="m">0</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">return</span><span class="x"> </span><span class="m">0</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="nb">panic</span><span class="p">(</span><span class="s">"NO!!!"</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// MyLoveAge2的测试文件</span><span class="x">
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"testing"</span><span class="x">
+	</span><span class="s">"github.com/stretchr/testify/assert"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="c">//需要事先进行一些mock操作，下面的函数才能一直跑成功</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">TestMyLoveAge2</span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">assert</span><span class="o">.</span><span class="n">Equal</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="x"> </span><span class="m">18</span><span class="p">,</span><span class="x"> </span><span class="n">MyLoveAge2</span><span class="p">())</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>比如，<code class="highlighter-rouge">MyLoveAge2</code>调用了<code class="highlighter-rouge">TimeFlying</code>函数，这时候如果想使得<code class="highlighter-rouge">TestMyLoveAge2</code>能一直保持正常工作，我们有两种选择：1）Mock一个<code class="highlighter-rouge">TimeFlying</code>函数，让整个函数永远返回<strong>0</strong>；2）Mock一个<code class="highlighter-rouge">rand.Intn</code>函数，让它永远返回<strong>0</strong>。<strong>很可惜，对于Golang来说，这两种方式实施起来都没有那么容易，甚至无法实现。</strong></p>
+
+<p>当代码量进一步增加，各个函数的依赖关系更为复杂时，实现起来将更为棘手。</p>
+
+<h3 id="ruby-vs-golang">Ruby V.S. Golang</h3>
+
+<p>那么，相对于Golang来说，为什么编写Ruby的测试用例能方便一些呢？这真的要归功于Ruby的元编程语言特性。</p>
+
+<p>Ruby的语言特性，决定了它的灵活性：1）一切皆对象；2）任何对象均可以在运行时拆解并允许重新组装。比如上面提到的<code class="highlighter-rouge">TimeFlying</code>函数，Ruby很方便对其进行Mock（本质是对Module中的方法进行Mock，当然Module已被看做一个对象）。</p>
+
+<p>和Ruby类似的思想，Golang中出现了一个<a href="https://github.com/prashantv/gostub">gostub</a>的工具，它的思想就是想办法把Golang中一切想Mock的东西变成变量，然后就可以对这个变量进行赋值仿造了。但是因为其需要对业务代码进行改造（比如需要把函数声明成变量），而改造以后就不像是Go的风格，因此并没有被普遍接受。</p>
+
+<h2 id="据说有个测试覆盖率100的代码库">据说有个测试覆盖率100%的代码库</h2>
+<p>在我们做基础服务时，发现了<a href="https://github.com/jaegertracing/jaeger">jaeger</a>这个开源组件，使用Golang进行开发，且测试用例的覆盖率是100%。在Golang的测试用例那么难写的条件下，它是如何实现100%测试覆盖率的呢？</p>
+
+<p>通过查看其源码，大概能得到一些启示：</p>
+
+<ul>
+  <li>当一个函数（或方法）在运行过程中没有新状态（传入的参数不算新状态）引入时，这个函数的测试用例编写起来是简单的。比如<code class="highlighter-rouge">MyLoveAge</code>函数，简单地返回一个年龄值，没有其他状态引入，因此测试用例写起来很简单。</li>
+  <li>当一个函数（或方法）在运行过程中引入新状态时，需要对这个状态进行Mock，测试用例写起来会比较复杂。</li>
+  <li>如果一个C函数在运行过程中引入了新的状态，而另一个A函数调用了C，那么A也会变成一个带状态的函数，需要对C函数或者C函数中引入的新状态进行Mock才能实现测试用例的编写。</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 调用链，A调用了B和C，B调用了M，其中‘↓’代表引入的新状态 </span>
+|-A<span class="o">(</span>↓<span class="o">)</span>
+	|---B---C<span class="o">(</span>↓）
+		|---M
+</code></pre></div></div>
+
+<p>比如对于上面的调用关系链所展示的，对M和B编写测试用例是很直观的，对C和A编写测试用例则需要对新状态或引入的新状态进行Mock。</p>
+
+<p>jaeger项目中大部分的函数在运行过程中，尽量避免引入新的状态，大大方便了其测试用例的编写；少有一些带</p>
+
+<h2 id="可测试代码最佳实践">可测试代码最佳实践</h2>
+<p><strong>首先应该知道，有些场景根本无法避免新状态的引入</strong>，比如编写Web后端时，和数据库进行交互的函数。但即使这样，也要继续坚持写代码，不然房子还买不买了。。</p>
+
+<p>目前能想到的实践包括：</p>
+
+<ul>
+  <li>把引入的新状态变成参数，以参数传入的方式使用。这个参数可以保存在最顶层的调用函数中，或者保存在包的全局变量中，可以根据数量和规模进行选择；</li>
+  <li>受到Golang语言特性的限制，现存的一些第三方测试框架，均没有解决Mock的问题，可以不必偏执某个测试框架，选择顺手的即可；</li>
+  <li>官方的GoMock本质上是对变量的Mock，如果想使用它，需要做到第一条；</li>
+  <li>使用VsCode编写Golang，多编写<code class="highlighter-rouge">myTestXxx</code>的测试函数，这种函数在<code class="highlighter-rouge">go test</code>时不会运行，如果想打断点进行调试，临时删除<code class="highlighter-rouge">my</code>留下<code class="highlighter-rouge">TestXxx</code>即可。（对此项不要太依赖，尽量编写能通过的测试用例！）</li>
+</ul>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://www.jianshu.com/p/f4e773a1b11f">GoMock框架使用指南</a></li>
+  <li><a href="https://www.jianshu.com/p/e3b2b1194830">GoConvey框架使用指南</a></li>
+  <li><a href="https://www.jianshu.com/p/70a93a9ed186">GoStub框架使用指南</a></li>
+  <li><a href="https://www.jianshu.com/p/53a531852619">GoStub框架二次开发实践</a></li>
+  <li><a href="https://blog.csdn.net/lavorange/article/details/73369153?utm_source=itdadao&amp;utm_medium=referral">Golang单元测试之httptest使用</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/3Tla_uOkocIB3F_gcj_zWA">亿级用户日活千万的社交平台探探，如何用Go支撑后端工程实践</a></li>
+  <li><a href="https://github.com/smartystreets/goconvey">smartystreets/goconvey</a> Golang测试框架</li>
+  <li><a href="https://github.com/agiledragon/gostub">agiledragon/gostub</a>  GoStub框架二次开发实践对应的代码</li>
+  <li><a href="https://github.com/jaegertracing/jaeger">jaegertracing/jaeger</a> 测试覆盖100%的代码库</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/06/20/keep-on-practicing-coding.html" class="read-next-link"></a>
+          <section>
+            <span>让人爱上Coding的坚持与实践</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
