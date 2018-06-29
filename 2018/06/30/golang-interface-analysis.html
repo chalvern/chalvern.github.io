@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go中的Interface及其零值 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Go中的Interface及其零值">
+    <meta name="keywords"  content="golang">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Go中的Interface及其零值 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/06/30/golang-interface-analysis.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+        
+      </div>
+      <h1>Go中的Interface及其零值</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-06-30"><i class="iconfont icon-date"></i>30 Jun 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">interface的零值及其在什么时候不在是零值</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#背景" id="markdown-toc-背景">背景</a>    <ul>
+      <li><a href="#示例代码" id="markdown-toc-示例代码">示例代码</a></li>
+      <li><a href="#示例代码运行结果" id="markdown-toc-示例代码运行结果">示例代码运行结果</a></li>
+    </ul>
+  </li>
+  <li><a href="#go源码相关内容" id="markdown-toc-go源码相关内容">Go源码相关内容</a>    <ul>
+      <li><a href="#源码中的nil" id="markdown-toc-源码中的nil">源码中的<code class="highlighter-rouge">nil</code></a></li>
+      <li><a href="#源码中的interface" id="markdown-toc-源码中的interface">源码中的Interface</a></li>
+    </ul>
+  </li>
+  <li><a href="#再看一个例子" id="markdown-toc-再看一个例子">再看一个例子</a></li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+</ul>
+
+<h2 id="背景">背景</h2>
+<p>前几天同事突然抛过来一张截图，很惊诧地说，Go的Interface很怪异。我一看，原来是一个示例程序，大体的内容如下：</p>
+
+<h3 id="示例代码">示例代码</h3>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">type</span><span class="x"> </span><span class="n">KK</span><span class="x"> </span><span class="k">interface</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">HappyBirthday</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="n">my</span><span class="x"> </span><span class="k">interface</span><span class="p">{}</span><span class="x">
+
+	</span><span class="k">if</span><span class="x"> </span><span class="n">my</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"mikk"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"not nil"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+
+	</span><span class="k">var</span><span class="x"> </span><span class="n">kk</span><span class="x"> </span><span class="n">KK</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">kk</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"mikk"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"not nil"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h3 id="示例代码运行结果">示例代码运行结果</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mikk
+mikk
+</code></pre></div></div>
+
+<p>从运行结果来看，<code class="highlighter-rouge">my</code>和<code class="highlighter-rouge">kk</code>都是空值，同事的疑惑是：明明 <code class="highlighter-rouge">kk</code> 的原型 <code class="highlighter-rouge">KK</code> 有 <code class="highlighter-rouge">HappyBirthday</code> 的方法声明，感觉上不应该是<code class="highlighter-rouge">nil</code>。</p>
+
+<h2 id="go源码相关内容">Go源码相关内容</h2>
+<p>看到同事的疑惑以后，我的第一反应是想到自己前不久才翻看过的<a href="https://github.com/chalvern/go">Go源码</a>。</p>
+
+<h3 id="源码中的nil">源码中的<code class="highlighter-rouge">nil</code></h3>
+<p>在<code class="highlighter-rouge">go/src/builtin/builtin.go</code>的源码中，对nil的定义如下：</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// nil is a predeclared identifier representing the zero value for a</span><span class="x">
+</span><span class="c">// pointer, channel, func, interface, map, or slice type.</span><span class="x">
+</span><span class="c">// 零值，特制 指针、信道、函数、接口、map、slice</span><span class="x">
+</span><span class="k">var</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="n">Type</span><span class="x"> </span><span class="c">// Type must be a pointer, channel, func, interface, map, or slice type</span><span class="x">
+</span></code></pre></div></div>
+
+<p>大体意思是：<code class="highlighter-rouge">nil</code>代表零值；特别地，代表指针、信道、函数、接口(Interface)、map、slice的零值。也就是说，Interface的零值本就是<code class="highlighter-rouge">nil</code>。</p>
+
+<p>而根据Go的特点，<code class="highlighter-rouge">var name Type</code> 的声明方式，<code class="highlighter-rouge">name</code>的默认值本就是零值，因此无论是<code class="highlighter-rouge">my</code>还是<code class="highlighter-rouge">kk</code>，都等于<code class="highlighter-rouge">nil</code>也便可以理解了。</p>
+
+<h3 id="源码中的interface">源码中的Interface</h3>
+
+<p>Interface主要其作用的地方是在运行时，因此这里主要介绍<code class="highlighter-rouge">go/src/runtime/runtime2.go</code>中的两个片段。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 带有方法的接口</span><span class="x">
+</span><span class="k">type</span><span class="x"> </span><span class="n">iface</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="c">// 存储_type信息还有结构实现方法的集合</span><span class="x">
+	</span><span class="n">tab</span><span class="x"> </span><span class="o">*</span><span class="n">itab</span><span class="x">
+	</span><span class="c">//指向数据的指针(go语言中特殊的指针类型unsafe.Pointer类似于c语言中的void*)</span><span class="x">
+	</span><span class="n">data</span><span class="x"> </span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="c">// 空接口</span><span class="x">
+</span><span class="k">type</span><span class="x"> </span><span class="n">eface</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="c">//类型信息</span><span class="x">
+	</span><span class="n">_type</span><span class="x"> </span><span class="o">*</span><span class="n">_type</span><span class="x">
+	</span><span class="c">// 指向数据的指针(go语言中特殊的指针类型unsafe.Pointer类似于c语言中的void*)</span><span class="x">
+	</span><span class="n">data</span><span class="x"> </span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>从源码可以知道，无论是<code class="highlighter-rouge">iface</code>还是<code class="highlighter-rouge">eface</code>，其底层均存在一个<code class="highlighter-rouge">data</code>字段，也就是说，无论是带方法的接口还是空接口，其的存在必然要依附有意义的数值才可以。可以简单认为一块内存，里面存放着变量，哪怕这个变量存放的全是零值也无所谓，但是必须要有这么一块内存，也就是说，<strong>只有这块内存存在了，Interface的存在才有意义</strong>。</p>
+
+<h2 id="再看一个例子">再看一个例子</h2>
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">type</span><span class="x"> </span><span class="n">Angel</span><span class="x"> </span><span class="k">interface</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">Show</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">type</span><span class="x"> </span><span class="n">Girl</span><span class="x"> </span><span class="k">struct</span><span class="p">{}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">girl</span><span class="x"> </span><span class="o">*</span><span class="n">Girl</span><span class="p">)</span><span class="x"> </span><span class="n">Show</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">miss</span><span class="p">()</span><span class="x"> </span><span class="n">Angel</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="n">g</span><span class="x"> </span><span class="o">*</span><span class="n">Girl</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="n">g</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">angel</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">miss</span><span class="p">()</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">angel</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"nil"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"not nil"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>上面的代码输出 <code class="highlighter-rouge">not nil</code>。</p>
+
+<p>具体的，虽然<code class="highlighter-rouge">miss()</code>返回了<code class="highlighter-rouge">零值的g</code>，但是<code class="highlighter-rouge">data</code>这时候已经有值了（虽然是个<code class="highlighter-rouge">nil</code>）。这种情况下，<code class="highlighter-rouge">angel</code>就不是<code class="highlighter-rouge">nil</code>了，因为它已经有了<code class="highlighter-rouge">data</code>。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文主要对比了Go的Interface的两个例子，并从源码角度简单剖析了Interface的本质。</p>
+
+<p>另外，某小仙女今天生日，在远方祝她生日快乐🎂。</p>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/06/23/golang-testcase-best-practices.html" class="read-next-link"></a>
+          <section>
+            <span>Golang测试用例的困境与最佳实践</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

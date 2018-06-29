@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Go中的Interface及其零值",
+      "tags"     : "golang",
+      "url"      : "/2018/06/30/golang-interface-analysis.html"
+    } ,
+  
+    {
       "title"    : "Golang测试用例的困境与最佳实践",
       "tags"     : "golang 最佳实践",
       "url"      : "/2018/06/23/golang-testcase-best-practices.html"
