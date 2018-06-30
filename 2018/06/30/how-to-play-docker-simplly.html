@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>如何用一个例子上手docker - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="如何用一个例子上手docker">
+    <meta name="keywords"  content="DevOps, 容器">
+    <!-- Open Graph -->
+    <meta property="og:title" content="如何用一个例子上手docker - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/06/30/how-to-play-docker-simplly.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%B9%E5%99%A8" class="post-tag">容器</a>
+          
+        
+      </div>
+      <h1>如何用一个例子上手docker</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-06-30"><i class="iconfont icon-date"></i>30 Jun 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">关于Docker及其实践</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#测试环境" id="markdown-toc-测试环境">测试环境</a></li>
+  <li><a href="#简介" id="markdown-toc-简介">简介</a></li>
+  <li><a href="#docker的定义及获取" id="markdown-toc-docker的定义及获取">Docker的定义及获取</a></li>
+  <li><a href="#开始使用启动一个ubuntu系统" id="markdown-toc-开始使用启动一个ubuntu系统">开始使用——启动一个ubuntu系统</a>    <ul>
+      <li><a href="#拉取镜像" id="markdown-toc-拉取镜像">拉取镜像</a></li>
+      <li><a href="#启动镜像" id="markdown-toc-启动镜像">启动镜像</a></li>
+      <li><a href="#与启动起来的container交互" id="markdown-toc-与启动起来的container交互">与启动起来的Container交互</a></li>
+    </ul>
+  </li>
+  <li><a href="#再起一个容器并和第一个容器交互" id="markdown-toc-再起一个容器并和第一个容器交互">再起一个容器并和第一个容器交互</a>    <ul>
+      <li><a href="#再起一个容器" id="markdown-toc-再起一个容器">再起一个容器</a></li>
+      <li><a href="#通过ssh登录到第一个容器" id="markdown-toc-通过ssh登录到第一个容器">通过ssh登录到第一个容器</a></li>
+    </ul>
+  </li>
+  <li><a href="#接下来" id="markdown-toc-接下来">接下来</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="测试环境">测试环境</h2>
+<ul>
+  <li>MacOS：10.13.4</li>
+  <li>Docker： 17.12.0-ce</li>
+</ul>
+
+<h2 id="简介">简介</h2>
+<p>本文通过一个示例简单介绍开发中使用到的docker命令，可以回答三个问题：</p>
+
+<ul>
+  <li>是什么</li>
+  <li>怎么使用</li>
+  <li>怎么debug</li>
+</ul>
+
+<h2 id="docker的定义及获取">Docker的定义及获取</h2>
+<p>所谓Docker，类似传统意义上的虚拟机，但是比那个要轻量。虽然大家对Docker有各种不同的诠释，但作为开发者，只需知道Docker比虚拟机性能要好，且更具实用价值即可。</p>
+
+<p>我可以通过官方网站选择<a href="https://www.docker.com/community-edition#/download">下载</a>Docker的运行时环境及客户端。安装并启动后，运行下面的命令可以获取得到Docker的基本信息：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jingwei@wheresmile:~/tmp/docker<span class="nv">$ </span>docker version
+Client:
+ Version:	17.12.0-ce
+ <span class="c">#省略几行</span>
+
+Server:
+ Engine:
+  Version:	17.12.0-ce
+  <span class="c">#这里也省略几行</span>
+</code></pre></div></div>
+
+<h2 id="开始使用启动一个ubuntu系统">开始使用——启动一个ubuntu系统</h2>
+<p>我们尝试一下是否可以用Docker代替虚拟机进行一些开发。</p>
+
+<h3 id="拉取镜像">拉取镜像</h3>
+
+<p>如果想查找docker镜像，可以到百度搜索关键词。比如在百度搜索<strong>docker ubuntu</strong>可以找到Docker官方库中Ubuntu的镜像链接。</p>
+
+<p><a href="https://hub.docker.com/">DockerHub</a>是由官方维护的一个镜像仓库，里面维护了镜像的基本信息。一般我们可以从里面找到需要的镜像名称以及标签。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 把标签为16.04，名称为ubuntu的镜像从docker-hub拉取下来</span>
+docker pull ubuntu:16.04
+
+<span class="c"># 拉取镜像成功后，可以通过下面的命令查看当前电脑中存在哪些镜像</span>
+docker images
+</code></pre></div></div>
+
+<h3 id="启动镜像">启动镜像</h3>
+
+<p>镜像下载下来以后，我们就可以基于这个镜像启动一个容器实例：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 首先创建一个临时目录备用</span>
+<span class="nb">mkdir</span> <span class="nt">-pv</span> /tmp/jing
+
+<span class="c"># 启动一个服务，其中</span>
+<span class="c"># -it 指定为交互模式，如果不添加则无法进入容器</span>
+<span class="c"># -rm 指定推出容器后自动删除容器实例，如果希望进入容器后的操作在退出容器后也能找回，就不要加这个，但是时间久了会有很多垃圾容器实例。</span>
+<span class="c"># --name jingwei 命名容器实例，否则会使一个随机值</span>
+<span class="c"># -p 60630:22 把容器里的22端口映射到主机的60630端口</span>
+<span class="c"># -v /tmp/jing:/tmp/wei 把主机的/tmp/jing目录mount到容器的/tmp/wei目录</span>
+docker run <span class="nt">-it</span> <span class="nt">--rm</span> <span class="nt">--name</span> jingwei <span class="nt">-p</span> 60630:22 <span class="nt">-v</span> /tmp/jing:/tmp/wei ubuntu:16.04 bash
+</code></pre></div></div>
+
+<p>如果顺利，我们已经进入到容器的Ubuntu里（且已经是root权限），至此我们可以像在一个虚拟机里的Ubuntu里做自己想做的事情了。</p>
+
+<p>因为Docker中的Ubuntu:16.04比较纯净，需要我们自己安装一些工具。比如运行下面的命令，安装vim、ssh、ifconfig、ping等：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 更新</span>
+apt update
+
+<span class="c"># 安装vim</span>
+apt <span class="nb">install</span> <span class="nt">-y</span> vim
+
+<span class="c"># 安装一个sshd，用于ssh连接</span>
+apt <span class="nb">install</span> <span class="nt">-y</span> openssh-server
+<span class="c"># 启动ssh服务</span>
+service ssh start
+
+<span class="c"># 安装ifconfig 命令</span>
+apt <span class="nb">install</span> <span class="nt">-y</span> net-tools
+
+<span class="c"># 安装ping命令</span>
+apt <span class="nb">install</span> <span class="nt">-y</span> iputils-ping
+</code></pre></div></div>
+
+<h3 id="与启动起来的container交互">与启动起来的Container交互</h3>
+
+<p>上一步中，我们已经启动了一个容器，我们可以再开一个terminal的tab，在另一个标签里进入这个容器。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">exec</span> <span class="nt">-it</span> jingwei bash
+</code></pre></div></div>
+
+<p>当然，因为我们已经在容器中安装了ssh服务，且把它的22端口进行了映射（60630），理论上我们可以通过在主机上<code class="highlighter-rouge">ssh -p 60630 root@localhost</code>进行远程连接。但是需要进行一些特殊处理，把<code class="highlighter-rouge">/etc/ssh/ssh_config</code>中的<code class="highlighter-rouge">PermitRootLogin</code>设置成<code class="highlighter-rouge">yes</code>。</p>
+
+<h2 id="再起一个容器并和第一个容器交互">再起一个容器并和第一个容器交互</h2>
+<p>在开发的过程中，容器之间的交互很是常见，比如写一个web服务，依赖一个mysql的服务，那么怎么让容器中的web服务调用容器中的mysql服务呢？</p>
+
+<h3 id="再起一个容器">再起一个容器</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># --link 把jingwei这个容器链接到 iamsecond 容器，并且给jingwei起个别名叫mykk</span>
+<span class="c"># 其他的标识参考前面的注释</span>
+docker run <span class="nt">-it</span> <span class="nt">--rm</span> <span class="nt">--link</span> jingwei:mykk <span class="nt">--name</span> iamsecond ubuntu:16.04 bash
+</code></pre></div></div>
+
+<p>我们通过<code class="highlighter-rouge">--link</code>把已命名的<code class="highlighter-rouge">jingwei</code>给链接到了第二个容器里。进一步，我们可以通过在第二个容器的<code class="highlighter-rouge">hosts</code>查看发生了啥：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@fd64c29001eb:/# <span class="nb">cat</span> /etc/hosts
+127.0.0.1	localhost
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+172.17.0.2	mykk c5f123ecc767 jingwei
+172.17.0.3	fd64c29001eb
+root@fd64c29001eb:/#
+</code></pre></div></div>
+
+<p>其中<code class="highlighter-rouge">172.17.0.2	mykk c5f123ecc767 jingwei</code>标明了第一个容器的地址，这样我们就可以在第二个容器里通过 <code class="highlighter-rouge">mykk</code>或者<code class="highlighter-rouge">jingwei</code>甚至<code class="highlighter-rouge">c5f123ecc767 </code>（只要你不怕麻烦）来访问第一个容器了。</p>
+
+<h3 id="通过ssh登录到第一个容器">通过ssh登录到第一个容器</h3>
+<p>比如我们可以通过下面的命令，从第二个容器ssh到第一个容器：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 更新
+apt update
+
+# 安装一个sshd，用于ssh连接
+apt install -y openssh-server
+
+ssh root@mykk
+# 输入密码就切到第一个容器了✌️
+</code></pre></div></div>
+
+<p>至此，成功。</p>
+
+<h2 id="接下来">接下来</h2>
+<p>本文从实践上简单探究了docker的使用，在探究完上面的内容，可以进一步研究下面几个问题：</p>
+<ul>
+  <li>如何打自己的镜像并分享给别人</li>
+  <li>什么是Dockerfile及其编写规范</li>
+  <li>docker命令进阶</li>
+</ul>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="http://www.runoob.com/docker/docker-tutorial.html">Docker 基础教程</a> 很基础的教程</li>
+  <li><a href="https://www.cnblogs.com/hslzju/p/5839913.html">SSH远程登陆docker容器</a>  解决了ssh远程登录docker容器的配置问题</li>
+  <li><a href="https://docs.docker.com/reference/">Docker官方参考文档</a> 详细但是繁杂的官方文档</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/06/30/golang-interface-analysis.html" class="read-next-link"></a>
+          <section>
+            <span>Go中的Interface及其零值</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
