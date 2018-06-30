@@ -280,14 +280,14 @@ root@fd64c29001eb:/#
 <h3 id="通过ssh登录到第一个容器">通过ssh登录到第一个容器</h3>
 <p>比如我们可以通过下面的命令，从第二个容器ssh到第一个容器：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 更新
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 更新</span>
 apt update
 
-# 安装一个sshd，用于ssh连接
-apt install -y openssh-server
+<span class="c"># 安装一个sshd，用于ssh连接</span>
+apt <span class="nb">install</span> <span class="nt">-y</span> openssh-server
 
 ssh root@mykk
-# 输入密码就切到第一个容器了✌️
+<span class="c"># 输入密码就切到第一个容器了✌️</span>
 </code></pre></div></div>
 
 <p>至此，成功。</p>
