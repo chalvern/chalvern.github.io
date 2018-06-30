@@ -174,7 +174,7 @@ Author: Ray-Eldath
 <h2 id="docker的定义及获取">Docker的定义及获取</h2>
 <p>所谓Docker，类似传统意义上的虚拟机，但是比那个要轻量。虽然大家对Docker有各种不同的诠释，但作为开发者，只需知道Docker比虚拟机性能要好，且更具实用价值即可。</p>
 
-<p>我可以通过官方网站选择<a href="https://www.docker.com/community-edition#/download">下载</a>Docker的运行时环境及客户端。安装并启动后，运行下面的命令可以获取得到Docker的基本信息：</p>
+<p>我们可以通过官方网站选择<a href="https://www.docker.com/community-edition#/download">下载</a>Docker的运行时环境及客户端。安装并启动后，运行下面的命令可以获取得到Docker的基本信息：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jingwei@wheresmile:~/tmp/docker<span class="nv">$ </span>docker version
 Client:
@@ -188,13 +188,13 @@ Server:
 </code></pre></div></div>
 
 <h2 id="开始使用启动一个ubuntu系统">开始使用——启动一个ubuntu系统</h2>
-<p>我们尝试一下是否可以用Docker代替虚拟机进行一些开发。</p>
+<p>我们尝试一下用Docker代替虚拟机进行一些开发。</p>
 
 <h3 id="拉取镜像">拉取镜像</h3>
 
-<p>如果想查找docker镜像，可以到百度搜索关键词。比如在百度搜索<strong>docker ubuntu</strong>可以找到Docker官方库中Ubuntu的镜像链接。</p>
+<p>如果想查找docker镜像，可以直接通过搜索引擎搜索关键词。比如在百度搜索<strong>docker ubuntu</strong>可以找到Docker官方库中Ubuntu的镜像链接。</p>
 
-<p><a href="https://hub.docker.com/">DockerHub</a>是由官方维护的一个镜像仓库，里面维护了镜像的基本信息。一般我们可以从里面找到需要的镜像名称以及标签。</p>
+<p><a href="https://hub.docker.com/">DockerHub</a>是由官方维护的一个镜像仓库，里面维护了镜像的基本信息。我们可以从里面找到需要的镜像。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 把标签为16.04，名称为ubuntu的镜像从docker-hub拉取下来</span>
 docker pull ubuntu:16.04
@@ -212,8 +212,8 @@ docker images
 
 <span class="c"># 启动一个服务，其中</span>
 <span class="c"># -it 指定为交互模式，如果不添加则无法进入容器</span>
-<span class="c"># -rm 指定推出容器后自动删除容器实例，如果希望进入容器后的操作在退出容器后也能找回，就不要加这个，但是时间久了会有很多垃圾容器实例。</span>
-<span class="c"># --name jingwei 命名容器实例，否则会使一个随机值</span>
+<span class="c"># -rm 指定退出容器后自动删除容器实例，如果希望进入容器后的操作在退出容器后也能找回，就不要加这个，但是时间久了会有很多垃圾容器实例。</span>
+<span class="c"># --name jingwei 命名容器实例，否则会是一个随机值</span>
 <span class="c"># -p 60630:22 把容器里的22端口映射到主机的60630端口</span>
 <span class="c"># -v /tmp/jing:/tmp/wei 把主机的/tmp/jing目录mount到容器的/tmp/wei目录</span>
 docker run <span class="nt">-it</span> <span class="nt">--rm</span> <span class="nt">--name</span> jingwei <span class="nt">-p</span> 60630:22 <span class="nt">-v</span> /tmp/jing:/tmp/wei ubuntu:16.04 bash
@@ -221,7 +221,7 @@ docker run <span class="nt">-it</span> <span class="nt">--rm</span> <span class=
 
 <p>如果顺利，我们已经进入到容器的Ubuntu里（且已经是root权限），至此我们可以像在一个虚拟机里的Ubuntu里做自己想做的事情了。</p>
 
-<p>因为Docker中的Ubuntu:16.04比较纯净，需要我们自己安装一些工具。比如运行下面的命令，安装vim、ssh、ifconfig、ping等：</p>
+<p>因为Docker中的Ubuntu:16.04比较纯净，需要自己安装一些工具。比如运行下面的命令，安装vim、ssh、ifconfig、ping等：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 更新</span>
 apt update
@@ -245,10 +245,11 @@ apt <span class="nb">install</span> <span class="nt">-y</span> iputils-ping
 
 <p>上一步中，我们已经启动了一个容器，我们可以再开一个terminal的tab，在另一个标签里进入这个容器。</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">exec</span> <span class="nt">-it</span> jingwei bash
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 其中 jingwei 即上面启动服务时 --name 指定的名称</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> jingwei bash
 </code></pre></div></div>
 
-<p>当然，因为我们已经在容器中安装了ssh服务，且把它的22端口进行了映射（60630），理论上我们可以通过在主机上<code class="highlighter-rouge">ssh -p 60630 root@localhost</code>进行远程连接。但是需要进行一些特殊处理，把<code class="highlighter-rouge">/etc/ssh/ssh_config</code>中的<code class="highlighter-rouge">PermitRootLogin</code>设置成<code class="highlighter-rouge">yes</code>。</p>
+<p>当然，因为我们已经在容器中安装了ssh服务，且把它的22端口进行了映射（60630），理论上我们可以通过在主机上<code class="highlighter-rouge">ssh -p 60630 root@localhost</code>进行远程连接。但是需要进行一些特殊处理，把<code class="highlighter-rouge">/etc/ssh/ssh_config</code>中的<code class="highlighter-rouge">PermitRootLogin</code>设置成<code class="highlighter-rouge">yes</code>，参考<a href="https://www.cnblogs.com/hslzju/p/5839913.html">SSH远程登陆docker容器</a>。</p>
 
 <h2 id="再起一个容器并和第一个容器交互">再起一个容器并和第一个容器交互</h2>
 <p>在开发的过程中，容器之间的交互很是常见，比如写一个web服务，依赖一个mysql的服务，那么怎么让容器中的web服务调用容器中的mysql服务呢？</p>
