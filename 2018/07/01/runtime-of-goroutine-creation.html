@@ -179,7 +179,7 @@ Author: Ray-Eldath
 </span><span class="p">}</span><span class="x">
 </span></code></pre></div></div>
 
-<p>上面的代码时一个比较简单的<code class="highlighter-rouge">main</code>函数，不赘述。关键的地方，在于<code class="highlighter-rouge">go mikk()</code>和<code class="highlighter-rouge">mikk()</code>这两行，如果代码使用<code class="highlighter-rouge">mikk()</code>而注释<code class="highlighter-rouge">go mikk()</code>（正如当前代码所示），那么就只有一个goroutine；反之，则通过<code class="highlighter-rouge">go</code>关键字把<code class="highlighter-rouge">mikk()</code>放到了另一个goroutine运行。</p>
+<p>上面的代码是一个比较简单的<code class="highlighter-rouge">main</code>函数，不赘述。关键的地方，在于<code class="highlighter-rouge">go mikk()</code>和<code class="highlighter-rouge">mikk()</code>这两行，如果代码使用<code class="highlighter-rouge">mikk()</code>而注释<code class="highlighter-rouge">go mikk()</code>（正如当前代码所示），那么就只有一个goroutine；反之，则通过<code class="highlighter-rouge">go</code>关键字把<code class="highlighter-rouge">mikk()</code>放到了另一个goroutine运行。</p>
 
 <h3 id="汇编main函数">汇编main函数</h3>
 <p>我们可以通过下面的指令把<code class="highlighter-rouge">main.go</code>进行汇编，生成相应的汇编文件<code class="highlighter-rouge">main.S</code>。</p>
@@ -207,11 +207,11 @@ Author: Ray-Eldath
 	<span class="mh">0x0075</span> <span class="mi">00117</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">14</span><span class="p">)</span>	<span class="nx">MOVQ</span>	<span class="nx">$1000000</span><span class="p">,</span> <span class="p">(</span><span class="nx">SP</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p><strong>简单说明一下</strong>： <code class="highlighter-rouge">"".</code> 代表的是这个函数的命名空间，SB是个伪寄存器，全名未Static Base，代表g这个函数地址</p>
+<p><strong>简单说明一下</strong>： <code class="highlighter-rouge">"".</code> 代表的是这个函数的命名空间，SB是个伪寄存器，全名为Static Base，代表对应函数的地址</p>
 
 <p>通过对比可以发现，如果没有使用<code class="highlighter-rouge">go</code>关键词，会直接调用<code class="highlighter-rouge">mikk(SB)</code>函数；如果使用了<code class="highlighter-rouge">go</code>关键词，会调用<code class="highlighter-rouge">runtime.newproc(SB)</code>函数。</p>
 
-<p>通过查看<code class="highlighter-rouge">runtime.newproc(SB)</code>的<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">源码</a><code class="highlighter-rouge">func newproc(siz int32, fn *funcval)</code>，我们可以到这个函数需要两个参数，一个是参数个数，一个是方法地址，在汇编代码中分别通过<code class="highlighter-rouge">MOVL	$0, (SP)</code>和<code class="highlighter-rouge">MOVQ	AX, 8(SP)</code>实现的，<strong>0个参数，AX地址所指向的函数</strong>。</p>
+<p>通过查看<code class="highlighter-rouge">runtime.newproc(SB)</code>的<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">源码</a><code class="highlighter-rouge">func newproc(siz int32, fn *funcval)</code>，我们可以知道这个函数需要两个参数，一个是参数个数，一个是方法地址，在汇编代码中分别通过<code class="highlighter-rouge">MOVL	$0, (SP)</code>和<code class="highlighter-rouge">MOVQ	AX, 8(SP)</code>实现的，<strong>0个参数，AX地址所指向的函数</strong>。</p>
 
 <h2 id="runtimenewproc">runtime.newproc</h2>
 <p>通过查看<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">go/proc.go</a>源码中的<code class="highlighter-rouge">newproc</code>主要调用了<code class="highlighter-rouge">newproc1</code>函数。这里会把调用方（caller）所在的goroutine和pc作为参数传给<code class="highlighter-rouge">newproc1 </code>。</p>
