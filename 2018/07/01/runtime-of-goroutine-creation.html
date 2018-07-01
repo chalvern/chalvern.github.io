@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang的runtime之从汇编说goroutine - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Golang的runtime之从汇编说goroutine">
+    <meta name="keywords"  content="golang">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Golang的runtime之从汇编说goroutine - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/07/01/runtime-of-goroutine-creation.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+        
+      </div>
+      <h1>Golang的runtime之从汇编说goroutine</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-07-01"><i class="iconfont icon-date"></i>01 Jul 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">go关键词如何初始化一个goroutine</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#环境" id="markdown-toc-环境">环境</a></li>
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#maingo及其汇编码" id="markdown-toc-maingo及其汇编码">main.go及其汇编码</a>    <ul>
+      <li><a href="#一个main函数" id="markdown-toc-一个main函数">一个main函数</a></li>
+      <li><a href="#汇编main函数" id="markdown-toc-汇编main函数">汇编main函数</a></li>
+      <li><a href="#对比" id="markdown-toc-对比">对比</a></li>
+    </ul>
+  </li>
+  <li><a href="#runtimenewproc" id="markdown-toc-runtimenewproc">runtime.newproc</a></li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="环境">环境</h2>
+<ul>
+  <li>MacOS：10.13.4</li>
+  <li>Golang： version go1.10.1 darwin/amd64</li>
+  <li>IDE：VSCode 1.24.0</li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>一直想啃一下Golang的运行时源码，看了一些以后，脑子里总整理不出一个思路来。大概因为里面包含了太多的概念，调用链路又比较复杂，单靠大脑的几百比特的存储太吃力了。所以打算找一个点慢慢切入。这是系列的第一篇（不知道后面会有几篇=.=），从混编切入，看看goroutine到底是个啥。</p>
+
+<h2 id="maingo及其汇编码">main.go及其汇编码</h2>
+<h3 id="一个main函数">一个main函数</h3>
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"time"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">mikk</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"kk"</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span><span class="x">
+	</span><span class="c">// go mikk()</span><span class="x">
+	</span><span class="n">mikk</span><span class="p">()</span><span class="x">
+	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="m">1000</span><span class="x"> </span><span class="o">*</span><span class="x"> </span><span class="m">1000</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>上面的代码时一个比较简单的<code class="highlighter-rouge">main</code>函数，不赘述。关键的地方，在于<code class="highlighter-rouge">go mikk()</code>和<code class="highlighter-rouge">mikk()</code>这两行，如果代码使用<code class="highlighter-rouge">mikk()</code>而注释<code class="highlighter-rouge">go mikk()</code>（正如当前代码所示），那么就只有一个goroutine；反之，则通过<code class="highlighter-rouge">go</code>关键字把<code class="highlighter-rouge">mikk()</code>放到了另一个goroutine运行。</p>
+
+<h3 id="汇编main函数">汇编main函数</h3>
+<p>我们可以通过下面的指令把<code class="highlighter-rouge">main.go</code>进行汇编，生成相应的汇编文件<code class="highlighter-rouge">main.S</code>。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go tool compile <span class="nt">-S</span> main.go <span class="o">&gt;</span> main.S
+</code></pre></div></div>
+
+<h3 id="对比">对比</h3>
+<p>当使用<code class="highlighter-rouge">mikk()</code>的时候，得到的汇编片段如下：</p>
+
+<div class="language-as highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="mh">0x0058</span> <span class="mi">00088</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">12</span><span class="p">)</span>	<span class="nx">CALL</span>	<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span>
+	<span class="mh">0x005d</span> <span class="mi">00093</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">14</span><span class="p">)</span>	<span class="nx">PCDATA</span>	<span class="nx">$0</span><span class="p">,</span> <span class="nx">$0</span>
+	<span class="mh">0x005d</span> <span class="mi">00093</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">14</span><span class="p">)</span>	<span class="nx">CALL</span>	<span class="s2">""</span><span class="p">.</span><span class="nx">mikk</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span>
+	<span class="mh">0x0062</span> <span class="mi">00098</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">15</span><span class="p">)</span>	<span class="nx">MOVQ</span>	<span class="nx">$1000000</span><span class="p">,</span> <span class="p">(</span><span class="nx">SP</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>当使用<code class="highlighter-rouge">go mikk()</code>的时候，得到的汇编片段如下:</p>
+
+<div class="language-as highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="mh">0x0058</span> <span class="mi">00088</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">12</span><span class="p">)</span>	<span class="nx">CALL</span>	<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span>
+	<span class="mh">0x005d</span> <span class="mi">00093</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">13</span><span class="p">)</span>	<span class="nx">MOVL</span>	<span class="nx">$0</span><span class="p">,</span> <span class="p">(</span><span class="nx">SP</span><span class="p">)</span>
+	<span class="mh">0x0064</span> <span class="mi">00100</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">13</span><span class="p">)</span>	<span class="nx">LEAQ</span>	<span class="s2">""</span><span class="p">.</span><span class="nx">mikk</span><span class="err">·</span><span class="nx">f</span><span class="p">(</span><span class="nx">SB</span><span class="p">),</span> <span class="nx">AX</span>
+	<span class="mh">0x006b</span> <span class="mi">00107</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">13</span><span class="p">)</span>	<span class="nx">MOVQ</span>	<span class="nx">AX</span><span class="p">,</span> <span class="mi">8</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>
+	<span class="mh">0x0070</span> <span class="mi">00112</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">13</span><span class="p">)</span>	<span class="nx">PCDATA</span>	<span class="nx">$0</span><span class="p">,</span> <span class="nx">$0</span>
+	<span class="mh">0x0070</span> <span class="mi">00112</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">13</span><span class="p">)</span>	<span class="nx">CALL</span>	<span class="nx">runtime</span><span class="p">.</span><span class="nx">newproc</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span>
+	<span class="mh">0x0075</span> <span class="mi">00117</span> <span class="p">(</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span><span class="o">:</span><span class="mi">14</span><span class="p">)</span>	<span class="nx">MOVQ</span>	<span class="nx">$1000000</span><span class="p">,</span> <span class="p">(</span><span class="nx">SP</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>简单说明一下</strong>： <code class="highlighter-rouge">"".</code> 代表的是这个函数的命名空间，SB是个伪寄存器，全名未Static Base，代表g这个函数地址</p>
+
+<p>通过对比可以发现，如果没有使用<code class="highlighter-rouge">go</code>关键词，会直接调用<code class="highlighter-rouge">mikk(SB)</code>函数；如果使用了<code class="highlighter-rouge">go</code>关键词，会调用<code class="highlighter-rouge">runtime.newproc(SB)</code>函数。</p>
+
+<p>通过查看<code class="highlighter-rouge">runtime.newproc(SB)</code>的<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">源码</a><code class="highlighter-rouge">func newproc(siz int32, fn *funcval)</code>，我们可以到这个函数需要两个参数，一个是参数个数，一个是方法地址，在汇编代码中分别通过<code class="highlighter-rouge">MOVL	$0, (SP)</code>和<code class="highlighter-rouge">MOVQ	AX, 8(SP)</code>实现的，<strong>0个参数，AX地址所指向的函数</strong>。</p>
+
+<h2 id="runtimenewproc">runtime.newproc</h2>
+<p>通过查看<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">go/proc.go</a>源码中的<code class="highlighter-rouge">newproc</code>主要调用了<code class="highlighter-rouge">newproc1</code>函数。这里会把调用方（caller）所在的goroutine和pc作为参数传给<code class="highlighter-rouge">newproc1 </code>。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">newproc</span><span class="p">(</span><span class="n">siz</span><span class="x"> </span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="n">fn</span><span class="x"> </span><span class="o">*</span><span class="n">funcval</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">argp</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">add</span><span class="p">(</span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fn</span><span class="p">),</span><span class="x"> </span><span class="n">sys</span><span class="o">.</span><span class="n">PtrSize</span><span class="p">)</span><span class="x">
+	</span><span class="n">gp</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">getg</span><span class="p">()</span><span class="x">
+	</span><span class="n">pc</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">getcallerpc</span><span class="p">()</span><span class="x">
+	</span><span class="n">systemstack</span><span class="p">(</span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">newproc1</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="x"> </span><span class="p">(</span><span class="o">*</span><span class="kt">uint8</span><span class="p">)(</span><span class="n">argp</span><span class="p">),</span><span class="x"> </span><span class="n">siz</span><span class="p">,</span><span class="x"> </span><span class="n">gp</span><span class="p">,</span><span class="x"> </span><span class="n">pc</span><span class="p">)</span><span class="x">
+	</span><span class="p">})</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>创建goroutine的工作大部分在<code class="highlighter-rouge">newproc1</code>中完成。它会首先从freeG列表中尝试获取一个free的goroutine（重复利用资源，可以减少malloc的次数，降低时间消耗），只有获取不到的时候才会重新在堆栈中搞一块新的内存并初始化gouroutine。</p>
+
+<p>把goroutine的栈初始化，并把各项属性设置适当的值以后，就可以把这个goroutine加入到当前P的G队列了。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 创建一个新的goroutine运行fn，参数开始于argp，共有narg个字节</span><span class="x">
+</span><span class="c">// 最后把创建的g放到g队列等待运行</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">newproc1</span><span class="p">(</span><span class="n">fn</span><span class="x"> </span><span class="o">*</span><span class="n">funcval</span><span class="p">,</span><span class="x"> </span><span class="n">argp</span><span class="x"> </span><span class="o">*</span><span class="kt">uint8</span><span class="p">,</span><span class="x"> </span><span class="n">narg</span><span class="x"> </span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="n">callergp</span><span class="x"> </span><span class="o">*</span><span class="n">g</span><span class="p">,</span><span class="x"> </span><span class="n">callerpc</span><span class="x"> </span><span class="kt">uintptr</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="c">// 获得当前的G</span><span class="x">
+	</span><span class="n">_g_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">getg</span><span class="p">()</span><span class="x">
+</span><span class="o">...</span><span class="x">
+	</span><span class="c">// 从P的freeG队列中拿一个G</span><span class="x">
+	</span><span class="n">_p_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">_g_</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">ptr</span><span class="p">()</span><span class="x">
+	</span><span class="n">newg</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">gfget</span><span class="p">(</span><span class="n">_p_</span><span class="p">)</span><span class="x">
+</span><span class="o">...</span><span class="x">
+	</span><span class="c">// 将G加入P的runnable G队列</span><span class="x">
+	</span><span class="n">runqput</span><span class="p">(</span><span class="n">_p_</span><span class="p">,</span><span class="x"> </span><span class="n">newg</span><span class="p">,</span><span class="x"> </span><span class="no">true</span><span class="p">)</span><span class="x">
+</span><span class="o">...</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+<p>本文从汇编代码入手，发现了<code class="highlighter-rouge">runtime.newproc</code>这一条线索，通过查看相应的源码，简单介绍了goroutine的初始化过程。</p>
+
+<p>这部分的源码逻辑比较复杂，无法通过简短的博文讲清楚，建议能自己读一读。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://blog.csdn.net/InsZVA/article/details/51783922">Golang1.7 Goroutine源码分析</a> 比较详细介绍了goroutine 的proc.go</li>
+  <li><a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">go/proc.go</a> runtime.newproc所在的源码文件</li>
+  <li><a href="https://blog.csdn.net/lengyuezuixue/article/details/78541861">Golang面试解析</a> 讲了一些golang比较细节的问题</li>
+  <li><a href="https://studygolang.com/articles/10572">初探 Go 的编译命令执行过程</a> 简单介绍了go命令执行了哪些事情</li>
+  <li><a href="https://www.cnblogs.com/yjf512/p/6132868.html">Golang汇编命令解读</a> 用例子简单介绍了Go的汇编</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/07/01/cgo-smallest-practice.html" class="read-next-link"></a>
+          <section>
+            <span>Go与C语言混编最小实践</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
