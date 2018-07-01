@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go与C语言混编最小实践 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Go与C语言混编最小实践">
+    <meta name="keywords"  content="golang">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Go与C语言混编最小实践 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/06/30/cgo-smallest-practice.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+        
+      </div>
+      <h1>Go与C语言混编最小实践</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-06-30"><i class="iconfont icon-date"></i>30 Jun 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">一个简单的例子混编Go与C</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#环境" id="markdown-toc-环境">环境</a></li>
+  <li><a href="#一个完整可运行的例子" id="markdown-toc-一个完整可运行的例子">一个完整可运行的例子</a></li>
+  <li><a href="#todo" id="markdown-toc-todo">TODO</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="环境">环境</h2>
+<ul>
+  <li>MacOS：10.13.4</li>
+  <li>Golang： version go1.10.1 darwin/amd64</li>
+  <li>IDE：VSCode 1.24.0</li>
+</ul>
+
+<h2 id="一个完整可运行的例子">一个完整可运行的例子</h2>
+<p>具体的Cgo使用，可以参考<a href="https://jiajunhuang.com/articles/2018_06_15-cgo.md.html">这一篇博客</a>。但是下面依然给出一个可运行的示例，供参考。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="c">// 下面的 import "C" 以及其前面的两个 #include 必须这么写</span><span class="x">
+</span><span class="c">// go编译器会根据 import "C" 前面的注释引入两个C的header</span><span class="x">
+</span><span class="c">//</span><span class="x">
+</span><span class="c">// 不能这么做：</span><span class="x">
+</span><span class="c">//  1. 不能把 import "C" 和下面的import合并，否则go编译器不认</span><span class="x">
+</span><span class="c">//  2. 不能在 import "C" 与前面的注释隔行，否则go编译器也不认</span><span class="x">
+
+</span><span class="c">/*
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+*/</span><span class="x">
+</span><span class="k">import</span><span class="x"> </span><span class="s">"C"</span><span class="x">
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"unsafe"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="c">// Random 调用了C库中的 random 函数</span><span class="x">
+</span><span class="c">// 由于C库汇总的 random 函数返回的是C语言的long类型，</span><span class="x">
+</span><span class="c">// 因此需要通过 int(C.random) 进行一次声明的转换，把</span><span class="x">
+</span><span class="c">// C语言的long类型转换为Go的int类型</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">Random</span><span class="p">()</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="kt">int</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">random</span><span class="p">())</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="c">// Seed 指定C库random函数的seed值</span><span class="x">
+</span><span class="c">// C.uint(i)把传入golang的int转换声明为C语言的uint类型</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">Seed</span><span class="p">(</span><span class="n">i</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">C</span><span class="o">.</span><span class="n">srandom</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="kt">uint</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="c">// Print 字符串示意函数</span><span class="x">
+</span><span class="c">// 这里我们首先通过 C.CString(s) 把传入的字符串转变类型为</span><span class="x">
+</span><span class="c">// C字符串（根据各方内容推测，应该包括两步：①malloc声明一块</span><span class="x">
+</span><span class="c">// 内存；②把Go里的字符串内容拷贝到内存；③返回字符串首地址。）</span><span class="x">
+</span><span class="c">// 因为Go的GC无法管理C语言里的内存，因此这里需要显式free掉。</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">Print</span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">cs</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">C</span><span class="o">.</span><span class="n">CString</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="x">
+	</span><span class="k">defer</span><span class="x"> </span><span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">(</span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="n">cs</span><span class="p">))</span><span class="x">
+	</span><span class="n">C</span><span class="o">.</span><span class="n">fputs</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span><span class="x"> </span><span class="p">(</span><span class="o">*</span><span class="n">C</span><span class="o">.</span><span class="n">FILE</span><span class="p">)(</span><span class="n">C</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">Seed</span><span class="p">(</span><span class="m">620</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">Random</span><span class="p">())</span><span class="x">
+
+	</span><span class="n">Print</span><span class="p">(</span><span class="s">"mikk</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>如果运行，可以观察到输出：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>381675317
+mikk
+</code></pre></div></div>
+
+<h2 id="todo">TODO</h2>
+<p>看了一下源码，发现Cgo这边的源码涉及比较多Golang运行时中的M、P、G概念，且有一些基础的函数调用栈帧的知识要再捡起来。</p>
+
+<p>推荐把参考中的文章看一遍，能对Cgo开发有一个大体的了解。更深一层的，则需要一些计算机基础知识的储备；好了，我要去看书了。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://golang.org/cmd/cgo/">Cgo命令</a> 官方Cgo文档</li>
+  <li><a href="https://blog.golang.org/c-go-cgo">C与Go与Cgo</a> 官方关于Cgo的Blog</li>
+  <li><a href="https://jiajunhuang.com/articles/2018_06_15-cgo.md.html">CGO简明教程</a> 对Cgo进行介绍的博客</li>
+  <li><a href="https://www.ardanlabs.com/blog/2013/08/using-c-dynamic-libraries-in-go-programs.html">Using C Dynamic Libraries In Go Programs Go, (Golang) Programming</a> 在MacOS上的一个Cgo混编实践，包含有动态链接库的使用</li>
+  <li><a href="https://blog.csdn.net/win_lin/article/details/51734588">CGO，GOLANG调用C库，调用代码、静态库或动态库</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/06/30/how-to-play-docker-simplly.html" class="read-next-link"></a>
+          <section>
+            <span>如何用一个例子上手docker</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

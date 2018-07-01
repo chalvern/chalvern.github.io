@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Go与C语言混编最小实践",
+      "tags"     : "golang",
+      "url"      : "/2018/06/30/cgo-smallest-practice.html"
+    } ,
+  
+    {
       "title"    : "如何用一个例子上手docker",
       "tags"     : "DevOps 容器",
       "url"      : "/2018/06/30/how-to-play-docker-simplly.html"
