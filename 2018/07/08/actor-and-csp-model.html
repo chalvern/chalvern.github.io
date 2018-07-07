@@ -140,7 +140,7 @@ Author: Ray-Eldath
       <ul id="markdown-toc">
   <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
   <li><a href="#actors模型" id="markdown-toc-actors模型">Actors模型</a></li>
-  <li><a href="#csp" id="markdown-toc-csp">CSP</a></li>
+  <li><a href="#csp模型" id="markdown-toc-csp模型">CSP模型</a></li>
   <li><a href="#比较" id="markdown-toc-比较">比较</a></li>
   <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
 </ul>
@@ -167,7 +167,7 @@ Actor4
   <li>如果Actor1想给Actor4发送信息，必须要显式地把Actor4的地址（指针或者其他能找到Actor4的柄）给Actor1，否则Actor1是不知道把信息传到哪里去的。因此，如果用Actor模型编写代码，会有很多过程的Id要传递，顺理成章地也就有了父进程和子进程的说法。</li>
 </ol>
 
-<h2 id="csp">CSP</h2>
+<h2 id="csp模型">CSP模型</h2>
 <p>CSP是 <strong>Communicating Sequential Processes</strong>(通信顺序进程) 的简称。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Worker1 <span class="nt">--</span><span class="o">&gt;</span> Channel <span class="nt">--</span><span class="o">&gt;</span> Worker2
