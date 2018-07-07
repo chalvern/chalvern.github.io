@@ -159,7 +159,7 @@ Author: Ray-Eldath
 </span><span class="c">//</span><span class="x">
 </span><span class="c">// 不能这么做：</span><span class="x">
 </span><span class="c">//  1. 不能把 import "C" 和下面的import合并，否则go编译器不认</span><span class="x">
-</span><span class="c">//  2. 不能在 import "C" 与前面的注释隔行，否则go编译器也不认</span><span class="x">
+</span><span class="c">//  2. 不能在 import "C" 与前面的注释插入空行，否则go编译器也不认</span><span class="x">
 
 </span><span class="c">/*
 #include &lt;stdlib.h&gt;
@@ -172,7 +172,7 @@ Author: Ray-Eldath
 </span><span class="p">)</span><span class="x">
 
 </span><span class="c">// Random 调用了C库中的 random 函数</span><span class="x">
-</span><span class="c">// 由于C库汇总的 random 函数返回的是C语言的long类型，</span><span class="x">
+</span><span class="c">// 由于C库中的 random 函数返回的是C语言的long类型，</span><span class="x">
 </span><span class="c">// 因此需要通过 int(C.random) 进行一次声明的转换，把</span><span class="x">
 </span><span class="c">// C语言的long类型转换为Go的int类型</span><span class="x">
 </span><span class="k">func</span><span class="x"> </span><span class="n">Random</span><span class="p">()</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">

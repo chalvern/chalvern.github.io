@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乐观锁与悲观锁与Golang - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="乐观锁与悲观锁与Golang">
+    <meta name="keywords"  content="golang, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="乐观锁与悲观锁与Golang - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/07/07/optimistic-perssimistic-locking-and-golang.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>乐观锁与悲观锁与Golang</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-07-07"><i class="iconfont icon-date"></i>07 Jul 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">白话乐观锁与悲观锁</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#改变一个数值的三个步骤" id="markdown-toc-改变一个数值的三个步骤">改变一个数值的三个步骤</a>    <ul>
+      <li><a href="#悲观锁" id="markdown-toc-悲观锁">悲观锁</a></li>
+      <li><a href="#乐观锁" id="markdown-toc-乐观锁">乐观锁</a></li>
+      <li><a href="#乐观锁与悲观锁对比" id="markdown-toc-乐观锁与悲观锁对比">乐观锁与悲观锁对比</a></li>
+    </ul>
+  </li>
+  <li><a href="#golang中的乐观锁与悲观锁" id="markdown-toc-golang中的乐观锁与悲观锁">Golang中的乐观锁与悲观锁</a>    <ul>
+      <li><a href="#syncatomic" id="markdown-toc-syncatomic">sync/atomic</a></li>
+      <li><a href="#sync" id="markdown-toc-sync">sync</a></li>
+    </ul>
+  </li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="改变一个数值的三个步骤">改变一个数值的三个步骤</h2>
+<p>听起来就像是一个笑话，可是真的是这三步：①把想修改的数值从某个地方取出来；②在取出来的数值修改为期望值；③把修改后的数值保存到原来的地方。</p>
+
+<p>这里面有一个问题，把数值取出来进行修改的时候（做完了①步，正在做②步），如果有另一个<strong>过程</strong>（进程或线程）对同一个数值进行同样的操作（取值，修改），那么当两个过程都要做③的时候，就肯定有一个过程是白干活的。</p>
+
+<p>怎么办呢？</p>
+
+<h3 id="悲观锁">悲观锁</h3>
+<p>悲观的锁<strong>总认为会发生并发问题，属于保守派</strong>。</p>
+
+<p>如果想修改一个数值，立马给这个数值上一把锁，标明这个数值正在被修改，谁也不能修改了；然后才开始<strong>三步走</strong>，在<strong>三步走</strong>的过程结束以后，再把锁解除。</p>
+
+<p>当有其他过程想要修改同一个数值时，看到了锁就不进行<strong>三步走</strong>了，而是选择等待；当锁被解除了，自己在数值也加一把锁，然后开始<strong>三步走</strong>，在三个步骤走完了，也把锁解除。</p>
+
+<p>上面的过程既是悲观锁，总是存在加锁和解除锁的动作。</p>
+
+<h3 id="乐观锁">乐观锁</h3>
+<p>如果修改数值的时候，并没有其他过程修改同一个数值，那么给它加锁再解除锁岂不是浪费时间浪费金钱。</p>
+
+<p>乐观的锁<strong>总认为不会发生并发问题，属于乐天派</strong>。</p>
+
+<p>如果想修改一个数值，不加锁了，可是怎么保证当自己修改数值的时候没有其他的过程修改同一个数值？有办法！</p>
+
+<p>不加锁，正常进行①②步，在进行③的时候，确认一下数值是否进行了修改，如果被修改过，放弃修改，重新走一遍①②③（或者放弃对数值进行修改）。</p>
+
+<p>上面的过程既是乐观锁，不存在加锁和解除锁的动作。</p>
+
+<h3 id="乐观锁与悲观锁对比">乐观锁与悲观锁对比</h3>
+
+<p>乐观锁<strong>没有</strong>加锁和解除锁的步骤，直觉上会快一些；但是乐观锁这么做的前提是<strong>总认为不会发生并发</strong>，如果并发发生的概率很大，重试的次数会增加，这种情况下乐观锁的性能就差很多了。</p>
+
+<p>悲观锁<strong>有</strong>加锁和解除锁的步骤，直觉上会慢一些；但是当有很多进程或者线程对同一个数值进行修改时，能避免大量的重试过程，这种情况下悲观锁的性能相对就很高了。</p>
+
+<h2 id="golang中的乐观锁与悲观锁">Golang中的乐观锁与悲观锁</h2>
+<h3 id="syncatomic">sync/atomic</h3>
+<p>Golang中有一个 <a href="https://golang.google.cn/pkg/sync/atomic/">atomic</a> 包，可以在不形成临界区和创建互斥量的情况下完成并发安全的值替换操作，这个包应用的便是乐观锁的原理。</p>
+
+<p>不过这个包只支持<strong>int32/int64/uint32/uint64/uintptr</strong>这几种数据类型的一些基础操作（增减、交换、载入、存储等）</p>
+
+<h3 id="sync">sync</h3>
+<p>Golang中的<a href="https://golang.google.cn/pkg/sync/">sync</a>包，提供了各种锁，如果使用了这个包，基本上就以悲观锁的工作模式了。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://blog.csdn.net/L_BestCoder/article/details/79298417">最通俗易懂的乐观锁与悲观锁原理及实现</a></li>
+  <li><a href="https://jiajunhuang.com/articles/2017_10_19-web_dev_part10.md.html">Web开发系列(十)：事务和锁</a> web开发中的乐观锁与悲观锁应用</li>
+  <li><a href="https://en.wikipedia.org/wiki/Critical_section">Critical section - Wikipedia</a> 维基百科中对临界区的解释</li>
+  <li><a href="https://my.oschina.net/myspaceNUAA/blog/81244">临界区的实现原理</a></li>
+  <li><a href="https://studygolang.com/articles/3557">Go语言atomic原子操作</a> 大概讲了go中atomic的应用</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/07/01/runtime-of-goroutine-creation.html" class="read-next-link"></a>
+          <section>
+            <span>Golang的runtime之从汇编说goroutine</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
