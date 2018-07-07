@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "并发模型：Actors与CSP",
+      "tags"     : "golang 基础",
+      "url"      : "/2018/07/08/actor-and-csp-model.html"
+    } ,
+  
+    {
       "title"    : "乐观锁与悲观锁与Golang",
       "tags"     : "golang 基础",
       "url"      : "/2018/07/07/optimistic-perssimistic-locking-and-golang.html"

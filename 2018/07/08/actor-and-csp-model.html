@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>乐观锁与悲观锁与Golang - 敬维</title>
+    <title>并发模型：Actors与CSP - 敬维</title>
     <meta name="author"  content="敬维">
-    <meta name="description" content="乐观锁与悲观锁与Golang">
+    <meta name="description" content="并发模型：Actors与CSP">
     <meta name="keywords"  content="golang, 基础">
     <!-- Open Graph -->
-    <meta property="og:title" content="乐观锁与悲观锁与Golang - 敬维">
+    <meta property="og:title" content="并发模型：Actors与CSP - 敬维">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jingwei.link/2018/07/07/optimistic-perssimistic-locking-and-golang.html">
+    <meta property="og:url" content="https://jingwei.link/2018/07/08/actor-and-csp-model.html">
     <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
     <meta property="og:site_name" content="敬维">
     <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
@@ -119,10 +119,10 @@ Author: Ray-Eldath
           
         
       </div>
-      <h1>乐观锁与悲观锁与Golang</h1>
+      <h1>并发模型：Actors与CSP</h1>
       <div class="post-meta">
         <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
-        <time class="post-meta-item" datetime="18-07-07"><i class="iconfont icon-date"></i>07 Jul 2018</time>
+        <time class="post-meta-item" datetime="18-07-08"><i class="iconfont icon-date"></i>08 Jul 2018</time>
       </div>
     </div>
     
@@ -133,74 +133,69 @@ Author: Ray-Eldath
 
   <div class="post-content visible">
     
-    <h2 class="post-subtitle">白话乐观锁与悲观锁</h2>
+    <h2 class="post-subtitle">介绍并比较Actors与CSP并发模型</h2>
     
 
     <article class="markdown-body">
       <ul id="markdown-toc">
-  <li><a href="#改变一个数值的三个步骤" id="markdown-toc-改变一个数值的三个步骤">改变一个数值的三个步骤</a>    <ul>
-      <li><a href="#悲观锁" id="markdown-toc-悲观锁">悲观锁</a></li>
-      <li><a href="#乐观锁" id="markdown-toc-乐观锁">乐观锁</a></li>
-      <li><a href="#乐观锁与悲观锁对比" id="markdown-toc-乐观锁与悲观锁对比">乐观锁与悲观锁对比</a></li>
-    </ul>
-  </li>
-  <li><a href="#golang中的乐观锁与悲观锁" id="markdown-toc-golang中的乐观锁与悲观锁">Golang中的乐观锁与悲观锁</a>    <ul>
-      <li><a href="#syncatomic" id="markdown-toc-syncatomic">sync/atomic</a></li>
-      <li><a href="#sync" id="markdown-toc-sync">sync</a></li>
-    </ul>
-  </li>
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#actors模型" id="markdown-toc-actors模型">Actors模型</a></li>
+  <li><a href="#csp" id="markdown-toc-csp">CSP</a></li>
+  <li><a href="#比较" id="markdown-toc-比较">比较</a></li>
   <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
 </ul>
 
-<h2 id="改变一个数值的三个步骤">改变一个数值的三个步骤</h2>
-<p>听起来就像是一个笑话，可是真的是这三步：①把想修改的数值从某个地方取出来；②在取出来的数值修改为期望值；③把修改后的数值保存到原来的地方。</p>
+<h2 id="写在前面">写在前面</h2>
+<p>最近翻了一下讲并发模型的书——<a href="https://book.douban.com/subject/26337939/">七周七并发模型</a>，包含了下面七种并发模型：线程与锁，函数式编程，Clojure，Actor，通信顺序进程（CSP），数据级并行，Lambda架构。</p>
 
-<p>这里面有一个问题，把数值取出来进行修改的时候（做完了①步，正在做②步），如果有另一个<strong>过程</strong>（进程或线程）对同一个数值进行同样的操作（取值，修改），那么当两个过程都要做③的时候，就肯定有一个过程是白干活的。</p>
+<p>这篇博文把Actor和CSP两种模型简单介绍一下。</p>
 
-<p>怎么办呢？</p>
+<h2 id="actors模型">Actors模型</h2>
+<p>Actor模型，顾名思义，侧重的是Actor。每个Actor与其他Actor进行直接通信，不经过中介，且消息时异步发送和处理的。</p>
 
-<h3 id="悲观锁">悲观锁</h3>
-<p>悲观的锁<strong>总认为会发生并发问题，属于保守派</strong>。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Actor1 <span class="nt">--</span><span class="o">&gt;</span> Actor2 <span class="nt">--</span><span class="o">&gt;</span> Actor3
+  ↓
+Actor4
+</code></pre></div></div>
 
-<p>如果想修改一个数值，立马给这个数值上一把锁，标明这个数值正在被修改，谁也不能修改了；然后才开始<strong>三步走</strong>，在<strong>三步走</strong>的过程结束以后，再把锁解除。</p>
+<p>这里隐含着这几种意思：</p>
 
-<p>当有其他过程想要修改同一个数值时，看到了锁就不进行<strong>三步走</strong>了，而是选择等待；当锁被解除了，自己在数值也加一把锁，然后开始<strong>三步走</strong>，在三个步骤走完了，也把锁解除。</p>
+<ol>
+  <li>可以把每个过程（微进程，比如<a href="https://elixir-lang.org/">Elixir</a>中的Process）当做一个Actor，能与其他的Actor互不干扰地并发运行。</li>
+  <li>如果Actor1想作用Actor2，必须通过发送消息的方式，给Actor2发送”邮件“，至于Actor2是否接受这份”邮件“，是Actor2的事情。</li>
+  <li>每个Actor有一个小邮箱，任意Actor可以向这个邮箱投递消息；投递和读取是两个过程，这就把Actor之间的交互解耦了。</li>
+  <li>如果Actor1想给Actor4发送信息，必须要显式地把Actor4的地址（指针或者其他能找到Actor4的柄）给Actor1，否则Actor1是不知道把信息传到哪里去的。因此，如果用Actor模型编写代码，会有很多过程的Id要传递，顺理成章地也就有了父进程和子进程的说法。</li>
+</ol>
 
-<p>上面的过程既是悲观锁，总是存在加锁和解除锁的动作。</p>
+<h2 id="csp">CSP</h2>
+<p>CSP是 <strong>Communicating Sequential Processes</strong>(通信顺序进程) 的简称。</p>
 
-<h3 id="乐观锁">乐观锁</h3>
-<p>如果修改数值的时候，并没有其他过程修改同一个数值，那么给它加锁再解除锁岂不是浪费时间浪费金钱。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Worker1 <span class="nt">--</span><span class="o">&gt;</span> Channel <span class="nt">--</span><span class="o">&gt;</span> Worker2
+</code></pre></div></div>
 
-<p>乐观的锁<strong>总认为不会发生并发问题，属于乐天派</strong>。</p>
+<p>在CSP中，多了一个角色<strong>Channel</strong>，过程（比如goroutine，Worker1）与过程（比如goroutine，Worker2）之间不直接通信，而是通过Channle进行通信。</p>
 
-<p>如果想修改一个数值，不加锁了，可是怎么保证当自己修改数值的时候没有其他的过程修改同一个数值？有办法！</p>
+<p>这里面也隐含着几种意思：</p>
 
-<p>不加锁，正常进行①②步，在进行③的时候，确认一下数值是否进行了修改，如果被修改过，放弃修改，重新走一遍①②③（或者放弃对数值进行修改）。</p>
+<ol>
+  <li>Channel是过程的中间媒介，在程序中其实就是一块内存，Worker1想要跟Worker2发信息时，直接把信息放到Channel里，然后Worker2在方便的时候到Channel里获取。</li>
+  <li>Worker1和Worker2之间可以存在很多个Channel；在Golang中每个Channel定义不同的数据类型，即发送不同类型的消息的时候会用到多个不同的Channel。</li>
+</ol>
 
-<p>上面的过程既是乐观锁，不存在加锁和解除锁的动作。</p>
-
-<h3 id="乐观锁与悲观锁对比">乐观锁与悲观锁对比</h3>
-
-<p>乐观锁<strong>没有</strong>加锁和解除锁的步骤，直觉上会快一些；但是乐观锁这么做的前提是<strong>总认为不会发生并发</strong>，如果并发发生的概率很大，重试的次数会增加，这种情况下乐观锁的性能就差很多了。</p>
-
-<p>悲观锁<strong>有</strong>加锁和解除锁的步骤，直觉上会慢一些；但是当有很多进程或者线程对同一个数值进行修改时，能避免大量的重试过程，这种情况下悲观锁的性能相对就很高了。</p>
-
-<h2 id="golang中的乐观锁与悲观锁">Golang中的乐观锁与悲观锁</h2>
-<h3 id="syncatomic">sync/atomic</h3>
-<p>Golang中有一个 <a href="https://golang.google.cn/pkg/sync/atomic/">atomic</a> 包，可以在不形成临界区和创建互斥量的情况下完成并发安全的值替换操作，这个包应用的便是乐观锁的原理。</p>
-
-<p>不过这个包只支持<strong>int32/int64/uint32/uint64/uintptr</strong>这几种数据类型的一些基础操作（增减、交换、载入、存储等）</p>
-
-<h3 id="sync">sync</h3>
-<p>Golang中的<a href="https://golang.google.cn/pkg/sync/">sync</a>包，提供了各种锁，如果使用了这个包，基本上就以悲观锁的工作模式了。</p>
+<h2 id="比较">比较</h2>
+<ul>
+  <li>和Actor模型比，CSP的Worker身上没有冗余的”小邮箱“；CSP模型把省下的内存空间都用来声明Channel了，所以不能说那种模型更节省内存。</li>
+  <li>Actor模型把”小邮箱“安装在每个Actor的身上，假设Actor之间是经常有通信的，因此更适合用来进行高并发通信的场合，比如Erlang。</li>
+  <li>CSP模型，默认Worker之间的通信是较少的，但是这样就能专注于提升Worker的性能（没有小邮箱了，设计时不用考虑它），比如Golang。</li>
+  <li>目前Golang（CSP模型）比Erlang以及Elixir（Actor模型）更火，后者比前者要小众一些。</li>
+</ul>
 
 <h2 id="参考">参考</h2>
 <ul>
-  <li><a href="https://blog.csdn.net/L_BestCoder/article/details/79298417">最通俗易懂的乐观锁与悲观锁原理及实现</a></li>
-  <li><a href="https://jiajunhuang.com/articles/2017_10_19-web_dev_part10.md.html">Web开发系列(十)：事务和锁</a> web开发中的乐观锁与悲观锁应用</li>
-  <li><a href="https://en.wikipedia.org/wiki/Critical_section">Critical section - Wikipedia</a> 维基百科中对临界区的解释</li>
-  <li><a href="https://my.oschina.net/myspaceNUAA/blog/81244">临界区的实现原理</a></li>
-  <li><a href="https://studygolang.com/articles/3557">Go语言atomic原子操作</a> 大概讲了go中atomic的应用</li>
+  <li><a href="https://www.jdon.com/actors.html">Actors编程模型</a> 对Actors模型进行定义</li>
+  <li><a href="https://www.jdon.com/concurrent/actor-csp.html">Actor模型和CSP模型的区别</a> 讲的比较清楚，建议看一下这篇文章</li>
+  <li><a href="https://jingwei.link/2018/07/07/optimistic-perssimistic-locking-and-golang.html">乐观锁与悲观锁与Golang</a> 简单白话地讲了乐观锁和悲观锁</li>
+  <li><a href="https://book.douban.com/subject/26337939/">七周七并发模型</a> 这本书的定位初看是有点尴尬的，看名称侧重定义，但内容中包含了大量的工程实践，如果对某些语言没有基础看起来还是挺吃力的。</li>
 </ul>
 
     </article>
@@ -235,24 +230,12 @@ Author: Ray-Eldath
     </section>
     <section class="post-footer-item read-next">
       
-      <div class="read-next-item">
-        <a href="/2018/07/08/actor-and-csp-model.html" class="read-next-link"></a>
-        <section>
-          <span>并发模型：Actors与CSP</span>
-          <p></p>
-        </section>
-        
-        <div class="filter"></div>
-        <img src="" alt="">
-        
-     </div>
-      
 
       
       <div class="read-next-item">
-        <a href="/2018/07/01/runtime-of-goroutine-creation.html" class="read-next-link"></a>
+        <a href="/2018/07/07/optimistic-perssimistic-locking-and-golang.html" class="read-next-link"></a>
           <section>
-            <span>Golang的runtime之从汇编说goroutine</span>
+            <span>乐观锁与悲观锁与Golang</span>
             <p></p>
           </section>
           
