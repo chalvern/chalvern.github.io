@@ -3,12 +3,12 @@
     {
       "title"    : "应对百万访问量的epoll模式",
       "tags"     : "基础 golang",
-      "url"      : "/2018/07/08/epoll-and-golang.html"
+      "url"      : "/2018/07/11/epoll-and-golang.html"
     } ,
   
     {
       "title"    : "并发模型：Actors与CSP",
-      "tags"     : "golang 基础",
+      "tags"     : "基础 golang",
       "url"      : "/2018/07/08/actor-and-csp-model.html"
     } ,
   
