@@ -171,8 +171,8 @@ Actor4
 
 <ol>
   <li>可以把每个过程（微进程，比如<a href="https://elixir-lang.org/">Elixir</a>中的Process）当做一个Actor，能与其他的Actor互不干扰地并发运行。</li>
-  <li>如果Actor1想作用Actor2，必须通过发送消息的方式，给Actor2发送”邮件“，至于Actor2是否接受这份”邮件“，是Actor2的事情。</li>
-  <li>每个Actor有一个小邮箱，任意Actor可以向这个邮箱投递消息；投递和读取是两个过程，这就把Actor之间的交互解耦了。</li>
+  <li>如果Actor1想作用Actor2，必须通过发送消息的方式给Actor2发送”邮件“（地址直接填Actor2的地址），至于Actor2是否接受这份”邮件“，是Actor2的事情。</li>
+  <li>每个Actor有一个小邮箱，任意Actor可以向自己的地址发送的信息都会放置在这个邮箱里；信息的投递和读取是两个过程，这就把Actor之间的交互解耦了。</li>
   <li>如果Actor1想给Actor4发送信息，必须要显式地把Actor4的地址（指针或者其他能找到Actor4的柄）给Actor1，否则Actor1是不知道把信息传到哪里去的。因此，如果用Actor模型编写代码，会有很多过程的Id要传递，顺理成章地也就有了父进程和子进程的说法。</li>
 </ol>
 
@@ -182,20 +182,20 @@ Actor4
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Worker1 <span class="nt">--</span><span class="o">&gt;</span> Channel <span class="nt">--</span><span class="o">&gt;</span> Worker2
 </code></pre></div></div>
 
-<p>在CSP中，多了一个角色<strong>Channel</strong>，过程（比如goroutine，Worker1）与过程（比如goroutine，Worker2）之间不直接通信，而是通过Channle进行通信。</p>
+<p>在CSP中，多了一个角色<strong>Channel</strong>，过程（比如goroutine，Worker1）与过程（Worker2）之间不直接通信，而是通过Channle进行通信。</p>
 
 <p>这里面也隐含着几种意思：</p>
 
 <ol>
-  <li>Channel是过程的中间媒介，在程序中其实就是一块内存，Worker1想要跟Worker2发信息时，直接把信息放到Channel里，然后Worker2在方便的时候到Channel里获取。</li>
+  <li>Channel是过程的中间媒介，Worker1想要跟Worker2发信息时，直接把信息放到Channel里（在程序中其实就是一块内存），然后Worker2在方便的时候到Channel里获取。</li>
   <li>Worker1和Worker2之间可以存在很多个Channel；在Golang中每个Channel定义不同的数据类型，即发送不同类型的消息的时候会用到多个不同的Channel。</li>
 </ol>
 
 <h2 id="比较">比较</h2>
 <ul>
-  <li>和Actor模型比，CSP的Worker身上没有冗余的”小邮箱“；CSP模型把省下的内存空间都用来声明Channel了，所以不能说那种模型更节省内存。</li>
-  <li>Actor模型把”小邮箱“安装在每个Actor的身上，假设Actor之间是经常有通信的，因此更适合用来进行高并发通信的场合，比如Erlang。</li>
-  <li>CSP模型，默认Worker之间的通信是较少的，但是这样就能专注于提升Worker的性能（没有小邮箱了，设计时不用考虑它），比如Golang。</li>
+  <li>和Actor模型比，CSP的Worker身上没有冗余的“信箱”；CSP模型把省下的内存空间都用来声明Channel了，所以不能说那种模型更节省内存。</li>
+  <li>Actor模型假设Actor之间是经常有通信的，把“小邮箱”安装在每个Actor的身上，更适合用来进行高并发通信的场合，比如Erlang、Elixir。</li>
+  <li>CSP模型，在解耦Worker之间通信的同时，提升了Worker的性能（没有小邮箱了，设计时不用考虑），比如Golang。</li>
   <li>目前Golang（CSP模型）比Erlang以及Elixir（Actor模型）更火，后者比前者要小众一些。</li>
 </ul>
 
@@ -238,6 +238,18 @@ Actor4
       
     </section>
     <section class="post-footer-item read-next">
+      
+      <div class="read-next-item">
+        <a href="/2018/07/08/epoll-and-golang.html" class="read-next-link"></a>
+        <section>
+          <span>应对百万访问量的epoll模式</span>
+          <p></p>
+        </section>
+        
+        <div class="filter"></div>
+        <img src="" alt="">
+        
+     </div>
       
 
       

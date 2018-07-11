@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>应对百万访问量的epoll模式 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="应对百万访问量的epoll模式">
+    <meta name="keywords"  content="基础, golang">
+    <!-- Open Graph -->
+    <meta property="og:title" content="应对百万访问量的epoll模式 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/07/08/epoll-and-golang.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+        
+      </div>
+      <h1>应对百万访问量的epoll模式</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-07-08"><i class="iconfont icon-date"></i>08 Jul 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">简单介绍epoll模式及其在golang中的实现</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#selectpoll与epoll" id="markdown-toc-selectpoll与epoll">select/poll与epoll</a>    <ul>
+      <li><a href="#selectpoll模型工作机理" id="markdown-toc-selectpoll模型工作机理">select/poll模型工作机理</a></li>
+      <li><a href="#selectpoll模型的局限" id="markdown-toc-selectpoll模型的局限">select/poll模型的局限</a></li>
+      <li><a href="#epoll模型工作机理" id="markdown-toc-epoll模型工作机理">epoll模型工作机理</a></li>
+      <li><a href="#epoll的局限" id="markdown-toc-epoll的局限">epoll的局限</a></li>
+    </ul>
+  </li>
+  <li><a href="#golang中的epoll" id="markdown-toc-golang中的epoll">golang中的epoll</a>    <ul>
+      <li><a href="#golang源码中的sysmon函数" id="markdown-toc-golang源码中的sysmon函数">golang源码中的sysmon函数</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>上一篇文章<a href="https://jingwei.link/2018/07/08/actor-and-csp-model.html">并发模型：Actors与CSP</a>简单介绍了Actors和CSP两种并发模型。如果认真推敲会发现，无论是Actors还是CSP，只管上来说其实都是内存模型，那么高并发的CPU模型是怎么样的呢？</p>
+
+<p>或者说：只有8颗CPU核的一台主机，同一时间至多运行8个线程，如何实现<strong>一秒时间内</strong>对上万个请求的响应？</p>
+
+<h2 id="selectpoll与epoll">select/poll与epoll</h2>
+<h3 id="selectpoll模型工作机理">select/poll模型工作机理</h3>
+<p>在epoll之前，存在两种高并发模型：select和poll，大体的步骤是：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># select和poll模式会专门对下面的连接链表进行轮询，查看那个连接上有请求</span>
+head-&gt;connetion1-&gt;connection2-&gt;connection3-&gt;connection4-&gt;...
+</code></pre></div></div>
+
+<ol>
+  <li>创建连接链表。简单讲，同一时间来了一万连接请求，给用户A发来的连接请求创建一个专门的connection1，用户B发来的连接请求创建一个专门的connection2；给用户C发来的……</li>
+  <li>遍历步骤1生成的连接链表，从connection1一个个地看直到connection10000，查看哪个连接（connection）上面用户发了新的请求，如果有发现新的请求，则想办法通知负责当前连接的进程（比如我们自己的服务）去响应，然后继续遍历。</li>
+  <li>终于遍历到了最后一个连接，继续从头开始遍历。</li>
+</ol>
+
+<h3 id="selectpoll模型的局限">select/poll模型的局限</h3>
+<p>从上面的描述可以知道，select/poll模型里面存在一个遍历查找过程。当链表的长度较短，且每个连接（connection）上的请求很频繁时，select/poll的模型工作的很好；但是一旦连接数增加，<strong>select/poll模式遍历查找的过程会消耗大量的CPU时间，而且连接数越多情况越恶化</strong>，因此限制了这种模式在高访问量场景下的使用。</p>
+
+<h3 id="epoll模型工作机理">epoll模型工作机理</h3>
+<p>既然遍历连接（可以看做一小块内存，是文件描述符的一种）限制了select/poll模型的天花板，那么能不能不要再让CPU遍历那么多连接了。</p>
+
+<p>linux说：可以。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 连接的列表，每个连接存在一个唯一的id</span>
+<span class="o">[</span>0]connection0 | <span class="o">[</span>1]connection1 | <span class="o">[</span>2]connection2 | ...
+
+<span class="c"># 发现connection1和connection10有请求</span>
+<span class="c"># 把它们加入到一个特殊的链表</span>
+head-&gt;connection1-&gt;connection10
+</code></pre></div></div>
+
+<p>大体的步骤如下：</p>
+
+<ol>
+  <li>创建连接数组列表。同一时间来了一万连接请求，给用户A发来的连接请求创建一个专门的connection0，ID为0；用户B发来的连接请求创建一个专门的connection1，ID为1；给用户C发来的……</li>
+  <li>linux内核和网卡驱动的约定：当某个连接上有新的请求时，网卡驱动把请求的内容和对应的连接ID一起发给内核。</li>
+  <li>linux内核拿到了带连接ID的请求，找到对应的connectionID并把它加入到一个特殊链表。</li>
+  <li>遍历这个特殊的链表，想办法通知负责当前连接的进程（比如我们自己的服务）去响应，然后继续遍历</li>
+</ol>
+
+<p><strong>注意</strong>第4步，因为linux内核已经把存在实际请求的连接拣出来了，因此不存在徒劳功，老老实实处理请求就好了。</p>
+
+<h3 id="epoll的局限">epoll的局限</h3>
+<p>像上面所描述的，epoll杜绝了无意义的遍历，因此在高访问量场景中有很大的发挥空间。但是不能不说，一切都是基于web请求计算量低请求低频的场景。</p>
+
+<p>试想，对于epoll中的connection，如果网卡突然对linux内核说：哥，现在所有的连接都有请求。那么特殊链表里其实就是所有的连接实例了，这种场景下epoll反而不如select/poll模式，毕竟后者步骤少啊。</p>
+
+<p>幸运的是，我们所说的百万访问量，都是人发起的，很契合epoll的使用场景。</p>
+
+<h2 id="golang中的epoll">golang中的epoll</h2>
+<p>参见<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">golang源码</a>的<code class="highlighter-rouge">src/runtime/proc.go</code>文件，其在main函数启动时，既开始在系统栈开始运行<code class="highlighter-rouge">sysmon</code>函数。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+</span><span class="c">//...</span><span class="x">
+	</span><span class="n">systemstack</span><span class="p">(</span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">newm</span><span class="p">(</span><span class="n">sysmon</span><span class="p">,</span><span class="x"> </span><span class="no">nil</span><span class="p">)</span><span class="x">
+	</span><span class="p">})</span><span class="x">
+</span><span class="c">//...</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h3 id="golang源码中的sysmon函数">golang源码中的sysmon函数</h3>
+<p>通过查看sysmon函数可以知道，这个函数主要的是一个无穷的<code class="highlighter-rouge">for</code>循环，负责调整时序、GC（垃圾回收）以及epoll检查等。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// sysmon</span><span class="x">
+</span><span class="c">// Go runtime启动时创建的，负责监控所有goroutine的状态判断是否需要GC，</span><span class="x">
+</span><span class="c">// 进行netpoll等操作。sysmon函数中会调用retake函数进行抢占式调度</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">sysmon</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+</span><span class="c">//...</span><span class="x">
+  </span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">if</span><span class="x"> </span><span class="n">netpollinited</span><span class="p">()</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="n">lastpoll</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="m">0</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="n">lastpoll</span><span class="o">+</span><span class="m">10</span><span class="o">*</span><span class="m">1000</span><span class="o">*</span><span class="m">1000</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">now</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="c">//更新最后一次查询G时间，为了下一次做判断</span><span class="x">
+			</span><span class="n">atomic</span><span class="o">.</span><span class="n">Cas64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sched</span><span class="o">.</span><span class="n">lastpoll</span><span class="p">,</span><span class="x"> </span><span class="kt">uint64</span><span class="p">(</span><span class="n">lastpoll</span><span class="p">),</span><span class="x"> </span><span class="kt">uint64</span><span class="p">(</span><span class="n">now</span><span class="p">))</span><span class="x">
+			</span><span class="c">// 从网络I/O查找已经就绪的G，不阻塞</span><span class="x">
+			</span><span class="n">gp</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">netpoll</span><span class="p">(</span><span class="no">false</span><span class="p">)</span><span class="x"> </span><span class="c">// non-blocking - returns list of goroutines</span><span class="x">
+			</span><span class="c">//...</span><span class="x">
+		</span><span class="p">}</span><span class="x">
+  </span><span class="p">}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>进一步查看<code class="highlighter-rouge">netpoll</code>函数，能发现主要有下面几个函数:</p>
+
+<ol>
+  <li><code class="highlighter-rouge">epollcreate/epollcreate1</code> 创建epoll</li>
+  <li><code class="highlighter-rouge">epollctl</code> 设置epoll事件</li>
+  <li><code class="highlighter-rouge">epollwait</code>等待epoll事件</li>
+</ol>
+
+<p>到这里，golang与epoll就算对接上了。因为时间问题，细节暂时就不展开了，大家感兴趣可以自己探索。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文简单介绍了epoll模型。直观上来讲，并发模型中的Actors模型、CSP模型等，侧重的是内存的分配与信号的管理；但是，如何能充分发挥这些并发模型的优势，满足高并发的真实场景呢？</p>
+
+<p>答案就是epoll模型。相比较于传统的select/poll模型，epoll能更充分地利用cpu的时间，把性能投入到有效的运算中去。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://baike.baidu.com/item/epoll">epoll-百度百科</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Select_%28Unix%29">select (Unix) - Wikipedia</a></li>
+  <li><a href="https://blog.csdn.net/davidsguo008/article/details/73556811">深度理解select、poll和epoll</a></li>
+  <li><a href="https://studygolang.com/articles/10127">golang 实现 epoll 代码解析</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/07/08/actor-and-csp-model.html" class="read-next-link"></a>
+          <section>
+            <span>并发模型：Actors与CSP</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
