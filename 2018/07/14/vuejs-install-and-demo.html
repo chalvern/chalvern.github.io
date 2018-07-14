@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端框架vue学习之起步 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="前端框架vue学习之起步">
+    <meta name="keywords"  content="基础, 前端">
+    <!-- Open Graph -->
+    <meta property="og:title" content="前端框架vue学习之起步 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/07/14/vuejs-install-and-demo.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%89%8D%E7%AB%AF" class="post-tag">前端</a>
+          
+        
+      </div>
+      <h1>前端框架vue学习之起步</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-07-14"><i class="iconfont icon-date"></i>14 Jul 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">一起学习一下vuejs的helloword</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#开发环境" id="markdown-toc-开发环境">开发环境</a></li>
+  <li><a href="#适应人群" id="markdown-toc-适应人群">适应人群</a></li>
+  <li><a href="#安装与初始化" id="markdown-toc-安装与初始化">安装与初始化</a>    <ul>
+      <li><a href="#安装" id="markdown-toc-安装">安装</a></li>
+      <li><a href="#初始化项目" id="markdown-toc-初始化项目">初始化项目</a></li>
+      <li><a href="#启动项目" id="markdown-toc-启动项目">启动项目</a></li>
+    </ul>
+  </li>
+  <li><a href="#element组件库及示例代码" id="markdown-toc-element组件库及示例代码">Element组件库及示例代码</a>    <ul>
+      <li><a href="#写一写感悟" id="markdown-toc-写一写感悟">写一写感悟</a></li>
+      <li><a href="#todo" id="markdown-toc-todo">TODO</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>作为一名写<a href="https://rubyonrails.org/">Ruby on Rails</a>出身，后来又转入<a href="https://golang.google.cn/">Go</a>开发的后端程序猿，接触前后端分离以后的前端的难度可想而知。</p>
+
+<p>什么是前后端分离？前后端分离以后的前端是什么？Vue是什么？怎么使用Vue开发？使用Vue开发真的会提升效率吗……我带着一系列的问题开始我的征程了。看看我能走到哪里吧。（为什么选择了Vue框架来学习，主要因为公司的前端同事对vue进行了培训……）</p>
+
+<h2 id="开发环境">开发环境</h2>
+<ul>
+  <li>Node: v8.9.0</li>
+  <li>Npm: 5.5.1</li>
+  <li>Vscode：1.25.0</li>
+</ul>
+
+<h2 id="适应人群">适应人群</h2>
+<p>这里假设读者已经了解前端的一些知识，知道js、css、html。如果读者还不了解Node、Npm等，请和我一起百度吧=。=</p>
+
+<h2 id="安装与初始化">安装与初始化</h2>
+<h3 id="安装">安装</h3>
+<p><a href="https://cn.vuejs.org/v2/guide/#%E8%B5%B7%E6%AD%A5">Vue官方教程</a> 里不推荐马上从<code class="highlighter-rouge">vue-cli</code>开始学习，但是我等不及了，所以立马安装了vue的脚手架<code class="highlighter-rouge">vue-cli</code>。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install</span> <span class="nt">-g</span> @vue/cli
+
+<span class="c"># 安装完成以后查看版本号</span>
+npm <span class="nt">--version</span>
+<span class="c"># 3.0.0-rc.3</span>
+</code></pre></div></div>
+
+<h3 id="初始化项目">初始化项目</h3>
+<p>使用脚手架初始化项目，这里使用了<code class="highlighter-rouge">vue init</code>命令。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 初始化一个helloword项目</span>
+<span class="c"># 这里使用了webpack模板，然而webpack是什么鬼？</span>
+vue init webpack helloword
+<span class="c"># 运行了上面的命令以后，一路 回车+Y 及可</span>
+</code></pre></div></div>
+
+<h3 id="启动项目">启动项目</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 切换到项目目录</span>
+<span class="nb">cd </span>helloword
+<span class="c"># 启动项目</span>
+npm run dev
+
+<span class="c"># 启动项目后，等待几秒钟后，就会显示如下的示例描述，点击链接即可在浏览器访问服务了。</span>
+<span class="c"># Your application is running here: http://localhost:8081</span>
+</code></pre></div></div>
+
+<h2 id="element组件库及示例代码">Element组件库及示例代码</h2>
+<p>之前前端的同学讲，使用vuejs做开发，可以使用现成的组件库，就好像搭积木一样，并推荐了<a href="http://element-cn.eleme.io/#/zh-CN">Element</a>这个组件库。</p>
+
+<p>花了大概一天的时间，根据论坛的样式做了一个demo，源码放在了<a href="https://github.com/chalvern/ws-client">ws-client</a>，感兴趣的同学可以去<code class="highlighter-rouge">git clone</code>下来跑一跑。</p>
+
+<h3 id="写一写感悟">写一写感悟</h3>
+
+<p>坐在我旁边的小黄同学，后端开发技能可谓精湛；而每次和他聊起前端，他都嫌弃说前端太麻烦，声称再也不写前端。我心里不服气，顺着前端同时培训的思路搞了一天的layout，发现前端比起后端确实要繁琐很多。</p>
+
+<h3 id="todo">TODO</h3>
+<p>目前<a href="https://github.com/chalvern/ws-client">ws-client</a>只包含了基本的样式，里面的数据逻辑尚未编写。如果真的要走完<code class="highlighter-rouge">vue</code>的学习之路，至少还要完成下面几个事项：</p>
+
+<ul>
+  <li>从后端获取动态数据</li>
+  <li>部署到服务器，与后端服务协同运作</li>
+  <li>前后端鉴权。一方面为前端添加登录页面，另一方面后端也要添加相应的接口。</li>
+</ul>
+
+<h2 id="小结">小结</h2>
+<p>文本一时兴起，客串了一下前端开发，简单介绍了<code class="highlighter-rouge">vuejs</code>学习起步的几个步骤，并给出了一个初级的demo。隔行如隔山，目前尚未彻底领悟到前端开发的要点，希望自己能继续下去，陆续完成上面列举的三个事项。</p>
+
+<p>需要特别强调一下，因为自己的精力大部分还是后端的开发，因此这个系列文章不会牵涉很细节的内容（隔行如隔山，有些细节实在想不到）。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://cli.vuejs.org/guide/installation.html">Vue CLI Installation</a> vue-cli的安装教程页面</li>
+  <li><a href="https://cn.vuejs.org/v2/guide/">介绍 — Vue.js</a> vue语法基本介绍</li>
+  <li><a href="http://element-cn.eleme.io/#/zh-CN">Element</a> 组件库，前端同学强力推荐的积木模块</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/07/11/epoll-and-golang.html" class="read-next-link"></a>
+          <section>
+            <span>应对百万访问量的epoll模式</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
