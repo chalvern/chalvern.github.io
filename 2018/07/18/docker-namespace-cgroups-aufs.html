@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>前端框架vue学习之起步 - 敬维</title>
+    <title>Docker基本原理简析 - 敬维</title>
     <meta name="author"  content="敬维">
-    <meta name="description" content="前端框架vue学习之起步">
-    <meta name="keywords"  content="基础, 前端">
+    <meta name="description" content="Docker基本原理简析">
+    <meta name="keywords"  content="基础, 容器, DevOps">
     <!-- Open Graph -->
-    <meta property="og:title" content="前端框架vue学习之起步 - 敬维">
+    <meta property="og:title" content="Docker基本原理简析 - 敬维">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jingwei.link/2018/07/14/vuejs-install-and-demo.html">
+    <meta property="og:url" content="https://jingwei.link/2018/07/18/docker-namespace-cgroups-aufs.html">
     <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
     <meta property="og:site_name" content="敬维">
     <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
@@ -124,14 +124,16 @@ Author: Ray-Eldath
           
             <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
           
-            <a href="https://jingwei.link/tags#%E5%89%8D%E7%AB%AF" class="post-tag">前端</a>
+            <a href="https://jingwei.link/tags#%E5%AE%B9%E5%99%A8" class="post-tag">容器</a>
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
           
         
       </div>
-      <h1>前端框架vue学习之起步</h1>
+      <h1>Docker基本原理简析</h1>
       <div class="post-meta">
         <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
-        <time class="post-meta-item" datetime="18-07-14"><i class="iconfont icon-date"></i>14 Jul 2018</time>
+        <time class="post-meta-item" datetime="18-07-18"><i class="iconfont icon-date"></i>18 Jul 2018</time>
       </div>
     </div>
     
@@ -142,23 +144,16 @@ Author: Ray-Eldath
 
   <div class="post-content visible">
     
-    <h2 class="post-subtitle">一起学习一下vuejs的helloword</h2>
+    <h2 class="post-subtitle">简单介绍Namespace、CGroups及AFUS</h2>
     
 
     <article class="markdown-body">
       <ul id="markdown-toc">
   <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
-  <li><a href="#开发环境" id="markdown-toc-开发环境">开发环境</a></li>
-  <li><a href="#适应人群" id="markdown-toc-适应人群">适应人群</a></li>
-  <li><a href="#安装与初始化" id="markdown-toc-安装与初始化">安装与初始化</a>    <ul>
-      <li><a href="#安装" id="markdown-toc-安装">安装</a></li>
-      <li><a href="#初始化项目" id="markdown-toc-初始化项目">初始化项目</a></li>
-      <li><a href="#启动项目" id="markdown-toc-启动项目">启动项目</a></li>
-    </ul>
-  </li>
-  <li><a href="#element组件库及示例代码" id="markdown-toc-element组件库及示例代码">Element组件库及示例代码</a>    <ul>
-      <li><a href="#写一写感悟" id="markdown-toc-写一写感悟">写一写感悟</a></li>
-      <li><a href="#todo" id="markdown-toc-todo">TODO</a></li>
+  <li><a href="#namespacecgroup与aufs" id="markdown-toc-namespacecgroup与aufs">Namespace、CGroup与AUFS</a>    <ul>
+      <li><a href="#linux中的namespace技术" id="markdown-toc-linux中的namespace技术">Linux中的Namespace技术</a></li>
+      <li><a href="#linux中的cgroup技术" id="markdown-toc-linux中的cgroup技术">Linux中的CGroup技术</a></li>
+      <li><a href="#aufs" id="markdown-toc-aufs">AUFS</a></li>
     </ul>
   </li>
   <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
@@ -166,79 +161,56 @@ Author: Ray-Eldath
 </ul>
 
 <h2 id="写在前面">写在前面</h2>
-<p>作为一名写<a href="https://rubyonrails.org/">Ruby on Rails</a>出身，后来又转入<a href="https://golang.google.cn/">Go</a>开发的后端程序猿，接触前后端分离以后的前端的难度可想而知。</p>
+<p>《<a href="https://jingwei.link/2018/06/30/how-to-play-docker-simplly.html">如何用一个例子上手docker</a>》这篇文章里通过一个例子上手Docker的基本使用，大家应该对Docker的使用有了一个基础的认识。那么，Docker这么牛x的东西，使用了哪些技术实现的呢？</p>
 
-<p>什么是前后端分离？前后端分离以后的前端是什么？Vue是什么？怎么使用Vue开发？使用Vue开发真的会提升效率吗……我带着一系列的问题开始我的征程了。看看我能走到哪里吧。（为什么选择了Vue框架来学习，主要因为公司的前端同事对vue进行了培训……）</p>
+<p>严格意义上来说，Docker并不是一门新的技术，而是几种虚拟化技术的结合；或者说是Docker的存在，使得几种虚拟化技术的使用更便宜，这才掀起了一阵不小的容器浪潮。</p>
 
-<h2 id="开发环境">开发环境</h2>
-<ul>
-  <li>Node: v8.9.0</li>
-  <li>Npm: 5.5.1</li>
-  <li>Vscode：1.25.0</li>
-</ul>
+<h2 id="namespacecgroup与aufs">Namespace、CGroup与AUFS</h2>
+<h3 id="linux中的namespace技术">Linux中的Namespace技术</h3>
+<p>linux中的Namespace是Kernel中用来分割内核资源的一个特性功能。命名空间A中的进程看到的资源与命名空间B中的进程看到的资源是不一样的。主要作用是隔离一系列的系统资源，比如PID（Process ID）、用户空间、网络等。</p>
 
-<h2 id="适应人群">适应人群</h2>
-<p>这里假设读者已经了解前端的一些知识，知道js、css、html。如果读者还不了解Node、Npm等，请和我一起百度吧=。=</p>
+<p>LInux的Namespace分不同的种类，有 Mount (2.4.19)、UTS (2.6.19)、IPC (2.6.19)、PID (2.6.24)、Network (2.6.29)、User (3.8)等几种（括号中为引入的版本号），而且各自在Linux内核中引入的时间是不一样的。</p>
 
-<h2 id="安装与初始化">安装与初始化</h2>
-<h3 id="安装">安装</h3>
-<p><a href="https://cn.vuejs.org/v2/guide/#%E8%B5%B7%E6%AD%A5">Vue官方教程</a> 里不推荐马上从<code class="highlighter-rouge">vue-cli</code>开始学习，但是我等不及了，所以立马安装了vue的脚手架<code class="highlighter-rouge">vue-cli</code>。</p>
+<p>这就使得在新声明一个进程P时，如果只指定了<code class="highlighter-rouge">CLONE_NEWPID</code>的命名空间，那么<code class="highlighter-rouge">Mount、Network、UTS</code>等维度的资源进程P所看到的与父进程所看到的是一致的。如果想声明一个<strong>洁净</strong>的环境，可以通过 <code class="highlighter-rouge">CLONE_NEWPID|CLONE_NEWUTS|CLONE_NEWIPC...</code>类似的方式显式指定，这时候生成的子进程P1只能看到自己的资源，看不到父进程所在命名空间的资源了；假如父进程用相同的方法创建了子进程P2，P1与P2之间逻辑上也是隔离互不可见的。</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install</span> <span class="nt">-g</span> @vue/cli
+<h3 id="linux中的cgroup技术">Linux中的CGroup技术</h3>
+<p>使用Linux的Namespace技术从逻辑上为新创建的进程隔离了各种资源，但是新创建的进程共享同一份物理资源，比如CPU、内存、网络等。大家使用同一份资源，如果不加限制就有可能所有的资源（比如CPU）被同一个命名空间的进程耗尽，这就失去命名空间的意义了。</p>
 
-<span class="c"># 安装完成以后查看版本号</span>
-npm <span class="nt">--version</span>
-<span class="c"># 3.0.0-rc.3</span>
-</code></pre></div></div>
+<p>好在有Control Groups（简称CGroups）技术。</p>
 
-<h3 id="初始化项目">初始化项目</h3>
-<p>使用脚手架初始化项目，这里使用了<code class="highlighter-rouge">vue init</code>命令。</p>
+<p>基本上可以这么理解CGroups：一个CGroups就像是一个资源池，可以为它增加不同维度的资源限制（比如cpu时间、内存大小等）；加入到这个资源池中的进程，在申请资源时都会首先检查，相对于资源限定值是否有空闲的资源，有则获取得到资源，没有则等待直至其他进程释放资源后再获取得到资源。</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 初始化一个helloword项目</span>
-<span class="c"># 这里使用了webpack模板，然而webpack是什么鬼？</span>
-vue init webpack helloword
-<span class="c"># 运行了上面的命令以后，一路 回车+Y 及可</span>
-</code></pre></div></div>
+<h3 id="aufs">AUFS</h3>
+<p>aufs的全称是advanced multi-layered unification filesystem，主要的功能是把多个文件夹的内容合并到一起，提供一个统一的视图。简单来讲，就是把不同物理位置的目录合并到同一个目录中。</p>
 
-<h3 id="启动项目">启动项目</h3>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 切换到项目目录</span>
-<span class="nb">cd </span>helloword
-<span class="c"># 启动项目</span>
-npm run dev
-
-<span class="c"># 启动项目后，等待几秒钟后，就会显示如下的示例描述，点击链接即可在浏览器访问服务了。</span>
-<span class="c"># Your application is running here: http://localhost:8081</span>
-</code></pre></div></div>
-
-<h2 id="element组件库及示例代码">Element组件库及示例代码</h2>
-<p>之前前端的同学讲，使用vuejs做开发，可以使用现成的组件库，就好像搭积木一样，并推荐了<a href="http://element-cn.eleme.io/#/zh-CN">Element</a>这个组件库。</p>
-
-<p>花了大概一天的时间，根据论坛的样式做了一个demo，源码放在了<a href="https://github.com/chalvern/ws-client">ws-client</a>，感兴趣的同学可以去<code class="highlighter-rouge">git clone</code>下来跑一跑。</p>
-
-<h3 id="写一写感悟">写一写感悟</h3>
-
-<p>坐在我旁边的小黄同学，后端开发技能可谓精湛；而每次和他聊起前端，他都嫌弃说前端太麻烦，声称再也不写前端。我心里不服气，顺着前端同时培训的思路搞了一天的layout，发现前端比起后端确实要繁琐很多。</p>
-
-<h3 id="todo">TODO</h3>
-<p>目前<a href="https://github.com/chalvern/ws-client">ws-client</a>只包含了基本的样式，里面的数据逻辑尚未编写。如果真的要走完<code class="highlighter-rouge">vue</code>的学习之路，至少还要完成下面几个事项：</p>
+<p>AUFS有几个特点：</p>
 
 <ul>
-  <li>从后端获取动态数据</li>
-  <li>部署到服务器，与后端服务协同运作</li>
-  <li>前后端鉴权。一方面为前端添加登录页面，另一方面后端也要添加相应的接口。</li>
+  <li>AUFS 是一种联合文件系统，它把若干目录按照顺序和权限 mount 为一个目录并呈现出来。</li>
+  <li>默认情况下，只有第一层（第一个目录）是可写的，其余层是只读的。</li>
+  <li>增加文件：默认情况下，新增的文件都会被放在最上面的可写层中。</li>
+  <li>删除文件：因为底下各层都是只读的，当需要删除这些层中的文件时，AUFS 使用 whiteout 机制，它的实现是<strong>通过在上层的可写的目录下建立对应的whiteout隐藏文件来实现的</strong>（现在知道在Dockerfile里增加一条删除语句最终镜像也不会变小的原因了吧）。</li>
+  <li>修改文件：<strong>AUFS 利用其 CoW （copy-on-write）特性来修改只读层中的文件</strong>。AUFS 工作在文件层面，因此，只要对只读层中的文件做修改，不管修改数据的量的多少，在第一次修改时，文件都会被拷贝到可写层然后再被修改。</li>
+  <li>节省空间：AUFS 的 CoW 特性能够允许在多个容器之间共享分层，从而减少物理空间占用。</li>
+  <li>查找文件：AUFS 的查找性能在层数非常多时会出现下降，层数越多，查找性能越低，因此，在制作 Docker 镜像时要注意层数不要太多。</li>
+  <li>性能：AUFS 的 CoW 特性在写入大型文件时第一次会出现延迟。</li>
 </ul>
+
+<p>了解了AUFS的几个特点后，基本上Docker镜像的一些特点也就显而易见了。</p>
 
 <h2 id="小结">小结</h2>
-<p>文本一时兴起，客串了一下前端开发，简单介绍了<code class="highlighter-rouge">vuejs</code>学习起步的几个步骤，并给出了一个初级的demo。隔行如隔山，目前尚未彻底领悟到前端开发的要点，希望自己能继续下去，陆续完成上面列举的三个事项。</p>
+<p>本文主要介绍了Docker中的三项主要技术：Namespace、CGroups以及AUFS。了解了基本原理，就能自然而然地理解容器的运行机制，应该能更好地理解它的使用。</p>
 
-<p>需要特别强调一下，因为自己的精力大部分还是后端的开发，因此这个系列文章不会牵涉很细节的内容（隔行如隔山，有些细节实在想不到）。</p>
+<p>受篇幅的影响，本文的内容只讲了大体的思路，可以考虑浏览参考中的文章试着挖掘更为具体的实现细节。</p>
 
 <h2 id="参考">参考</h2>
 <ul>
-  <li><a href="https://cli.vuejs.org/guide/installation.html">Vue CLI Installation</a> vue-cli的安装教程页面</li>
-  <li><a href="https://cn.vuejs.org/v2/guide/">介绍 — Vue.js</a> vue语法基本介绍</li>
-  <li><a href="http://element-cn.eleme.io/#/zh-CN">Element</a> 组件库，前端同学强力推荐的积木模块</li>
+  <li><a href="https://draveness.me/docker">Docker 核心技术与实现原理</a> 比较详细地较少docker所使用的技术</li>
+  <li><a href="https://book.douban.com/subject/27082348/">自己动手写Docker</a> 这是一本书，把docker用golang重写了一遍；技术背景讲的不是很多，但是实践性很强的一本书。</li>
+  <li><a href="https://en.wikipedia.org/wiki/Linux_namespaces">Linux namespaces - Wikipedia</a></li>
+  <li><a href="https://www.ibm.com/developerworks/cn/linux/1506_cgroup/">CGroup 介绍、应用实例及原理描述</a> 介绍了CGroup的原理</li>
+  <li><a href="https://www.cnblogs.com/sammyliu/p/5931383.html">理解Docker之Docker 存储 - AUFS</a>
+#Blog/容器</li>
 </ul>
 
     </article>
@@ -273,24 +245,12 @@ npm run dev
     </section>
     <section class="post-footer-item read-next">
       
-      <div class="read-next-item">
-        <a href="/2018/07/18/docker-namespace-cgroups-aufs.html" class="read-next-link"></a>
-        <section>
-          <span>Docker基本原理简析</span>
-          <p></p>
-        </section>
-        
-        <div class="filter"></div>
-        <img src="" alt="">
-        
-     </div>
-      
 
       
       <div class="read-next-item">
-        <a href="/2018/07/11/epoll-and-golang.html" class="read-next-link"></a>
+        <a href="/2018/07/14/vuejs-install-and-demo.html" class="read-next-link"></a>
           <section>
-            <span>应对百万访问量的epoll模式</span>
+            <span>前端框架vue学习之起步</span>
             <p></p>
           </section>
           
