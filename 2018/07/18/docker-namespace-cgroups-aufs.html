@@ -163,7 +163,7 @@ Author: Ray-Eldath
 <h2 id="写在前面">写在前面</h2>
 <p>《<a href="https://jingwei.link/2018/06/30/how-to-play-docker-simplly.html">如何用一个例子上手docker</a>》这篇文章里通过一个例子上手Docker的基本使用，大家应该对Docker的使用有了一个基础的认识。那么，Docker这么牛x的东西，使用了哪些技术实现的呢？</p>
 
-<p>严格意义上来说，Docker并不是一门新的技术，而是几种虚拟化技术的结合；或者说是Docker的存在，使得几种虚拟化技术的使用更便宜，这才掀起了一阵不小的容器浪潮。</p>
+<p>严格意义上来说，Docker并不是一门新的技术，而是几种虚拟化技术的结合；或者说是Docker的存在，使得几种虚拟化技术的使用更简单，这才掀起了一阵不小的容器浪潮。</p>
 
 <h2 id="namespacecgroup与aufs">Namespace、CGroup与AUFS</h2>
 <h3 id="linux中的namespace技术">Linux中的Namespace技术</h3>
@@ -178,7 +178,7 @@ Author: Ray-Eldath
 
 <p>好在有Control Groups（简称CGroups）技术。</p>
 
-<p>基本上可以这么理解CGroups：一个CGroups就像是一个资源池，可以为它增加不同维度的资源限制（比如cpu时间、内存大小等）；加入到这个资源池中的进程，在申请资源时都会首先检查，相对于资源限定值是否有空闲的资源，有则获取得到资源，没有则等待直至其他进程释放资源后再获取得到资源。</p>
+<p>基本上可以这么理解CGroups：一个CGroups就像是一个资源池，可以为它增加不同维度的资源限制（比如cpu时间、内存大小等）；加入到这个资源池中的进程，在申请资源时都会首先检查配额，相对于资源限定值是否有空闲的资源，有则获取得到资源，没有则等待直至其他进程释放资源然后获取资源。</p>
 
 <h3 id="aufs">AUFS</h3>
 <p>aufs的全称是advanced multi-layered unification filesystem，主要的功能是把多个文件夹的内容合并到一起，提供一个统一的视图。简单来讲，就是把不同物理位置的目录合并到同一个目录中。</p>
@@ -209,8 +209,7 @@ Author: Ray-Eldath
   <li><a href="https://book.douban.com/subject/27082348/">自己动手写Docker</a> 这是一本书，把docker用golang重写了一遍；技术背景讲的不是很多，但是实践性很强的一本书。</li>
   <li><a href="https://en.wikipedia.org/wiki/Linux_namespaces">Linux namespaces - Wikipedia</a></li>
   <li><a href="https://www.ibm.com/developerworks/cn/linux/1506_cgroup/">CGroup 介绍、应用实例及原理描述</a> 介绍了CGroup的原理</li>
-  <li><a href="https://www.cnblogs.com/sammyliu/p/5931383.html">理解Docker之Docker 存储 - AUFS</a>
-#Blog/容器</li>
+  <li><a href="https://www.cnblogs.com/sammyliu/p/5931383.html">理解Docker之Docker 存储 - AUFS</a></li>
 </ul>
 
     </article>
