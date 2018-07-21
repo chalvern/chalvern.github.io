@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络基础及Docker中的网络实现 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="网络基础及Docker中的网络实现">
+    <meta name="keywords"  content="基础, 容器, DevOps">
+    <!-- Open Graph -->
+    <meta property="og:title" content="网络基础及Docker中的网络实现 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/07/21/net-foundation-and-docker-net.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%B9%E5%99%A8" class="post-tag">容器</a>
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+        
+      </div>
+      <h1>网络基础及Docker中的网络实现</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-07-21"><i class="iconfont icon-date"></i>21 Jul 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">简单介绍IP、端口、防火墙、Iptables及Docker中的网络实现</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#什么是ip如何共享ip" id="markdown-toc-什么是ip如何共享ip">什么是IP，如何共享IP</a>    <ul>
+      <li><a href="#ip地址" id="markdown-toc-ip地址">IP地址</a></li>
+      <li><a href="#端口号" id="markdown-toc-端口号">端口号</a></li>
+      <li><a href="#ipv4与终端大爆炸" id="markdown-toc-ipv4与终端大爆炸">IPV4与终端大爆炸</a></li>
+      <li><a href="#大家共享一个ip地址" id="markdown-toc-大家共享一个ip地址">大家共享一个IP地址</a></li>
+      <li><a href="#响应链路" id="markdown-toc-响应链路">响应链路</a></li>
+    </ul>
+  </li>
+  <li><a href="#防火墙与iptables" id="markdown-toc-防火墙与iptables">防火墙与iptables</a>    <ul>
+      <li><a href="#netfilteriptables" id="markdown-toc-netfilteriptables">netfilter/iptables</a></li>
+    </ul>
+  </li>
+  <li><a href="#docker中的网络" id="markdown-toc-docker中的网络">Docker中的网络</a>    <ul>
+      <li><a href="#linux中的veth" id="markdown-toc-linux中的veth">linux中的Veth</a></li>
+      <li><a href="#linux中的bridge" id="markdown-toc-linux中的bridge">Linux中的Bridge</a></li>
+      <li><a href="#docker中的网络链路" id="markdown-toc-docker中的网络链路">Docker中的网络链路</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>通过上篇《<a href="https://jingwei.link/2018/07/18/docker-namespace-cgroups-aufs.html">Docker基本原理简析</a>》知道，Docker通过Linux中的Namespace、CGroups及AFUS（联合文件系统）完成了容器与宿主机的隔离；但是同时也把容器与宿主机的网络隔离了（Docker通过命名空间为容器创建了一个隔离的网络环境），即此时的容器是无法与外界相连的。</p>
+
+<p>那么，Docker是如何让容器与外界相连的呢？或者说，容器使用了哪种技术通过宿主机向互联网发起网络请求的？</p>
+
+<h2 id="什么是ip如何共享ip">什么是IP，如何共享IP</h2>
+
+<h3 id="ip地址">IP地址</h3>
+
+<p>试想当深圳的<strong>电脑J</strong>想要访问上海的<strong>电脑K</strong>上的服务，那么<strong>J</strong>该如何才能找到<strong>K</strong>呢（而不是电脑A、B、C、D……）？</p>
+
+<p>编个号啊！</p>
+
+<p>给<strong>K</strong>进行唯一性编号<code class="highlighter-rouge">5.20.13.14</code>，这样只要<strong>J</strong>告诉网络自己想连接<code class="highlighter-rouge">5.20.13.14</code>这个编号上的电脑，那么<strong>J</strong>就能自然而然连接到<strong>K</strong>去了。</p>
+
+<p>这里的<code class="highlighter-rouge">5.20.13.14</code>就类似于我们平时所说的<strong>IP地址</strong>。</p>
+
+<h3 id="端口号">端口号</h3>
+
+<p>假如电脑<strong>J</strong>每次只发出一次请求，等收到响应再发出第二个请求……，这种模式下只用IP地址就好了。但是这种模式肯定不满足实际需求，比如我可能在电脑<strong>J</strong>上用微信给电脑<strong>K</strong>发信息，同时用浏览器访问<code class="highlighter-rouge">baidu.com</code>查明天去香港的船票；这时候只有<strong>IP</strong>就不够了，还需要<strong>端口号(Port)</strong>来区分到底是谁发起的请求。</p>
+
+<p>只要请求里包含了两对<code class="highlighter-rouge">IP:Port</code>（一个是发起者的，一个是目的地），就能准确定义是哪台电脑的哪个应用访问了哪台电脑的哪个服务。</p>
+
+<p>下面的golang代码能启动一个服务，并把请求中的<code class="highlighter-rouge">IP:Port</code>打印出来：</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// golang语言</span><span class="x">
+</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"log"</span><span class="x">
+	</span><span class="s">"net/http"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">sayhelloName</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="x"> </span><span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">RemoteAddr</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">http</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s">"/"</span><span class="p">,</span><span class="x"> </span><span class="n">sayhelloName</span><span class="p">)</span><span class="x">       </span><span class="c">//设置访问的路由</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">http</span><span class="o">.</span><span class="n">ListenAndServe</span><span class="p">(</span><span class="s">":9090"</span><span class="p">,</span><span class="x"> </span><span class="no">nil</span><span class="p">)</span><span class="x"> </span><span class="c">//设置监听的端口</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="s">"ListenAndServe: "</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 如果利用curl访问上面的服务</span>
+<span class="c"># curl -v localhost:9090</span>
+<span class="c"># 可以发现console中会输出类似下面的内容</span>
+<span class="o">[</span>::1]:53354
+<span class="o">[</span>::1]:53356
+</code></pre></div></div>
+
+<h3 id="ipv4与终端大爆炸">IPV4与终端大爆炸</h3>
+
+<p>理想情况下只要给每个终端（电脑、手机、智能手环等）各自分配一个<strong>IP地址</strong>，世界上的任何一个终端都可以唯一定位到另一个终端。奈何，IP地址是有限的，尤其是当前通用的IPV4（4个byte，32个二进制位），全部利用最多只能容下大概43亿（2的32次方）个终端。</p>
+
+<p>终端多于43亿个以后怎么办？</p>
+
+<p>有人说既然32位不够用，128位总够用了吧，即IPV6（据说IPV6能够给地球上的每一粒沙子编个号）。但是因为<strong>IPV4</strong>的历史包袱太重，大部分设备都是按照<strong>IPV4</strong>设计的，更新换代成本太高；且出现了NAT（Network Address Translation，网络地址转换）技术，一定程度上缓解了IP不够的情况。</p>
+
+<h3 id="大家共享一个ip地址">大家共享一个IP地址</h3>
+<p>现在我住的地方安装了宽带，被运营商分配了一个公网IP地址（<code class="highlighter-rouge">5.21.13.14</code>），我的两个平板（M和N）、两部手机(P和Q)和一台电脑(K)都要上网，怎么做到呢？</p>
+
+<p>给 <strong>M、N、P、Q和K</strong>再编个号，比如给<strong>M</strong>分配个<code class="highlighter-rouge">192.168.0.3</code>，给<strong>N</strong>分配个<code class="highlighter-rouge">192.168.0.4</code>，给<strong>P</strong>分配个<code class="highlighter-rouge">192.168.0.5</code>……</p>
+
+<p>当<strong>M</strong>要访问<code class="highlighter-rouge">www.baidu.com</code>时，可能会遵循下面的链路：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># baidu.com不知道内网地址：192.168.0.3</span>
+<span class="c"># 但是知道公网IP：5.21.13.14</span>
+<span class="c"># 知道请求是从 5.21.13.14:60630 发来的</span>
+192.168.0.3:60624 -&gt; 5.21.13.14:60630 -&gt; ... -&gt; baidu.com
+</code></pre></div></div>
+
+<p>这里需要注意，当请求从<code class="highlighter-rouge">192.168.0.3</code>发出，经过<code class="highlighter-rouge">5.21.13.14</code>的时候，为了让<code class="highlighter-rouge">baidu.com</code>知道把答复传到哪里，因此会把请求里的<strong>sourceIP</strong>修改成<code class="highlighter-rouge">5.21.13.14</code>（因为<code class="highlighter-rouge">baidu.com</code>根本不知道<code class="highlighter-rouge">192.168.0.3</code>的存在），然后请求会一直顺着链路到<code class="highlighter-rouge">baidu.com</code>的服务器。</p>
+
+<p>现在我的所有的设备都可以通过内部地址<code class="highlighter-rouge">192.168.0.*</code>连接到共享的IP<code class="highlighter-rouge">5.21.13.14</code>访问<code class="highlighter-rouge">baidu.com</code>了。</p>
+
+<h3 id="响应链路">响应链路</h3>
+<p>为了让<code class="highlighter-rouge">baidu.com</code>知道把响应传回哪里，请求里的<strong>sourceIP</strong>被改成了公网IP地址，响应传回平板<strong>M</strong>的链路可以认为如下：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># baidu.com知道请求是从 5.21.13.14:60630 发来的</span>
+<span class="c"># 因此把请求发送给了 5.21.13.14:60630</span>
+<span class="c"># 但是请求到了 5.21.13.14:60630 以后</span>
+<span class="c"># 再怎么到 192.168.0.3:60624 呢</span>
+192.168.0.3:60624 <span class="o">&lt;&lt;-</span> <span class="no">5</span><span class="sh">.21.13.14:60630 &lt;- ... &lt;- baidu.com
+</span></code></pre></div></div>
+
+<p>这里有一个问题，即响应到达<code class="highlighter-rouge">5.21.13.14</code>的时候，它怎么知道这个响应是平板<strong>M</strong>发出的而不是<strong>N</strong>发出的呢？</p>
+
+<p>我们能注意到，从<code class="highlighter-rouge">192.168.0.3:60624-&gt;5.21.13.14:60630</code>的请求，端口号由<code class="highlighter-rouge">60624</code>变成了<code class="highlighter-rouge">60630</code>（当然也可以是其他值），<strong>baidu.com</strong>知道我们请求是从<code class="highlighter-rouge">5.21.13.14:60630</code>过来的，因此把响应发送到了<code class="highlighter-rouge">5.21.13.14:60630</code>，那么再怎么根据这个地址把响应转发到<code class="highlighter-rouge">192.168.0.3:60624</code>呢？</p>
+
+<p>其实这件事情也不难，即当请求从<code class="highlighter-rouge">5.21.13.14:60630</code>发出以后，网络设备（比如路由器）会记一件事情，即<strong>60630</strong>的请求是从<code class="highlighter-rouge">192.168.0.3:60624</code>发出的，等到有响应发送到<strong>60630</strong>端口，就立马把这个响应再转发给<code class="highlighter-rouge">192.168.0.3:60624</code>。如此，链路就算通了。</p>
+
+<h2 id="防火墙与iptables">防火墙与iptables</h2>
+<p>记得十年前刚读大学时，那时候流行给电脑安装杀毒软件，诚惶诚恐地配置各种奇怪项，生怕自己中了病毒。对于我们使用的笔记本电脑来说，<strong>防火墙</strong>到底是什么呢？详细描述大家可以查看参考列表中的文章，简单讲<strong>防火墙</strong>是一套连接的规则，比如<strong>J</strong>想要连接<strong>M</strong>，但是<strong>M</strong>在那边设置了一条规则，”凡是来自J的请求都拒绝”，这条规则就可以认为是一个私有的小防火墙了。</p>
+
+<p>需要说明的一点是，防火墙可以从很多层面进行设置，比如链路层、连接层、应用层等等，可以在硬件层面做设置，更可以在软件层面做限制。不同的操作系统的默认防火墙也是不一样的，windows有一套，Linux有一套，MacOS也有一套。因为开源和应用广泛，这里只简单说一下Linux系统中的Iptables。</p>
+
+<h3 id="netfilteriptables">netfilter/iptables</h3>
+<p>作为一般用户，大家比较喜欢使用Windows系统，有很漂亮的界面，无论做什么事情，点几下就搞定了。但是作为开发者来说，会更喜欢Linux（也喜欢Mac，但是贼拉贵），因为Linux更开放，相对地也就更可控（这也是我在<a href="https://jingwei.link/2018/06/20/keep-on-practicing-coding.html">让人爱上Coding的坚持与实践</a>这篇博文里推荐Linux的原因）。</p>
+
+<p>Linux内核天生具有路由功能，其中包含<strong>netfilter模块</strong>，可以实现丰富的路由功能。比如设置拒绝接受任何来自<code class="highlighter-rouge">5.21.13.14</code>的请求；再比如，实现NAT功能，把内网的<code class="highlighter-rouge">IP:Port</code>映射成为公网的<code class="highlighter-rouge">IP:Port</code>并记录公网<code class="highlighter-rouge">Port</code>到内网<code class="highlighter-rouge">IP:Port</code>的映射。</p>
+
+<p>上面这些都可以统称为路由规则，而这些路由规则需要通过<strong>iptables</strong>写入内核。</p>
+
+<h2 id="docker中的网络">Docker中的网络</h2>
+<p>既然通过Namespace把容器的网络与宿主机完全隔离开了，如果想通过宿主机的网络访问外网，还需要两类虚拟技术。</p>
+
+<h3 id="linux中的veth">linux中的Veth</h3>
+
+<p>在linux中，Veth是成对出现的虚拟网络设备（可以视为虚拟的网卡），发送到Veth一端虚拟设备的请求会从另一端的虚拟设备中发出。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>|---------|----------|
+|   ns1   |    ns2   |
+| veth0---|---veth1  |
+|         |          |
+|---------|----------|
+</code></pre></div></div>
+
+<p>比如上图的<strong>veth0</strong>与<strong>veth1</strong>是一对veth，其中veth0绑定到了命名空间ns1，veth1绑定到了ns2。那么在ns1中发送到veth0的请求就会自然而然地被ns2在veth1上面获取到。</p>
+
+<h3 id="linux中的bridge">Linux中的Bridge</h3>
+
+<p>虽然有了veth，但是想把流量发送到宿主机所在的公网，依然不够。Linux中的Bridge是一种虚拟的网络桥接设备，相当于现实世界中的交换机（或路由器），可以连接不同的网络设备。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>|---------|----------|
+|   ns1   |          |
+|  veth1--|---veth0  |
+|---------|     |    |
+          |    br0   |
+          |     |    |
+   主机----|---eth0   |
+          |----------|
+</code></pre></div></div>
+
+<p>如上图，命名空间ns1通过br0连接起来了，ns1可以通过veth1发送请求，通过<code class="highlighter-rouge">veth1-&gt;veth0-&gt;br0-&gt;eth0</code>连通到主机。</p>
+
+<h3 id="docker中的网络链路">Docker中的网络链路</h3>
+
+<p>那么，网络如何通过<code class="highlighter-rouge">veth1-&gt;veth0-&gt;br0-&gt;eth0</code>访问外部网络的呢？这里需要借助Iptables了。</p>
+
+<ol>
+  <li>设置命名空间ns1中所有流量都经过<strong>veth1</strong>的网络设备流出；如此，在ns1中可以访问宿主机的网络地址。</li>
+  <li>在宿主机上将ns1所在网络段的请求路由到<strong>br0</strong>的网桥；如此，在宿主机可以访问Namespace中的网络地址。</li>
+  <li>在宿主机上打开IP转发；如此，宿主机在收到ns1传过来的请求时，将进行转发操作。</li>
+  <li>在宿主机上设定把ns1中发出的包添加网络地址转换；如此，从ns1中发出的请求，有了公网的IP（宿主机IP），就能收到响应了。</li>
+  <li>收到响应后，再路由回ns1，就完成请求了（欧耶）。</li>
+</ol>
+
+<h2 id="小结">小结</h2>
+<p>本文简单介绍了IP、端口、linux中的路由，最后简单梳理了docker中的网络链路。这里面忽略了很多的细节，但是基本说明了容器通过宿主机访问外网的原理。大家可以阅读参考文献，自行探索更详细的内容。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://www.cnblogs.com/f-ck-need-u/p/7397146.html">防火墙和iptables</a> 对防火墙和Iptables有比较系统的分析</li>
+  <li><a href="https://book.douban.com/subject/27082348/">自己动手写Docker</a> 重点参考这一本书网络部分（第六章）</li>
+  <li><a href="https://baike.baidu.com/item/nat/320024">NAT-Network Address Translation，网络地址转换_百度百科</a></li>
+  <li><a href="https://jiajunhuang.com/articles/2017_08_12-tcp_ip.md.html">从零构建TCP/IP协议（这次叫PCT协议）</a> 很浅显易懂地描述了TCP/IP协议的工作机理</li>
+  <li><a href="https://jiajunhuang.com/articles/2017_09_02-tcp_ip_part2.md.html">从零构建TCP/IP协议（二）连接，断开与拥塞控制</a> 同上，侧重控制部分</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/07/18/docker-namespace-cgroups-aufs.html" class="read-next-link"></a>
+          <section>
+            <span>Docker基本原理简析</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
