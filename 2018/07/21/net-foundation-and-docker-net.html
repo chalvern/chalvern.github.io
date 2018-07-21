@@ -173,7 +173,7 @@ Author: Ray-Eldath
 </ul>
 
 <h2 id="写在前面">写在前面</h2>
-<p>通过上篇《<a href="https://jingwei.link/2018/07/18/docker-namespace-cgroups-aufs.html">Docker基本原理简析</a>》知道，Docker通过Linux中的Namespace、CGroups及AFUS（联合文件系统）完成了容器与宿主机的隔离；但是同时也把容器与宿主机的网络隔离了（Docker通过命名空间为容器创建了一个隔离的网络环境），即此时的容器是无法与外界相连的。</p>
+<p>通过上篇《<a href="https://jingwei.link/2018/07/18/docker-namespace-cgroups-aufs.html">Docker基本原理简析</a>》知道，Docker通过Linux中的Namespace、CGroups及AFUS（联合文件系统）实现了容器与宿主机的隔离；但是同时也把容器与宿主机的网络隔离了（Docker通过命名空间为容器创建了一个隔离的网络环境），即此时的容器是无法与外界相连的。</p>
 
 <p>那么，Docker是如何让容器与外界相连的呢？或者说，容器使用了哪种技术通过宿主机向互联网发起网络请求的？</p>
 
@@ -181,9 +181,9 @@ Author: Ray-Eldath
 
 <h3 id="ip地址">IP地址</h3>
 
-<p>试想当深圳的<strong>电脑J</strong>想要访问上海的<strong>电脑K</strong>上的服务，那么<strong>J</strong>该如何才能找到<strong>K</strong>呢（而不是电脑A、B、C、D……）？</p>
+<p>试想当深圳的<strong>电脑J</strong>想要访问上海的<strong>电脑K</strong>上的服务，那么<strong>J</strong>该如何才能找到<strong>K</strong>（而不是电脑A、B、C、D……）呢？</p>
 
-<p>编个号啊！</p>
+<p>编个号试试啊！</p>
 
 <p>给<strong>K</strong>进行唯一性编号<code class="highlighter-rouge">5.20.13.14</code>，这样只要<strong>J</strong>告诉网络自己想连接<code class="highlighter-rouge">5.20.13.14</code>这个编号上的电脑，那么<strong>J</strong>就能自然而然连接到<strong>K</strong>去了。</p>
 
@@ -191,9 +191,9 @@ Author: Ray-Eldath
 
 <h3 id="端口号">端口号</h3>
 
-<p>假如电脑<strong>J</strong>每次只发出一次请求，等收到响应再发出第二个请求……，这种模式下只用IP地址就好了。但是这种模式肯定不满足实际需求，比如我可能在电脑<strong>J</strong>上用微信给电脑<strong>K</strong>发信息，同时用浏览器访问<code class="highlighter-rouge">baidu.com</code>查明天去香港的船票；这时候只有<strong>IP</strong>就不够了，还需要<strong>端口号(Port)</strong>来区分到底是谁发起的请求。</p>
+<p>假如电脑<strong>J</strong>每次只发出一个请求，等收到响应才发出第二个请求……，这种模式下只用IP地址就好了。但是这种模式肯定不满足实际需求，比如我可能在电脑<strong>J</strong>上用微信给电脑<strong>K</strong>发信息，同时用浏览器访问<code class="highlighter-rouge">baidu.com</code>查明天去香港的船票；这时候只有<strong>IP</strong>就不够了，还需要<strong>端口号(Port)</strong>来区分到底是谁发起的请求。</p>
 
-<p>只要请求里包含了两对<code class="highlighter-rouge">IP:Port</code>（一个是发起者的，一个是目的地），就能准确定义是哪台电脑的哪个应用访问了哪台电脑的哪个服务。</p>
+<p>只要请求里包含了两对<code class="highlighter-rouge">IP:Port</code>（一个发起者的，一个目的地），就能准确定义是哪台电脑的哪个应用访问了哪台电脑的哪个服务。</p>
 
 <p>下面的golang代码能启动一个服务，并把请求中的<code class="highlighter-rouge">IP:Port</code>打印出来：</p>
 
@@ -228,16 +228,14 @@ Author: Ray-Eldath
 
 <h3 id="ipv4与终端大爆炸">IPV4与终端大爆炸</h3>
 
-<p>理想情况下只要给每个终端（电脑、手机、智能手环等）各自分配一个<strong>IP地址</strong>，世界上的任何一个终端都可以唯一定位到另一个终端。奈何，IP地址是有限的，尤其是当前通用的IPV4（4个byte，32个二进制位），全部利用最多只能容下大概43亿（2的32次方）个终端。</p>
+<p>理想情况下只要给每个终端（电脑、手机、智能手环等）各自分配一个<strong>IP地址</strong>，世界上的任何一个终端都可以唯一定位到另一个终端。奈何IP地址是有限的，尤其是当前通用的IPV4（4个byte，32个二进制位），最多也只能容下大概43亿（2的32次方）个终端，那么终端多于43亿个以后怎么办？</p>
 
-<p>终端多于43亿个以后怎么办？</p>
-
-<p>有人说既然32位不够用，128位总够用了吧，即IPV6（据说IPV6能够给地球上的每一粒沙子编个号）。但是因为<strong>IPV4</strong>的历史包袱太重，大部分设备都是按照<strong>IPV4</strong>设计的，更新换代成本太高；且出现了NAT（Network Address Translation，网络地址转换）技术，一定程度上缓解了IP不够的情况。</p>
+<p>有人说既然32位不够用，128位总够用了吧，即IPV6（据说IPV6能够给地球上的每一粒沙子编个号）。但是因为<strong>IPV4</strong>的历史包袱太重，大部分设备都是按照<strong>IPV4</strong>设计的，更新换代成本太高；且出现了NAT（Network Address Translation，网络地址转换）技术，一定程度上缓解了IP不够的情况，因此升级到IPV6并不那么急迫了。接下来看看NAT是个啥。</p>
 
 <h3 id="大家共享一个ip地址">大家共享一个IP地址</h3>
-<p>现在我住的地方安装了宽带，被运营商分配了一个公网IP地址（<code class="highlighter-rouge">5.21.13.14</code>），我的两个平板（M和N）、两部手机(P和Q)和一台电脑(K)都要上网，怎么做到呢？</p>
+<p>现在我住的地方安装了宽带，被运营商分配了一个公网IP地址（假设为<code class="highlighter-rouge">5.21.13.14</code>），我的两个平板（M和N）、两部手机(P和Q)和一台电脑(K)都能上网，怎么做到的呢？</p>
 
-<p>给 <strong>M、N、P、Q和K</strong>再编个号，比如给<strong>M</strong>分配个<code class="highlighter-rouge">192.168.0.3</code>，给<strong>N</strong>分配个<code class="highlighter-rouge">192.168.0.4</code>，给<strong>P</strong>分配个<code class="highlighter-rouge">192.168.0.5</code>……</p>
+<p>不妨给 <strong>M、N、P、Q和K</strong>再编个号，比如给<strong>M</strong>分配个<code class="highlighter-rouge">192.168.0.3</code>，给<strong>N</strong>分配个<code class="highlighter-rouge">192.168.0.4</code>，给<strong>P</strong>分配个<code class="highlighter-rouge">192.168.0.5</code>……</p>
 
 <p>当<strong>M</strong>要访问<code class="highlighter-rouge">www.baidu.com</code>时，可能会遵循下面的链路：</p>
 
@@ -247,12 +245,12 @@ Author: Ray-Eldath
 192.168.0.3:60624 -&gt; 5.21.13.14:60630 -&gt; ... -&gt; baidu.com
 </code></pre></div></div>
 
-<p>这里需要注意，当请求从<code class="highlighter-rouge">192.168.0.3</code>发出，经过<code class="highlighter-rouge">5.21.13.14</code>的时候，为了让<code class="highlighter-rouge">baidu.com</code>知道把答复传到哪里，因此会把请求里的<strong>sourceIP</strong>修改成<code class="highlighter-rouge">5.21.13.14</code>（因为<code class="highlighter-rouge">baidu.com</code>根本不知道<code class="highlighter-rouge">192.168.0.3</code>的存在），然后请求会一直顺着链路到<code class="highlighter-rouge">baidu.com</code>的服务器。</p>
+<p>这里需要注意，当请求从<code class="highlighter-rouge">192.168.0.3</code>发出，经过<code class="highlighter-rouge">5.21.13.14</code>的时候，为了让<code class="highlighter-rouge">baidu.com</code>知道把响应传到哪里，因此会把请求里的<strong>sourceIP</strong>修改成公网IP<code class="highlighter-rouge">5.21.13.14</code>（因为<code class="highlighter-rouge">baidu.com</code>不知道私有IP<code class="highlighter-rouge">192.168.0.3</code>的存在），然后请求会一直顺着链路到<code class="highlighter-rouge">baidu.com</code>的服务器。</p>
 
-<p>现在我的所有的设备都可以通过内部地址<code class="highlighter-rouge">192.168.0.*</code>连接到共享的IP<code class="highlighter-rouge">5.21.13.14</code>访问<code class="highlighter-rouge">baidu.com</code>了。</p>
+<p>现在我所有的设备都可以通过内部地址<code class="highlighter-rouge">192.168.0.*</code>连接到共享的IP<code class="highlighter-rouge">5.21.13.14</code>并访问<code class="highlighter-rouge">baidu.com</code>了。</p>
 
 <h3 id="响应链路">响应链路</h3>
-<p>为了让<code class="highlighter-rouge">baidu.com</code>知道把响应传回哪里，请求里的<strong>sourceIP</strong>被改成了公网IP地址，响应传回平板<strong>M</strong>的链路可以认为如下：</p>
+<p>为了让<code class="highlighter-rouge">baidu.com</code>知道把响应传回哪里，请求里的<strong>sourceIP</strong>被改成了公网IP地址，响应传回平板<strong>M</strong>的链路如下：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># baidu.com知道请求是从 5.21.13.14:60630 发来的</span>
 <span class="c"># 因此把请求发送给了 5.21.13.14:60630</span>
@@ -261,19 +259,18 @@ Author: Ray-Eldath
 192.168.0.3:60624 <span class="o">&lt;&lt;-</span> <span class="no">5</span><span class="sh">.21.13.14:60630 &lt;- ... &lt;- baidu.com
 </span></code></pre></div></div>
 
-<p>这里有一个问题，即响应到达<code class="highlighter-rouge">5.21.13.14</code>的时候，它怎么知道这个响应是平板<strong>M</strong>发出的而不是<strong>N</strong>发出的呢？</p>
+<p>这里有一个问题，即响应到达<code class="highlighter-rouge">5.21.13.14</code>的时候，它怎么知道这个响应是平板<strong>M</strong>发出而不是<strong>N</strong>发出的呢？</p>
 
-<p>我们能注意到，从<code class="highlighter-rouge">192.168.0.3:60624-&gt;5.21.13.14:60630</code>的请求，端口号由<code class="highlighter-rouge">60624</code>变成了<code class="highlighter-rouge">60630</code>（当然也可以是其他值），<strong>baidu.com</strong>知道我们请求是从<code class="highlighter-rouge">5.21.13.14:60630</code>过来的，因此把响应发送到了<code class="highlighter-rouge">5.21.13.14:60630</code>，那么再怎么根据这个地址把响应转发到<code class="highlighter-rouge">192.168.0.3:60624</code>呢？</p>
+<p>我们能注意到，从<code class="highlighter-rouge">192.168.0.3:60624-&gt;5.21.13.14:60630</code>的请求，端口号由<code class="highlighter-rouge">60624</code>变成了<code class="highlighter-rouge">60630</code>（当然也可以是其他值），<strong>baidu.com</strong>知道我们请求是从<code class="highlighter-rouge">5.21.13.14:60630</code>过来的，因此把响应发送到了<code class="highlighter-rouge">5.21.13.14:60630</code>。那么接下来再怎么根据这个地址把响应转发到<code class="highlighter-rouge">192.168.0.3:60624</code>呢？</p>
 
-<p>其实这件事情也不难，即当请求从<code class="highlighter-rouge">5.21.13.14:60630</code>发出以后，网络设备（比如路由器）会记一件事情，即<strong>60630</strong>的请求是从<code class="highlighter-rouge">192.168.0.3:60624</code>发出的，等到有响应发送到<strong>60630</strong>端口，就立马把这个响应再转发给<code class="highlighter-rouge">192.168.0.3:60624</code>。如此，链路就算通了。</p>
+<p>其实这件事情也不难。当请求从<code class="highlighter-rouge">5.21.13.14:60630</code>发出以后，网络设备（比如路由器）会记一件事情，即从<strong>60630</strong>发出的请求是<code class="highlighter-rouge">192.168.0.3:60624</code>发出的，等到有响应发送到<strong>60630</strong>端口时，设备就立即把这个响应再转发给<code class="highlighter-rouge">192.168.0.3:60624</code>。如此，<strong>M</strong>收到了应有的响应，链路就通了。</p>
 
 <h2 id="防火墙与iptables">防火墙与iptables</h2>
 <p>记得十年前刚读大学时，那时候流行给电脑安装杀毒软件，诚惶诚恐地配置各种奇怪项，生怕自己中了病毒。对于我们使用的笔记本电脑来说，<strong>防火墙</strong>到底是什么呢？详细描述大家可以查看参考列表中的文章，简单讲<strong>防火墙</strong>是一套连接的规则，比如<strong>J</strong>想要连接<strong>M</strong>，但是<strong>M</strong>在那边设置了一条规则，”凡是来自J的请求都拒绝”，这条规则就可以认为是一个私有的小防火墙了。</p>
 
-<p>需要说明的一点是，防火墙可以从很多层面进行设置，比如链路层、连接层、应用层等等，可以在硬件层面做设置，更可以在软件层面做限制。不同的操作系统的默认防火墙也是不一样的，windows有一套，Linux有一套，MacOS也有一套。因为开源和应用广泛，这里只简单说一下Linux系统中的Iptables。</p>
+<p>需要说明的一点是，防火墙可以从很多层面进行设置，比如链路层、连接层、应用层等等，可以在硬件层面做设置，更可以在软件层面做限制。不同的操作系统的默认防火墙也是不一样的，windows有一套，Linux有一套，MacOS也有一套。因为开源和应用广泛，这里只简单说一下Linux系统中的Iptables（这也是我在<a href="https://jingwei.link/2018/06/20/keep-on-practicing-coding.html">让人爱上Coding的坚持与实践</a>这篇博文里推荐Linux的原因）。</p>
 
 <h3 id="netfilteriptables">netfilter/iptables</h3>
-<p>作为一般用户，大家比较喜欢使用Windows系统，有很漂亮的界面，无论做什么事情，点几下就搞定了。但是作为开发者来说，会更喜欢Linux（也喜欢Mac，但是贼拉贵），因为Linux更开放，相对地也就更可控（这也是我在<a href="https://jingwei.link/2018/06/20/keep-on-practicing-coding.html">让人爱上Coding的坚持与实践</a>这篇博文里推荐Linux的原因）。</p>
 
 <p>Linux内核天生具有路由功能，其中包含<strong>netfilter模块</strong>，可以实现丰富的路由功能。比如设置拒绝接受任何来自<code class="highlighter-rouge">5.21.13.14</code>的请求；再比如，实现NAT功能，把内网的<code class="highlighter-rouge">IP:Port</code>映射成为公网的<code class="highlighter-rouge">IP:Port</code>并记录公网<code class="highlighter-rouge">Port</code>到内网<code class="highlighter-rouge">IP:Port</code>的映射。</p>
 
@@ -309,18 +306,18 @@ Author: Ray-Eldath
           |----------|
 </code></pre></div></div>
 
-<p>如上图，命名空间ns1通过br0连接起来了，ns1可以通过veth1发送请求，通过<code class="highlighter-rouge">veth1-&gt;veth0-&gt;br0-&gt;eth0</code>连通到主机。</p>
+<p>如上图，命名空间ns1通过br0连接起来了，ns1可以通过veth1发送请求，顺着<code class="highlighter-rouge">veth1-&gt;veth0-&gt;br0-&gt;eth0</code>的链路连通到主机。</p>
 
 <h3 id="docker中的网络链路">Docker中的网络链路</h3>
 
-<p>那么，网络如何通过<code class="highlighter-rouge">veth1-&gt;veth0-&gt;br0-&gt;eth0</code>访问外部网络的呢？这里需要借助Iptables了。</p>
+<p>那么，网络如何通过<code class="highlighter-rouge">veth1-&gt;veth0-&gt;br0-&gt;eth0</code>访问外部网络的呢？这里需要借助Iptables：</p>
 
 <ol>
   <li>设置命名空间ns1中所有流量都经过<strong>veth1</strong>的网络设备流出；如此，在ns1中可以访问宿主机的网络地址。</li>
   <li>在宿主机上将ns1所在网络段的请求路由到<strong>br0</strong>的网桥；如此，在宿主机可以访问Namespace中的网络地址。</li>
   <li>在宿主机上打开IP转发；如此，宿主机在收到ns1传过来的请求时，将进行转发操作。</li>
-  <li>在宿主机上设定把ns1中发出的包添加网络地址转换；如此，从ns1中发出的请求，有了公网的IP（宿主机IP），就能收到响应了。</li>
-  <li>收到响应后，再路由回ns1，就完成请求了（欧耶）。</li>
+  <li>在宿主机上设定把ns1中发出的包添加NAT（网络地址转换）；如此，从ns1中发出的请求，有了公网的IP（宿主机IP），就能收到响应了。</li>
+  <li>收到响应后，再路由回ns1，请求链路就闭合了。</li>
 </ol>
 
 <h2 id="小结">小结</h2>
@@ -359,6 +356,12 @@ Author: Ray-Eldath
         <li>
           <a href="//github.com/chalvern" target="_blank">
                     <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
                 </a>
         </li>
         
