@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>git使用基础 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="git使用基础">
+    <meta name="keywords"  content="基础, 经验, 碎碎念">
+    <!-- Open Graph -->
+    <meta property="og:title" content="git使用基础 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/08/01/git-foundation-of-foundation.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E7%A2%8E%E7%A2%8E%E5%BF%B5" class="post-tag">碎碎念</a>
+          
+        
+      </div>
+      <h1>git使用基础</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-08-01"><i class="iconfont icon-date"></i>01 Aug 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">简单介绍git必须知道的几个基础命令</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#阻碍使用git的几个可能" id="markdown-toc-阻碍使用git的几个可能">阻碍使用git的几个可能</a></li>
+  <li><a href="#几个常用的git命令" id="markdown-toc-几个常用的git命令">几个常用的git命令</a>    <ul>
+      <li><a href="#git-init" id="markdown-toc-git-init">git init</a></li>
+      <li><a href="#git-status" id="markdown-toc-git-status">git status</a></li>
+      <li><a href="#git-add" id="markdown-toc-git-add">git add</a></li>
+      <li><a href="#git-commit" id="markdown-toc-git-commit">git commit</a></li>
+      <li><a href="#git-log" id="markdown-toc-git-log">git log</a></li>
+      <li><a href="#git-clone" id="markdown-toc-git-clone">git clone</a></li>
+      <li><a href="#git-checkout" id="markdown-toc-git-checkout">git checkout</a></li>
+    </ul>
+  </li>
+  <li><a href="#todo" id="markdown-toc-todo">TODO</a></li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="适用人群">适用人群</h2>
+<p>新手开发人员，大学生</p>
+
+<h2 id="写在前面">写在前面</h2>
+<p>git是什么呢，一个版本控制系统。何为版本控制呢？版本控制是一种记录一个或若干文件内容变化，以便将来查阅特定版本修订情况的系统。</p>
+
+<p>我记得自己在不知道git这个工具前，为了保存自己的代码（害怕做一些改变后代码不能正常运行），往往会在重写某个功能前先把原来的代码复制一份做备份，避免代码丢失。这样做的一个结果是，我的每个项目目录下都会有好几个子目录，存放着最近的1，2，3…10次改变，为了记录每次改变，还要在每个版本的README里写上改动了那些内容，避免自己忘记。</p>
+
+<p>后来知道了git，相知恨晚，感慨自己原来的做法是多么地原始。。。</p>
+
+<h2 id="阻碍使用git的几个可能">阻碍使用git的几个可能</h2>
+<p>首先应该肯定git工具的实用性。只要是写代码，无论走到哪个城市进到哪家公司，git都将是必备技能。但是我们可能会因为下面的几个原因，而迟迟没有使用git，如果遇到这几种情况，建议尽量克服或避免：</p>
+
+<ol>
+  <li>习惯使用windows的图形界面，不知道有命令行这种东西，或者不知道git还能通过命令行使用。（建议了解一下Linux系统，至少了解一下git的命令行工具）</li>
+  <li>潜意识里觉得敲命令行会是一件麻烦的事情。（如果只是使用git，只需记住几个常用的命令即可）</li>
+  <li>之前从没有使用过git，不知道从何开始。（从下载安装git这个工具开始，从百度搜索git开始，从这里开始吧）</li>
+</ol>
+
+<h2 id="几个常用的git命令">几个常用的git命令</h2>
+<p>假设我们已经安装了git工具，运行<code class="highlighter-rouge">git version</code>能够有正常的输出（比如<code class="highlighter-rouge">git version 2.14.3</code>）。</p>
+
+<p>下面我们看一下几个常用的git命令，掌握这几个命令，就可以使用git进行开发了。</p>
+
+<h3 id="git-init">git init</h3>
+<p>这是初始化git的命令。运行这个命令，会在运行命令的当前目录中创建一个<code class="highlighter-rouge">.git/</code>目录，git相关的配置、版本碎片都会在这个目录中保存。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 随便切换到一个空目录</span>
+<span class="nb">cd</span> /an/empty/path
+
+<span class="c"># 创建一个README.md文件，并写点内容</span>
+<span class="nb">echo</span> <span class="s2">"# smile"</span> <span class="o">&gt;&gt;</span> README.md
+
+<span class="c"># 现在可以运行git init初始化git了</span>
+git init
+</code></pre></div></div>
+
+<h3 id="git-status">git status</h3>
+<p>这个是查看git当前状态的命令，大体会列出：当前在哪个分支，有哪些文件改变了，添加了哪些文件，删除了那些文件，等等。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git status
+<span class="c"># 运行上面的命令大体会输出下面的内容</span>
+On branch master
+Your branch is up-to-date with <span class="s1">'origin/master'</span><span class="nb">.</span>
+
+Untracked files:
+  <span class="o">(</span>use <span class="s2">"git add &lt;file&gt;..."</span> to include <span class="k">in </span>what will be committed<span class="o">)</span>
+
+	README.md
+</code></pre></div></div>
+
+<h3 id="git-add">git add</h3>
+<p>这个是添加命令。我们可以从<code class="highlighter-rouge">git status</code>的输出看到<code class="highlighter-rouge">git add</code>的命令，如果运行<code class="highlighter-rouge">git add README.md</code>，就会把当前文件夹中的README.md这个文件添加到暂存区了，也就是说这个时候我们的文件已经有一个副本在<code class="highlighter-rouge">.git/</code>文件夹的某个地方了，虽然这个副本还没有被永久保存。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 把README.md添加到暂存区</span>
+git add README.md
+
+<span class="c"># 更多时候会用.来代替README.md, 这个.带指当前目录下的所有改变</span>
+<span class="c"># 即当我们有1.md, 2.md, 3.md 时，不能一个个add，太麻烦，只需</span>
+<span class="c"># 运行一下下面的命令，就都保存了</span>
+git add <span class="nb">.</span>
+
+<span class="c"># 只add是不够的，如果我们这个时候把README.md删除了，接着又运行</span>
+<span class="c"># 了一遍 git add, 那么我们删除文件的这个动作也会被写入暂存区，</span>
+<span class="c"># REAME.md这个文件在暂存区就不存在了。。。</span>
+<span class="c"># 比如：(如果不知道自己做了啥，下面的命令就不要运行了)</span>
+<span class="c"># rm README.md</span>
+<span class="c"># git add . </span>
+</code></pre></div></div>
+
+<h3 id="git-commit">git commit</h3>
+<p>如果我们把README.md永久保存成一个版本，这样再删除README.md的情况下，我们依然可以从这个版本里恢复README.md。<code class="highlighter-rouge">git commit</code>命令做的就是把暂存区中的文件保存成一个版本。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 把暂存区的README.md添加到一个版本记录</span>
+<span class="c"># 这样暂存区中的README.md就永久地保存到.git/目录了</span>
+<span class="c"># 即时我们删除了README.md并且`git add .`，也不会</span>
+<span class="c"># 丢失这个文件了。</span>
+git commit <span class="nt">-m</span> <span class="s2">"my first commit"</span>
+</code></pre></div></div>
+
+<h3 id="git-log">git log</h3>
+<p>我们可以提交很多的版本，比如每次修改一下README.md，就按照<code class="highlighter-rouge">git add .</code>并<code class="highlighter-rouge">git commit -m “xth commit”</code>，我们怎么知道提交了多少次呢？</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看有多少次提交了</span>
+git log
+
+<span class="c"># 运行上面的命令会有下面类似的输出</span>
+<span class="c"># 标明了什么时间（Wed Aug 1 23:43:51 2018 +0800）</span>
+<span class="c"># 由谁（Jingwei &lt;zhjw43@163.com&gt;）提交的，提交的注释</span>
+<span class="c"># 是“first commit”，就是 git commit 是 -m 后面跟着</span>
+<span class="c"># 的内容</span>
+commit 17471fb52e6c65e60bb0397f7d2fab18675b625b <span class="o">(</span>HEAD -&gt; master, origin/master<span class="o">)</span>
+Author: Jingwei &lt;zhjw43@163.com&gt;
+Date:   Wed Aug 1 23:43:51 2018 +0800
+
+    first commit
+</code></pre></div></div>
+
+<h3 id="git-clone">git clone</h3>
+<p>git的仓库是可以共享的，比如我就把相关的内容共享到了<a href="https://github.com/chalvern/smile.git">GitHub - chalvern/smile: 博客中介绍基础概念会用到的仓库</a>github上的这个仓库里。读者可以把这个仓库下载下来查看。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 运行下面的命令会在当前目录创建一个smile目录
+# 并把github仓库中的所有内容下载到smile目录
+git clone https://github.com/chalvern/smile.git
+</code></pre></div></div>
+
+<h3 id="git-checkout">git checkout</h3>
+<p>我这个仓库以后会放很多版本，到时候如果你来查看默认的分支（master分支），有可能和我当前写这个博客的时候已经变化了很大了。为了避免这种情况，我创建了一个分支<code class="highlighter-rouge">git-foundation</code>，这样你只需checkout这个分支，就能看到现在写博客的我所看到的一模一样的内容了。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 检出git-foundation分支</span>
+git checkout git-foundation
+
+<span class="c"># 此时能看到smile这个目录只有一个README.md文件</span>
+</code></pre></div></div>
+
+<h2 id="todo">TODO</h2>
+<p>如果大家看到这里，自己已经可以用git进行自己代码的管理了。但是在一个多人合作开发的团队里，只掌握上面的内容还不够的。但是受到时间因素影响，本博文不再赘述，不过可以给大家一些线索，进行进一步的探索：</p>
+
+<ol>
+  <li>如何把代码推（push）到远端与别人共享？（提示：github的使用）</li>
+  <li>如果创建新的分支？（提示：git checkout -b xxx）</li>
+  <li>如何查看有哪些分支？（提示：git branch 及 git branch -a）</li>
+  <li>如何知道git有哪些子命令？ （强烈推荐直接运行 <code class="highlighter-rouge">git</code> 试试，会有一大坨提示）</li>
+  <li>其他。</li>
+</ol>
+
+<h2 id="小结">小结</h2>
+<p>本文简单介绍了git的几个命令，如果只是简单开发，了解上面的命令已经够写helloworld了。如果要求不高的项目，甚至可以进行开发了。不过如果想更好地使用git，只了解上面的这些内容还远远不够的，读者可以根据TODO小节的提示，自行阅读参考部分的内容（一点点看，不要贪多，否则很可能失去兴趣。。。）</p>
+
+<p>也可以百度搜索上面讲到的每个命令，查看每个命令对应的更多的细节。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%85%B3%E4%BA%8E%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6">Git - 关于版本控制</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/07/21/net-foundation-and-docker-net.html" class="read-next-link"></a>
+          <section>
+            <span>网络基础及Docker中的网络实现</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

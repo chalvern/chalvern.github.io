@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "git使用基础",
+      "tags"     : "基础 经验 碎碎念",
+      "url"      : "/2018/08/01/git-foundation-of-foundation.html"
+    } ,
+  
+    {
       "title"    : "网络基础及Docker中的网络实现",
       "tags"     : "基础 容器 DevOps",
       "url"      : "/2018/07/21/net-foundation-and-docker-net.html"
