@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "k8s中的基本概念",
+      "tags"     : "基础 经验 DevOps",
+      "url"      : "/2018/08/04/k8s-foundation-concepts.html"
+    } ,
+  
+    {
       "title"    : "git使用基础",
       "tags"     : "基础 经验 碎碎念",
       "url"      : "/2018/08/01/git-foundation-of-foundation.html"

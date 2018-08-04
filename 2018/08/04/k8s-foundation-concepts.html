@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>k8s中的基本概念 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="k8s中的基本概念">
+    <meta name="keywords"  content="基础, 经验, DevOps">
+    <!-- Open Graph -->
+    <meta property="og:title" content="k8s中的基本概念 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/08/04/k8s-foundation-concepts.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+        
+      </div>
+      <h1>k8s中的基本概念</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-08-04"><i class="iconfont icon-date"></i>04 Aug 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">简单介绍k8s中的几个基础概念</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#基本概念" id="markdown-toc-基本概念">基本概念</a>    <ul>
+      <li><a href="#cluster集群" id="markdown-toc-cluster集群">Cluster（集群）</a></li>
+      <li><a href="#node节点" id="markdown-toc-node节点">Node（节点）</a></li>
+      <li><a href="#pod" id="markdown-toc-pod">Pod</a></li>
+      <li><a href="#service服务" id="markdown-toc-service服务">Service（服务）</a></li>
+      <li><a href="#volume卷" id="markdown-toc-volume卷">Volume（卷）</a></li>
+      <li><a href="#namespace命名空间" id="markdown-toc-namespace命名空间">Namespace（命名空间）</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>前面的博文对docker的基本概念和使用进行了简单的介绍（见参考），解决了开发测试环境与运行时环境不一致的问题。只要镜像在本地开发环境能够正常运行且测试通过，理论上这个镜像也能在生产环境正常使用。</p>
+
+<p>k8s解决的是另一个问题。假设为了快速迭代，我们把系统拆分成几十个子服务，每个子服务打包成一个镜像，这几十个镜像协同向用户提供服务；这样做我们就可以单独对某个子服务进行升级，而不影响其他子服务的运行。那么，有没有好的方式管理这几十个镜像的部署呢，又该如何管理这些镜像之间的相互调用关系？</p>
+
+<p>k8s解决的便是docker镜像及其服务编排复杂的问题。它为运维开发提供了一个统一的接口，管理机器，部署应用，管理副本数量，负载均衡，服务发现，等等。先不要贪多，我们先简单介绍一下k8s中的基本概念。</p>
+
+<h2 id="基本概念">基本概念</h2>
+<p>通过对k8s的学习和使用，发现里面涉及的概念非常多，对于普通的开发者来说，可能很难一下子把握。不过顺着一定的思路理解，再多花一些时间琢磨，理解这些基本概念也不是什么困难的事情。</p>
+
+<h3 id="cluster集群">Cluster（集群）</h3>
+<p>提到k8s平台，大多数我们指的是一个k8s集群。所谓集群，是指k8s管理了很多物理机（或者云虚拟机），有这些机器的超级管理权限，k8s想在这些机器上面做什么就做什么。</p>
+
+<p>k8s中主要包含两个角色：Master和Worker。从名称不难理解，Master是k8s的大脑，所有的管理及元数据保存皆由Master负责；Worder是k8s的主要工作者，k8s调度的服务大都在上面运行。</p>
+
+<h3 id="node节点">Node（节点）</h3>
+<p>Node就是我们上面提到的物理机或者云虚拟机，在搭建k8s集群时，会选择一些（一般为3个）作为Master节点，剩余的便是Worker节点。</p>
+
+<p>如果是生产环境的机器，一般只让Master节点负责调度，并不会跑业务的服务。因此Master节点的性能相对可以比Worker节点逊色；而Worker节点主要负责出力，性能比Master高一些。</p>
+
+<h3 id="pod">Pod</h3>
+<p>用docker打好镜像，并被部署到k8s以后，它的运行时便在Pod中进行。</p>
+
+<p>我们可以把Pod看做是k8s管理的轻量级的虚拟机。和普通虚拟机不同，k8s管理的Pod会共享Node上的内核，只运行那些必要的进程，有点类似docker中的 Container (容器)概念。但是要注意，<strong>Pod 又和 Container 不一样，因为一个Pod上可以运行多个Container。</strong></p>
+
+<h3 id="service服务">Service（服务）</h3>
+<p>当访问量很多的时候，如果只有一个Pod可能不够用，利用k8s可以很方便地扩展出几个甚至几十个Pod。当Pod很多的时候，就需要一个提供负载均衡的地方，能够把用户的请求发送到这些Pod。Service便可以实现这个功能。</p>
+
+<p>Service能够根据标签找到所有相关的Pod，并把这些Pod的<code class="highlighter-rouge">IP</code>收集记录下来，当有请求发送到Service时，Service会再把请求负载均衡到各个Pod。</p>
+
+<h3 id="volume卷">Volume（卷）</h3>
+<p>每个Pod被k8s调度，当其中一个因为故障重启，里面的文件也会随之”蒸发“掉，这时候就需要把其中的文件给持久化到某个地方。</p>
+
+<p>在k8s中就是通过Volume挂载持久盘到Pod中的。</p>
+
+<h3 id="namespace命名空间">Namespace（命名空间）</h3>
+<p>如果把所有的应用部署在k8s上，当应用多的时候，很难区分哪个是哪个。</p>
+
+<p>Namespace可以从逻辑上把不同的应用区分开，比如小组A开发所有应用部署在<code class="highlighter-rouge">group-a</code>命名空间，小组B开发的所有应用部署在<code class="highlighter-rouge">group-b</code>命名空间，通过设置让小组A的成员只能访问<code class="highlighter-rouge">group-a</code>，小组B的成员只能访问<code class="highlighter-rouge">group-b</code>，这样管理起来就方便很多了。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文简单介绍了k8s中的几个静态的概念：Cluster、Node、Pod、Service、Volume以及Namespace。不过k8s中还包含成百上千的概念，只知道上面几个概念远远不够的。</p>
+
+<p>如果根据官方的课程，比如<a href="https://kubernetes.io/docs/tutorials/kubernetes-basics/">Kubernetes Basics</a>，可以很快地在k8s中部署一个应用。不过，就k8s中所包含的众多的概念，想要在生产中使用k8s，需要很深的技术储备才行。可以认为k8s是一个集权的管理平台，而作为一个系统，如果其本身出现一个故障，那么部署在上面的所有服务有可能都会出现问题，也就是说k8s在提供便易的同时把风险也叠加了。这就需要维护k8s平台的同学对它有很深的理解才行。</p>
+
+<p>不过，k8s的使用是一个趋势，尤其在人工成本逐渐升高的当下。有了k8s的加持，理论上就可以把复杂的应用尽可能地拆分，每个服务拆分成开发人员都容易理解维护的模块，这样对企业来说招人、换人的成本也就不会那么高了。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://jingwei.link/2018/06/30/how-to-play-docker-simplly.html">如何用一个例子上手docker - 敬维</a></li>
+  <li><a href="https://jingwei.link/2018/07/18/docker-namespace-cgroups-aufs.html">Docker基本原理简析 - 敬维</a> 介绍了Docker实现的基本原理</li>
+  <li><a href="https://jingwei.link/2018/07/21/net-foundation-and-docker-net.html">网络基础及Docker中的网络实现 - 敬维</a></li>
+  <li><a href="https://blog.csdn.net/aa1215018028/article/details/80888334">k8s基本概念及使用</a> 类似本博文介绍了k8s中的基本概念</li>
+  <li><a href="https://kubernetes.io/docs/concepts/">Concepts - Kubernetes</a> 官方介绍基本概念的地址</li>
+  <li><a href="https://kubernetes.io/docs/tutorials/kubernetes-basics/">Kubernetes Basics - Kubernetes</a> k8s中的例子</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/08/01/git-foundation-of-foundation.html" class="read-next-link"></a>
+          <section>
+            <span>git使用基础</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
