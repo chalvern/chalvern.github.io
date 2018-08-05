@@ -208,7 +208,7 @@ Author: Ray-Eldath
 
 <p><strong>gitlab</strong>把一些平台相关的内容保存在数据库中（比如用户数据、项目信息等），而所有git版本仓库的数据则通过<strong>gitaly_client</strong>这个SDK与<strong>gitlaly</strong>进行RPC调用。</p>
 
-<p><strong>gitaly</strong>对git的使用进行了封装，通过查看其源码发现，这个工具所做的事情是对git命令的封装。即对gitaly而言，它的底层也是通过调用<strong>git</strong>这个仓库实现的。可以通过查看<a href="https://gitlab.com/gitlab-org/gitaly/blob/v0.115.0/internal/command/command.go#L69">internal/command/command.go</a>，发现在发起命令前，会首先获取到<strong>git</strong>的二进制包路径，也就是说gitaly会像我们手动去<code class="highlighter-rouge">git branch</code>或<code class="highlighter-rouge">git diff</code>那样去做，只是它会对输出进行自动化解析，变成代码可理解的内容然后传回给<strong>gitlaly_client</strong>。</p>
+<p><strong>gitaly</strong>对git的使用进行了封装，通过查看其源码发现，这个工具所做的事情是对git命令的封装。即对gitaly而言，它的底层也是通过调用<strong>git</strong>这个命令实现的。可以通过查看<a href="https://gitlab.com/gitlab-org/gitaly/blob/v0.115.0/internal/command/command.go#L69">internal/command/command.go</a>，发现在发起命令前，会首先获取到<strong>git</strong>的二进制包路径，也就是说gitaly会像我们手动去<code class="highlighter-rouge">git branch</code>或<code class="highlighter-rouge">git diff</code>那样去做，只是它会对输出进行自动化解析，变成代码可理解的内容然后传回给<strong>gitlaly_client</strong>。</p>
 
 <h2 id="gitlab高可用方案">gitlab高可用方案</h2>
 <p>当实现私有化部署时，最应关注的问题是高可用方案。这里面包括两层意思：1）一个是服务的高可用。跑demo式的做法肯定不可以，需要服务搭建者考虑一旦发生故障，该如何避免对用户的影响；一般的做法是启用多个副本同时提供服务，其中一个翘掉还有其他的可用。2）数据的安全。<strong>数据不能丢！数据不能丢！数据不能丢！</strong> 这个是重中之重，甚至比服务的高可用更重要。</p>
