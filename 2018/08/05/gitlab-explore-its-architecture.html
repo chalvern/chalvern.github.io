@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gitlab的架构探索 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Gitlab的架构探索">
+    <meta name="keywords"  content="基础, 经验, DevOps">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Gitlab的架构探索 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/08/05/gitlab-explore-its-architecture.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+        
+      </div>
+      <h1>Gitlab的架构探索</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-08-05"><i class="iconfont icon-date"></i>05 Aug 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">探索gitlab如何使用git实现基础功能及高可用</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#gitlab如何调用git仓库" id="markdown-toc-gitlab如何调用git仓库">Gitlab如何调用git仓库</a>    <ul>
+      <li><a href="#gitlab-ce源码初探" id="markdown-toc-gitlab-ce源码初探">gitlab-ce源码初探</a></li>
+      <li><a href="#pygitruby-git与jgit" id="markdown-toc-pygitruby-git与jgit">pygit、ruby-git与JGit</a></li>
+      <li><a href="#最后找到了gitaly及gitaly-client" id="markdown-toc-最后找到了gitaly及gitaly-client">最后找到了gitaly及gitaly-client</a></li>
+    </ul>
+  </li>
+  <li><a href="#gitlab高可用方案" id="markdown-toc-gitlab高可用方案">gitlab高可用方案</a>    <ul>
+      <li><a href="#gitlab服务的高可用方案" id="markdown-toc-gitlab服务的高可用方案">gitlab服务的高可用方案</a></li>
+      <li><a href="#git的高可用方案" id="markdown-toc-git的高可用方案">git的高可用方案</a></li>
+      <li><a href="#高可用架构图" id="markdown-toc-高可用架构图">高可用架构图</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>最近有点分裂，一方面想把问题写得简单易懂，另一方面又发现有些概念只能通过持续地时间和精力投入才能精通甚至理解。心神不宁之季，写写文字记录自己的一些探索，聊以解闷。</p>
+
+<p>一旦说到与<a href="https://git-scm.com/">Git</a>，不得不提两个基于此技术的两个网页应用：<a href="https://github.com/">GitHub</a>和<a href="https://about.gitlab.com/">GitLab</a>。前者号称是全球最大的同志交友平台，理论上也差不多，因为平台汇聚的是全球的程序猿，而这个物种大都是男性（无语）。后者则因其开源的特性，应该是企业应用最多的私有化部署方案。</p>
+
+<p><strong>那么gitlab是如何调用git的服务完成代码管理的基础功能以及高可用的呢？</strong></p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
+
+<h2 id="gitlab如何调用git仓库">Gitlab如何调用git仓库</h2>
+<p>在这之前，我已经知道git的工作机制，也能够通过git命令进行操作，但是对于gitlab这种代码仓库的架构一点概念也没有。比如说：</p>
+
+<ol>
+  <li>gitlab如何与git仓库进行沟通？</li>
+  <li>从实用性来说，企业所搭建gitlab肯定是高可用的，那么git仓库的代码是保存在何处的？如何实现高可用的？（至少不能丢数据，那么如何做到不丢数据的？）</li>
+</ol>
+
+<p>带着上面的两个疑问，我到源码中查到了一番。</p>
+
+<p>（其实在此之前和几位同事讨论过此事，大家可能说不出具体的方案，但是各自在擅长的地方发表了一番看法，让我明确了大概的方向，<strong>抛出问题主动交流的重要性！</strong>）</p>
+
+<h3 id="gitlab-ce源码初探">gitlab-ce源码初探</h3>
+<p>很庆幸gitlab有开源的社区版本（代码库地址见参考），这种免费的面包这个时候就特别解饿。</p>
+
+<p>gitlab-ce源码是用<a href="http://rubyonrails.org/">Ruby on Rails</a>编写的，而作为此技术栈出身的自己，读它的代码不在话下。我到<code class="highlighter-rouge">/app/controllers/projects_controller.rb</code>去找了半天（十分钟），但是半天过去了也没有发现明显的git仓库调用的接口。</p>
+
+<p>因为Ruby元编程的特性，代码不一定藏在了什么地方，无奈，只能去google了（此时百度就表现出局限性了）。</p>
+
+<h3 id="pygitruby-git与jgit">pygit、ruby-git与JGit</h3>
+
+<p>从同事那边听到了pygit这个词，自己到github上搜到了ruby-git这个库，在git的官方地址看到了JGit这个工具。是的，这几个工具是对应语言的git接口库。</p>
+
+<p>于是，我尝试在gitlab-ce源码中全局搜索<code class="highlighter-rouge">ruby-git</code>关键词，不过最终也没有找到。</p>
+
+<h3 id="最后找到了gitaly及gitaly-client">最后找到了gitaly及gitaly-client</h3>
+
+<p>最终在gitlab-ce的源码库找到了<code class="highlighter-rouge">lib/gitlab/git</code>、<code class="highlighter-rouge">lib/gitlab/gitaly_client</code>，并且找到了 <a href="https://gitlab.com/gitlab-org/gitaly">gitaly</a> 这个仓库。</p>
+
+<p><strong>gitlab</strong>把一些平台相关的内容保存在数据库中（比如用户数据、项目信息等），而所有git版本仓库的数据则通过<strong>gitaly_client</strong>这个SDK与<strong>gitlaly</strong>进行RPC调用。</p>
+
+<p><strong>gitaly</strong>对git的使用进行了封装，通过查看其源码发现，这个工具所做的事情是对git命令的封装。即对gitaly而言，它的底层也是通过调用<strong>git</strong>这个仓库实现的。可以通过查看<a href="https://gitlab.com/gitlab-org/gitaly/blob/v0.115.0/internal/command/command.go#L69">internal/command/command.go</a>，发现在发起命令前，会首先获取到<strong>git</strong>的二进制包路径，也就是说gitaly会像我们手动去<code class="highlighter-rouge">git branch</code>或<code class="highlighter-rouge">git diff</code>那样去做，只是它会对输出进行自动化解析，变成代码可理解的内容然后传回给<strong>gitlaly_client</strong>。</p>
+
+<h2 id="gitlab高可用方案">gitlab高可用方案</h2>
+<p>当实现私有化部署时，最应关注的问题是高可用方案。这里面包括两层意思：1）一个是服务的高可用。跑demo式的做法肯定不可以，需要服务搭建者考虑一旦发生故障，该如何避免对用户的影响；一般的做法是启用多个副本同时提供服务，其中一个翘掉还有其他的可用。2）数据的安全。<strong>数据不能丢！数据不能丢！数据不能丢！</strong> 这个是重中之重，甚至比服务的高可用更重要。</p>
+
+<p>通过上面的分析可以知道，gitlab最终通过封装git的二进制来实现代码的版本仓库功能库，那么数据层面的安全方案就自然而然变成了<strong>如何搭建一个高可用的git仓库</strong>。</p>
+
+<h3 id="gitlab服务的高可用方案">gitlab服务的高可用方案</h3>
+<p>服务多副本即可。比如，让gitlab的服务同时运行在两台物理机上，当请求到来时，负载均衡到这两台机器上面。或者把gitlab的服务部署在k8s中，如<a href="https://jingwei.link/2018/08/04/k8s-foundation-concepts.html#pod">k8s中的基本概念</a>所介绍的，启用两个Pod对外提供服务，通过Service把请求负载到这两个Pod上。</p>
+
+<h3 id="git的高可用方案">git的高可用方案</h3>
+<p>因为git本身就是分布式的，因此可以考虑把文件直接保存到多个文件系统副本。比如使用高可用NFS文件服务器保存git仓库的元数据。</p>
+
+<h3 id="高可用架构图">高可用架构图</h3>
+<p>通过上面的分析，gitlab简易版的高可用架构图如下：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下面是gitlab简易版的高可用架构图</span>
+<span class="c"># 其中 高可用数据库用来保存gitlab中的</span>
+<span class="c"># 用户数据、项目信息等</span>
+<span class="c"># </span>
+gitlab 多副本运行 ———— 高可用数据库（保存用户信息等）
+    |
+    |-------------<span class="o">(</span>lib库引入<span class="o">)</span>
+gitaly-client
+    |
+    |-------------<span class="o">(</span>RPC调用<span class="o">)</span>
+  gitaly
+    |
+    |-------------<span class="o">(</span>通过调用git二进制包与git仓库沟通<span class="o">)</span>
+git仓库<span class="o">(</span>多副本保存<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+<p>本文对gitlab的架构进行了探索，主要围绕<strong>如何实现git仓库版本控制功能</strong>展开，基本确定：1）通过二次封装git命令调用原生的git仓库功能实现；2）gitlab封装了自己的git交互仓库gitaly；3）基于上面两点提出的一种gitlab的高可用方案。</p>
+
+<p>需要说明的是，以上是纸上谈兵，只提供一种思路，在实际实施的过程中肯定会遇到各种坑，但是可以让大家对gitlab的架构有一个初步的认识。如果下次你所使用的gitlab服务出现故障时，或许能诊断出故障出在哪个地方，解答心中的疑惑。当然，本文也能给搭建并运维gitlab的新手一个指引，从而制定出符合自己环境的高可用方案。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://gitlab.com/gitlab-org/gitlab-ce">GitLab.org / GitLab Community Edition · GitLab</a> gitlab-ce版本的开源代码</li>
+  <li><a href="https://gitlab.com/gitlab-org/gitaly">GitLab.org / gitaly · GitLab</a> gitlab开源的调用git仓库的RPC实现</li>
+  <li><a href="https://pypi.org/project/pygit2/">pygit2 · PyPI</a> python中调用git的接口库</li>
+  <li><a href="https://git-scm.com/book/zh/v2/%E9%99%84%E5%BD%95-B%3A-%E5%B0%86-Git-%E5%B5%8C%E5%85%A5%E4%BD%A0%E7%9A%84%E5%BA%94%E7%94%A8-JGit">Git - JGit</a> java中调用git的接口库</li>
+  <li><a href="https://github.com/ruby-git/ruby-git">ruby-git/ruby-git</a> ruby中调用git的接口库</li>
+  <li><a href="https://blog.csdn.net/houdaiye/article/details/52330403">生产环境下的高可用NFS文件服务器</a> git版本仓库可以利用高可用NFS服务器进行元数据的保存</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/08/04/k8s-foundation-concepts.html" class="read-next-link"></a>
+          <section>
+            <span>k8s中的基本概念</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

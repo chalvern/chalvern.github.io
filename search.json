@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Gitlab的架构探索",
+      "tags"     : "基础 经验 DevOps",
+      "url"      : "/2018/08/05/gitlab-explore-its-architecture.html"
+    } ,
+  
+    {
       "title"    : "k8s中的基本概念",
       "tags"     : "基础 经验 DevOps",
       "url"      : "/2018/08/04/k8s-foundation-concepts.html"
