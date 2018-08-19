@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "我搭建了WhereSmile.com社区",
+      "tags"     : "碎碎念 基础 经验",
+      "url"      : "/2018/08/19/where-smile-is-online.html"
+    } ,
+  
+    {
       "title"    : "Gitlab的架构探索",
       "tags"     : "基础 经验 DevOps",
       "url"      : "/2018/08/05/gitlab-explore-its-architecture.html"
