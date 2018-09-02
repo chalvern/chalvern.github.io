@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《白话互联网技术》之一个请求的链路 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="《白话互联网技术》之一个请求的链路">
+    <meta name="keywords"  content="碎碎念, 基础, 互联网">
+    <!-- Open Graph -->
+    <meta property="og:title" content="《白话互联网技术》之一个请求的链路 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/09/01/internet-a-request-route.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%A2%8E%E7%A2%8E%E5%BF%B5" class="post-tag">碎碎念</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E4%BA%92%E8%81%94%E7%BD%91" class="post-tag">互联网</a>
+          
+        
+      </div>
+      <h1>《白话互联网技术》之一个请求的链路</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-09-01"><i class="iconfont icon-date"></i>01 Sep 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('https://ws4.sinaimg.cn/large/006tNbRwgy1fuugg0ljqlj30zi0dy3zu.jpg') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">互联网技术、职位及其局限性</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#一个简单的请求链路" id="markdown-toc-一个简单的请求链路">一个简单的请求链路</a></li>
+  <li><a href="#网络链路中包含的互联网技术及职位" id="markdown-toc-网络链路中包含的互联网技术及职位">网络链路中包含的互联网技术及职位</a></li>
+  <li><a href="#互联网技术的局限性" id="markdown-toc-互联网技术的局限性">互联网技术的局限性</a></li>
+</ul>
+
+<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fuugg0ljqlj30zi0dy3zu.jpg" alt="一个简单的请求链路" /></p>
+
+<h2 id="写在前面">写在前面</h2>
+
+<p>互联网技术大大地改变了人们的生活方式。社交、休闲、新闻、理财、出行、住宿、就餐等等，互联网在每个领域里都有各种各样的解决方案。互联网把信息传递的成本变得微乎其微，促使了信息的流动；而信息一旦流动起来，人、事、物之间的距离就变得不那么明显了，实现了“足不出户知天下、得天下”的便易。</p>
+
+<p>从本世纪初的传统互联网到今天的移动互联网，互联网的应用场景越来越多，支撑它运转的硬件、软件也都经历了好几代更迭。不过从应用的层面讲，我们可以把互联网抽象成一个简单的模型（如上图《一个简单的请求链路》所示），几乎所有硬件和软件的更新，都是为了能让这个模型更快、更稳定地工作。</p>
+
+<p>《白话互联网技术》将从互联网的简单模型进行展开，尝试一层层剥开它的神秘面纱。</p>
+
+<h2 id="一个简单的请求链路">一个简单的请求链路</h2>
+<p>当我们在浏览器中输入<code class="highlighter-rouge">WhereSmile.com</code>，从点击“确认”(或回车)开始一直到看到页面，网络链路基本上是这样的：</p>
+
+<ul>
+  <li>① 我们在电脑或手机（为方便，后面统称为计算机）的浏览器里输入一个网址（比如<code class="highlighter-rouge">WhereSmile.com</code>），并发起了请求。</li>
+  <li>② 计算机通过DNS（可以类比为互联网中的通讯录，通过它可以把<code class="highlighter-rouge">WhereSmile.com</code>这个名称对应的IP号码找出来）得到网址所在的IP地址，于是就可以把请求发送到互联网了。</li>
+  <li>③ 请求在被发送到互联网之前，里面包含了源地址（我们自己计算机的IP地址）和目标地址（<code class="highlighter-rouge">WhereSmile.com</code>这个名称对应的IP地址），互联网会根据请求中的目的地址，把请求努力发送到目的地址所在的服务器上面。</li>
+  <li>④ 服务器接收到来自远方的请求，它从请求中提取出源地址、用户传入的参数（假如有参数）、用户的身份信息（假如有身份信息）等等，根据后端工程师设定的逻辑产生一定的内容，接着就把内容打包（称为响应），把这个包的目的地写成请求中的源地址（这个时候响应的目的地址是我们计算机的IP地址），然后发送到互联网上。</li>
+  <li>⑤ 互联网根据响应中的目的地址，把响应的数据包努力地发送到我们的电脑上。浏览器把响应中的数据拿出来，并按照特定的规范进行一定的渲染，我们就可以看到<code class="highlighter-rouge">WhereSmile.com</code>这个页面了。</li>
+</ul>
+
+<h2 id="网络链路中包含的互联网技术及职位">网络链路中包含的互联网技术及职位</h2>
+
+<p>网络链路的过程是简单，但是里面包含了很多复杂的技术。如果读者是IT圈里的一名工程师，那么自己所做的工作很大程度上属于这个链路的一环或者几环。下面我简单罗列一下这些技术，以及每项技术所创造的职位。</p>
+
+<ul>
+  <li>我们可以在浏览器中输入任何网址，从而获取网址所在的页面。那么我们获取某个页面的请求时如何发出去的？在服务端返回了响应以后，浏览器如何拿出响应中所包含的内容进行渲染的？这部分涉及到浏览器内核的知识。国内腾讯、阿里、百度、360、搜狗等均有定制自己的浏览器，因此会存在浏览器研发相关的工作。</li>
+  <li>在浏览器中输入的网址（比如<code class="highlighter-rouge">WhereSmile.com</code>），一般是为了方便大家记忆，而非某台服务器的真实地址。互联网中的信息流使用IP进行定位，因此在请求发送前首先需要把网址转变成IP地址，DNS（Domain Name System，域名系统）便充当了这样一个角色。由于DNS的技术已经存在了很久，且技术发展相对成熟，定制化需求较低，因此对口的工作非常少。很难看到专职开发DNS服务器的职位，不过配置DNS是大部分运维工程师必备的技能之一。</li>
+  <li>当提及访问互联网服务，前提是计算机（电脑或手机）已接入互联网。如果不是使用4G网络，而是通过WiFi或网线的方式接入互联网，则涉及到多台计算机共享网络（比如一个宿舍的几个同学通过一台路由器同时上网）、4G网络与WiFi网络互相切换等问题。这里涉及到网络底层的技术，网络七层协议、四层协议等等。硬件方面有路由器研发相关的职位，软件方面有嵌入式开发工程师，产品方面有网络连接工程师（优化网络连接、切换方案）等。</li>
+  <li>当一个请求到达互联网，这个请求按照什么样的路线进行转发最后找到服务器的呢？对于一个千里之外的服务器，可以肯定，我们的计算机与它之间并不是由一条网线直连，而是由很多交换机和路由器节点网格连接起来的，那么请求沿着网格的哪一条进行路由的呢？计算机网络是一门包含了很多内容的基础课程，未来我可能会就其中几个关键点进行描述。职位方面，华为作为通信行业的大佬，它在通信基础设施建设上的职位可谓很多很多了。</li>
+  <li>请求到达服务器后，如何从请求中拿到数据，并根据这份数据执行对应的逻辑，这部分就是业务开发工程师要做的了。不得不说，这部分是技术种类最多、职位最多的一块，包含了前端工程师、后端工程师、运维工程师等几个大的种类。根据所侧重工作的不同，前端工程师可以细分成交互设计工程师、UI工程师、前端工程师（侧重编码）等，后端工程师可以细分成业务开发工程师、中间件研发工程师、性能优化工程师、测试工程师等，运维工程师可以细分成业务运维工程师、系统运维工程师、网络运维工程师等。这里需要提一下，根据技术栈的不同，后端工程师还可以细分成Java工程师、Golang工程师、Ruby工程师、PHP工程师，等等。</li>
+</ul>
+
+<h2 id="互联网技术的局限性">互联网技术的局限性</h2>
+<p>过去的二十年里，互联网技术创造了很多传奇的企业和个人；年轻人曾一度为它疯狂，包括搞技术的、搞产品的、搞投资的，等等。我也曾是这些年轻人中的一员，甚至现在也在为它痴迷，燃烧自己的激情。</p>
+
+<p>不过，在肯定互联网技术潜力无限的同时，我们也应注意到它的局限性，这样才能把它的效能发挥到极致，同时不会影响我们对其他领域的投入。</p>
+
+<p>互联网价值的本质是信息的流动，这种流动从某种程度上促使了物质的流动。比如网络版社交、新闻促进了人与人之间的交流，网络版理财促进了资本的更合理分配，出行订票、住宿订房和就餐预定等更便捷。不过，互联网无法替代实体经济，仅仅靠它造不出飞机、高铁、汽车、公路、房子、桌子、米饭、馒头等；对于个人来说，互联网能带给人们的也只局限于获取信息的便捷，它将不能减轻我们生存的压力、成长的烦恼，反而需要避免被它麻痹从而影响了我们个人的进步。</p>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/08/19/where-smile-is-online.html" class="read-next-link"></a>
+          <section>
+            <span>我搭建了WhereSmile.com社区</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
