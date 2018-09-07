@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang中的副本与指针 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Golang中的副本与指针">
+    <meta name="keywords"  content="基础, 经验, golang">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Golang中的副本与指针 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/09/06/golang-pointer-duplication.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+        
+      </div>
+      <h1>Golang中的副本与指针</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-09-06"><i class="iconfont icon-date"></i>06 Sep 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">golang的for-range中容易犯错的指针使用，顺便一提Ruby中的对象及引用</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适应人群" id="markdown-toc-适应人群">适应人群</a></li>
+  <li><a href="#先看一段代码" id="markdown-toc-先看一段代码">先看一段代码</a></li>
+  <li><a href="#golang中的副本与指针" id="markdown-toc-golang中的副本与指针">Golang中的副本与指针</a>    <ul>
+      <li><a href="#ruby中的引用或指针" id="markdown-toc-ruby中的引用或指针">Ruby中的引用（或指针）</a></li>
+      <li><a href="#golang中的副本与指针-1" id="markdown-toc-golang中的副本与指针-1">Golang中的副本与指针</a></li>
+    </ul>
+  </li>
+  <li><a href="#代码的答案" id="markdown-toc-代码的答案">代码的答案</a></li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>使用Golang写代码已有一段时间，自认为达到了一个“还可以”的水平：工作中的业务需求能快速地完成，同事遇到了问题也能参与讨论一起解决。</p>
+
+<p>不过最近还是有一处代码竟没有一次性通过，接下来就借此机会聊一聊Golang中的副本与指针的概念。</p>
+
+<h2 id="适应人群">适应人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
+
+<h2 id="先看一段代码">先看一段代码</h2>
+<p>如果大家不看最后的答案，可以分析一下，下面这段代码的输出是什么。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+</span><span class="k">import</span><span class="x"> </span><span class="s">"fmt"</span><span class="x">
+
+</span><span class="k">type</span><span class="x"> </span><span class="n">Angle</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">Name</span><span class="x"> </span><span class="kt">string</span><span class="x">
+	</span><span class="n">Age</span><span class="x">  </span><span class="kt">int</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">m</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="n">Angle</span><span class="p">)</span><span class="x">
+	</span><span class="n">angs</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[]</span><span class="n">Angle</span><span class="p">{</span><span class="x">
+		</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"ka"</span><span class="p">,</span><span class="x"> </span><span class="n">Age</span><span class="o">:</span><span class="x"> </span><span class="m">18</span><span class="p">},</span><span class="x">
+		</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"kan"</span><span class="p">,</span><span class="x"> </span><span class="n">Age</span><span class="o">:</span><span class="x"> </span><span class="m">18</span><span class="p">},</span><span class="x">
+		</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"kang"</span><span class="p">,</span><span class="x"> </span><span class="n">Age</span><span class="o">:</span><span class="x"> </span><span class="m">18</span><span class="p">},</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="n">_</span><span class="p">,</span><span class="x"> </span><span class="n">ang</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">angs</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">m</span><span class="p">[</span><span class="n">ang</span><span class="o">.</span><span class="n">Name</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="o">&amp;</span><span class="n">ang</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="n">k</span><span class="p">,</span><span class="x"> </span><span class="n">v</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">m</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"key=&gt;"</span><span class="o">+</span><span class="n">k</span><span class="p">,</span><span class="x"> </span><span class="s">"name=&gt;"</span><span class="o">+</span><span class="n">v</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h2 id="golang中的副本与指针">Golang中的副本与指针</h2>
+<p>作为一名“优秀“的Ruby程序猿，在写Golang时习惯上难免会带有一些Ruby的影子；尤其当平时的工作包含一部分Ruby代码的编写时，这种编程语言自由切换的酸爽感觉，真简直了。</p>
+
+<p>为了便于记忆，这里先把Ruby与Golang的不同列一下。</p>
+
+<h3 id="ruby中的引用或指针">Ruby中的引用（或指针）</h3>
+<p>先来看一下Ruby中的一个函数(见<a href="https://github.com/rails/rails/blob/53be0132c3f66dd8510921215d940641bbfd9588/activesupport/lib/active_support/json/decoding.rb#L22">这里</a>)。在rails的源码中，有一段对JSON进行解码的函数，它的意思是把json进行解析以后，返回<code class="highlighter-rouge">data</code>这个对象。(Ruby中JSON的parse函数参考<a href="http://ruby-doc.org/stdlib-2.5.1/libdoc/json/rdoc/JSON.html#method-i-parse">这里</a>)</p>
+
+<p>初看很自然对不对？<strong>那么考虑一下，这里为什么直接返回了data，而不是返回data的指针呢</strong>？</p>
+
+<p><strong>在Ruby中，一切皆对象</strong>，默认的返回既是对象的引用（或指针）。因此在Ruby的JSON的decode函数中，返回data即意味着返回了data的指针或者引用。（需要说明，在Ruby中，有一类特殊的类型，它们的值放在指针里面，比如数字）</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="n">json</span><span class="p">)</span>
+  <span class="n">data</span> <span class="o">=</span> <span class="o">::</span><span class="no">JSON</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="n">json</span><span class="p">,</span> <span class="ss">quirks_mode: </span><span class="kp">true</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="no">ActiveSupport</span><span class="p">.</span><span class="nf">parse_json_times</span>
+    <span class="n">convert_dates_from</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="n">data</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h3 id="golang中的副本与指针-1">Golang中的副本与指针</h3>
+<p>Golang中相应的decode函数见<a href="https://golang.org/src/encoding/json/stream.go?s=1425:1472#L49">这里</a>，它主要实现的功能是<strong>把JSON编码的值读出来，然后把JSON的转变成Go的值（一般为struct，及结构）</strong>。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Decode reads the next JSON-encoded value from its</span><span class="x">
+</span><span class="c">// input and stores it in the value pointed to by v.</span><span class="x">
+</span><span class="c">//</span><span class="x">
+</span><span class="c">// See the documentation for Unmarshal for details about</span><span class="x">
+</span><span class="c">// the conversion of JSON into a Go value.</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">dec</span><span class="x"> </span><span class="o">*</span><span class="n">Decoder</span><span class="p">)</span><span class="x"> </span><span class="n">Decode</span><span class="p">(</span><span class="n">v</span><span class="x"> </span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="kt">error</span><span class="x"> </span><span class="p">{</span><span class="x">
+  </span><span class="c">//省略很多内容</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>注意上面的源码可以发现，这里的<code class="highlighter-rouge">dec *Decoder</code>使用了指针的形式；假如函数的声明是<code class="highlighter-rouge">func (dec Decoder) Decode(v interface{}) error</code>会怎么样呢？</p>
+
+<p>其实答案很简单，如果使用<code class="highlighter-rouge">(dec Decoder)</code>的方式，Decode函数将不起任何作用。因为这种情况下在调用<code class="highlighter-rouge">dec.Decode(v)</code>时，会在内存中生成一个<code class="highlighter-rouge">dec</code>的副本，其方法作用的值也会保存在这个副本中；函数一旦结束，这个副本所在的内存被GC（垃圾回收器）回收掉，原来的<code class="highlighter-rouge">dec</code>根本感觉不到任何的变化，因此这里应该使用指针的方式。</p>
+
+<p>当然，<strong>当使用指针的方式，dec.Decode(v)方法调用时，dec的指针也会被复制一份，但是由于两个指针指向同一份数据，因此函数会作用到dec的本体上面</strong>。</p>
+
+<h2 id="代码的答案">代码的答案</h2>
+<p>通过上面的内容，可以很容易理解，”先看一段代码“小节的代码的答案，如下所示：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#</span>
+<span class="c"># 下面为golang代码的输出</span>
+<span class="nv">key</span><span class="o">=&gt;</span>ka <span class="nv">name</span><span class="o">=&gt;</span>kang
+<span class="nv">key</span><span class="o">=&gt;</span>kan <span class="nv">name</span><span class="o">=&gt;</span>kang
+<span class="nv">key</span><span class="o">=&gt;</span>kang <span class="nv">name</span><span class="o">=&gt;</span>kang
+</code></pre></div></div>
+
+<p>如果还是有所疑惑，那么考虑下面的代码片段：</p>
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 很容易看出来这里的i是一个被重复利用的值</span><span class="x">
+</span><span class="c">// 即在整个for循环中，只存在一个i变量；</span><span class="x">
+</span><span class="c">// 同样的道理，这里只存在一个ang变量，每次</span><span class="x">
+</span><span class="c">// range时，新的Angle副本会填充整个ang变量</span><span class="x">
+</span><span class="c">// 变成一个新的值。</span><span class="x">
+</span><span class="c">// 把ang的指针赋值给m[ang.Name]，也就意味</span><span class="x">
+</span><span class="c">// 着所有的m中存在的是指向同一块内存的同一个</span><span class="x">
+</span><span class="c">// 指针。</span><span class="x">
+</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="p">,</span><span class="x"> </span><span class="n">ang</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">angs</span><span class="x"> </span><span class="p">{</span><span class="x">
+  </span><span class="n">m</span><span class="p">[</span><span class="n">ang</span><span class="o">.</span><span class="n">Name</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="o">&amp;</span><span class="n">ang</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+<p>本文简单就一段代码引发的bug进行了简单的分析，从Ruby中一切皆对象，一切赋值为引用（或指针）赋值，到Golang中的副本与指针，阐明了代码中bug存在的本质。</p>
+
+<p>最后不免感慨，编程语言的自由切换，需要对每种语言模型具有深刻的理解。平日里多留心细节，不忘编程初心，才是一个快乐的程序猿。</p>
+
+<p>（程序猿的编程初心是什么：升值加薪，走上人生高峰，赢取某白富美， 😆 ）</p>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/09/01/internet-a-request-route.html" class="read-next-link"></a>
+          <section>
+            <span>《白话互联网技术》之一个请求的链路</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fuugg0ljqlj30zi0dy3zu.jpg" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

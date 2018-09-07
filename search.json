@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Golang中的副本与指针",
+      "tags"     : "基础 经验 golang",
+      "url"      : "/2018/09/06/golang-pointer-duplication.html"
+    } ,
+  
+    {
       "title"    : "《白话互联网技术》之一个请求的链路",
       "tags"     : "碎碎念 基础 互联网",
       "url"      : "/2018/09/01/internet-a-request-route.html"
