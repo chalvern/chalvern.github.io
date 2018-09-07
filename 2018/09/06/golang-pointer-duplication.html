@@ -164,7 +164,7 @@ Author: Ray-Eldath
 <h2 id="写在前面">写在前面</h2>
 <p>使用Golang写代码已有一段时间，自认为达到了一个“还可以”的水平：工作中的业务需求能快速地完成，同事遇到了问题也能参与讨论一起解决。</p>
 
-<p>不过最近还是有一处代码竟没有一次性通过，接下来就借此机会聊一聊Golang中的副本与指针的概念。</p>
+<p>不过最近还是有一处代码竟没有一次性通过，是可忍孰不可忍，接下来就借此机会聊一聊Golang中的副本与指针的概念。</p>
 
 <h2 id="适应人群">适应人群</h2>
 <p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
@@ -202,11 +202,6 @@ Author: Ray-Eldath
 <p>为了便于记忆，这里先把Ruby与Golang的不同列一下。</p>
 
 <h3 id="ruby中的引用或指针">Ruby中的引用（或指针）</h3>
-<p>先来看一下Ruby中的一个函数(见<a href="https://github.com/rails/rails/blob/53be0132c3f66dd8510921215d940641bbfd9588/activesupport/lib/active_support/json/decoding.rb#L22">这里</a>)。在rails的源码中，有一段对JSON进行解码的函数，它的意思是把json进行解析以后，返回<code class="highlighter-rouge">data</code>这个对象。(Ruby中JSON的parse函数参考<a href="http://ruby-doc.org/stdlib-2.5.1/libdoc/json/rdoc/JSON.html#method-i-parse">这里</a>)</p>
-
-<p>初看很自然对不对？<strong>那么考虑一下，这里为什么直接返回了data，而不是返回data的指针呢</strong>？</p>
-
-<p><strong>在Ruby中，一切皆对象</strong>，默认的返回既是对象的引用（或指针）。因此在Ruby的JSON的decode函数中，返回data即意味着返回了data的指针或者引用。（需要说明，在Ruby中，有一类特殊的类型，它们的值放在指针里面，比如数字）</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="n">json</span><span class="p">)</span>
   <span class="n">data</span> <span class="o">=</span> <span class="o">::</span><span class="no">JSON</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="n">json</span><span class="p">,</span> <span class="ss">quirks_mode: </span><span class="kp">true</span><span class="p">)</span>
@@ -219,8 +214,14 @@ Author: Ray-Eldath
 <span class="k">end</span>
 </code></pre></div></div>
 
+<p>先来看一下Ruby中的一个函数(出处见<a href="https://github.com/rails/rails/blob/53be0132c3f66dd8510921215d940641bbfd9588/activesupport/lib/active_support/json/decoding.rb#L22">这里</a>)。在rails的源码中，有一段对JSON进行解码的函数，它的意思是把json进行解析以后，返回<code class="highlighter-rouge">data</code>这个对象。(Ruby中JSON的parse函数参考<a href="http://ruby-doc.org/stdlib-2.5.1/libdoc/json/rdoc/JSON.html#method-i-parse">这里</a>)</p>
+
+<p>初看很自然对不对？<strong>那么考虑一下，这里为什么直接返回了data，而不是返回data的指针呢</strong>？</p>
+
+<p><strong>在Ruby中，一切皆对象</strong>，默认的返回既是对象的引用（或指针）。因此在Ruby的JSON的decode函数中，返回data即意味着返回了data的指针或者引用。（需要说明，在Ruby中，有一类特殊的类型，它们的值放在指针里面，比如数字）</p>
+
 <h3 id="golang中的副本与指针-1">Golang中的副本与指针</h3>
-<p>Golang中相应的decode函数见<a href="https://golang.org/src/encoding/json/stream.go?s=1425:1472#L49">这里</a>，它主要实现的功能是<strong>把JSON编码的值读出来，然后把JSON的转变成Go的值（一般为struct，及结构）</strong>。</p>
+<p>Golang中相应的decode函数，源码见<a href="https://golang.org/src/encoding/json/stream.go?s=1425:1472#L49">这里</a>，它主要实现的功能是<strong>把JSON编码的值读出来，然后把JSON的转变成Go的值（一般为struct，既结构）</strong>。</p>
 
 <div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Decode reads the next JSON-encoded value from its</span><span class="x">
 </span><span class="c">// input and stores it in the value pointed to by v.</span><span class="x">
@@ -258,6 +259,7 @@ Author: Ray-Eldath
 </span><span class="c">// 着所有的m中存在的是指向同一块内存的同一个</span><span class="x">
 </span><span class="c">// 指针。</span><span class="x">
 </span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="p">,</span><span class="x"> </span><span class="n">ang</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">angs</span><span class="x"> </span><span class="p">{</span><span class="x">
+  </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">)</span><span class="x">
   </span><span class="n">m</span><span class="p">[</span><span class="n">ang</span><span class="o">.</span><span class="n">Name</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="o">&amp;</span><span class="n">ang</span><span class="x">
 </span><span class="p">}</span><span class="x">
 </span></code></pre></div></div>
