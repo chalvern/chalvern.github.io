@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编写代码的两个侧重点——功能开发与效率开发 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="编写代码的两个侧重点——功能开发与效率开发">
+    <meta name="keywords"  content="经验, golang, 管理">
+    <!-- Open Graph -->
+    <meta property="og:title" content="编写代码的两个侧重点——功能开发与效率开发 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/09/15/coding-style-feature-and-performance.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E7%AE%A1%E7%90%86" class="post-tag">管理</a>
+          
+        
+      </div>
+      <h1>编写代码的两个侧重点——功能开发与效率开发</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-09-15"><i class="iconfont icon-date"></i>15 Sep 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('https://ws3.sinaimg.cn/large/006tNbRwgy1fvab94u0ggj30yi0pcnp6.jpg') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">浅谈自己对代码编写的一点理解</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a>    <ul>
+      <li><a href="#首先讲一个欢喜的事情" id="markdown-toc-首先讲一个欢喜的事情">首先讲一个欢喜的事情</a></li>
+      <li><a href="#接着安利一个代码库" id="markdown-toc-接着安利一个代码库">接着安利一个代码库</a></li>
+    </ul>
+  </li>
+  <li><a href="#背景" id="markdown-toc-背景">背景</a></li>
+  <li><a href="#编写代码的两个侧重点" id="markdown-toc-编写代码的两个侧重点">编写代码的两个侧重点</a>    <ul>
+      <li><a href="#80的功能开发" id="markdown-toc-80的功能开发">80%的功能开发</a></li>
+      <li><a href="#20的效率开发" id="markdown-toc-20的效率开发">20%的效率开发</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<h3 id="首先讲一个欢喜的事情">首先讲一个欢喜的事情</h3>
+<p>前几天，小妹家又添了一个男娃；于我而言，又多了一个喊舅舅的孩子，加起来总共有四个了。</p>
+
+<h3 id="接着安利一个代码库">接着安利一个代码库</h3>
+<p><a href="https://github.com/chalvern/simplate">GitHub - chalvern/simplate: simple template of golang</a> 一个简单的golang模板库，把所有的模板文件加载到内存中，并以<code class="highlighter-rouge">map</code>（称为哈希或字典）的方式组织模板。</p>
+
+<h2 id="背景">背景</h2>
+<p>上周花了整个周末的时间读了一下瑞·达利欧的<a href="https://wheresmile.com/topic/27">《原则》</a>，认识到了很多问题，思想上得到了一次大补给；加上最近团队内部分享讨论的风气比较优越，和身边的各位大佬切磋比较多，于是产生了一些新的觉悟。</p>
+
+<p>这觉悟不仅仅关乎代码，还关系到生活的其他方面，不过只有代码方面的思考能够直白地描述，因此这里就简单写写它：编写代码的两个侧重点——功能开发与效率开发。</p>
+
+<h2 id="编写代码的两个侧重点">编写代码的两个侧重点</h2>
+<p>平日里我工作的主要内容就是编写代码。在DevOps小组做基础架构，平时主要涉及一些公共服务的开发。最近出现一个紧急需求，于是投了一些精力做业务开发。</p>
+
+<p>应该说，无论做基础架构的服务，还是做纯业务的需求，都不是那么容易。而作为一个优秀的开发者，总能站到一定的高度思考并解决问题。我相信，这种“解决问题、获取成长、继而引发进一步思考”的过程是一名高级开发者与一名初级开发者的重要区别。</p>
+
+<p>根据自己编写的代码性质，我把它们分成两类，一种涉及到功能的开发，另一种涉及到效率的开发。当然，这二者所占的比重是不一样的，前者占用了开发者大概80%的时间与精力，而后者只占到开发者剩下20%的时间与精力。</p>
+
+<h3 id="80的功能开发">80%的功能开发</h3>
+<p>在我迈入职场生涯的第三个年头，编写代码已经变成一件得心应手的事情。不过，编写代码永远不是一件轻松的事情，尤其在需求不定的时候，尤其在没有产品经理帮忙梳理业务逻辑的时候，尤其在业务决策不定而需要开发者推动进度的时候。</p>
+
+<p>如果仔细观察会发现，平时程序员的大部分交流都是围绕着业务展开的（假如聊的不是互相吹捧的话），而对于编程语言的语法特性、架构设计等交流的频次则很少。其实，如果工作时能和同事聊到编程语言的语法特性或者架构相关的事情，心态上要轻松很多。</p>
+
+<p>那么，作为一名程序猿，应该如何在解决繁杂业务问题的时候提升自己呢？我先把问题摆在这里。不过基本可以向着这个方向考虑：多了解需求，成为梳理并拆分庞大需求（对应繁杂的问题）的人。</p>
+
+<h3 id="20的效率开发">20%的效率开发</h3>
+<p>在编写代码相关的工作里，相对于功能开发，效率开发发生的几率要少很多。在参加2017年在杭州举办的Ruby开发者大会时听到一种说法，”只有成功者才会跑数据看性能“。一年过去了，在经历了几个项目后发觉此言不虚。</p>
+
+<p>一次调用耗时为50毫秒还是200毫秒，同等内存与CPU资源条件下跑2000个并发还是1000个并发，等必须要做这一层优化时，说明相应的项目已经成功了；而在此之前，大部分项目的主要矛盾是功能的开发。</p>
+
+<p>最近半年的时间里，我逐渐意识到另一个层面的效率问题——开发效率问题；比如如何让团队里的成员更好更快地上手新项目，接手老项目，直到最近才想清楚该如何面对或解决。此事一定程度上涉及到工具研发的内容，比如：编写通用的工具库，抽象更方便使用的库，制造开发工具，编写易懂详细的开发文档等等。</p>
+
+<p>作为一名程序猿，如果能涉及此部分的内容且喜欢这部分的内容，则可以奔着技术管理或技术专家的方向发展。</p>
+
+<h2 id="小结">小结</h2>
+<p>在我未毕业时，心气一直是很高的，觉得凭着自己的聪明才智，可以很快地完成一些牛逼的事情。而随着对职场的进一步了解，随着对社会的进一步了解，发现自己当时的想法是多么地稚嫩。有些东西，若非亲身经历过，头脑再聪明都只能是纸上谈兵，而纸上谈兵是很难获取真正的胜利的。</p>
+
+<p>对此，我能想到的是《三个火枪手》里达达尼昂的老爸在达达尼昂出发闯荡前给他说的话：”去闯荡，去犯错，去战斗，去爱，去挣扎“。只有如此，才有可能成为一个真实的英雄。</p>
+
+<p>加油，年轻人。</p>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/09/06/golang-pointer-duplication.html" class="read-next-link"></a>
+          <section>
+            <span>Golang中的副本与指针</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

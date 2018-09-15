@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "编写代码的两个侧重点——功能开发与效率开发",
+      "tags"     : "经验 golang 管理",
+      "url"      : "/2018/09/15/coding-style-feature-and-performance.html"
+    } ,
+  
+    {
       "title"    : "Golang中的副本与指针",
       "tags"     : "基础 经验 golang",
       "url"      : "/2018/09/06/golang-pointer-duplication.html"
