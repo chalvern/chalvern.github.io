@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "台风“山竹”引发的Golang类型探究",
+      "tags"     : "基础 经验 golang",
+      "url"      : "/2018/09/16/golang-type-study.html"
+    } ,
+  
+    {
       "title"    : "编写代码的两个侧重点——功能开发与效率开发",
       "tags"     : "经验 golang 管理",
       "url"      : "/2018/09/15/coding-style-feature-and-performance.html"
