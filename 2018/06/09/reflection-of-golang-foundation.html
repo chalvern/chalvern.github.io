@@ -179,7 +179,7 @@ Author: Ray-Eldath
 <h2 id="代码原型">代码原型</h2>
 <p>仿照<a href="https://www.cnblogs.com/rojas/p/4389389.html">golang 反射</a>中的做法，我们先给出一个代码约定，后面的代码都是基于下面的代码运行得出的结果：</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
 
 </span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
 	</span><span class="s">"fmt"</span><span class="x">
@@ -243,7 +243,7 @@ ptr
 
 <p>如果进一步追究可以发现，<strong>reflect.TypeOf(i)</strong>所返回的依然是一个接口（interface），且这个接口所对应的底层数据是<strong>rtype</strong>，它的数据结构如下（即 rtype 实现了reflect.Type接口）：</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// rtype is the common implementation of most values.</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// rtype is the common implementation of most values.</span><span class="x">
 </span><span class="c">// It is embedded in other, public struct types, but always</span><span class="x">
 </span><span class="c">// with a unique tag like `reflect:"array"` or `reflect:"ptr"`</span><span class="x">
 </span><span class="c">// so that code cannot convert from, say, *arrayType to *ptrType.</span><span class="x">
@@ -269,7 +269,7 @@ ptr
 <h3 id="获取t指针所指向的对象">获取t指针所指向的对象</h3>
 <p>上面的<strong>t</strong>归根到底是一个指针，如果我们想获取<strong>t</strong>所指向的对象的属性，需要再调用一个函数<code class="highlighter-rouge">reflect.Elem()</code>把指针所指向的对象解析出来。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="c">// 获取i所指向的对象的类型</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="c">// 获取i所指向的对象的类型</span><span class="x">
 	</span><span class="n">e</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">t</span><span class="o">.</span><span class="n">Elem</span><span class="p">()</span><span class="x">
 	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="x">
 	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">Kind</span><span class="p">())</span><span class="x">
@@ -285,7 +285,7 @@ boy
 <h3 id="获取t指针所指向对象的方法">获取t指针所指向对象的方法</h3>
 <p>在golang中，Method也有自己的数据结构，如下</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Method represents a single method.</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Method represents a single method.</span><span class="x">
 </span><span class="k">type</span><span class="x"> </span><span class="n">Method</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
 	</span><span class="c">// Name is the method name.</span><span class="x">
 	</span><span class="c">// PkgPath is the package path that qualifies a lower case (unexported)</span><span class="x">
@@ -304,7 +304,7 @@ boy
 
 <p>如果要获取指针<strong>t</strong>中的方法，可以通过reflect.Type接口中的 <code class="highlighter-rouge">Method(int) Method</code> 获取。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"method"</span><span class="p">)</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"method"</span><span class="p">)</span><span class="x">
 	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">Method</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">NumMethod</span><span class="p">()</span><span class="x"> </span><span class="o">-</span><span class="x"> </span><span class="m">1</span><span class="p">))</span><span class="x">
 	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">NumMethod</span><span class="p">())</span><span class="x">
 </span></code></pre></div></div>
@@ -326,7 +326,7 @@ boy
 <h3 id="获取v所指向对象的方法">获取v所指向对象的方法</h3>
 <p>通过上面的描述我们可以知道，可以通过与t相似的方法获取v所指向对象的方法，如下：</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"value about"</span><span class="p">)</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"value about"</span><span class="p">)</span><span class="x">
 	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">NumMethod</span><span class="p">())</span><span class="x">
 	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">Method</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">NumMethod</span><span class="p">()</span><span class="x"> </span><span class="o">-</span><span class="x"> </span><span class="m">1</span><span class="p">))</span><span class="x">
 </span></code></pre></div></div>
@@ -343,7 +343,7 @@ boy
 <h3 id="动态方法调用">动态方法调用</h3>
 <p>通过t或者v获取到了方法以后，可以通过显示调用<code class="highlighter-rouge">Call()</code>函数进行调用，如下：</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="c">//无输入参数的方法调用， 构造zero value</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">	</span><span class="c">//无输入参数的方法调用， 构造zero value</span><span class="x">
 	</span><span class="n">args</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">([]</span><span class="n">reflect</span><span class="o">.</span><span class="n">Value</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="x">
 	</span><span class="n">v</span><span class="o">.</span><span class="n">MethodByName</span><span class="p">(</span><span class="s">"SayName"</span><span class="p">)</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x">
 </span></code></pre></div></div>

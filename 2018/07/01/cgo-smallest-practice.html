@@ -161,7 +161,7 @@ Author: Ray-Eldath
 <h2 id="一个完整可运行的例子">一个完整可运行的例子</h2>
 <p>具体的Cgo使用，可以参考<a href="https://jiajunhuang.com/articles/2018_06_15-cgo.md.html">这一篇博客</a>。但是下面依然给出一个可运行的示例，供参考。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
 
 </span><span class="c">// 下面的 import "C" 以及其前面的两个 #include 必须这么写</span><span class="x">
 </span><span class="c">// go编译器会根据 import "C" 前面的注释引入两个C的header</span><span class="x">

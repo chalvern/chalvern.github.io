@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Simplate = 一个简单的Golang模板管理库",
+      "tags"     : "golang 最佳实践",
+      "url"      : "/2018/09/19/simplate-golang-simple-template.html"
+    } ,
+  
+    {
       "title"    : "台风“山竹”引发的Golang类型探究",
       "tags"     : "基础 经验 golang",
       "url"      : "/2018/09/16/golang-type-study.html"

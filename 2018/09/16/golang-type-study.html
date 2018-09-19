@@ -175,7 +175,7 @@ Author: Ray-Eldath
 <h3 id="一段又臭又长的源码">一段又臭又长的源码</h3>
 <p>下面就是我用来试验的源码，基本上遵循了：1）声明某个类型的slice并初始化；2）<code class="highlighter-rouge">println</code>函数打印slice的地址及各个元素的地址。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
 
 </span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
 	</span><span class="n">myBool</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[]</span><span class="kt">bool</span><span class="p">{</span><span class="no">false</span><span class="p">,</span><span class="x"> </span><span class="no">false</span><span class="p">,</span><span class="x"> </span><span class="no">true</span><span class="p">}</span><span class="x">
@@ -318,7 +318,7 @@ Author: Ray-Eldath
 
 <h3 id="string类型">string类型</h3>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// ----myString---</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// ----myString---</span><span class="x">
 </span><span class="c">// 0xc42004b940</span><span class="x">
 </span><span class="c">// 0xc42004bb40</span><span class="x">
 </span><span class="c">// 0xc42004bb50</span><span class="x">
@@ -335,7 +335,7 @@ Author: Ray-Eldath
 <h3 id="特立独行的struct">特立独行的struct</h3>
 <p>从试验结果看，struct类型的元素和string、channel、slice和map不同。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">
 	</span><span class="k">type</span><span class="x"> </span><span class="n">MyStruct</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
 		</span><span class="n">Name</span><span class="x"> </span><span class="kt">string</span><span class="x">
 	</span><span class="p">}</span><span class="x">
@@ -409,6 +409,18 @@ Author: Ray-Eldath
       
     </section>
     <section class="post-footer-item read-next">
+      
+      <div class="read-next-item">
+        <a href="/2018/09/19/simplate-golang-simple-template.html" class="read-next-link"></a>
+        <section>
+          <span>Simplate = 一个简单的Golang模板管理库</span>
+          <p></p>
+        </section>
+        
+        <div class="filter"></div>
+        <img src="" alt="">
+        
+     </div>
       
 
       

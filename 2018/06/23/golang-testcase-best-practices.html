@@ -172,7 +172,7 @@ Author: Ray-Eldath
 
 <p>比如下面的<code class="highlighter-rouge">MyLoveAge</code>函数，我们假设固定返回<strong>18</strong>岁，为了保证<code class="highlighter-rouge">MyLoveAge</code>的正确性，再写一个<code class="highlighter-rouge">TestMyLoveAge</code>的函数。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// MyLoveAge returns mylover's age</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// MyLoveAge returns mylover's age</span><span class="x">
 </span><span class="k">func</span><span class="x"> </span><span class="n">MyLoveAge</span><span class="p">()</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
 	</span><span class="k">return</span><span class="x"> </span><span class="m">18</span><span class="x">
 </span><span class="p">}</span><span class="x">
@@ -180,7 +180,7 @@ Author: Ray-Eldath
 
 <p>下面的<code class="highlighter-rouge">TestMyLoveAge</code>断言了<code class="highlighter-rouge">MyLoveAge</code>函数的输出，如果是<strong>18</strong>岁测试用例就通过，否则就失败。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
 	</span><span class="s">"testing"</span><span class="x">
 	</span><span class="s">"github.com/stretchr/testify/assert"</span><span class="x">
 </span><span class="p">)</span><span class="x">
@@ -196,7 +196,7 @@ Author: Ray-Eldath
 
 <p>但是，造一个假的N往往没那么容易。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="x"> </span><span class="s">"math/rand"</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="x"> </span><span class="s">"math/rand"</span><span class="x">
 
 </span><span class="c">// MyLoveAge2 returns mylover's age</span><span class="x">
 </span><span class="k">func</span><span class="x"> </span><span class="n">MyLoveAge2</span><span class="p">()</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
@@ -212,7 +212,7 @@ Author: Ray-Eldath
 </span><span class="p">}</span><span class="x">
 </span></code></pre></div></div>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// MyLoveAge2的测试文件</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// MyLoveAge2的测试文件</span><span class="x">
 </span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
 	</span><span class="s">"testing"</span><span class="x">
 	</span><span class="s">"github.com/stretchr/testify/assert"</span><span class="x">

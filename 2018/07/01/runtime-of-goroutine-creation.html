@@ -170,7 +170,7 @@ Author: Ray-Eldath
 
 <h2 id="maingo及其汇编码">main.go及其汇编码</h2>
 <h3 id="一个main函数">一个main函数</h3>
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
 
 </span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
 	</span><span class="s">"fmt"</span><span class="x">
@@ -225,7 +225,7 @@ Author: Ray-Eldath
 <h2 id="runtimenewproc">runtime.newproc</h2>
 <p>通过查看<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">go/proc.go</a>源码中的<code class="highlighter-rouge">newproc</code>主要调用了<code class="highlighter-rouge">newproc1</code>函数。这里会把调用方（caller）所在的goroutine和pc作为参数传给<code class="highlighter-rouge">newproc1 </code>。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">newproc</span><span class="p">(</span><span class="n">siz</span><span class="x"> </span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="n">fn</span><span class="x"> </span><span class="o">*</span><span class="n">funcval</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">newproc</span><span class="p">(</span><span class="n">siz</span><span class="x"> </span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="n">fn</span><span class="x"> </span><span class="o">*</span><span class="n">funcval</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
 	</span><span class="n">argp</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">add</span><span class="p">(</span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fn</span><span class="p">),</span><span class="x"> </span><span class="n">sys</span><span class="o">.</span><span class="n">PtrSize</span><span class="p">)</span><span class="x">
 	</span><span class="n">gp</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">getg</span><span class="p">()</span><span class="x">
 	</span><span class="n">pc</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">getcallerpc</span><span class="p">()</span><span class="x">
@@ -239,7 +239,7 @@ Author: Ray-Eldath
 
 <p>把goroutine的栈初始化，并把各项属性设置适当的值以后，就可以把这个goroutine加入到当前P的G队列了。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 创建一个新的goroutine运行fn，参数开始于argp，共有narg个字节</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 创建一个新的goroutine运行fn，参数开始于argp，共有narg个字节</span><span class="x">
 </span><span class="c">// 最后把创建的g放到g队列等待运行</span><span class="x">
 </span><span class="k">func</span><span class="x"> </span><span class="n">newproc1</span><span class="p">(</span><span class="n">fn</span><span class="x"> </span><span class="o">*</span><span class="n">funcval</span><span class="p">,</span><span class="x"> </span><span class="n">argp</span><span class="x"> </span><span class="o">*</span><span class="kt">uint8</span><span class="p">,</span><span class="x"> </span><span class="n">narg</span><span class="x"> </span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="n">callergp</span><span class="x"> </span><span class="o">*</span><span class="n">g</span><span class="p">,</span><span class="x"> </span><span class="n">callerpc</span><span class="x"> </span><span class="kt">uintptr</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
 	</span><span class="c">// 获得当前的G</span><span class="x">

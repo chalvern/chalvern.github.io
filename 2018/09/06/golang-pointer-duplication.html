@@ -172,7 +172,7 @@ Author: Ray-Eldath
 <h2 id="先看一段代码">先看一段代码</h2>
 <p>如果大家不看最后的答案，可以分析一下，下面这段代码的输出是什么。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
 </span><span class="k">import</span><span class="x"> </span><span class="s">"fmt"</span><span class="x">
 
 </span><span class="k">type</span><span class="x"> </span><span class="n">Angle</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
@@ -223,7 +223,7 @@ Author: Ray-Eldath
 <h3 id="golang中的副本与指针-1">Golang中的副本与指针</h3>
 <p>Golang中相应的decode函数，源码见<a href="https://golang.org/src/encoding/json/stream.go?s=1425:1472#L49">这里</a>，它主要实现的功能是<strong>把JSON编码的值读出来，然后把JSON的转变成Go的值（一般为struct，既结构）</strong>。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Decode reads the next JSON-encoded value from its</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Decode reads the next JSON-encoded value from its</span><span class="x">
 </span><span class="c">// input and stores it in the value pointed to by v.</span><span class="x">
 </span><span class="c">//</span><span class="x">
 </span><span class="c">// See the documentation for Unmarshal for details about</span><span class="x">
@@ -250,7 +250,7 @@ Author: Ray-Eldath
 </code></pre></div></div>
 
 <p>如果还是有所疑惑，那么考虑下面的代码片段：</p>
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 很容易看出来这里的i是一个被重复利用的值</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 很容易看出来这里的i是一个被重复利用的值</span><span class="x">
 </span><span class="c">// 即在整个for循环中，只存在一个i变量；</span><span class="x">
 </span><span class="c">// 同样的道理，这里只存在一个ang变量，每次</span><span class="x">
 </span><span class="c">// range时，新的Angle副本会填充整个ang变量</span><span class="x">

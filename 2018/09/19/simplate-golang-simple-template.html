@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simplate = 一个简单的Golang模板管理库 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Simplate = 一个简单的Golang模板管理库">
+    <meta name="keywords"  content="golang, 最佳实践">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Simplate = 一个简单的Golang模板管理库 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/09/19/simplate-golang-simple-template.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="post-tag">最佳实践</a>
+          
+        
+      </div>
+      <h1>Simplate = 一个简单的Golang模板管理库</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-09-19"><i class="iconfont icon-date"></i>19 Sep 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">simple template of golang，keeps all Template in memory as map</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适应人群" id="markdown-toc-适应人群">适应人群</a></li>
+  <li><a href="#我需要的golang模板的样子" id="markdown-toc-我需要的golang模板的样子">我需要的Golang模板的样子</a></li>
+  <li><a href="#simplate及其应用" id="markdown-toc-simplate及其应用">Simplate及其应用</a>    <ul>
+      <li><a href="#快速使用指南" id="markdown-toc-快速使用指南">快速使用指南</a>        <ul>
+          <li><a href="#1在项目目录下创建模板文件夹及模板文件" id="markdown-toc-1在项目目录下创建模板文件夹及模板文件">1）在项目目录下创建模板文件夹及模板文件</a></li>
+          <li><a href="#2-初始化simplate并渲染模板" id="markdown-toc-2-初始化simplate并渲染模板">2) 初始化simplate并渲染模板</a></li>
+          <li><a href="#3更进一步的理解" id="markdown-toc-3更进一步的理解">3）更进一步的理解</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>前些日子，在使用Golang写业务逻辑时，有一个功能需要渲染几个HTML的页面。使用了Golang原生的<a href="https://golang.google.cn/pkg/html/template/">template</a>模板库，虽然Golang的这个库口碑不是很好，不过需求也比较简单，因此就凑合着用了。就像<a href="https://golang.google.cn/pkg/html/template/#pkg-examples">这里</a>给出的示例一样，把需要渲染的内容写到代码里，然后Parse，接着嵌入数据。</p>
+
+<p>后来，随着新需求的不断提出，业务越来越复杂（这是大部分的系统的宿命：代码越来越多，越来越复杂），需要渲染的页面越来越多。发现事情不对啊，于是造了个轮子：<a href="https://github.com/chalvern/simplate">Simplate</a>。</p>
+
+<h2 id="适应人群">适应人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
+
+<h2 id="我需要的golang模板的样子">我需要的Golang模板的样子</h2>
+<p>如果到<strong>Github</strong>上搜索，然而并没有发现自己需要的库。要么与一些框架强耦合，要么侧重定义一些新的语法，都不满足我的需求。我理想中的Golang库应该是这样的：</p>
+
+<ul>
+  <li>模板文件具有规范的组织形式，方便我去管理（创建、相互引用等）。</li>
+  <li>项目初始化时加载到内存，当需要渲染模板时直接从内存中获取，而不是每次渲染都从文件中读取。</li>
+  <li>不强绑定第三方框架（比如<a href="https://github.com/gin-gonic/gin">Gin</a>），且不会对已有代码耦合造成破坏。</li>
+  <li>其他……</li>
+</ul>
+
+<p>在意识到上面的问题后，我从几个现有的Web框架中寻找灵感，因为我维护的<a href="https://wheresmile.com/">WhereSmile.com</a>是基于<a href="https://github.com/astaxie/beego">beego</a>开发的，了解beego具有模板管理的相应模块；同时了解到<a href="https://github.com/gin-gonic/gin">Gin</a>及<a href="https://github.com/labstack/echo">echo</a>这两个热度很高的Web框架没有模板相关模块，因此决定从beego项目中寻找灵感。</p>
+
+<h2 id="simplate及其应用">Simplate及其应用</h2>
+<p>在看了beego源码后，发现其模板部分具有很高的可塑性，于是把其模板相关的一部分代码抽离出来，即形成现在的库<a href="https://github.com/chalvern/simplate">Simplate</a>。</p>
+
+<p>Simplate会加载并解析特定目录下的所有模板文件，把每个文件解析成的Template对象保存在一个Map对象中，使用时传入特定的索引值（key值）即可。</p>
+
+<h3 id="快速使用指南">快速使用指南</h3>
+<p>Simplate最大的优点是，可以在一个特定目录中统一管理所有的模板文件，同时以一种优雅的方式解决了模板嵌套的问题。</p>
+
+<h4 id="1在项目目录下创建模板文件夹及模板文件">1）在项目目录下创建模板文件夹及模板文件</h4>
+<p>项目的整体目录结构可能类似于下面所示：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>|-app <span class="o">(</span>业务逻辑目录<span class="o">)</span>
+    |--home.go
+    |--about.go
+|-lib （其他逻辑目录）
+|-views （模板目录）
+    |--home <span class="o">(</span>对应业务逻辑目录<span class="o">)</span>
+        |--index.html
+        |--head.tpl
+        |--body.tpl
+    |--layout <span class="o">(</span>存放布局模板文件）
+        |--default.html
+|-main.go
+</code></pre></div></div>
+
+<p>其中<strong>views</strong>目录包含了所有的模板文件（业务&amp;布局）。需要说明的是：1）在业务模板中可以通过<strong>key</strong>值嵌套引入其他模板，比如在 <code class="highlighter-rouge">home/index.html</code> 中通过 <code class="highlighter-rouge">{{ template "home/head.tpl" . }}</code> 语句显式嵌入模板 <code class="highlighter-rouge">home/head.tpl</code>。2）布局模板中需要包含 <code class="highlighter-rouge">{{ .LayoutContent }}</code> 语句，当业务模板渲染完以后，被渲染的内容会赋值给<code class="highlighter-rouge">LayoutContent</code>这个变量传递给模板文件。</p>
+
+<p>模板文件的可能样式如下：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;style </span><span class="na">type=</span><span class="s">"text/css"</span><span class="nt">&gt;</span>
+      <span class="nt">body</span> <span class="p">{</span><span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">}</span>
+      <span class="nt">p</span> <span class="p">{</span><span class="nl">margin-left</span><span class="p">:</span> <span class="m">20px</span><span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+  
+    {{ if .LayoutContent }}{{ .LayoutContent }} {{ end }}
+  
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<h4 id="2-初始化simplate并渲染模板">2) 初始化simplate并渲染模板</h4>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="x"> </span><span class="s">"github.com/chalvern/simplate"</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">InitIsmplate</span><span class="p">(){</span><span class="x">
+  </span><span class="n">simplate</span><span class="o">.</span><span class="n">ViewsPath</span><span class="x">  </span><span class="o">=</span><span class="x"> </span><span class="s">"your-templates-dir"</span><span class="x"> </span><span class="c">// default is "views"</span><span class="x">
+  </span><span class="n">simplate</span><span class="o">.</span><span class="n">LayoutFile</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="s">"your-layout-file"</span><span class="x"> </span><span class="c">// default is "layout/default.html"</span><span class="x">
+
+  </span><span class="c">// initial</span><span class="x">
+  </span><span class="n">simplate</span><span class="o">.</span><span class="n">InitTemplate</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">YourCode</span><span class="p">()</span><span class="x"> </span><span class="kt">error</span><span class="x"> </span><span class="p">{</span><span class="x">
+  </span><span class="n">data</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
+  </span><span class="c">// data["Jingwei"] = "https://jingwei.link"</span><span class="x">
+  </span><span class="c">// 这里把渲染的内容输出到标准输出</span><span class="x">
+  </span><span class="k">return</span><span class="x"> </span><span class="n">simplate</span><span class="o">.</span><span class="n">ExecuteTemplate</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stdout</span><span class="p">,</span><span class="s">"home/body.html"</span><span class="p">,</span><span class="x"> </span><span class="n">data</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">YourCodeTwo</span><span class="p">()</span><span class="x"> </span><span class="kt">error</span><span class="x"> </span><span class="p">{</span><span class="x">
+  </span><span class="n">data</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
+  </span><span class="c">// data["site"] = "https://WhereSmile.com"</span><span class="x">
+  </span><span class="c">// 当有多个布局时，指定特定的布局，把渲染的内容输出到标准输出</span><span class="x">
+  </span><span class="k">return</span><span class="x"> </span><span class="n">simplate</span><span class="o">.</span><span class="n">ExecuteViewPathTemplateWithLayout</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stdout</span><span class="p">,</span><span class="x"> </span><span class="s">"layout/default.html"</span><span class="p">,</span><span class="x"> </span><span class="s">"home/body.html"</span><span class="p">,</span><span class="x"> </span><span class="n">data</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h4 id="3更进一步的理解">3）更进一步的理解</h4>
+
+<p>按照第1步中的目录结构，views目录下的模板在被Simplate结构化后，会形成一个<code class="highlighter-rouge">map[string]*template.Template</code>的类型值。这个值在Simplate源码中的变量是<code class="highlighter-rouge">simplateViewPathTemplates </code>，其中索引值（string类型的key值）是 <code class="highlighter-rouge">[]string{"home/body.tpl","home/head.tpl","home/index.html","layout/default.html"}</code></p>
+
+<h2 id="小结">小结</h2>
+<p>Simplate库是从业务出发抽象出的一个公共库，轻量级的Golang模板管理库，非常适合在小应用中使用。比如对于那些需要发送邮件内容的小型应用，既不想引入大的框架（比如beego），又想很好地管理自己的邮件模板，此库就非常合适。</p>
+
+<p>欢迎大家到<a href="https://github.com/chalvern/simplate">Simplate</a>帮忙点亮一颗Star，感谢！</p>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+  <li><a href="https://github.com/astaxie/beego">GitHub - beego</a> beego在github上的地址</li>
+  <li><a href="https://github.com/chalvern/simplate">Simplate</a> Simplate在github上的地址</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>[介绍一个golang的模板轮子</td>
+          <td>WhereSmile.com](https://wheresmile.com/topic/36) 本文在WhereSmile.com中的地址，可以到这里互动~</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/09/16/golang-type-study.html" class="read-next-link"></a>
+          <section>
+            <span>台风“山竹”引发的Golang类型探究</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

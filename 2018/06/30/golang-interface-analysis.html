@@ -164,7 +164,7 @@ Author: Ray-Eldath
 
 <h3 id="示例代码">示例代码</h3>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
 
 </span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
 	</span><span class="s">"fmt"</span><span class="x">
@@ -206,7 +206,7 @@ mikk
 <h3 id="源码中的nil">源码中的<code class="highlighter-rouge">nil</code></h3>
 <p>在<code class="highlighter-rouge">go/src/builtin/builtin.go</code>的源码中，对nil的定义如下：</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// nil is a predeclared identifier representing the zero value for a</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// nil is a predeclared identifier representing the zero value for a</span><span class="x">
 </span><span class="c">// pointer, channel, func, interface, map, or slice type.</span><span class="x">
 </span><span class="c">// 零值，特制 指针、信道、函数、接口、map、slice</span><span class="x">
 </span><span class="k">var</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="n">Type</span><span class="x"> </span><span class="c">// Type must be a pointer, channel, func, interface, map, or slice type</span><span class="x">
@@ -220,7 +220,7 @@ mikk
 
 <p>Interface主要其作用的地方是在运行时，因此这里主要介绍<code class="highlighter-rouge">go/src/runtime/runtime2.go</code>中的两个片段。</p>
 
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 带有方法的接口</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 带有方法的接口</span><span class="x">
 </span><span class="k">type</span><span class="x"> </span><span class="n">iface</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
 	</span><span class="c">// 存储_type信息还有结构实现方法的集合</span><span class="x">
 	</span><span class="n">tab</span><span class="x"> </span><span class="o">*</span><span class="n">itab</span><span class="x">
@@ -240,7 +240,7 @@ mikk
 <p>从源码可以知道，无论是<code class="highlighter-rouge">iface</code>还是<code class="highlighter-rouge">eface</code>，其底层均存在一个<code class="highlighter-rouge">data</code>字段，也就是说，无论是带方法的接口还是空接口，其的存在必然要依附有意义的数值（零值也是有意义的）才可以。可以简单认为一块内存，里面存放着变量，哪怕这个变量存放的全是零值也无所谓，但是必须要有这么一个内存变量，也就是说，<strong>只有这块内存存在了，Interface的存在才有意义</strong>。</p>
 
 <h2 id="再看一个例子">再看一个例子</h2>
-<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
 
 </span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
 	</span><span class="s">"fmt"</span><span class="x">
