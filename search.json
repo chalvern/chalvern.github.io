@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Web类技术研发流程小结",
+      "tags"     : "经验 管理",
+      "url"      : "/2018/10/03/web-def-flow-summary.html"
+    } ,
+  
+    {
       "title"    : "抓包gRPC的细节及分析",
       "tags"     : "gRPC 基础",
       "url"      : "/2018/10/02/grpc-wireshark-analysis.html"
