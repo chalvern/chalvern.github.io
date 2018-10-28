@@ -194,7 +194,7 @@ Author: Ray-Eldath
 <h3 id="gin路由中的基数树-1">Gin路由中的基数树</h3>
 <p>从上面的题目可以知道，基数树具有明确的构建规则，且搜索二叉树有非常高的检索效率。Gin路由的本质是一颗基数树，因此其效率有非常大的保障（在数据结构上至少如此）。</p>
 
-<p>Gin的路由是由<a href="https://github.com/julienschmidt/httprouter">httprouter</a>这个包实现的，因为这里以<strong>httprouter</strong>中的例子进行说明。</p>
+<p>Gin的路由是由<a href="https://github.com/julienschmidt/httprouter">httprouter</a>这个包实现的，因此这里以<strong>httprouter</strong>中的例子进行说明。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Priority   Path             Handle
 9          <span class="se">\ </span>               <span class="k">*</span>&lt;1&gt;
@@ -229,7 +229,7 @@ Author: Ray-Eldath
 <p>由于在RESTFul接口的实现中，路由中存在大量的变量，因此有非常大的概率会造成路由冲突。</p>
 
 <h3 id="gin路由定义的最佳实践">Gin路由定义的最佳实践</h3>
-<p>知道了基数树的局限性，可以总结出在使用Gin定义路由时最佳实践的几个点：</p>
+<p>知道了基数树的局限性，可以总结出在使用Gin定义路由时最佳实践的两个点：</p>
 
 <h4 id="接口确定性的前缀尽可能全">接口确定性的<strong>前缀尽可能全</strong></h4>
 <p>从经验来看，项目伊始就要规划好。推荐前缀中①指明是否为接口路由，②指明版本号，③指明模块或项目（代号）。
@@ -247,7 +247,7 @@ Author: Ray-Eldath
 <h2 id="小结">小结</h2>
 <p>Gin基数树的路由，效率非常高（从数据结构来看），不过其也面临一些局限性。在设计Api时，需要谨慎避免路由冲突。文章最后给出的两个Gin路由定义的最佳实践，其实是框架无关的规则，只要是定义Api便建议去参考的。</p>
 
-<p>使用Gin定义路由时，没有规范时，遇到路由冲突心里很慌；理清楚了其中的道理，制定好定义路由的规范，再遇到类似的问题心态上就稳多了 ^_^~</p>
+<p>使用Gin定义路由，没有规范时，遇到路由冲突心里很慌；理清楚了其中的道理，制定好定义路由的规范，再遇到类似的问题心态上就稳多了 ^_^~</p>
 
 <h2 id="参考">参考</h2>
 <ul>
@@ -256,6 +256,7 @@ Author: Ray-Eldath
   <li><a href="https://blog.csdn.net/zilingxiyue/article/details/43372599">算法导论 第12章 12-2 基数树 - CSDN博客</a></li>
   <li><a href="https://blog.csdn.net/u010188674/article/details/50499310">《算法导论》读书笔记—计数排序&amp;基数排序-CSDN博客</a></li>
   <li><a href="http://www.cnblogs.com/sun/archive/2008/06/26/1230095.htm">算法总结系列之五: 基数排序(Radix Sort) -博客园</a></li>
+  <li><a href="https://jiajunhuang.com/articles/2018_01_28-router_design.md.html">设计一个路由</a></li>
 </ul>
 
     </article>
