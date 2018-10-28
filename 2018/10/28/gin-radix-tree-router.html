@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gin的基数树路由局限及最佳实践 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Gin的基数树路由局限及最佳实践">
+    <meta name="keywords"  content="经验, 最佳实践, golang">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Gin的基数树路由局限及最佳实践 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/10/28/gin-radix-tree-router.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="post-tag">最佳实践</a>
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+        
+      </div>
+      <h1>Gin的基数树路由局限及最佳实践</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-10-28"><i class="iconfont icon-date"></i>28 Oct 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('https://ws2.sinaimg.cn/large/006tNbRwgy1fwnntpufmuj30dx08ut91.jpg') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">Gin中的路由采坑及接口路由定义规范</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适应人群" id="markdown-toc-适应人群">适应人群</a></li>
+  <li><a href="#gin路由中的基数树" id="markdown-toc-gin路由中的基数树">Gin路由中的基数树</a>    <ul>
+      <li><a href="#算法导论中的一道题目二叉查找树-思考题" id="markdown-toc-算法导论中的一道题目二叉查找树-思考题">《算法导论》中的一道题目（二叉查找树-思考题）</a></li>
+      <li><a href="#gin路由中的基数树-1" id="markdown-toc-gin路由中的基数树-1">Gin路由中的基数树</a></li>
+      <li><a href="#gin基数树路由的局限性" id="markdown-toc-gin基数树路由的局限性">Gin基数树路由的局限性</a></li>
+      <li><a href="#gin路由定义的最佳实践" id="markdown-toc-gin路由定义的最佳实践">Gin路由定义的最佳实践</a>        <ul>
+          <li><a href="#接口确定性的前缀尽可能全" id="markdown-toc-接口确定性的前缀尽可能全">接口确定性的<strong>前缀尽可能全</strong></a></li>
+          <li><a href="#局部restful接口定义" id="markdown-toc-局部restful接口定义">局部RESTFul接口定义</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>最近使用<a href="https://github.com/gin-gonic/gin">Gin</a>开发Api接口，在路由注册时遇到了棘手的路由冲突的问题。和公司的少年们讨论了一下，发现Gin的路由其实是一颗基数树（Radix Tree），于是花时间探索了一下，了解这棵树以更好地利用这棵树。</p>
+
+<h2 id="适应人群">适应人群</h2>
+<p><strong>入门√</strong>——初级——中级——高级；本文适应入门及以上。</p>
+
+<h2 id="gin路由中的基数树">Gin路由中的基数树</h2>
+<h3 id="算法导论中的一道题目二叉查找树-思考题">《算法导论》中的一道题目（二叉查找树-思考题）</h3>
+
+<p>给定两个串a = a0a1……ap和b = b0b1……b1，其中每一个ai和每一个bj都属于某个有序字符集，如果下面两条规则之一成立，则说串a按字典序小于串b：</p>
+<ol>
+  <li>存在一个整数j，0&lt;=j&lt;=min(p,q)，使得ai=bi，i=0，1，……，j-1，且aj&lt;bj；</li>
+  <li>p&lt;q，且ai=bi，对所有的i=0，1，……，p成立。</li>
+</ol>
+
+<p>这与字典中的排序很相似。例如，对于<strong>here</strong>和<strong>hero</strong>这两个字符串，根据规则①(设j=3)，我们可以得出<strong>here</strong>排在<strong>hero</strong>前面；而对于<strong>hero</strong>和<strong>heroine</strong>这两个字符串，根据规则②，我们可以得出<strong>hero</strong>排在<strong>heroine</strong>前面。</p>
+
+<p>如果a和b是位串（二进制串），则根据规则①，有<code class="highlighter-rouge">10100 &lt; 10110</code>；根据规则②，有<code class="highlighter-rouge">10100 &lt; 101000</code>。</p>
+
+<p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fwnntpufmuj30dx08ut91.jpg" alt="" /></p>
+
+<p>上图示出的是基数树的数据结构，其中存储了位串1011、10、011、100和0。当查找某个关键字a = a0a1……ap时，在深度为i的一个结点处，若ai = 0则向左转；若ai = 1则向右转。设S为一组不同的二进制串构成的集合，各串的长度之和为n。说明如何利用基数树，在O(n)时间内对S按字典序排序。例如，对上图中每个结点的关键字，排序的输出应该是序列0、011、10、100、1011。</p>
+
+<p>关于上面的题目，大家可以参阅参考文献。这里仅提一下，此为二叉查找树的一个应用，难点在于二叉树的创建（即插入元素），创建完成后采用前序遍历把树中的元素读出来即可。</p>
+
+<h3 id="gin路由中的基数树-1">Gin路由中的基数树</h3>
+<p>从上面的题目可以知道，基数树具有明确的构建规则，且搜索二叉树有非常高的检索效率。Gin路由的本质是一颗基数树，因此其效率有非常大的保障（在数据结构上至少如此）。</p>
+
+<p>Gin的路由是由<a href="https://github.com/julienschmidt/httprouter">httprouter</a>这个包实现的，因为这里以<strong>httprouter</strong>中的例子进行说明。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Priority   Path             Handle
+9          <span class="se">\ </span>               <span class="k">*</span>&lt;1&gt;
+3          ├s               nil
+2          |├earch<span class="se">\ </span>        <span class="k">*</span>&lt;2&gt;
+1          |└upport<span class="se">\ </span>       <span class="k">*</span>&lt;3&gt;
+2          ├blog<span class="se">\ </span>          <span class="k">*</span>&lt;4&gt;
+1          |    └:post      nil
+1          |         └<span class="se">\ </span>    <span class="k">*</span>&lt;5&gt;
+2          ├about-us<span class="se">\ </span>      <span class="k">*</span>&lt;6&gt;
+1          |        └team<span class="se">\ </span> <span class="k">*</span>&lt;7&gt;
+1          └contact<span class="se">\ </span>       <span class="k">*</span>&lt;8&gt;
+</code></pre></div></div>
+
+<p>上面所展示的树中，<strong>Priority</strong>表示路由的优先级，Path表示路由路径，Handle表示路由所对应的响应函数，其中<code class="highlighter-rouge">*&lt;num&gt;</code>表示函数指针。如果对应到代码，可以认为上面的基数树是由下面的代码生成的：</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/"</span><span class="p">,</span><span class="x"> </span><span class="n">f1</span><span class="p">)</span><span class="x">
+</span><span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/search"</span><span class="p">,</span><span class="x"> </span><span class="n">f2</span><span class="p">)</span><span class="x">
+</span><span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/support"</span><span class="p">,</span><span class="x"> </span><span class="n">f3</span><span class="p">)</span><span class="x">
+</span><span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/blog"</span><span class="p">,</span><span class="x"> </span><span class="n">f4</span><span class="p">)</span><span class="x">
+</span><span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/blog/:post"</span><span class="p">,</span><span class="x"> </span><span class="n">f5</span><span class="p">)</span><span class="x">
+</span><span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/about_us"</span><span class="p">,</span><span class="x"> </span><span class="n">f6</span><span class="p">)</span><span class="x">
+</span><span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/about_us/team"</span><span class="p">,</span><span class="x"> </span><span class="n">f7</span><span class="p">)</span><span class="x">
+</span><span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/contact"</span><span class="p">,</span><span class="x"> </span><span class="n">f8</span><span class="p">)</span><span class="x">
+</span></code></pre></div></div>
+
+<h3 id="gin基数树路由的局限性">Gin基数树路由的局限性</h3>
+<p>在编写Api接口时，为了表意清晰方便调用，大都尽量遵循RESTFul的风格。不过很现实的情况是，一个系统在架构（尤其定义接口）时，无法严格按照RESTFul的方式设计，总存在特殊情况，其接口跳出RESTFul的风格而存在。在这种情况下，Gin的路由便表现出其局限性。</p>
+
+<p>比如在已经注册了<code class="highlighter-rouge">/blog/:post</code>这条路由的情况下，将无法继续注册<code class="highlighter-rouge">/blog/hot</code> 与 <code class="highlighter-rouge">/blog/a/b/c</code>这两类路由。因为<code class="highlighter-rouge">/blog/:post</code>这条规则，会把<code class="highlighter-rouge">/blog/</code>后的第一个元素（以“/”分割）当做<code class="highlighter-rouge">:post</code>变量来看待，因此当在<code class="highlighter-rouge">/blog/</code>后面追加<code class="highlighter-rouge">hot</code>与<code class="highlighter-rouge">a/b/c</code>时，均会与<code class="highlighter-rouge">:post</code>这个变量的路由冲突。</p>
+
+<p>由于在RESTFul接口的实现中，路由中存在大量的变量，因此有非常大的概率会造成路由冲突。</p>
+
+<h3 id="gin路由定义的最佳实践">Gin路由定义的最佳实践</h3>
+<p>知道了基数树的局限性，可以总结出在使用Gin定义路由时最佳实践的几个点：</p>
+
+<h4 id="接口确定性的前缀尽可能全">接口确定性的<strong>前缀尽可能全</strong></h4>
+<p>从经验来看，项目伊始就要规划好。推荐前缀中①指明是否为接口路由，②指明版本号，③指明模块或项目（代号）。
+比如<code class="highlighter-rouge">/api/v1/admin</code>表示后台管理需要的接口；比如<code class="highlighter-rouge">/api/v1/naza</code>表示开发代号为<strong>哪吒</strong>其相关的接口。</p>
+
+<h4 id="局部restful接口定义">局部RESTFul接口定义</h4>
+<p>不否认RESTFul架构的表意清晰的特点，为了方便对接，可以在局部使用RESTFul的接口定义风格。比如</p>
+
+<ul>
+  <li><code class="highlighter-rouge">/api/v1/naza/activities/rules</code> 获取活动条款列表</li>
+  <li><code class="highlighter-rouge">/api/v1/naza/activity/:id/members</code>  获取某活动所有成员</li>
+  <li><code class="highlighter-rouge">/api/v1/naza/activity/:id/member/:id</code> 或许某活动中某成员信息</li>
+</ul>
+
+<h2 id="小结">小结</h2>
+<p>Gin基数树的路由，效率非常高（从数据结构来看），不过其也面临一些局限性。在设计Api时，需要谨慎避免路由冲突。文章最后给出的两个Gin路由定义的最佳实践，其实是框架无关的规则，只要是定义Api便建议去参考的。</p>
+
+<p>使用Gin定义路由时，没有规范时，遇到路由冲突心里很慌；理清楚了其中的道理，制定好定义路由的规范，再遇到类似的问题心态上就稳多了 ^_^~</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://lailin.xyz/post/web_read/httprouter%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/">Httprouter介绍及源码阅读</a></li>
+  <li><a href="https://blog.csdn.net/joker0910/article/details/8250085">基数树(radix tree) - CSDN博客</a></li>
+  <li><a href="https://blog.csdn.net/zilingxiyue/article/details/43372599">算法导论 第12章 12-2 基数树 - CSDN博客</a></li>
+  <li><a href="https://blog.csdn.net/u010188674/article/details/50499310">《算法导论》读书笔记—计数排序&amp;基数排序-CSDN博客</a></li>
+  <li><a href="http://www.cnblogs.com/sun/archive/2008/06/26/1230095.htm">算法总结系列之五: 基数排序(Radix Sort) -博客园</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/10/22/three-style-moon-is-beautiful.html" class="read-next-link"></a>
+          <section>
+            <span>今晚的月色真美之职业三种表现形式</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
