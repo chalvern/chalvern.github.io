@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go的ORM框架GORM最佳实践之不定参数的用法 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Go的ORM框架GORM最佳实践之不定参数的用法">
+    <meta name="keywords"  content="最佳实践, golang, 经验">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Go的ORM框架GORM最佳实践之不定参数的用法 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/10/31/golang-variadic-with-gorm.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="post-tag">最佳实践</a>
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+        
+      </div>
+      <h1>Go的ORM框架GORM最佳实践之不定参数的用法</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-10-31"><i class="iconfont icon-date"></i>31 Oct 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">进一步理解不定参数及其在GORM中的优雅应用</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适应人群" id="markdown-toc-适应人群">适应人群</a></li>
+  <li><a href="#gorm最佳实践之不定参数的用法" id="markdown-toc-gorm最佳实践之不定参数的用法">GORM最佳实践之不定参数的用法</a>    <ul>
+      <li><a href="#go中的不定参数" id="markdown-toc-go中的不定参数">Go中的不定参数</a></li>
+      <li><a href="#gorm简介" id="markdown-toc-gorm简介">GORM简介</a></li>
+      <li><a href="#grom中不定参数的最佳实践" id="markdown-toc-grom中不定参数的最佳实践">GROM中不定参数的最佳实践</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>最近一段时间的工作主要以业务逻辑编写为主，重度使用了一些Go的框架，比如Web框架<a href="https://github.com/gin-gonic/gin">Gin</a>、ORM框架<a href="http://gorm.io/">GORM</a>、模板渲染框架<a href="https://github.com/chalvern/simplate">Simplate</a>等等。在高强度的情况下编写高复杂度的代码，难免会遇到各种坑（比如 <a href="https://jingwei.link/2018/10/28/gin-radix-tree-router.html">Gin基数路由的局限</a> 就在我的上一篇博客中提及到了），自然而然地也会积累很多宝贵的经验，这些经验是我个人比较看重的，因此总乐意花一些时间总结。</p>
+
+<p>这篇博文介绍本人非常喜欢的一个经验：不定参数（即…运算符）在GORM中的使用。</p>
+
+<h2 id="适应人群">适应人群</h2>
+<p><strong>入门√</strong>——初级——中级——高级；本文适应入门及以上。</p>
+
+<h2 id="gorm最佳实践之不定参数的用法">GORM最佳实践之不定参数的用法</h2>
+
+<h3 id="go中的不定参数">Go中的不定参数</h3>
+
+<p>在Golang的<a href="https://golang.google.cn/ref/spec#Passing_arguments_to_..._parameters">语言特性文档</a>中，对不定参数（… 参数）进行了专门的讲解。当在函数定义中声明了一个不定参数<strong>…T</strong>（比如 <code class="highlighter-rouge">func Greeting(prefix string, who ...string)</code>）时，在函数内部就相当于有了一个类型为<strong>[]T</strong>的变量（比如在<code class="highlighter-rouge">Greeting</code>函数内，存在一个类型为<code class="highlighter-rouge">[]string</code>的<code class="highlighter-rouge">who</code>）。</p>
+
+<p>如果有下面的Greeting函数：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">Greeting</span><span class="p">(</span><span class="n">prefix</span><span class="x"> </span><span class="kt">string</span><span class="p">,</span><span class="x"> </span><span class="n">who</span><span class="x"> </span><span class="o">...</span><span class="kt">string</span><span class="p">){</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">who</span><span class="p">),</span><span class="x"> </span><span class="n">who</span><span class="p">)</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">who</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;</span><span class="x"> </span><span class="m">0</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">Greeting</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span><span class="x"> </span><span class="n">who</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>那么可以通过<code class="highlighter-rouge">Greeting("nobody")</code>和<code class="highlighter-rouge">Greeting("hello:", "KiKi", "Joe", "Anna")</code>来调用<code class="highlighter-rouge">Greeting</code>方法。对于前者用法来说，<code class="highlighter-rouge">who</code>的值为<code class="highlighter-rouge">nil</code>； 对于后者用法来说，<code class="highlighter-rouge">who</code>的值为<code class="highlighter-rouge">[]string{"KiKi", "Joe", "Anna"}</code>。</p>
+
+<p>这里需要注意两点：1）<strong>不能直接传入字符串切片调用</strong><code class="highlighter-rouge">Greeting("hello:", []string{"KiKi", "Joe", "Anna"})</code>，否则编译器会报错。2）也<strong>不能这么调用</strong><code class="highlighter-rouge">Greeting(prefix, who[1:])</code>，必须要传入<code class="highlighter-rouge">who[1:]...</code>。这两点基本上能揭露出不定参数的本质，<strong>它更像是声明运算过程而非数据类型，①当在函数声明中使用时，做的是把函数调用时传入的参数组装成为切片（slice）；②当在函数体内部传参使用时，代表的是把切片中的数据拆组成为单个元素</strong>。恩，基本上就是这样了。</p>
+
+<h3 id="gorm简介">GORM简介</h3>
+<p>对于一个编写Web应用的开发者，应该对ORM框架非常熟悉。比如Java中有名的Hibernate、Mybatis， Ruby中的Rails Model，Python中的SQLAlchemy，以及 Golang中的 GORM，等等。</p>
+
+<p><a href="https://github.com/jinzhu/gorm">GORM</a>遵循Go的语言特性，可以通过配置搜索条件把数据库中的每行记录塞进结构对象或其切片中，大大提升了开发效率。</p>
+
+<p>不过，如果大家查看GROM的源码，可以发现它大量使用了反射，这也引申出其效率相对低下的问题；不过在编写Web应用时，<strong>主要矛盾是产品的原型设计及其逻辑实现</strong>，代码的运行效率反而无需那么关注，毕竟产品往往在还未达到系统的性能瓶颈前，它的生命周期就结束了（衰= =）。</p>
+
+<h3 id="grom中不定参数的最佳实践">GROM中不定参数的最佳实践</h3>
+<p>说实话，在刚开始接触不定参数时，并不觉得它存在的必要性；平日里编写代码很少用到它，感觉它就像是一个玩具，或者像是语言的一个噱头。直到最近在使用GROM的过程中，面对复杂的业务逻辑，当model层定制的方法越来越多，总觉得力不从心。直到一次review代码时，经过我们组赖老师的指点，才算给我的代码世界又打开了一扇新大门。</p>
+
+<p>先看一段代码：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Topic 话题</span><span class="x">
+</span><span class="k">type</span><span class="x"> </span><span class="n">Topic</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">gorm</span><span class="o">.</span><span class="n">Model</span><span class="x">
+	</span><span class="n">Title</span><span class="x">         </span><span class="kt">string</span><span class="x">    </span><span class="s">`gorm:"index"`</span><span class="x">
+	</span><span class="n">Content</span><span class="x">       </span><span class="kt">string</span><span class="x">    </span><span class="s">`gorm:"type:text"`</span><span class="x">
+	</span><span class="n">ViewCount</span><span class="x">     </span><span class="kt">int</span><span class="x">       </span><span class="s">`json:"view_count"`</span><span class="x">
+	</span><span class="n">ReplyCount</span><span class="x">    </span><span class="kt">int</span><span class="x">       </span><span class="s">`json:"reply_count"`</span><span class="x">
+	</span><span class="n">UserID</span><span class="x">        </span><span class="kt">int</span><span class="x">       </span><span class="s">`gorm:"index" json:"user_id"`</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="c">// QueryByUserID 根据UserID获取话题</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">Topic</span><span class="p">)</span><span class="x"> </span><span class="n">QueryByUserID</span><span class="p">(</span><span class="n">userID</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="n">topics</span><span class="x"> </span><span class="p">[]</span><span class="n">Topic</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">db</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">config</span><span class="o">.</span><span class="n">DB</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"user_id = ?"</span><span class="p">,</span><span class="x"> </span><span class="n">userID</span><span class="p">)</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
+	</span><span class="k">return</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>为了根据用户ID（UserID）获取到相应的话题（Topic），我们定义了一个<code class="highlighter-rouge">QueryByUserID </code>的方法，为了表意这里刻意传入了一个参数；好像这个函数已经能帮我们解决model层与controller的分离。但是如果真正使用时会发现，其实这个函数有很大的局限性：它只能获取某个UserID的所有的话题，却无法实现对这个UserID下话题的进一步筛选（比如获取最近七天发布的话题）。</p>
+
+<p>那么应该如何定义这个Query函数，使得我们使用时既优雅又功能强大呢？<strong>答案便是不定参数</strong>。</p>
+
+<p>试想，我们把<code class="highlighter-rouge">QueryByUserID</code>函数以如下的方式定义：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// QueryByUserID 根据UserID获取话题</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">Topic</span><span class="p">)</span><span class="x"> </span><span class="n">QueryByUserID</span><span class="p">(</span><span class="n">userID</span><span class="x"> </span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="n">args</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="p">(</span><span class="n">topics</span><span class="x"> </span><span class="p">[]</span><span class="n">Topic</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">db</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">config</span><span class="o">.</span><span class="n">DB</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"user_id = ?"</span><span class="p">,</span><span class="x"> </span><span class="n">userID</span><span class="p">)</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">2</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">],</span><span class="x"> </span><span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">1</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
+	</span><span class="k">return</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>我们这里在<code class="highlighter-rouge">QueryByUserID</code>的最后强行添加了一个<code class="highlighter-rouge">args</code>不定参数，从而接受调用时传入的附加的参数。同时在函数体内，我们根据<code class="highlighter-rouge">args</code>的长度对它进行不同方式的应用，这就非常优雅地扩展了<code class="highlighter-rouge">QueryByUserID</code>的功能。根据GORM的特性，大量使用了Go的反射特性，查看源码后知道这种用法完全可行。</p>
+
+<p>在添加了不定参数的情况下，再调用<code class="highlighter-rouge">QueryByUserID</code>的时候，想要进一步精细地搜索话题，就方便多了。比如，想要获取<code class="highlighter-rouge">UserID为1</code>且最近一周发布的话题，可以这么写了：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">topics</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span><span class="o">.</span><span class="n">QueryByUserID</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="x"> </span><span class="s">"created_at &gt; ?"</span><span class="p">,</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="o">-</span><span class="m">7</span><span class="o">*</span><span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span><span class="x">
+</span><span class="c">// ... 其他对topics 与 err 的处理</span><span class="x">
+</span></code></pre></div></div>
+
+<p>非常灵活，好喜欢！</p>
+
+<h2 id="小结">小结</h2>
+<p>本文对Go中的不定参数、GORM进行了简单的介绍，并就二者的优雅结合实践进行了描述。通过一个<strong>搜索某用户发表的话题（Topic）的例子</strong>介绍了使用GORM时加入不定参数后所带来的巨大灵活性。</p>
+
+<p>通过这样一种结合，能够对不定参数以及GORM具有更深一步的认识，而认识的够深刻，开发起来就能更加得心应手了😆。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="http://doc.gorm.io/">Getting Started with GORM · GORM Guide</a> GORM的官方文档</li>
+  <li><a href="https://golang.google.cn/ref/spec#Passing_arguments_to_..._parameters">The Go Programming Language Specification</a>Go官网文档中对不定参数的解释</li>
+  <li><a href="https://blog.csdn.net/cscrazybing/article/details/79310448">Golang的不定参数 - CSDN博客</a> 介绍了Go中的不定参数</li>
+  <li><a href="https://jingwei.link/2018/10/28/gin-radix-tree-router.html">Gin的基数树路由局限及最佳实践</a> 介绍了Go的Web框架Gin的路由局限，以及最佳实践</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/10/28/gin-radix-tree-router.html" class="read-next-link"></a>
+          <section>
+            <span>Gin的基数树路由局限及最佳实践</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fwnntpufmuj30dx08ut91.jpg" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
