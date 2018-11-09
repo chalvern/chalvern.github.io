@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Go的ORM框架GORM最佳实践之不定参数的用法（二）",
+      "tags"     : "最佳实践 golang 经验",
+      "url"      : "/2018/11/10/golang-variadic-with-gorm-2.html"
+    } ,
+  
+    {
       "title"    : "Go的ORM框架GORM最佳实践之不定参数的用法",
       "tags"     : "最佳实践 golang 经验",
       "url"      : "/2018/10/31/golang-variadic-with-gorm.html"

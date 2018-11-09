@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go的ORM框架GORM最佳实践之不定参数的用法（二） - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Go的ORM框架GORM最佳实践之不定参数的用法（二）">
+    <meta name="keywords"  content="最佳实践, golang, 经验">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Go的ORM框架GORM最佳实践之不定参数的用法（二） - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/11/10/golang-variadic-with-gorm-2.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="post-tag">最佳实践</a>
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+        
+      </div>
+      <h1>Go的ORM框架GORM最佳实践之不定参数的用法（二）</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-11-10"><i class="iconfont icon-date"></i>10 Nov 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">更进一步理解不定参数在GORM中的优雅应用</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适应人群" id="markdown-toc-适应人群">适应人群</a></li>
+  <li><a href="#gorm最佳实践之不定参数的用法二" id="markdown-toc-gorm最佳实践之不定参数的用法二">GORM最佳实践之不定参数的用法（二）</a>    <ul>
+      <li><a href="#再看grom中不定参数的最佳实践" id="markdown-toc-再看grom中不定参数的最佳实践">再看GROM中不定参数的最佳实践</a></li>
+      <li><a href="#所述最佳实践中不定参数的约定" id="markdown-toc-所述最佳实践中不定参数的约定">所述最佳实践中不定参数的约定</a></li>
+      <li><a href="#gorm中相关函数源码解读" id="markdown-toc-gorm中相关函数源码解读">GORM中相关函数源码解读</a>        <ul>
+          <li><a href="#where函数" id="markdown-toc-where函数">Where函数</a></li>
+          <li><a href="#buildcondition-函数" id="markdown-toc-buildcondition-函数">buildCondition 函数</a></li>
+        </ul>
+      </li>
+      <li><a href="#其他问题" id="markdown-toc-其他问题">其他问题</a></li>
+      <li><a href="#如果期望传入多个查询条件" id="markdown-toc-如果期望传入多个查询条件">如果期望传入多个查询条件</a></li>
+      <li><a href="#如果期望传入一个函数回调" id="markdown-toc-如果期望传入一个函数回调">如果期望传入一个函数回调</a></li>
+      <li><a href="#不定参数用在可有可无的搜索条件" id="markdown-toc-不定参数用在可有可无的搜索条件">不定参数用在可有可无的搜索条件</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>最近一段时间的工作主要以业务逻辑编写为主，重度使用了一些Go的框架，比如Web框架<a href="https://github.com/gin-gonic/gin">Gin</a>、ORM框架<a href="http://gorm.io/">GORM</a>、模板渲染框架<a href="https://github.com/chalvern/simplate">Simplate</a>等等。在高强度的情况下编写高复杂度的代码，难免会遇到各种坑，自然而然地也会积累很多宝贵的经验，这些经验是我个人比较看重的，因此总乐意花一些时间总结。</p>
+
+<p>上一篇<a href="https://jingwei.link/2018/10/31/golang-variadic-with-gorm.html">博客</a>写了在GROM中使用不定参数的技巧，有朋友私信询问，于是感觉有必要基于上一篇内容再续一篇把这个点讲透彻。</p>
+
+<h2 id="适应人群">适应人群</h2>
+<p><strong>入门√</strong>——初级——中级——高级；本文适应入门及以上。</p>
+
+<h2 id="gorm最佳实践之不定参数的用法二">GORM最佳实践之不定参数的用法（二）</h2>
+<h3 id="再看grom中不定参数的最佳实践">再看GROM中不定参数的最佳实践</h3>
+<p>承接上一篇博客，看下面的代码：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Topic 话题</span><span class="x">
+</span><span class="k">type</span><span class="x"> </span><span class="n">Topic</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">gorm</span><span class="o">.</span><span class="n">Model</span><span class="x">
+	</span><span class="n">Title</span><span class="x">         </span><span class="kt">string</span><span class="x">    </span><span class="s">`gorm:"index"`</span><span class="x">
+	</span><span class="n">Content</span><span class="x">       </span><span class="kt">string</span><span class="x">    </span><span class="s">`gorm:"type:text"`</span><span class="x">
+	</span><span class="n">ViewCount</span><span class="x">     </span><span class="kt">int</span><span class="x">       </span><span class="s">`json:"view_count"`</span><span class="x">
+	</span><span class="n">ReplyCount</span><span class="x">    </span><span class="kt">int</span><span class="x">       </span><span class="s">`json:"reply_count"`</span><span class="x">
+	</span><span class="n">UserID</span><span class="x">        </span><span class="kt">int</span><span class="x">       </span><span class="s">`gorm:"index" json:"user_id"`</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="c">// QueryByUserID 根据UserID获取话题</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">Topic</span><span class="p">)</span><span class="x"> </span><span class="n">QueryByUserID</span><span class="p">(</span><span class="n">userID</span><span class="x"> </span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="n">args</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="p">(</span><span class="n">topics</span><span class="x"> </span><span class="p">[]</span><span class="n">Topic</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">db</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">config</span><span class="o">.</span><span class="n">DB</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"user_id = ?"</span><span class="p">,</span><span class="x"> </span><span class="n">userID</span><span class="p">)</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">2</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">],</span><span class="x"> </span><span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">1</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
+	</span><span class="k">return</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>为了根据用户ID（UserID）获取到相应的话题（Topic），我们定义了一个<code class="highlighter-rouge">QueryByUserID </code>的方法，为了表意刻意传入了一个参数，同时在<code class="highlighter-rouge">QueryByUserID</code>的最后强行添加了一个<code class="highlighter-rouge">args</code>不定参数，从而接受调用时传入的附加的参数，在函数体内根据<code class="highlighter-rouge">args</code>的长度对它进行不同方式的应用，达到了优雅扩展<code class="highlighter-rouge">QueryByUserID</code>的功能。</p>
+
+<p>在添加了不定参数的情况下，调用<code class="highlighter-rouge">QueryByUserID</code>时如果想要进一步精细地搜索话题，比如想要获取<code class="highlighter-rouge">UserID为1</code>且最近一周发布的话题，可以这么写了：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">topics</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span><span class="o">.</span><span class="n">QueryByUserID</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="x"> </span><span class="s">"created_at &gt; ?"</span><span class="p">,</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="o">-</span><span class="m">7</span><span class="o">*</span><span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span><span class="x">
+</span><span class="c">// ... 其他对topics 与 err 的处理</span><span class="x">
+</span></code></pre></div></div>
+
+<p>总之，非常灵活！</p>
+
+<h3 id="所述最佳实践中不定参数的约定">所述最佳实践中不定参数的约定</h3>
+<p>在<code class="highlighter-rouge">QueryByUserID </code>中根据传入的不定参数的数量，采用不同的传入方式，其实这里<strong>遵循了GORM中Where条件语句的作用方式</strong>。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// ...</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">2</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">],</span><span class="x"> </span><span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">1</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+</span><span class="c">// ...</span><span class="x">
+</span></code></pre></div></div>
+
+<p><strong>首先我们先把这里的约定给出来</strong>：</p>
+
+<ol>
+  <li>当传入的<code class="highlighter-rouge">args</code>长度为1时，如果<code class="highlighter-rouge">args[0]</code>不是一个<code class="highlighter-rouge">map[string]interface{}</code>的值，这个值必须能够作用到主键上面。比如<strong>1</strong>，表示主键ID为<strong>1</strong>（<code class="highlighter-rouge">ID=1</code>）的记录；比如<strong>[]int{1,2}</strong>，表示主键ID为<strong>1和2</strong>（<code class="highlighter-rouge">ID IN (1,2)</code>）的记录；</li>
+  <li>否则，当传入的<code class="highlighter-rouge">args</code>长度为1时，<code class="highlighter-rouge">args[0]</code>必须是一个<code class="highlighter-rouge">map[string]interface{}</code>的值；</li>
+  <li>当传入的<code class="highlighter-rouge">args</code>长度大于等于2时，<code class="highlighter-rouge">args[0]</code>必须是一个<code class="highlighter-rouge">string</code>类型的值，且包含了<code class="highlighter-rouge">args[1:]</code>中同等个数的占位符。打个比方，如果<code class="highlighter-rouge">args[0]</code>真实值为<code class="highlighter-rouge">"created_at &gt; ? AND deleted_at &gt; ?"</code>，那么<code class="highlighter-rouge">args[1:]</code>则应该包含两个值，一个对应第一个<strong>问号</strong>（即创建时间），一个对应第二个<strong>问号</strong>（即删除时间）。</li>
+</ol>
+
+<h3 id="gorm中相关函数源码解读">GORM中相关函数源码解读</h3>
+
+<h4 id="where函数">Where函数</h4>
+<p>当在GORM中调用<code class="highlighter-rouge">Where</code>方法时，通过查看源码可以知道，这个函数最底层也会使用一个不定参数，将传入到<code class="highlighter-rouge">Where</code>第一个后面的参数看成一个数组进行处理。具体地，第一个参数保存在<code class="highlighter-rouge">map[string]interface{}</code>类型的<code class="highlighter-rouge">query</code>字段，其他参数保存在<code class="highlighter-rouge">args</code>字段。</p>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="o">*</span><span class="n">search</span><span class="p">)</span><span class="x"> </span><span class="n">Where</span><span class="p">(</span><span class="n">query</span><span class="x"> </span><span class="k">interface</span><span class="p">{},</span><span class="x"> </span><span class="n">values</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="o">*</span><span class="n">search</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">s</span><span class="o">.</span><span class="n">whereConditions</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="nb">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">whereConditions</span><span class="p">,</span><span class="x"> </span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}{</span><span class="s">"query"</span><span class="o">:</span><span class="x"> </span><span class="n">query</span><span class="p">,</span><span class="x"> </span><span class="s">"args"</span><span class="o">:</span><span class="x"> </span><span class="n">values</span><span class="p">})</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="n">s</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h4 id="buildcondition-函数">buildCondition 函数</h4>
+<p>通过分析源码，可以找到GORM中的<code class="highlighter-rouge">Where</code>、<code class="highlighter-rouge">Or</code>、<code class="highlighter-rouge">Not</code>定义的搜索语句最终都通过 <a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/scope.go#L528">buildCondition函数</a> 渲染成为<strong>SQL</strong>语句。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">scope</span><span class="x"> </span><span class="o">*</span><span class="n">Scope</span><span class="p">)</span><span class="x"> </span><span class="n">buildCondition</span><span class="p">(</span><span class="n">clause</span><span class="x"> </span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{},</span><span class="x"> </span><span class="n">include</span><span class="x"> </span><span class="kt">bool</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="n">str</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+</span><span class="c">//...</span><span class="x">
+	</span><span class="c">// 这里会把传入Where的第一个参数拿出来，进行类型断言</span><span class="x">
+	</span><span class="k">switch</span><span class="x"> </span><span class="n">value</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">clause</span><span class="p">[</span><span class="s">"query"</span><span class="p">]</span><span class="o">.</span><span class="p">(</span><span class="k">type</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">case</span><span class="x"> </span><span class="n">sql</span><span class="o">.</span><span class="n">NullInt64</span><span class="o">:</span><span class="x">
+	</span><span class="c">// 如果传入Where的第一个参数是SQL中的空类型，执行逻辑...</span><span class="x">
+	</span><span class="k">case</span><span class="x"> </span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="kt">int8</span><span class="p">,</span><span class="x"> </span><span class="kt">int16</span><span class="p">,</span><span class="x"> </span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="kt">int64</span><span class="p">,</span><span class="x"> </span><span class="kt">uint</span><span class="p">,</span><span class="x"> </span><span class="kt">uint8</span><span class="p">,</span><span class="x"> </span><span class="kt">uint16</span><span class="p">,</span><span class="x"> </span><span class="kt">uint32</span><span class="p">,</span><span class="x"> </span><span class="kt">uint64</span><span class="o">:</span><span class="x">
+	</span><span class="c">//如果传入Where的第一个参数是一个数字，执行逻辑...</span><span class="x">
+	</span><span class="k">case</span><span class="x"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">int8</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">int16</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">int64</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">uint</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">uint8</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">uint16</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">uint32</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">uint64</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="k">interface</span><span class="p">{}</span><span class="o">:</span><span class="x">
+	</span><span class="c">//如果传入Where的第一个参数是一个数字类型的数组，执行逻辑...</span><span class="x">
+	</span><span class="k">case</span><span class="x"> </span><span class="kt">string</span><span class="o">:</span><span class="x">
+	</span><span class="c">//如果传入Where的第一个参数是一个字符串，结合后面的</span><span class="x">
+	</span><span class="c">// for _, arg := range args {...} 会把参数塞进</span><span class="x">
+	</span><span class="c">// 占位符...</span><span class="x">
+	</span><span class="k">case</span><span class="x"> </span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}</span><span class="o">:</span><span class="x">
+	</span><span class="c">// 恩，map[string]interface{} 类型的值比较特殊</span><span class="x">
+	</span><span class="c">// 也就是说，如果在Where中只传入一个值，且这个值是</span><span class="x">
+	</span><span class="c">// 个map，则必须要是 map[string]interface{}类型</span><span class="x">
+	</span><span class="c">// 的值，不能是 map[string]string 或其他类型的值</span><span class="x">
+	</span><span class="c">// 否则就匹配到 interface{} 去了...</span><span class="x">
+	</span><span class="k">case</span><span class="x"> </span><span class="k">interface</span><span class="p">{}</span><span class="o">:</span><span class="x">
+	</span><span class="c">// 最后，如果以上类型都不是，则执行到了这里...</span><span class="x">
+	</span><span class="k">default</span><span class="o">:</span><span class="x">
+	</span><span class="c">// 如果都没有匹配，报错...</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="c">// ...</span><span class="x">
+	</span><span class="n">args</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">clause</span><span class="p">[</span><span class="s">"args"</span><span class="p">]</span><span class="o">.</span><span class="p">([]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="n">_</span><span class="p">,</span><span class="x"> </span><span class="n">arg</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">args</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="c">// 这里会遍历传入Where的第一个参数后面的值</span><span class="x">
+	</span><span class="c">// 来替换掉占位符...</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+</span><span class="c">// ...</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h3 id="其他问题">其他问题</h3>
+<p>通过上面的分析可以知道，在Where中传入的不定参数具有一定的约束，第二
+、三…个参数不能随便写。</p>
+
+<h3 id="如果期望传入多个查询条件">如果期望传入多个查询条件</h3>
+<p>在这种情况下，建议通过构造不定参数中第一个<code class="highlighter-rouge">string</code>类型的参数达成目的，比如同时通过创建时间和删除时间查找数据，则构建<code class="highlighter-rouge">"created_at &gt; ? AND deleted_at &gt; ?"</code>这种语句，后面跟着传入<strong>创建时间</strong>与<strong>删除时间</strong>即可。</p>
+
+<h3 id="如果期望传入一个函数回调">如果期望传入一个函数回调</h3>
+<p>在我所遇到的应用场景中，还没有传入回调的场景，就个人经验来看，在没有强规范制约时（当前确实想不到一种合适的规范），传入回调会增加函数复杂度，造成后期代码维护困难。</p>
+
+<h3 id="不定参数用在可有可无的搜索条件">不定参数用在可有可无的搜索条件</h3>
+<p>推荐不定参数只用在那些可有可无的搜索条件，如果一个函数定义时已经明确知道函数中需要包含哪些参数，推荐把这些参数显式写在函数定义中，利用Go静态语言的特定，减少编码逻辑上的错误。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文介绍了使用GORM时加入不定参数后的灵活性，以及这种灵活性背后的约束。通过对GORM中 <a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/search.go#L39">Where函数</a>和 <a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/scope.go#L528">buildCondition函数</a> 源码的分析，更进一步阐释了这种不定参数的应用规范（及其缘由）：</p>
+
+<ol>
+  <li>当传入的<code class="highlighter-rouge">args</code>长度为1时，如果<code class="highlighter-rouge">args[0]</code>不是一个<code class="highlighter-rouge">map[string]interface{}</code>的值，这个值必须能够作用到主键上面；</li>
+  <li>否则，当传入的<code class="highlighter-rouge">args</code>长度为1时，<code class="highlighter-rouge">args[0]</code>必须是一个<code class="highlighter-rouge">map[string]interface{}</code>的值；</li>
+  <li>当传入的<code class="highlighter-rouge">args</code>长度大于等于2时，<code class="highlighter-rouge">args[0]</code>必须是一个<code class="highlighter-rouge">string</code>类型的值，且包含了<code class="highlighter-rouge">args[1:]</code>中同等个数的占位符。</li>
+</ol>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://jingwei.link/2018/10/31/golang-variadic-with-gorm.html">Go的ORM框架GORM最佳实践之不定参数的用法</a> GORM中不定参数最佳实践的第一篇博文</li>
+  <li><a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/main.go#L195">gorm-DB-Where函数</a> GORM中Where函数源码</li>
+  <li><a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/search.go#L39">gorm-search-Where函数</a> GORM中search对象对应的Where函数源码</li>
+  <li><a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/scope.go#L528">gorm-buildCondition函数</a>  GORM中buildCondition函数源码</li>
+  <li><a href="http://doc.gorm.io/">Getting Started with GORM · GORM Guide</a> GORM的官方文档</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/10/31/golang-variadic-with-gorm.html" class="read-next-link"></a>
+          <section>
+            <span>Go的ORM框架GORM最佳实践之不定参数的用法</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
