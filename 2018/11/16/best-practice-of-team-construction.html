@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作观察之融于团队最佳实践 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="工作观察之融于团队最佳实践">
+    <meta name="keywords"  content="经验, 管理">
+    <!-- Open Graph -->
+    <meta property="og:title" content="工作观察之融于团队最佳实践 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/11/16/best-practice-of-team-construction.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E7%AE%A1%E7%90%86" class="post-tag">管理</a>
+          
+        
+      </div>
+      <h1>工作观察之融于团队最佳实践</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-11-16"><i class="iconfont icon-date"></i>16 Nov 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">漫谈技术不相干的心得体会</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#融于团队最佳实践" id="markdown-toc-融于团队最佳实践">融于团队最佳实践</a>    <ul>
+      <li><a href="#被lead的成员视角" id="markdown-toc-被lead的成员视角">被lead的成员视角</a>        <ul>
+          <li><a href="#头脑风暴时尽力抛出自己的想法" id="markdown-toc-头脑风暴时尽力抛出自己的想法">头脑风暴时尽力抛出自己的想法</a></li>
+          <li><a href="#侧重表达并达成共识" id="markdown-toc-侧重表达并达成共识">侧重表达并达成共识</a></li>
+          <li><a href="#让团队其他成员了解自己所做的事" id="markdown-toc-让团队其他成员了解自己所做的事">让团队其他成员了解自己所做的事</a></li>
+          <li><a href="#注意语言组织能力" id="markdown-toc-注意语言组织能力">注意语言组织能力</a></li>
+        </ul>
+      </li>
+      <li><a href="#leader的视角" id="markdown-toc-leader的视角">leader的视角</a>        <ul>
+          <li><a href="#讨论时应该有的观察力" id="markdown-toc-讨论时应该有的观察力">讨论时应该有的观察力</a></li>
+          <li><a href="#描述清楚目的以及初衷" id="markdown-toc-描述清楚目的以及初衷">描述清楚目的以及初衷</a></li>
+          <li><a href="#决策是leader存在的最大价值" id="markdown-toc-决策是leader存在的最大价值">决策是leader存在的最大价值</a></li>
+          <li><a href="#授权的艺术" id="markdown-toc-授权的艺术">授权的艺术</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>在入职场经历过许多后，难免对一些事物产生一些想法。其实这是件令人胆颤的事情，意味着自己的思想开始固化，进一步远离了青少年的世界。</p>
+
+<p>不过，无论如何都要面对事实。无论自己所认知的东西对或错，都需承认内心的真实想法，如此才有可能改变（进化）。因此我给自己创造机会，把一些想法表达出来，无论被认同、被吐槽或被反驳。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
+
+<h2 id="融于团队最佳实践">融于团队最佳实践</h2>
+<p>融于团队，应该有两个层面的含义，一个是被lead的成员（一线工作者）贡献自己的脑力与体力，一个是leader这名成员贡献自己的脑力与体力。因此，为了方便理解，这里从被lead的成员和leader两个不同的视角来分别描述。</p>
+
+<h3 id="被lead的成员视角">被lead的成员视角</h3>
+
+<h4 id="头脑风暴时尽力抛出自己的想法">头脑风暴时尽力抛出自己的想法</h4>
+<p>话题相关且有逻辑的想法好于话题相关却没有逻辑的想法，好于话题不相关的想法，好于沉默不语。</p>
+
+<h4 id="侧重表达并达成共识">侧重表达并达成共识</h4>
+<p>平时对工作有想法，应侧重表达并达成共识，避免情绪化但毫无价值的争论。一个点是表达，让大家明白这种想法的背景缘由，征求大家的意见与反馈，然后尽可能地尝试抛出一个方案（很关键，否则讨论会变成没有结果的讨论，会浪费很多时间）；另一个点是收集大家的反馈，并推敲有价值的反馈，如果发现有价值的观点，可以私下里找抛出此观点的人进一步讨论；如果最终得出一个结论，记录过程与结论，这就是一个过程可追寻且有成果的工作。</p>
+
+<h4 id="让团队其他成员了解自己所做的事">让团队其他成员了解自己所做的事</h4>
+<p>无论在团队里做的是什么，最佳实践是让团队成员了解自己所做的事情。最差的情况也应该保证直属leader了解其中的细节。</p>
+
+<p>当深入一个细节做事情时，很容易把一件事情做成只有自己才能做的事情。这种情况无疑会给自己造成很大的负担，同时也给团队造成一定的负担。寻找一切可以存在的方式，通过分享、文档、培训等方式，让团队的成员了解自己所做的工作，是一件百利仅有一害的事情（这唯一的害处可能是占用了大家的时间，不过总有喜欢学习的小伙伴~）。</p>
+
+<p>最差的情况下，让leader成为做上面事情的人（下下策）。</p>
+
+<h4 id="注意语言组织能力">注意语言组织能力</h4>
+<p>条理清楚且有重点的描述，好于清晰条理的描述，好于流水账式描述，好于零描述。</p>
+
+<h3 id="leader的视角">leader的视角</h3>
+<p>我一直认为，领导的主要存在价值是为自己所lead的同事服务。不过在看了一些管理类的文章，发现只是不同人管理风格的差异而已。不过无论风格如何，下面几条应该是相同的。</p>
+
+<h4 id="讨论时应该有的观察力">讨论时应该有的观察力</h4>
+<p>短时间里鉴定头脑风暴，信息同步，求助信号等信息。尤其在日常化的会议中，根据性格差异每个人会有不同的表达方式，而每个人在头脑风暴、信息同步、潜意识求助等不同场景下表达方式又会不同。如果某个时刻能够快速鉴定某个人的描述属于哪个类别，从而做出相应的反馈，会大大提升lead效率。</p>
+
+<h4 id="描述清楚目的以及初衷">描述清楚目的以及初衷</h4>
+<p>如果是上级对下级布置任务，应描述清楚做这件事情的目的以及初衷，可以征求执行者的想法或方案，应避免一句话指令式需求。</p>
+
+<p>如果leader不想把决策权禅让给实施者（一般不要这么做，见下一条），那么需要在下发任务时描述清楚任务的目的及初衷，给任务定个性，收集信息，预研，任务拆分，实施，等等。在信息不对称的情况下，在任务定性不明确的情况下，同一个任务可以有一百种做法。</p>
+
+<h4 id="决策是leader存在的最大价值">决策是leader存在的最大价值</h4>
+<p>如果一件事情leader没有办法得出好的决策，那么被lead的人更难以得出好的决策。当然这里决策的具体表现按照leader的级别不同（比如某个leader和这个leader的leader对比）存在差异。</p>
+
+<p>这里应该避免僭越权力的陷阱，比如leader A的leader M给A下发了任务，A立马以M相同的视角把任务下发给被Lead的B（绕过了分析、拆解）。原来应该由A得出决策（通过整合自己所知的信息得出决策，或者组织会议收集信息后得到决策），最后却变成由B做出决策。在A的消息面更广而B的消息面相对较窄的情况下，后者得出的决策质量很大程度会比前者得出的决策质量低。</p>
+
+<h4 id="授权的艺术">授权的艺术</h4>
+
+<p>”权力越大，责任越大。”不过实际中遇到的大部分情况是，在授权不够大的情况下，要求某个人承担较大的责任。当然这里的授权不仅仅指决策权，还有支配权。</p>
+
+<p>比如把任务分配给多个人组成的团队，授权团队中某个人有决策权，但不授予支配权。此时很大概率会造成一定程度的内耗，最坏情况会影响任务的正常完成。</p>
+
+<h2 id="小结">小结</h2>
+<p>平日里比较喜欢观察（毕竟涂了近六年的鸦），积累了一些思考。最近的一段时间里，先后和多位朋友讨论到了职场上的成长问题，于是拣了其中一部分写下来，从<strong>普通一线成员、leader视角</strong>分别列举了几个点，希望能给到大家一些启发吧。</p>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/11/10/golang-variadic-with-gorm-2.html" class="read-next-link"></a>
+          <section>
+            <span>Go的ORM框架GORM最佳实践之不定参数的用法（二）</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
