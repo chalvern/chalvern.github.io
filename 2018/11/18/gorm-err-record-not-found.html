@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GORM最佳实践之ErrRecordNotFound的坑 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="GORM最佳实践之ErrRecordNotFound的坑">
+    <meta name="keywords"  content="最佳实践, golang, 经验">
+    <!-- Open Graph -->
+    <meta property="og:title" content="GORM最佳实践之ErrRecordNotFound的坑 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/11/18/gorm-err-record-not-found.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="post-tag">最佳实践</a>
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+        
+      </div>
+      <h1>GORM最佳实践之ErrRecordNotFound的坑</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-11-18"><i class="iconfont icon-date"></i>18 Nov 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('‘’') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">GORM何时抛出ErrRecordNotFound错误</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适应人群" id="markdown-toc-适应人群">适应人群</a></li>
+  <li><a href="#gorm何时抛出errrecordnotfound错误" id="markdown-toc-gorm何时抛出errrecordnotfound错误">GORM何时抛出ErrRecordNotFound错误</a>    <ul>
+      <li><a href="#首先看一段示例代码" id="markdown-toc-首先看一段示例代码">首先看一段示例代码</a></li>
+      <li><a href="#示例代码的运行结果分析" id="markdown-toc-示例代码的运行结果分析">示例代码的运行结果分析</a></li>
+      <li><a href="#gorm何时抛出errrecordnotfound错误-1" id="markdown-toc-gorm何时抛出errrecordnotfound错误-1">GORM何时抛出ErrRecordNotFound错误</a></li>
+      <li><a href="#gorm相关源码阅读" id="markdown-toc-gorm相关源码阅读">GORM相关源码阅读</a>        <ul>
+          <li><a href="#gorm中的findfirstlast方法" id="markdown-toc-gorm中的findfirstlast方法">GORM中的Find、First、Last方法</a></li>
+          <li><a href="#gorm中的querycallback方法" id="markdown-toc-gorm中的querycallback方法">GORM中的queryCallback方法</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>前一段时间的工作主要以业务逻辑编写为主，重度使用了一些Go的框架，比如Web框架<a href="https://github.com/gin-gonic/gin">Gin</a>、ORM框架<a href="http://gorm.io/">GORM</a>、模板渲染框架<a href="https://github.com/chalvern/simplate">Simplate</a>等等。</p>
+
+<p>对一个框架的细节了解的越多，使用的时候就能够更加得心应手。本篇博文将通过示例及源码解读的方式对GORM中的ErrRecordNotFound进行探究，其中会涉及到一些query相关的内容，比如Find、First、Last等方法的应用。</p>
+
+<h2 id="适应人群">适应人群</h2>
+<p><strong>入门√</strong>——初级——中级——高级；本文适应入门及以上。</p>
+
+<h2 id="gorm何时抛出errrecordnotfound错误">GORM何时抛出ErrRecordNotFound错误</h2>
+<h3 id="首先看一段示例代码">首先看一段示例代码</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+
+	</span><span class="s">"github.com/jinzhu/gorm"</span><span class="x">
+	</span><span class="n">_</span><span class="x"> </span><span class="s">"github.com/jinzhu/gorm/dialects/sqlite"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">type</span><span class="x"> </span><span class="n">Topic</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">gorm</span><span class="o">.</span><span class="n">Model</span><span class="x">
+	</span><span class="n">Title</span><span class="x">   </span><span class="kt">string</span><span class="x">
+	</span><span class="n">Content</span><span class="x"> </span><span class="kt">string</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">db</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">gorm</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"sqlite3"</span><span class="p">,</span><span class="x"> </span><span class="s">"test.db"</span><span class="p">)</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="nb">panic</span><span class="p">(</span><span class="s">"连接数据库失败"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="c">// db.LogMode(true)</span><span class="x">
+	</span><span class="k">defer</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span><span class="x">
+
+	</span><span class="c">// 自动迁移模式，会自动在数据库中生成topics表</span><span class="x">
+	</span><span class="c">// 以及对应的列(id, title, content，created_at,</span><span class="x">
+	</span><span class="c">// updated_at, deleted_at）</span><span class="x">
+	</span><span class="n">db</span><span class="o">.</span><span class="n">AutoMigrate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span><span class="x">
+
+	</span><span class="c">// 创建一条记录</span><span class="x">
+	</span><span class="n">db</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{</span><span class="n">Title</span><span class="o">:</span><span class="x"> </span><span class="s">"welcome"</span><span class="p">,</span><span class="x"> </span><span class="n">Content</span><span class="o">:</span><span class="x"> </span><span class="s">"jingwei.link"</span><span class="p">})</span><span class="x">
+
+	</span><span class="c">// 查找一个topic</span><span class="x">
+	</span><span class="c">// 这里的err值不为空，会报出“record not found”的错误</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="n">topic</span><span class="x"> </span><span class="n">Topic</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topic的id:"</span><span class="p">,</span><span class="x"> </span><span class="n">topic</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span><span class="x">
+	</span><span class="c">// First</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">First</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topic的id:"</span><span class="p">,</span><span class="x"> </span><span class="n">topic</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span><span class="x">
+	</span><span class="c">// Last</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Last</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topic的id:"</span><span class="p">,</span><span class="x"> </span><span class="n">topic</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span><span class="x">
+
+	</span><span class="c">// 查找topic列表</span><span class="x">
+	</span><span class="c">// 这里的err值为nil</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="n">topics</span><span class="x"> </span><span class="p">[]</span><span class="n">Topic</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topics的长度"</span><span class="p">,</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">))</span><span class="x">
+	</span><span class="c">// First</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">First</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topics的长度"</span><span class="p">,</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">))</span><span class="x">
+	</span><span class="c">// Last</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Last</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topics的长度"</span><span class="p">,</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">))</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>上面的示例代码，按照步骤依次：1）初始化数据库连接，这里连接到本地的<strong>sqlite</strong>数据库）。2）数据库自动表结构创建，<code class="highlighter-rouge">AutoMigrate</code>方法可以根据传入的参数反射出对象的结构，从而根据规则映射出数据库中应该创建的表结构；比如传入<code class="highlighter-rouge">&amp;Topic{}</code>会自动在数据库中生成<code class="highlighter-rouge">topics</code>表，包含<code class="highlighter-rouge">id, title, content，created_at, updated_at, deleted_at</code>等数据列。3）创建一条<code class="highlighter-rouge">Topic</code>记录。4）查找一条<code class="highlighter-rouge">id</code>为<code class="highlighter-rouge">0</code>的Topic记录。5）查找<code class="highlighter-rouge">id</code>为<code class="highlighter-rouge">0</code>的Topic列表。</p>
+
+<p>这里<strong>特别说明</strong>一下，<code class="highlighter-rouge">err = db.Where("id=?", 0).Find(&amp;topic).Error</code>这种在查询语句最后添加<code class="highlighter-rouge">.Error</code>的方式，可以把GORM查询数据库过程中发生的错误赋值到<code class="highlighter-rouge">err</code>，从而可以通过判定<code class="highlighter-rouge">err</code>的方式来决定接下来的操作。比如，当<code class="highlighter-rouge">err</code>为<code class="highlighter-rouge">nil</code>时，说明没有出现错误，代码可以正常运行；当<code class="highlighter-rouge">err</code>不为<code class="highlighter-rouge">nil</code>时，说明出现错误，可以直接抛出这个错误或者采取措施处理这个错误。</p>
+
+<h3 id="示例代码的运行结果分析">示例代码的运行结果分析</h3>
+
+<p>示例代码的运行结果如下面所示，其中<code class="highlighter-rouge">record not found</code>是GORM中<code class="highlighter-rouge">ErrRecordNotFound</code>这个类型的<code class="highlighter-rouge">Error</code>的描述：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>error： record not found
+topic的id: 0
+error： record not found
+topic的id: 0
+error： record not found
+topic的id: 0
+error： &lt;nil&gt;
+topics的长度 0
+error： &lt;nil&gt;
+topics的长度 0
+error： &lt;nil&gt;
+topics的长度 0
+</code></pre></div></div>
+
+<h3 id="gorm何时抛出errrecordnotfound错误-1">GORM何时抛出ErrRecordNotFound错误</h3>
+
+<p>既然存在<code class="highlighter-rouge">ErrRecordNotFound</code>这个类型的错误，很容易想到通过判定<code class="highlighter-rouge">ErrRecordNotFound</code>是否为nil来判定数据库中是否存在某个检索条件的记录。那么GORM会在什么时候抛出<code class="highlighter-rouge">ErrRecordNotFound</code>呢？</p>
+
+<p><strong>通过上面的示例及其运行结果可以知道</strong>，相同的检索条件<code class="highlighter-rouge">Where("id=?", 0)</code>，传入的接收检索结果的参数类型不同得到的结果也不同。</p>
+
+<ul>
+  <li>当传入<code class="highlighter-rouge">var topic Topic</code>时抛出了<code class="highlighter-rouge">ErrRecordNotFound</code>错误；</li>
+  <li>当传入<code class="highlighter-rouge">var topics []Topic</code>时不会抛出<code class="highlighter-rouge">ErrRecordNotFound</code>错误。</li>
+</ul>
+
+<h3 id="gorm相关源码阅读">GORM相关源码阅读</h3>
+<h4 id="gorm中的findfirstlast方法">GORM中的Find、First、Last方法</h4>
+<p>通过源码可以看出来，在GORM中，First与Last相比Find多了Limit限制和默认排序顺序，三个方法没有本质的区别。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Find find records that match given conditions</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="p">)</span><span class="x"> </span><span class="n">Find</span><span class="p">(</span><span class="n">out</span><span class="x"> </span><span class="k">interface</span><span class="p">{},</span><span class="x"> </span><span class="n">where</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="n">s</span><span class="o">.</span><span class="n">NewScope</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="o">.</span><span class="n">inlineCondition</span><span class="p">(</span><span class="n">where</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">callCallbacks</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">queries</span><span class="p">)</span><span class="o">.</span><span class="n">db</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="c">// First find first record that match given conditions, order by primary key</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="p">)</span><span class="x"> </span><span class="n">First</span><span class="p">(</span><span class="n">out</span><span class="x"> </span><span class="k">interface</span><span class="p">{},</span><span class="x"> </span><span class="n">where</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">newScope</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">s</span><span class="o">.</span><span class="n">NewScope</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="x">
+	</span><span class="n">newScope</span><span class="o">.</span><span class="n">Search</span><span class="o">.</span><span class="n">Limit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="n">newScope</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s">"gorm:order_by_primary_key"</span><span class="p">,</span><span class="x"> </span><span class="s">"ASC"</span><span class="p">)</span><span class="o">.</span><span class="x">
+</span><span class="n">inlineCondition</span><span class="p">(</span><span class="n">where</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">callCallbacks</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">queries</span><span class="p">)</span><span class="o">.</span><span class="n">db</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="c">// Last find last record that match given conditions, order by primary key</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="p">)</span><span class="x"> </span><span class="n">Last</span><span class="p">(</span><span class="n">out</span><span class="x"> </span><span class="k">interface</span><span class="p">{},</span><span class="x"> </span><span class="n">where</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">newScope</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">s</span><span class="o">.</span><span class="n">NewScope</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="x">
+	</span><span class="n">newScope</span><span class="o">.</span><span class="n">Search</span><span class="o">.</span><span class="n">Limit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="n">newScope</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s">"gorm:order_by_primary_key"</span><span class="p">,</span><span class="x"> </span><span class="s">"DESC"</span><span class="p">)</span><span class="o">.</span><span class="x">
+</span><span class="n">inlineCondition</span><span class="p">(</span><span class="n">where</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">callCallbacks</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">queries</span><span class="p">)</span><span class="o">.</span><span class="n">db</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h4 id="gorm中的querycallback方法">GORM中的queryCallback方法</h4>
+
+<p>通过源码可以知道，在对检索出来的数据进行解析并赋值时，如果检索到0行，且传入接收检索结果的不是一个Slice类型的变量（这时候肯定是一个Struct类型的变量），会抛出 ErrRecordNotFound 错误。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// queryCallback used to query data from database</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">queryCallback</span><span class="p">(</span><span class="n">scope</span><span class="x"> </span><span class="o">*</span><span class="n">Scope</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="c">// ...</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="p">(</span><span class="x">
+		</span><span class="n">isSlice</span><span class="p">,</span><span class="x"> </span><span class="n">isPtr</span><span class="x"> </span><span class="kt">bool</span><span class="x">
+		</span><span class="n">resultType</span><span class="x">     </span><span class="n">reflect</span><span class="o">.</span><span class="n">Type</span><span class="x">
+		</span><span class="n">results</span><span class="x">        </span><span class="o">=</span><span class="x"> </span><span class="n">scope</span><span class="o">.</span><span class="n">IndirectValue</span><span class="p">()</span><span class="x">
+	</span><span class="p">)</span><span class="x">
+	</span><span class="c">// ...</span><span class="x">
+	</span><span class="c">// 传入接收检索结果的变量要么是Slice，要么是Struct</span><span class="x">
+	</span><span class="c">// 其他类型的变量都会报错</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">kind</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">results</span><span class="o">.</span><span class="n">Kind</span><span class="p">();</span><span class="x"> </span><span class="n">kind</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="n">reflect</span><span class="o">.</span><span class="n">Slice</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">isSlice</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="no">true</span><span class="x">
+		</span><span class="n">resultType</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">results</span><span class="o">.</span><span class="n">Type</span><span class="p">()</span><span class="o">.</span><span class="n">Elem</span><span class="p">()</span><span class="x">
+		</span><span class="n">results</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="n">reflect</span><span class="o">.</span><span class="n">MakeSlice</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">Type</span><span class="p">(),</span><span class="x"> </span><span class="m">0</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">))</span><span class="x">
+
+		</span><span class="k">if</span><span class="x"> </span><span class="n">resultType</span><span class="o">.</span><span class="n">Kind</span><span class="p">()</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="n">reflect</span><span class="o">.</span><span class="n">Ptr</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="n">isPtr</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="no">true</span><span class="x">
+			</span><span class="n">resultType</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">resultType</span><span class="o">.</span><span class="n">Elem</span><span class="p">()</span><span class="x">
+		</span><span class="p">}</span><span class="x">
+	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="k">if</span><span class="x"> </span><span class="n">kind</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="n">reflect</span><span class="o">.</span><span class="n">Struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">scope</span><span class="o">.</span><span class="n">Err</span><span class="p">(</span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"unsupported destination, should be slice or struct"</span><span class="p">))</span><span class="x">
+		</span><span class="k">return</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="c">// ...</span><span class="x">
+	</span><span class="c">// 在进行赋值时，如果检索到0行，且传入接收检索结果的不是一个Slice类型</span><span class="x">
+  </span><span class="c">// 就会抛出 ErrRecordNotFound 错误</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">rows</span><span class="o">.</span><span class="n">Err</span><span class="p">();</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">scope</span><span class="o">.</span><span class="n">Err</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="k">if</span><span class="x"> </span><span class="n">scope</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">RowsAffected</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="m">0</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="o">!</span><span class="n">isSlice</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">scope</span><span class="o">.</span><span class="n">Err</span><span class="p">(</span><span class="n">ErrRecordNotFound</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+<p>本文通过一个示例来说明<code class="highlighter-rouge">record not found</code>的错误，并通过分析源码的方式详细阐明了GORM抛出<code class="highlighter-rouge">ErrRecordNotFound</code>的具体场景。具体地，1）传入接收检索结果的变量只能为Struct类型或Slice类型；2）当传入变量为Struc类型时，如果检索出来的数据为0条，会抛出<code class="highlighter-rouge">ErrRecordNotFound</code>错误；3）当传入变量为Slice类型时，任何条件下均不会抛出<code class="highlighter-rouge">ErrRecordNotFound</code>错误。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/main.go#L313">gorm中Find方法的源码</a></li>
+  <li><a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/main.go#L290">gorm中First方法的源码</a></li>
+  <li><a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/main.go#L305">gorm中Last方法的源码</a></li>
+  <li><a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/callback_query.go#L17">gorm中queryCallback源码</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/11/16/best-practice-of-team-construction.html" class="read-next-link"></a>
+          <section>
+            <span>工作观察之融于团队最佳实践</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
