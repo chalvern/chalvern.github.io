@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Kubernetes组件ETCD中存储的数据之探究",
+      "tags"     : "DevOps 经验 k8s",
+      "url"      : "/2018/11/25/kubernetes-etcd-data-save-specification.html"
+    } ,
+  
+    {
       "title"    : "GORM最佳实践之ErrRecordNotFound的坑",
       "tags"     : "最佳实践 golang 经验",
       "url"      : "/2018/11/18/gorm-err-record-not-found.html"

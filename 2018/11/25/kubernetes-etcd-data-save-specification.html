@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes组件ETCD中存储的数据之探究 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Kubernetes组件ETCD中存储的数据之探究">
+    <meta name="keywords"  content="DevOps, 经验, k8s">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Kubernetes组件ETCD中存储的数据之探究 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/11/25/kubernetes-etcd-data-save-specification.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#k8s" class="post-tag">k8s</a>
+          
+        
+      </div>
+      <h1>Kubernetes组件ETCD中存储的数据之探究</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-11-25"><i class="iconfont icon-date"></i>25 Nov 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">探索Kubernetes在ETCD中保存数据的规范</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#探究正文" id="markdown-toc-探究正文">探究正文</a>    <ul>
+      <li><a href="#相关环境" id="markdown-toc-相关环境">相关环境</a></li>
+      <li><a href="#k8s中etcd数据的增删改查" id="markdown-toc-k8s中etcd数据的增删改查">k8s中ETCD数据的增删改查</a></li>
+      <li><a href="#初探etcd中的数据" id="markdown-toc-初探etcd中的数据">初探ETCD中的数据</a>        <ul>
+          <li><a href="#获取etcd中的所有的key值" id="markdown-toc-获取etcd中的所有的key值">获取ETCD中的所有的key值</a></li>
+          <li><a href="#etcd中key值的规律" id="markdown-toc-etcd中key值的规律">ETCD中key值的规律</a></li>
+          <li><a href="#etcd中的value值" id="markdown-toc-etcd中的value值">ETCD中的value值</a></li>
+        </ul>
+      </li>
+      <li><a href="#etcd中其他的key及其value" id="markdown-toc-etcd中其他的key及其value">ETCD中其他的key及其value</a>        <ul>
+          <li><a href="#据说flannel需要使用etcd保存网络元数据" id="markdown-toc-据说flannel需要使用etcd保存网络元数据">据说flannel需要使用ETCD保存网络元数据</a></li>
+          <li><a href="#default命名空间中endpoint实例kubernetes的值" id="markdown-toc-default命名空间中endpoint实例kubernetes的值">default命名空间中endpoint实例kubernetes的值</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p><a href="https://kubernetes.io/">Kubernetes</a>  （简称k8s）是容器集群管理系统，是一个开源的平台，可以实现容器集群的自动化部署、自动扩缩容、维护等功能，具体的大家可以参考 <a href="http://docs.kubernetes.org.cn/227.html">Kubernetes中文文档</a> 或者<a href="https://kubernetes.io/zh/docs/home/">Kubernetes官网的文档</a>。</p>
+
+<p>K8s的架构复杂，涉及到概念非常多，其基础组件包含 ETCD、kube-apiserver、kube-controller-manager、kube-scheduler、kubelet、kube-proxy等，其运行时环境为docker或Rkt，当然还包含很多插件。在我看来，k8s是DevOps的未来，因此不禁想写一些它的故事。</p>
+
+<p>ETCD在k8s技术栈的地位，就仿佛数据库（Mysql、Postgresql或oracle等）在Web应用中的地位，它存储了k8s集群中所有的元数据（以key-value的方式）。那么很现实的一个问题是：这些元数据是如何组织并保存的呢？本文就对此问题探究一番。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——初级——<strong>中级√</strong>——高级；本文适应中级及以上。</p>
+
+<h2 id="探究正文">探究正文</h2>
+<h3 id="相关环境">相关环境</h3>
+<ul>
+  <li>两台2个核4G内存（2C4G）的虚拟机，ip分别为<code class="highlighter-rouge">192.168.205.137</code>和<code class="highlighter-rouge">192.168.205.139</code></li>
+  <li>k8s相关控件-1.8.6</li>
+  <li>etcd-3.3.10</li>
+  <li>docker-18.06.1-ce</li>
+</ul>
+
+<p>我这里采用了<a href="https://kubernetes.io/docs/setup/independent/high-availability/">kubeadm</a>的部署方法，探索了高可用（HA）部署方案（推荐参考一下<a href="https://github.com/cookeem/kubeadm-ha/">这里</a> ，未来会考虑写一篇关于k8s高可用原理的博文，敬请期待😝）。</p>
+
+<h3 id="k8s中etcd数据的增删改查">k8s中ETCD数据的增删改查</h3>
+<p>首先应该明确，<strong>K8s中所有元数据的增删改查都是由kube-apiserver来执行的</strong>，那么这些数据在ETCD中必然有一套存储规范，这样才能保证在集群中部署成千上万的应用时不会出差错。在此基础上可以认为，只要掌握了k8s在ETCD中存储数据的规范，便可以像k8s一样手动来操作ETCD了（虽然不建议这么做）。不过更大的价值是能对k8s的理解更进一步，便于以后debug或者二次开发k8s的某些功能时更有底气。</p>
+
+<h3 id="初探etcd中的数据">初探ETCD中的数据</h3>
+<p>本文对ETCD的操作主要使用了其官方客户端工具<a href="https://github.com/etcd-io/etcd/tree/master/etcdctl">etcdctl</a>，这里不对etcdctl进行详解了（需要用一整篇博客来介绍它才行），只就用到的一些命令进行阐释。</p>
+
+<h4 id="获取etcd中的所有的key值">获取ETCD中的所有的key值</h4>
+<p>下面的命令可以获取ETCD中的所有的key值：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 获取ETCD中的所有数据</span>
+<span class="c"># --prefix 表示获取所有key值头为某个字符串的数据， 由于传入的是""，所以会匹配所有的值</span>
+<span class="c"># --keys-only 表示只返回key而不返回value</span>
+<span class="c"># 对输出的结果使用grep过滤掉空行</span>
+/<span class="nv">$ ETCDCTL_API</span><span class="o">=</span>3 etcdctl get <span class="s2">""</span> <span class="nt">--prefix</span> <span class="nt">--keys-only</span> |grep <span class="nt">-Ev</span> <span class="s2">"^$"</span>
+
+<span class="c"># 输出结果如下所示，实际数据会非常整齐</span>
+/registry/apiextensions.k8s.io/customresourcedefinitions/globalbgpconfigs.crd.projectcalico.org
+/registry/apiextensions.k8s.io/customresourcedefinitions/globalfelixconfigs.crd.projectcalico.org
+/registry/apiextensions.k8s.io/customresourcedefinitions/globalnetworkpolicies.crd.projectcalico.org
+<span class="c"># ... 略过很多条目</span>
+/registry/namespaces/default
+/registry/namespaces/kube-public
+/registry/namespaces/kube-system
+/registry/pods/kube-system/canal-mljsv
+/registry/pods/kube-system/canal-qlvh6
+<span class="c"># ... 略过很多条目</span>
+/registry/services/endpoints/kube-system/kube-scheduler
+/registry/services/specs/default/kubernetes
+/registry/services/specs/kube-system/kube-dns
+compact_rev_key
+
+<span class="c"># 总共有240条记录</span>
+/<span class="nv">$ </span>etcdctl get <span class="s2">""</span> <span class="nt">--prefix</span> <span class="nt">--keys-only</span> |grep <span class="nt">-Ev</span> <span class="s2">"^$"</span> |wc <span class="nt">-l</span>
+240
+</code></pre></div></div>
+
+<h4 id="etcd中key值的规律">ETCD中key值的规律</h4>
+<p>通过观察可以简单得出下面几个规律：</p>
+
+<ul>
+  <li>k8s主要把自己的数据注册在<code class="highlighter-rouge">/registry/</code>前缀下面（在ETCD-v3版本后没有了目录的概念，只能一切皆前缀了）。</li>
+  <li>通过观察k8s中<code class="highlighter-rouge">deployment、namespace、pod</code>等在ETCD中的表示，可以知道这部分资源的key的格式为<code class="highlighter-rouge">/registry/#{k8s对象}/#{命名空间}/#{具体实例名}</code>。</li>
+  <li>存在一个与众不同的key值<code class="highlighter-rouge">compact_rev_key</code>，搜索可以知道这是<a href="https://github.com/kubernetes/apiserver/blob/2710b17b80fbf42c29cd3e1193433b948b10cee3/pkg/storage/etcd3/compact.go">apiserver/compact.go</a>中用来记录无效数据版本使用的；运行<code class="highlighter-rouge">etcdctl get compact_rev_key</code>可以发现，输出的是一个整形数值。</li>
+  <li>在查看ETCD时，k8s中除了必要的网络插件<a href="https://github.com/projectcalico/canal">canal</a>，未部署其他的应用，此时ETCD中只有240条数据，个人觉得这个量级没有想象中的多。</li>
+</ul>
+
+<p>有了上面的规律，可以初步得出一个结论：在研究k8s时重点关注<code class="highlighter-rouge">/registry/</code>前缀的key及其value即可。</p>
+
+<h4 id="etcd中的value值">ETCD中的value值</h4>
+<p>通过上面的内容知道，k8s在ETCD中保存数据时key的取值非常讲究，规律非常容易概括出来。那么这些key值所对应的值是什么样子呢？我试着输出了<code class="highlighter-rouge">/registry/ranges/serviceips</code>和<code class="highlighter-rouge">/registry/services/endpoints/default/kubernetes</code>这两个key所对应的值，效果见下面编码展示区。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 获取"/registry/ranges/serviceips"所对应的值</span>
+<span class="c"># 发现这里有很多奇怪的字符=。=</span>
+<span class="c"># 可以大体推断出来，集群所有service的ip范围为10.96.0.0/12， 与api-server的yaml文件中配置的一致</span>
+/<span class="nv">$ </span>etcdctl get /registry/ranges/serviceips
+/registry/ranges/serviceips
+k8s
+
+v1RangeAllocation&amp;
+
+<span class="s2">"*28Bz
+      10.96.0.0/12"</span>
+
+<span class="c"># 获取"/registry/services/endpoints/default/kubernetes"所对应的值</span>
+<span class="c"># 发现这里有很多奇怪的字符=。=</span>
+<span class="c"># 在default命名空间的kubernetes这个service所对应的endpoint有两个ip</span>
+<span class="c"># 分别为192.168.205.137和192.168.205.139</span>
+/<span class="nv">$ </span>etcdctl get /registry/services/endpoints/default/kubernetes
+/registry/services/endpoints/default/kubernetes
+k8s
+
+v1	Endpoints�
+O
+
+kubernetesdefault<span class="s2">"*</span><span class="nv">$0b6bb724</span><span class="s2">-f066-11e8-be14-000c29d2cb3a2ں��z;
+
+192.168.205.137
+
+192.168.205.139
+https�2TCP"</span>
+</code></pre></div></div>
+
+<p>可以很明显看出来，ETCD中保存的并不是输出友好的数据（比如json或xml等就是输出友好型数据）。当然，如果进一步研究可以知道，ETCD保存的是<a href="https://developers.google.com/protocol-buffers/">Protocol Buffers</a>序列化后的值。如果大家对Protobuf有研究，可以知道这个协议也是个key-value的协议，只不过会把其key-value值按照特定的算法进行压缩，不过并没有压缩的很厉害，显式输出这些值多少也能获取到一些信息；比如<code class="highlighter-rouge">/registry/services/endpoints/default/kubernetes</code>对应的<code class="highlighter-rouge">192.168.205.137、192.168.205.139</code>等值。</p>
+
+<h3 id="etcd中其他的key及其value">ETCD中其他的key及其value</h3>
+<p>通过上面的探索，对ETCD中存储的数据有了大体的了解，接下来就可以开始更加刺激的冒险了。</p>
+
+<h4 id="据说flannel需要使用etcd保存网络元数据">据说flannel需要使用ETCD保存网络元数据</h4>
+<p>那么，flannel在ETCD中保存的数据是什么，保存在哪个key中了呢？下面把所有网关相关的几个关键词 <code class="highlighter-rouge">canal|flannel|calico</code>输出可以知道，里面只有一个可能包含flannel所需数据的key，即<code class="highlighter-rouge">/registry/configmaps/kube-system/canal-config</code>，输出内容后对比<a href="https://coreos.com/flannel/docs/latest/flannel-config.html">关于flannel的etcd配置</a>这篇文章，很大程度可以认为就是它了（需要进一步去canal项目的源码中去确认）。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/<span class="nv">$ </span>etcdctl get <span class="s2">""</span> <span class="nt">--prefix</span> <span class="nt">--keys-only</span> |grep <span class="nt">-Ev</span> <span class="s2">"^$"</span> |grep <span class="s2">"canal</span><span class="se">\|</span><span class="s2">flannel</span><span class="se">\|</span><span class="s2">calico"</span>
+<span class="c"># ... 忽略很多条</span>
+/registry/configmaps/kube-system/canal-config
+<span class="c"># ... 忽略很多条</span>
+
+<span class="c"># 可以看到里面有一个配置项 net-conf， 对比flannel的配置，可以认为这个地方很可能就是canal项目中flannel在etcd中需要的值。这里设置了网段为"10.244.0.0/16"</span>
+/<span class="nv">$ </span>etcdctl get /registry/configmaps/kube-system/canal-config
+<span class="c"># ... 省略很多</span>
+net-conf.jsonI<span class="o">{</span>
+  <span class="s2">"Network"</span>: <span class="s2">"10.244.0.0/16"</span>,
+  <span class="s2">"Backend"</span>: <span class="o">{</span>
+    <span class="s2">"Type"</span>: <span class="s2">"vxlan"</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="default命名空间中endpoint实例kubernetes的值">default命名空间中endpoint实例kubernetes的值</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 在k8s的HA部署时，会发现default命名空间有一个默认的service</span>
+<span class="c"># 明明没有selector（如果不熟悉这个概念可以自行去搜索了解一下），却有实实在在的Endpoints值</span>
+<span class="c"># 那么这个值是如何写入的呢？</span>
+/<span class="nv">$ </span>kubectl describe svc kubernetes
+Name:              kubernetes
+Namespace:         default
+Labels:            <span class="nv">component</span><span class="o">=</span>apiserver
+                   <span class="nv">provider</span><span class="o">=</span>kubernetes
+Annotations:       &lt;none&gt;
+Selector:          &lt;none&gt;
+Type:              ClusterIP
+IP:                10.96.0.1
+Port:              https  443/TCP
+TargetPort:        6443/TCP
+Endpoints:         192.168.205.137:6443,192.168.205.139:6443
+Session Affinity:  ClientIP
+Events:            &lt;none&gt;
+
+<span class="c"># 通过在ETCD中检索可以获取到两个key值</span>
+<span class="c"># 一个对应的是default命名空间中的service，另一个是对应的endpoint</span>
+/<span class="nv">$ </span>etcdctl get <span class="s2">""</span> <span class="nt">--prefix</span> <span class="nt">--keys-only</span> |grep <span class="nt">-Ev</span> <span class="s2">"^$"</span> |grep <span class="s2">"default"</span> |grep <span class="s2">"kubernetes"</span>
+/registry/services/endpoints/default/kubernetes
+/registry/services/specs/default/kubernetes
+</code></pre></div></div>
+
+<p>我把<code class="highlighter-rouge">/registry/services/endpoints/default/kubernetes</code>输入到搜索引擎搜索了一下，发现<a href="https://github.com/kubernetes/kubernetes/issues/19989">有人</a>在github上抛出类似的问题，从其<code class="highlighter-rouge">The three apiservers (Ip Adresses .31,.32,.33) are constantly overwriting the etcd-key /registry/services/endpoints/default/kubernetes</code>可以推测出来，这个值是api-server这个控件主动去写入的。</p>
+
+<p>这能得出一个结论：在部署高可用集群时，如果想把多个api-server注册到集群，那么所有的api-server的服务都将会出现在default命名空间的kubernetes这个endpoints上；这也就意味着难以把集群中的一个api-server单独隔离出来而不让它对外提供服务（我当前想debug的一个问题需要这么操作，得出这个结论表示很无奈）。</p>
+
+<h2 id="小结">小结</h2>
+<p>文本对k8s数据仓库ETCD进行了探究，总结了ETCD保存k8s数据时key值的规范，并尝试查看了value值的内容。最后对几个感兴趣的key值及其value值进行了探索。通过探究可以知道，k8s把集群的信息非常有条理地保存在ETCD中，key值定义有章可循，比较方便debug；同时，虽然ETCD中的value值是protobuf序列化后的数据，不适合展示，不过输出到文本后依然有一定的参考价值。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://kubernetes.io/">Production-Grade Container Orchestration - Kubernetes</a>  Kubernetes官网</li>
+  <li><a href="http://docs.kubernetes.org.cn/227.html">Kubernetes是什么 _ Kubernetes(K8S)中文文档_Kubernetes中文社区</a> k8s中文文档</li>
+  <li><a href="https://github.com/cookeem/kubeadm-ha/">GitHub - cookeem/kubeadm-ha: Kubernetes high availiability deploy based on kubeadm (English/中文 for v1.11.x/v1.9.x/v1.7.x/v1.6.x)</a> k8s高可用部署方案</li>
+  <li><a href="https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/flannel">Installing Calico for policy and flannel for networking</a> 网络插件的安装</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>[flannel Container Networking</td>
+          <td>Configuring flannel Networking](https://coreos.com/flannel/docs/latest/flannel-config.html)  flannel配置etcd作为datastore的描述，可以推敲出etcd中保存的值可能的样子</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li><a href="https://github.com/coreos/flannel/blob/master/Documentation/configuration.md">flannel/configuration.md at master · coreos/flannel · GitHub</a> flannel配置etcd作为datastore的文档</li>
+  <li><a href="https://github.com/kubernetes/kubernetes/issues/19989">Kubernetes service multiple apiserver endpoints · Issue #19989 · kubernetes/kubernetes · GitHub</a> 从这里的描述可以看出api-server本身主动向ETCD写数据</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/11/18/gorm-err-record-not-found.html" class="read-next-link"></a>
+          <section>
+            <span>GORM最佳实践之ErrRecordNotFound的坑</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
