@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes搭建之kubeadm-init探究 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Kubernetes搭建之kubeadm-init探究">
+    <meta name="keywords"  content="DevOps, 经验, k8s">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Kubernetes搭建之kubeadm-init探究 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/11/28/kubeadm-init-research.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#k8s" class="post-tag">k8s</a>
+          
+        
+      </div>
+      <h1>Kubernetes搭建之kubeadm-init探究</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-11-28"><i class="iconfont icon-date"></i>28 Nov 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">探索kubenetes搭建工具kubeadm子命令init</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#kubeadm-init" id="markdown-toc-kubeadm-init">kubeadm-init</a>    <ul>
+      <li><a href="#kubeadm是什么" id="markdown-toc-kubeadm是什么">kubeadm是什么</a></li>
+      <li><a href="#使用kubeadm构建一个master节点" id="markdown-toc-使用kubeadm构建一个master节点">使用kubeadm构建一个master节点</a></li>
+      <li><a href="#kubeadm-init的工作流" id="markdown-toc-kubeadm-init的工作流">kubeadm-init的工作流</a></li>
+      <li><a href="#其他" id="markdown-toc-其他">其他</a>        <ul>
+          <li><a href="#通过传入配置文件的方式来运行kubeadm-init" id="markdown-toc-通过传入配置文件的方式来运行kubeadm-init">通过传入配置文件的方式来运行<code class="highlighter-rouge">kubeadm init</code></a></li>
+          <li><a href="#使用自己定制的镜像" id="markdown-toc-使用自己定制的镜像">使用自己定制的镜像</a></li>
+          <li><a href="#kubeadm内置的kubelet相关配置文件" id="markdown-toc-kubeadm内置的kubelet相关配置文件">kubeadm内置的kubelet相关配置文件</a></li>
+          <li><a href="#配置cri运行时" id="markdown-toc-配置cri运行时">配置CRI运行时</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>如果想要搭建私有的k8s集群，业界有几个方案，比如<a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/">kubeadm</a>、<a href="https://rancher.com/">Rancher</a>、<a href="https://kubernetes.io/docs/setup/minikube/">Minikube</a>等，其中前两种方式搭建的k8s集群可以在生产中使用，而Minikube搭建的集群则可以用来自己本地调试开发。</p>
+
+<p>由于Kubeadm是官方推荐的集群搭建方式，因此想着把这个命令探索一番。一方面可以对这个命令更加了解，以后使用这个命令搭建集群时也能够更自信；另一方面可以借助这个过程来探究搭建k8s的细节，了解它的一砖一瓦是如何垒砌成为庞大的集群的，对以后集群的运维也将有非常大的帮助。</p>
+
+<p>本博文将主要对kubeadm的子命令<code class="highlighter-rouge">kubeadm init</code>以及此命令背后的运转机制进行探究。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
+
+<h2 id="kubeadm-init">kubeadm-init</h2>
+<h3 id="kubeadm是什么">kubeadm是什么</h3>
+<p>首先，kubeadm是一个构建k8s集群的工具。它提供的<code class="highlighter-rouge">kubeadm init</code>和<code class="highlighter-rouge">kubeadm join</code>两个命令是快速构建k8s集群的最佳实践。
+其次，kubeadm工具只为构建最小可用集群，它只关心集群中最基础的组件，至于其他的插件（比如dashboard、网络等）则不会涉及。
+不过，从我的经验来看，这些已经足够。</p>
+
+<h3 id="使用kubeadm构建一个master节点">使用kubeadm构建一个master节点</h3>
+<p>通过<code class="highlighter-rouge">kubeadm init [flags]</code>命令可以启动一个master节点。其中<code class="highlighter-rouge">[flags]</code>代表了<code class="highlighter-rouge">kubeadm init</code>命令可以传入的参数。</p>
+
+<p>如果查看官方介绍，可以发现<code class="highlighter-rouge">kubeadm init</code>可以传入的参数比较多，这里只简单介绍几种（其他的大家可以到 <a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/">这里</a>查看 ）：</p>
+
+<ul>
+  <li><code class="highlighter-rouge">--apiserver-bind-port int32     Default: 6443</code> 可以通过这个参数指定API-server的工作端口，默认是6443。</li>
+  <li><code class="highlighter-rouge">--config string</code> 可以通过这个命令传入<code class="highlighter-rouge">kubeadm</code>的配置文件，<strong>需要注意的是，这个参数是实验性质的，不推荐使用</strong>。</li>
+  <li><code class="highlighter-rouge">--dry-run</code> 带了这个参数后，运行命令将会把<code class="highlighter-rouge">kubeadm</code>做的事情输出到标准输出，但是不会实际部署任何东西。<strong>强烈推荐</strong>！</li>
+  <li><code class="highlighter-rouge">-h, --help</code> 输出帮助文档。</li>
+  <li><code class="highlighter-rouge">--node-name string</code> 指定当前节点的名称。</li>
+  <li><code class="highlighter-rouge">--pod-network-cidr string</code> 通过这个值来设定pod网络的IP地址网段；设置了这个值以后，控制平面会自动给每个节点设置CIDRs（无类别域间路由，Classless Inter-Domain Routing）。</li>
+  <li><code class="highlighter-rouge">--service-cidr string     Default: "10.96.0.0/12"</code> 设置service的CIDRs，默认为 <code class="highlighter-rouge">10.96.0.0/12</code>。</li>
+  <li><code class="highlighter-rouge">--service-dns-domain string     Default: "cluster.local"</code> 设置域名称后缀，默认为<code class="highlighter-rouge">cluster.local</code>。</li>
+  <li>其他参数。</li>
+</ul>
+
+<h3 id="kubeadm-init的工作流">kubeadm-init的工作流</h3>
+<p>在运行了 <code class="highlighter-rouge">kubeadm init</code> 命令以后，都进行了那些操作呢？这里主要就是跟着官方文档来翻译一遍了：</p>
+
+<ol>
+  <li>首先会运行一系列预检代码来检查系统的状态；大部分的检查只会抛出一个警告，也有一部分会抛出异常错误从而导致工作流推出（比如没有关闭swap或者没有安装docker）。官方给出一个参数<code class="highlighter-rouge">--ignore-preflight-errors=&lt;list-of-errors&gt;</code>， 我估计八成大家用不到，除非真的明白自己在做啥。。。</li>
+  <li>生成一个用来认证k8s组件间调用的自签名的CA（Certificate Authority，证书授权）；这个证书也可以通过<code class="highlighter-rouge">--cert-dir</code>（默认是/etc/kubernetets/pki）的方式传入，那么这一步就会跳过。</li>
+  <li>把kubelet、controller-manager和scheduler等组件的配置文件写到<code class="highlighter-rouge">/etc/kubernets/</code>目录，这几个组件会使用这些配置文件来连接API-server的服务；除了上面几个配置文件，还会生成一个管理相关的<code class="highlighter-rouge">admin.conf</code>文件。</li>
+  <li>如果参数中包含<code class="highlighter-rouge">--feature-gates=DynamicKubeletConfig</code>，会把kubelet的初始化配置文件写入<code class="highlighter-rouge">/var/lib/kubelet/config/init/kubelet</code>这个文件；官方给出一坨文字解释，这里先不探究了，因为我没有用到。。。</li>
+  <li>接下来就是创建一些 <a href="https://kubernetes.io/docs/tasks/administer-cluster/static-pod/">静态pod</a> 的配置文件了，包括API-server、controller-manager和scheduler。假如没有提供外部<a href="https://coreos.com/etcd/">etcd</a>，还会另外生成一个etcd的静态Pod配置文件。这些静态pod会被写入<code class="highlighter-rouge">/etc/kubernetes/manifests</code>，<code class="highlighter-rouge">kubelet</code>进程会监控这个目录，从而创建相关的pod。</li>
+  <li>假如第五步比较顺利，这个时候k8s的控制面进程（api-server、controller-manager、scheduler）就全都起来了。</li>
+  <li>如果传入了参数<code class="highlighter-rouge">--feature-gates=DynamicKubeletConfig</code>，又会对kubelet进行一坨操作，因为没有用到，所以这里不做详细探究。</li>
+  <li>给当前的节点（Master节点）打label和taints，从而防止其他的负载在这个节点运行。</li>
+  <li>生成token，其他节点如果想加入当前节点（Master）所在的k8s集群，会用到这个token。</li>
+  <li>进行一些允许节点以 <a href="https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/">Bootstrap Tokens</a>) 和 <a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/">TLS bootstrapping </a>方式加入集群的必要的操作：
+    <ol>
+      <li>设置RBAC规则，同时创建一个用于节点加入集群的ConfigMap（包含了加入集群需要的所有信息）。</li>
+      <li>让Bootstrap Tokens可以访问CSR签名的API。</li>
+      <li>给新的CSR请求配置自动认证机制。</li>
+    </ol>
+  </li>
+  <li>到这里基本上就告一段落了。</li>
+</ol>
+
+<p>就这样，把<code class="highlighter-rouge">kubeadm init</code>命令具体的操作流程过了一遍，其实完全可以使用<code class="highlighter-rouge">--dry-run</code>参数，通过观察输出来看看到底包含哪些流程。上面的流程是按照最新的文档（截止到北京时间2018-11-28晚23时），关于其他版本（比如<a href="https://github.com/kubernetes/website/blob/release-1.8/docs/reference/generated/kubeadm.md">1.8</a> ）都可以到github上查找。</p>
+
+<h3 id="其他">其他</h3>
+<p>这里只列出几个作者比较感兴趣的点，其他的点大家可以到官网去查看。</p>
+
+<h4 id="通过传入配置文件的方式来运行kubeadm-init">通过传入配置文件的方式来运行<code class="highlighter-rouge">kubeadm init</code></h4>
+<p>就像前面描述的，<code class="highlighter-rouge">kubeadm init</code>可以通过配置<code class="highlighter-rouge">--config</code>参数来传入配置文件。从官网描述来看，这个特性还不怎么稳定，不过就实践经验来看，其实是可以用的。</p>
+
+<h4 id="使用自己定制的镜像">使用自己定制的镜像</h4>
+<p>默认情况下<code class="highlighter-rouge">kubeadm</code>会到<code class="highlighter-rouge">k8s.gcr.io</code>拉取镜像，不过对于一些私有化部署（比如国内存在墙的情况下，上面的地址是访问不到的），就需要自定义镜像地址了。
+这种方式需要通过配置文件的方式才能实现，允许传入的参数包括：</p>
+
+<ul>
+  <li>通过 <code class="highlighter-rouge">imageRepository</code>参数来覆盖默认的<code class="highlighter-rouge">k8s.gcr.io</code>。</li>
+  <li>通过<code class="highlighter-rouge">unifiedControlPlaneImage</code>来让所有的控制平面组件（api-server、controller-manager、scheduler等）使用统一的镜像而不是分离开的镜像（应该适用于自定义镜像的情况）。</li>
+  <li>通过<code class="highlighter-rouge">etcd.image</code>来定义etcd所使用的镜像。</li>
+</ul>
+
+<p>需要注意，配置文件中的<code class="highlighter-rouge">kubernetesVersion</code>字段或者命令行传入的<code class="highlighter-rouge">--kubernetes-version</code>会影响镜像的版本。</p>
+
+<h4 id="kubeadm内置的kubelet相关配置文件">kubeadm内置的kubelet相关配置文件</h4>
+<p><code class="highlighter-rouge">kubeadm</code>的安装包事先配置了<code class="highlighter-rouge">kubelet</code>的运行方式，定义了比较多的参数来定制化<code class="highlighter-rouge">kubelet</code>的运行。这里不细描述了，感兴趣可以自行钻研。</p>
+
+<h4 id="配置cri运行时">配置CRI运行时</h4>
+<p>即可以通过改写kubelet的启动文件来设置容器运行时，目前可以选择的有Docker、cri-containerd、rkt等，默认是docker。建议使用docker就好了，除非知道自己在做什么，可以尝试其他的容器运行时环境。</p>
+
+<h2 id="小结">小结</h2>
+<p>文本简单介绍了kubeadm的子命令<code class="highlighter-rouge">kubeadm init</code>以及此命令的工作流程。主要参考了英文的官方文档内容，进行了简单的翻译。如果大家对<code class="highlighter-rouge">kubeadm init</code>感兴趣想要详细钻研，建议到官网页面进行探究；不过本文作为中文材料，作者有选择性的把一些点列出来，对于初学者来说也具有一定的参考价值。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/">kubeadm init - Kubernetes</a> kubeadm-init的官方文档</li>
+  <li><a href="https://blog.csdn.net/han156/article/details/77817031">CIDR的IP地址的表示与划分方法</a> 主要查看CIDR部分的介绍即可</li>
+  <li><a href="https://kubernetes.io/docs/tasks/administer-cluster/static-pod/">Static Pods - Kubernetes</a> 官方介绍什么是静态pod</li>
+  <li><a href="https://github.com/kubernetes/website/blob/release-1.8/docs/reference/generated/kubeadm.md">website/kubeadm.md at release-1.8</a> 1.8版本的kubeadm文档</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/11/25/kubernetes-etcd-data-save-specification.html" class="read-next-link"></a>
+          <section>
+            <span>Kubernetes组件ETCD中存储的数据之探究</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

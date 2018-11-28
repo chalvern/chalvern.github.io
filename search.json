@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Kubernetes搭建之kubeadm-init探究",
+      "tags"     : "DevOps 经验 k8s",
+      "url"      : "/2018/11/28/kubeadm-init-research.html"
+    } ,
+  
+    {
       "title"    : "Kubernetes组件ETCD中存储的数据之探究",
       "tags"     : "DevOps 经验 k8s",
       "url"      : "/2018/11/25/kubernetes-etcd-data-save-specification.html"
