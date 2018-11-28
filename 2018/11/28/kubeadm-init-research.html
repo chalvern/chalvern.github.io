@@ -181,7 +181,7 @@ Author: Ray-Eldath
 <h2 id="kubeadm-init">kubeadm-init</h2>
 <h3 id="kubeadm是什么">kubeadm是什么</h3>
 <p>首先，kubeadm是一个构建k8s集群的工具。它提供的<code class="highlighter-rouge">kubeadm init</code>和<code class="highlighter-rouge">kubeadm join</code>两个命令是快速构建k8s集群的最佳实践。
-其次，kubeadm工具只为构建最小可用集群，它只关心集群中最基础的组件，至于其他的插件（比如dashboard、网络等）则不会涉及。
+其次，kubeadm工具只为构建最小可用集群，它只关心集群中最基础的组件，至于其他的插件（比如dashboard、CNI等）则不会涉及。
 不过，从我的经验来看，这些已经足够。</p>
 
 <h3 id="使用kubeadm构建一个master节点">使用kubeadm构建一个master节点</h3>
@@ -221,6 +221,7 @@ Author: Ray-Eldath
       <li>给新的CSR请求配置自动认证机制。</li>
     </ol>
   </li>
+  <li>通过API-server安装DNS服务器（1.11版本后默认为CoreDNS，早期版本默认为kube-dns）和kube-proxy插件。这里需要注意的是，DNS服务器只有在安装了CNI（flannel或calico）之后才会真正部署，否则会处于挂起（pending）状态。</li>
   <li>到这里基本上就告一段落了。</li>
 </ol>
 
@@ -256,6 +257,7 @@ Author: Ray-Eldath
 <h2 id="参考">参考</h2>
 <ul>
   <li><a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/">kubeadm init - Kubernetes</a> kubeadm-init的官方文档</li>
+  <li><a href="https://blog.csdn.net/WaltonWang/article/details/70162993">kubeadm工作机制分析</a> 通过图表的方式列出init与join命令的工作流</li>
   <li><a href="https://blog.csdn.net/han156/article/details/77817031">CIDR的IP地址的表示与划分方法</a> 主要查看CIDR部分的介绍即可</li>
   <li><a href="https://kubernetes.io/docs/tasks/administer-cluster/static-pod/">Static Pods - Kubernetes</a> 官方介绍什么是静态pod</li>
   <li><a href="https://github.com/kubernetes/website/blob/release-1.8/docs/reference/generated/kubeadm.md">website/kubeadm.md at release-1.8</a> 1.8版本的kubeadm文档</li>
