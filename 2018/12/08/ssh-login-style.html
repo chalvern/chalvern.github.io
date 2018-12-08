@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ubuntu-ssh用户名密码登录与证书免密登录 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="ubuntu-ssh用户名密码登录与证书免密登录">
+    <meta name="keywords"  content="DevOps, 经验, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="ubuntu-ssh用户名密码登录与证书免密登录 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/12/08/ssh-login-style.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>ubuntu-ssh用户名密码登录与证书免密登录</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-12-08"><i class="iconfont icon-date"></i>08 Dec 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">简单介绍 ssh 的使用方法及其基本原理</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#ssh登录服务器的两种方式" id="markdown-toc-ssh登录服务器的两种方式">ssh登录服务器的两种方式</a>    <ul>
+      <li><a href="#ssh工具" id="markdown-toc-ssh工具">ssh工具</a></li>
+      <li><a href="#用户名密码登录" id="markdown-toc-用户名密码登录">用户名密码登录</a></li>
+      <li><a href="#ssh免密登录" id="markdown-toc-ssh免密登录">ssh免密登录</a>        <ul>
+          <li><a href="#如何得到证书公钥与私钥" id="markdown-toc-如何得到证书公钥与私钥">如何得到证书（公钥与私钥）</a></li>
+          <li><a href="#公钥放置位置" id="markdown-toc-公钥放置位置">公钥放置位置</a></li>
+          <li><a href="#免密登录" id="markdown-toc-免密登录">免密登录</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>最近一段时间的工作偏运维开发，负责搭建一些基础服务（比如 k8s ）等。面对着一堆的机器，如何才是正确的登录姿势呢？怎么样才是正确的管理姿势呢？我抽时间请教了一下我们组的高级运维开发们，听到了很多大学时接触到的概念，比如 <a href="http://www.ansible.com.cn/docs/intro_getting_started.html">Ansible</a>、 <a href="https://www.cnblogs.com/gaojun/archive/2012/08/22/2650229.html">LVM</a> 、<a href="http://www.zsythink.net/archives/tag/iptables/">iptables</a>、自动化脚本、批量任务等等。作为一个好学少年，自然要加班加点地学习。
+本博文就 <strong>Ansible 使用的一个前提——ssh登录服务器</strong>为切入点，讲一讲 ssh 登录服务器的两种方式。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p><strong>入门√</strong>——初级——中级——高级；本文适应入门及以上。</p>
+
+<h2 id="ssh登录服务器的两种方式">ssh登录服务器的两种方式</h2>
+<p>如果是一个比较喜欢折腾的人，在某个云平台购买了一台云主机，除了通过云平台提供的web页面上的命令行工具，其实也可以在本地电脑上面通过 ssh 进行登录。具体地又可以分成两种：1）ssh 用户名密码登录，2）ssh 证书（免密码）登录。需要说明一下，后者的安全性高于前者，因此一般会默认不启用第一种登录方式，只允许第二种登录方式。</p>
+
+<h3 id="ssh工具">ssh工具</h3>
+<p>SSH 为 Secure Shell 的缩写，是建立在应用层基础上的安全协议，利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。ssh 分成服务端与客户端，其中服务端运行在<strong>被登录</strong>的机器上面，客户端运行在操作的机器上面。</p>
+
+<p>在 ubuntu 中，可以通过下面的命令安装ssh的服务端与客户端</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 安装服务端</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>openssh-server
+<span class="c"># 一般安装完成后sshd服务会默认启动</span>
+<span class="c"># 可以通过下面的命令启动（重新启动）</span>
+service ssh restart
+
+<span class="c"># 安装客户端</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>openssh-client
+</code></pre></div></div>
+
+<h3 id="用户名密码登录">用户名密码登录</h3>
+<p>从我测试得到的结果来看，在本地 docker 中运行的 ubuntu 容器中安装的 openssh-server 默认允许用户名登录，但是不排除为了安全考虑云上的服务器上禁止开启 ssh 的这种登录方式，毕竟用户名加密码的方式很容易被爆力破解。</p>
+
+<p>如果大家理解其中的厉害关系，可以检查修改 <code class="highlighter-rouge">/etc/ssh/sshd_config</code>（sshd的配置文件）中 <code class="highlighter-rouge">PasswordAuthentication</code> 这一项配置为 <code class="highlighter-rouge">yes</code>（一般默认是 yes ）。修改完配置重启<code class="highlighter-rouge">sshd</code>服务就可以使用用户名和密码登录了。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -l 指定用户名为 jingwei</span>
+<span class="c"># -p 指定端口为 6004，默认为 22</span>
+<span class="c"># 输入下面的命令后根据提示输入密码就可以登录到对应的服务器了</span>
+ssh <span class="nt">-l</span> jingwei <span class="nt">-p</span> 6004 0.0.0.0
+</code></pre></div></div>
+
+<h3 id="ssh免密登录">ssh免密登录</h3>
+<p>所谓免密登录，也就是说不需要人工再输入用户名和密码了，但这并不意味着没有了鉴权的动作，服务器毕竟是自己的，不能随便允许别人登录到上面去搞破坏。ssh 免密登录通过证书进行鉴权。</p>
+
+<p>这里的证书分为公钥与私钥，我们可以简单地理解为：公钥=锁；私钥=钥匙。</p>
+
+<p>流程基本是这样的：如果我们想要从 A 免密登录到 B，就需要<strong>把公钥（锁）放到 B 的特定位置，而 A 拥有私钥（钥匙）的完整副本</strong>。当 A 拿着私钥去访问 B 的时候，B 发现自己身上有一把锁（B 可能有很多公钥）可以被 A 的私钥打开，于是给 A 放行，A就成功登录到 B 了。</p>
+
+<h4 id="如何得到证书公钥与私钥">如何得到证书（公钥与私钥）</h4>
+<p>上面提到的证书可以通过两种方式获取得到。第一种是向服务器管理员索取，一般索取得到的是私钥，这样就可以免密登录到任何存放了公钥的服务器了。第二种是自己生成证书（比如使用<code class="highlighter-rouge">ssh-keygen</code>），然后把公钥放到对应的服务器的特定位置，就可以免密登录到对应的服务器了。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 通过 ssh-keygen 可以生成需要的证书</span>
+<span class="c"># 根据提示一路按 RETURN(ENTER) 即可</span>
+<span class="c"># 默认情况下会生成 id_rsa 和 id_rsa.pub </span>
+<span class="c"># id_rsa 为私钥，id_rsa.pub 为公钥</span>
+ssh-keygen
+</code></pre></div></div>
+
+<h4 id="公钥放置位置">公钥放置位置</h4>
+<p>linux系统允许多用户登录同一台服务器，一般情况下 <code class="highlighter-rouge">/home</code> 目录会有非常多的用户目录。可以把公钥放置在任何一个用户目录的<code class="highlighter-rouge">$HOME/.ssh/authorized_keys</code>文件中，比如 <code class="highlighter-rouge">cat id_rsa.pub &gt;&gt; /home/jingwei/.ssh/authorized_keys</code> ，这样就可以使用私钥以 <code class="highlighter-rouge">jingwei</code> 的名义登录对应的服务器了。</p>
+
+<h4 id="免密登录">免密登录</h4>
+<p>在使用 ssh 的时候，还有一些“常识”，如下：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -i 指定私钥，默认条件下使用 ~/.ssh/id_rsa</span>
+<span class="c"># -l 指定用户名</span>
+<span class="c"># -p 指定端口，默认为 22</span>
+ssh <span class="nt">-i</span> ~/.ssh/id_rsa <span class="nt">-p</span> 6004 <span class="nt">-l</span> jingwei 0.0.0.0
+
+<span class="c"># 上面的命令等同于</span>
+ssh <span class="nt">-p</span> 6004 jingwei@0.0.0.0
+</code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+<p>本文简单介绍了 ssh 的使用方法及其基本原理，尤其通俗易懂地介绍了 ssh 免密登录的基本原理。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="http://www.ansible.com.cn/docs/intro_getting_started.html">新手上路 — 国内最专业的Ansible中文官方学习手册</a> 如题，讲的真的很专业</li>
+  <li><a href="https://www.cnblogs.com/gaojun/archive/2012/08/22/2650229.html">Linux LVM硬盘管理及LVM扩容</a> 仅供参考</li>
+  <li><a href="http://www.zsythink.net/archives/1199">iptables详解：图文并茂理解iptables</a> 推荐这个iptables系列文章</li>
+  <li><a href="https://blog.csdn.net/wenyun_kang/article/details/77413714">Linux系统（Ubuntu16.04）ssh配置无密码登录</a> ssh免密登录的博文</li>
+  <li><a href="https://www.cnblogs.com/liubin0509/p/6211909.html">Ubuntu使用ssh公钥实现免密码登录</a> 另一篇ssh免密登录的博文</li>
+  <li><a href="https://baike.baidu.com/item/ssh/10407">ssh（安全外壳协议）_百度百科</a> 介绍了ssh的定义</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/11/28/kubeadm-init-research.html" class="read-next-link"></a>
+          <section>
+            <span>Kubernetes搭建之kubeadm-init探究</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+  <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

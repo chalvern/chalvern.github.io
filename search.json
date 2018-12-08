@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "ubuntu-ssh用户名密码登录与证书免密登录",
+      "tags"     : "DevOps 经验 基础",
+      "url"      : "/2018/12/08/ssh-login-style.html"
+    } ,
+  
+    {
       "title"    : "Kubernetes搭建之kubeadm-init探究",
       "tags"     : "DevOps 经验 k8s",
       "url"      : "/2018/11/28/kubeadm-init-research.html"
