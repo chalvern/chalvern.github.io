@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "以认真的态度做完美的事情（2018年总结）",
+      "tags"     : "自己 经验 碎碎念",
+      "url"      : "/2018/12/08/year-conclusion-of-myself.html"
+    } ,
+  
+    {
       "title"    : "ubuntu-ssh用户名密码登录与证书免密登录",
       "tags"     : "DevOps 经验 基础",
       "url"      : "/2018/12/08/ssh-login-style.html"
