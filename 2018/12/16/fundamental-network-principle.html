@@ -142,7 +142,7 @@ Author: Ray-Eldath
 
   <div class="post-content visible">
     
-    <h2 class="post-subtitle">自认为深入浅出的网络拓扑介绍</h2>
+    <h2 class="post-subtitle">深入浅出的网络拓扑介绍</h2>
     
 
     <article class="markdown-body">
@@ -160,55 +160,55 @@ Author: Ray-Eldath
   <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
 </ul>
 <h2 id="写在前面">写在前面</h2>
-<p>最近一段时间的工作偏运维开发，相对于纯粹的后端开发，关注的点由 CPU 和内存转到了更为宏观的系统、性能及稳定性。对我来说，做业务开发时技术上考虑更多的是计算效率与存储效率的问题，对IO（缓存、磁盘、网络等）的指标考虑的比较少，因此IO相关的知识储备就显得像是一块短板。俗话说”趁未老，补短板“，利用这周末复习了一下网络相关的知识，现在总结一下，以备后用。</p>
+<p>最近一段时间的工作偏运维开发，相对于纯粹的后端开发，关注的点由 CPU 和内存转到了更为宏观的系统、性能及稳定性。对我来说，做业务开发时技术上考虑更多的是计算效率与存储效率的问题，对IO（缓存、磁盘、网络等）的指标考虑的比较少，因此IO相关的知识储备就显得像是一块短板。俗话说“趁未老，补短板”，因此花了一点时间复习了一下网络相关的知识，现在总结一下，以备后用。</p>
 
 <h2 id="适用人群">适用人群</h2>
 <p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
 
 <h2 id="网络基础">网络基础</h2>
-<p>按照<a href="https://baike.baidu.com/item/%E7%BD%91%E7%BB%9C%E4%B8%83%E5%B1%82%E5%8D%8F%E8%AE%AE/6056879">OSI</a>模型的定义，可以把网络分成七层，分别是1）物理层、2）数据链路层、3）网络层、4）传输层、5）会话层、6）表示层、7）应用层。这个模型不太具有实践的意义（相对来说 TCP/IP 协议族实践性更强），但是为表达概念提供了很好的参考，比如：当我们说一个设备工作在<strong>二层网络</strong>的时候，说明其主要工作在数据链路层；当我们说<strong>做四层负载均衡</strong>时，说明是在传输层做手脚，很大程度是讲UDP或TCP连接的事情；当我们说<strong>七层负载均衡</strong>时，说明是在应用层做手脚，很可能就是在讲一次或多次 HTTP 请求的事情。每一层有每一层的特点，具体的大家可以再去翻翻《<a href="https://book.douban.com/subject/2970300/">计算机网络</a>》这本书，我这里只就几个点做一些简单的阐述。</p>
+<p>按照<a href="https://baike.baidu.com/item/%E7%BD%91%E7%BB%9C%E4%B8%83%E5%B1%82%E5%8D%8F%E8%AE%AE/6056879">OSI</a>模型的定义，可以把网络分成七层，分别是1）物理层、2）数据链路层、3）网络层、4）传输层、5）会话层、6）表示层、7）应用层。这个模型不太具有实践的意义（相对来说 TCP/IP 协议族实践性更强），但是为概念表达提供了很好的参考，比如：当我们说一个设备工作在<strong>二层网络</strong>的时候，说明其主要工作在数据链路层；当我们说<strong>做四层负载均衡</strong>时，说明是在传输层做手脚，很大程度是讲UDP或TCP连接的事情；当我们说<strong>七层负载均衡</strong>时，说明是在应用层做手脚，大概率是在讲一次或多次 HTTP 连接的事情。每一层有每一层的特点，具体的大家可以再去翻翻《<a href="https://book.douban.com/subject/2970300/">计算机网络</a>》这本书，我这里只就几个点做一些简单的阐述。</p>
 
 <h3 id="从网线直连到交换机连通二层网络">从网线直连到交换机连通（二层网络）</h3>
 
 <p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fy7xbpbswaj311y0ectap.jpg" alt="" /></p>
 
-<p>假如世界上只有两台电脑，为了能够让这两台电脑能够互相通信，可以使用一根网线把它们连接起来，如上图 A 所示。由 1 发出的所有信息通过网线直接到达 2，干脆利落。</p>
+<p>假如世界上只有两台电脑，为了能够让这两台电脑能够互相通信，可以使用一根网线把它们连接起来，如上图 A 所示，由 1 发出的所有信息通过网线直接到达 2，反之亦然，真是干脆利落。</p>
 
-<p>按照 A 的拓扑特点，当有三台电脑时，为了达成两两之间能够互相通信，需要在两两之间假设网线，如上图 B 所示。当 1 想要给 2 发送信息时，通过网路 1 就可以实现了；如果 1 想要给 3 发送信息，则通过网路 3 就可以实现了。如果把网路想象成道路，可以想象的到，为了让三个地方互相连通而按照这种方式修路，实在太浪费了。尤其当扩展新节点的时候，要另外添加 <code class="highlighter-rouge">(N-1)</code>条线路，根本无法支撑大数量的节点群。</p>
+<p>按照 A 的拓扑特点，当有三台电脑时，为了达成两两之间能够互相通信，需要在两两之间架设网线，如上图 B 所示。当 1 想要给 2 发送信息时，通过网路 1 可以实现；如果 1 想要给 3 发送信息，通过网路 3 可以实现；以此类推。如果把网路想象成道路，可以意识到，为了让三个地方互相连通两两之间修路的方式实在太浪费了。尤其当扩展新节点的时候，要另外添加 <code class="highlighter-rouge">(N-1)</code>条线路，这根本无法支撑大数量的节点群啊。</p>
 
-<p>这个时候，就出现了上图 C 的拓扑结构，图示有 5 个节点通过交换机互连（交换机不是唯一选择，比如集线器、网桥等也可以做到）。当 1 感觉到孤独时，会首先向交换机<strong>询问连通到交换机的其他节点列表</strong>，获取到了 2、3、4、5， 于是它对交换机说”帮我对 5 说一句’你好‘“，于是有了 <code class="highlighter-rouge">(PC with eth0-1) -&gt; (线路1) -&gt; (交换机) -&gt; (线路5) -&gt; (PC with eth0-5)</code>这个链路。当 5 收到了讯息后，觉得有必要寒暄一下，于是对交换机说”帮我回 1 说一句’你也好‘“，于是有了<code class="highlighter-rouge">(PC with eth0-5) -&gt; (线路5) -&gt; (交换机) -&gt; (线路5) -&gt; (PC with eth0-1)</code>这个链路。虽然通信的过程变复杂了，但是建设网路的消耗变少了，同时再扩展新的节点时，也只需要添加一条到交换机的网路就可以了。</p>
+<p>这个时候，就出现了上图 C 的拓扑结构，图示有 5 个节点通过交换机互连（交换机不是唯一选择，比如集线器、网桥等也可以做到）。当 1 感觉到孤独时，会首先向交换机<strong>询问连通到交换机的其他节点列表</strong>，获取到了 2、3、4、5 后， 于是它对交换机说“帮我对 5 说一句‘你好’”，于是有了 <code class="highlighter-rouge">(PC with eth0-1) -&gt; (线路1) -&gt; (交换机) -&gt; (线路5) -&gt; (PC with eth0-5)</code>这个链路。当 5 收到了讯息后，觉得有必要寒暄一下，于是对交换机说“帮我回 1 说一句‘你也好’”，于是有了<code class="highlighter-rouge">(PC with eth0-5) -&gt; (线路5) -&gt; (交换机) -&gt; (线路5) -&gt; (PC with eth0-1)</code>这个链路。虽然通信的过程变复杂了，但是建设网路的消耗变少了，再扩展新的节点时，也只需要添加一条到交换机的网路就可以了。</p>
 
-<p>通过上面的描述可以知道，如果节点变得更多的时候，交换机会成为通信的瓶颈。同时受到地理位置的限制，不可能把所有的电脑都连接到一个交换机上面（试想获取的节点列表很大时的情况），因此可能会出现多个节点群，那么多个节点群之间该如何连通呢？</p>
+<p>通过上面的描述可以知道，如果同一台交换机上挂载的节点变得非常多的时候，交换机必然会成为通信的瓶颈。同时受到地理位置的限制，也不可能把所有的电脑都连接到一个交换机上面，因此可能会出现多个拓扑类似的节点群。那么这样的多个节点群之间该如何连通呢？</p>
 
 <h3 id="ip与网关三层网络">IP与网关（三层网络）</h3>
 
 <p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fy7xc6zpj3j31270u0797.jpg" alt="" /></p>
 
-<p>上图的上半部分描述了两个节点群 M 与 N 之间的拓扑图，如果 M 中的 <code class="highlighter-rouge">PC with eth0-1</code> 想给 N 中的 <code class="highlighter-rouge">PC with eth0-9</code> 发送讯息，该以一种什么样的方式实现呢？如果不对拓扑结构进行扩展，其实 <code class="highlighter-rouge">eth0-1</code> 甚至不知道有 <code class="highlighter-rouge">eth0-9</code> 的存在。在 “从网线直连到交换机连通” 一节已经描述过，为了与外界沟通，<code class="highlighter-rouge">eth0-1</code>节点要首先向交换器<strong>询问连通到交换机的其他节点列表</strong>，由于 <code class="highlighter-rouge">eth0-9</code> 在另一个交换机上面，因此 <code class="highlighter-rouge">eth0-1</code> 所获取得到的<strong>节点列表里也是不包含</strong><code class="highlighter-rouge">eth0-9</code>的。即使 <code class="highlighter-rouge">eth0-1</code>知道了<code class="highlighter-rouge">eth0-9</code>的存在，它对交换机说”帮我对 <code class="highlighter-rouge">eth0-9</code> 说一句’你好‘“，交换机也不知道该怎么办，只能傻掉。</p>
+<p>上图的上半部分描述了两个节点群 M 与 N 之间的拓扑图，如果 M 中的 <code class="highlighter-rouge">PC with eth0-1</code> 想给 N 中的 <code class="highlighter-rouge">PC with eth0-9</code> 发送讯息，该以一种什么样的方式实现呢？如果不对拓扑结构进行扩展，其实 <code class="highlighter-rouge">eth0-1</code> 甚至不知道有 <code class="highlighter-rouge">eth0-9</code> 的存在。在上一节已经描述过，为了与外界沟通，<code class="highlighter-rouge">eth0-1</code>节点要首先向交换器<strong>询问连通到交换机的其他节点列表</strong>，由于 <code class="highlighter-rouge">eth0-9</code> 在另一个交换机上面，因此 <code class="highlighter-rouge">eth0-1</code> 所获取得到的<strong>节点列表里是不包含</strong><code class="highlighter-rouge">eth0-9</code>的。其实即使 <code class="highlighter-rouge">eth0-1</code>知道了<code class="highlighter-rouge">eth0-9</code>的存在，它对交换机说“帮我对 <code class="highlighter-rouge">eth0-9</code> 说一句‘你好’”，交换机也不知道该怎么办，只能傻掉。</p>
 
-<p>为了实现 M 中的 <code class="highlighter-rouge">PC with eth0-1</code> 给 N 中的 <code class="highlighter-rouge">PC with eth0-9</code> 发送讯息，上图的下半部分给出了一种方案。1）首先对所有的机器进行统一编码（设定 IP），比如 M 节点群 IP 为 <code class="highlighter-rouge">10.0.1.1-5/24</code>，N 节点群 IP 为 <code class="highlighter-rouge">10.0.2.1-5/24</code>。2）同时为各个节点群配置了网关（<code class="highlighter-rouge">eth0-4</code>和<code class="highlighter-rouge">eth0-7</code>）并设置二者之间的网路使之连通。</p>
+<p>为了实现 M 中的 <code class="highlighter-rouge">PC with eth0-1</code> 给 N 中的 <code class="highlighter-rouge">PC with eth0-9</code> 发送讯息，上图的下半部分给出了一种拓扑方案。1）首先<strong>对所有的机器进行统一编码</strong>（设定 IP），比如 M 节点群 IP 为 <code class="highlighter-rouge">10.0.1.1-5/24</code>，N 节点群 IP 为 <code class="highlighter-rouge">10.0.2.1-5/24</code>。2）<strong>同时为各个节点群配置了网关（<code class="highlighter-rouge">eth0-4</code>和<code class="highlighter-rouge">eth0-7</code>）并设置二者之间的网路使之连通</strong>。</p>
 
-<p>当 M 中的 <code class="highlighter-rouge">eth0-1</code> 给 N 中的 <code class="highlighter-rouge">eth0-9</code> 发送讯息时，它首先会<strong>向交换机询问同一个<a href="https://baike.baidu.com/item/%E7%BD%91%E6%AE%B5/11026985">网段</a>其他节点的列表（每个节点的 IP 及 Mac 地址）</strong>。在<code class="highlighter-rouge">eth0-1</code>获取得到列表后，发现并没有<code class="highlighter-rouge">eth0-9</code>的身影，于是它把请求直接发给了网关<code class="highlighter-rouge">eth0-4</code>。一个请求被发送到了<code class="highlighter-rouge">eth0-4</code>，<code class="highlighter-rouge">eth0-4</code>会首先检查请求中的目的 IP，当发现目的 IP 在网段 <code class="highlighter-rouge">10.0.2.0/24</code> 时，于是把请求发送到 <code class="highlighter-rouge">eth0-7</code>。而当 <code class="highlighter-rouge">eth0-7</code>接收到请求，发现自己知道请求里的目的 IP 指的是<code class="highlighter-rouge">eth0-9</code>这台机器，于是把请求发送到<code class="highlighter-rouge">eth0-9</code>。</p>
+<p>基于上面的方案，当 M 中的 <code class="highlighter-rouge">eth0-1</code> 给 N 中的 <code class="highlighter-rouge">eth0-9</code> 发送讯息时，它首先会<strong>向交换机询问同一个<a href="https://baike.baidu.com/item/%E7%BD%91%E6%AE%B5/11026985">网段</a>其他节点的列表（每个节点的 IP 及 eth0 对应的 Mac 地址）</strong>。在<code class="highlighter-rouge">eth0-1</code>获取得到列表后，发现并没有<code class="highlighter-rouge">eth0-9</code>的身影，于是它把请求直接发给了网关<code class="highlighter-rouge">eth0-4</code>。一个请求被发送到了<code class="highlighter-rouge">eth0-4</code>，<code class="highlighter-rouge">eth0-4</code>会首先检查请求中的目的 IP，当发现目的 IP 在网段 <code class="highlighter-rouge">10.0.2.0/24</code> 时，于是把请求发送到 <code class="highlighter-rouge">eth0-7</code>。这时候 <code class="highlighter-rouge">eth0-7</code>接收到了请求，检查<strong>从交换机获取到的节点列表里有请求里设定的目的 IP</strong>，对应的就是<code class="highlighter-rouge">eth0-9</code>这台机器，于是把请求发送到<code class="highlighter-rouge">eth0-9</code>。</p>
 
 <h3 id="路由router依然是三层网络">路由（Router，依然是三层网络）</h3>
 
 <p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fy7xcj987tj30z20lojuv.jpg" alt="" /></p>
 
-<p>当子网比较多，相应的网关也会越来越多，这个时候如果在每个网关上配置路由信息（根据请求中的目的 IP 或者响应中的 IP 决策发送到哪个子网或网关），也会显得比较累赘。比如上图中网关-1、网关-6与网关-7之间的路由关系，因为拓扑简单因此直接维护在网关服务器上；而网关1-5则通过一个集中的 Router（类比家里用的路由器，不过企业里用的肯定比家用的要高级）来转发网络请求。</p>
+<p>当子网越来越多，相应的网关也会越来越多，这个时候如果在每个网关上配置路由信息（根据请求中的目的 IP 或者响应中的 IP 决策发送到哪个子网或网关），也会显得比较累赘。比如上图中网关-1、网关-6与网关-7之间的路由关系，因为拓扑简单因此路由信息直接维护在网关服务器上；而网关1-5则通过一个集中的 Router（类比家里用的路由器，不过企业里用的要高级很多）来转发网络请求。</p>
 
 <h3 id="最后简单聊一下正向与反向代理四层与七层网络">最后简单聊一下正向与反向代理（四层与七层网络）</h3>
-<p>当前世界上存在的智能终端数目（PC、手机、车载系统等）已经远远超过了<code class="highlighter-rouge">2^32</code>（大概是40亿）个，这也是 IPV4 的极限数量。为了让每一个智能终端都能够“联网”，必须为每个智能终端编号，这怎么办呢？比如一个企业内部有一个私有集群，集群中包含了成千上百台机器，但是没有必要给每台机器申请一个公网 IP，一方面节省开支（每个公网 IP 都是要收使用费的），另一方面可以有效避免被外界黑客攻击的风险。但是这种架构下集群里的机器如何上网呢？答案是<strong>正向代理</strong>。</p>
+<p>当前世界上存在的智能终端数目（PC、手机、车载系统等）已经远远超过了<code class="highlighter-rouge">2^32</code>（大概是40亿）个，这也是 IPV4 的极限数量。同时为了让每一个智能终端都能够“联网”，必须为每个智能终端编号，这怎么编号呢？一个方案是 IPV6，不过目前有更普世的 <a href="https://baike.baidu.com/item/nat/320024">NAT</a> 方案。比如一个企业内部有一个私有集群，集群中包含了成千上百台机器，但是没有必要给每台机器申请一个公网 IP，一方面节省开支（每个公网 IP 都是要收使用费的），另一方面可以有效避免被外界黑客攻击的风险。这种架构下集群里的机器如何上网呢？答案是基于 NAT 原理的<strong>正向代理</strong>（四层代理）。</p>
 
-<p>上一小节里的图示中包含一个<strong>出入口</strong>，这就是正向代理工作的地方。当任意子网中的主机有访问互联网服务的需求时，比如 <code class="highlighter-rouge">10.0.5.30/24</code> 这台服务器想要访问<code class="highlighter-rouge">www.baidu.com(14.215.177.38)</code>的服务，请求经过网关-5和路由最终会汇聚到<strong>10.0.253.3/24</strong>，然后经过<a href="https://baike.baidu.com/item/nat/320024">NAT</a>把请求源 IP 映射成为公网 IP 的请求，形成<code class="highlighter-rouge">10.0.5.30:34567 =&gt; 185.199.111.153:45234 =&gt; 14.215.177.38:80</code> 这样的调用链路。于是，<code class="highlighter-rouge">14.215.177.38:80</code>所在的服务知道把对应的响应返回给<code class="highlighter-rouge">185.199.111.153:45234</code>，而<code class="highlighter-rouge">185.199.111.153:45234</code>知道对应了内网里的<code class="highlighter-rouge">10.0.5.30:34567</code>，请求最终完成响应。</p>
+<p>上一小节里的图示中包含一个<strong>出入口</strong>，这就是正向代理工作的地方。当任意子网中的主机有访问互联网服务的需求时，比如 <code class="highlighter-rouge">10.0.5.30/24</code> 这台服务器想要访问<code class="highlighter-rouge">www.baidu.com(14.215.177.38)</code>的服务，请求经过网关-5和路由最终会汇聚到<strong>10.0.253.3/24</strong>，然后经过 NAT 把请求源 IP 映射成为公网 IP，形成<code class="highlighter-rouge">10.0.5.30:34567 =&gt; 185.199.111.153:45234 =&gt; 14.215.177.38:80</code> 这样的调用链路。于是，<code class="highlighter-rouge">14.215.177.38:80</code>所在的服务知道把对应的响应返回给<code class="highlighter-rouge">185.199.111.153:45234</code>，而<code class="highlighter-rouge">185.199.111.153:45234</code>知道自己对应了内网里的<code class="highlighter-rouge">10.0.5.30:34567</code>，最终完成响应。</p>
 
-<p>当我们访问<code class="highlighter-rouge">www.baidu.com(假如只绑定了一个IP，14.215.177.38)</code>的时候，虽然会解析到<code class="highlighter-rouge">14.215.177.38:80</code>所在的服务，但是从百度的体量考虑可以知道后端肯定有非常多的机器，甚至这些机器监听的并不是<code class="highlighter-rouge">80</code>端口（比如监听了<code class="highlighter-rouge">8081</code>端口）。那么外部的请求是如何传到后端的服务器的呢？答案是<strong>反向代理</strong>。</p>
+<p>考虑另一个问题，当我们访问<code class="highlighter-rouge">www.baidu.com(假如只绑定了一个IP，14.215.177.38)</code>的时候，虽然会解析到<code class="highlighter-rouge">14.215.177.38:80</code>所在的服务，但是从百度的体量考虑可以知道它的后端肯定有非常多的机器，甚至这些机器监听的并不是<code class="highlighter-rouge">80</code>端口（比如监听了<code class="highlighter-rouge">8081</code>端口）。那么外部的请求是如何传到后端的服务器的呢？答案是<strong>反向代理</strong>（七层代理）。</p>
 
-<p>最终的调用链路为 <code class="highlighter-rouge">10.0.5.30:34567 &lt;=&gt; 185.199.111.153:45234 &lt;=&gt;  14.215.177.38:80 &lt;=&gt; x.x.x.x:8081</code>这样的链路。</p>
+<p>最终的调用链路为 <code class="highlighter-rouge">10.0.5.30:34567 &lt;=&gt; 185.199.111.153:45234 &lt;=&gt;  14.215.177.38:80 &lt;=&gt; x.x.x.x:8081</code>，实现了请求从客户端到服务端再到客户端的完整响应。</p>
 
 <h2 id="小结">小结</h2>
-<p>本文复习了大学课堂上学习的基础网络拓扑原理，主要涉及到了二层网络中的交换机（Switch）、三层网络中的路由（Router）及四层与七层网络中的正向和反向代理。这些知识应该是 IT 从业人员的常识，不过不排除一些细节上的理解与真实情况存在出路。虽然简单，不过只有熟练掌握了上面所讲的内容，才能进一步深入了解更多高阶的架构设计。</p>
+<p>本文复习了大学课堂上学习的基础网络拓扑原理，主要涉及到了二层网络中的交换机（Switch）、三层网络中的路由（Router）及四层与七层网络中的正向和反向代理。这些知识应该是 IT 从业人员的常识，不过不排除一些细节上的理解与真实情况存在出路。计算机网络是一门高复杂度的工程，每一层上延伸出的技术实践远不止本文讲述的这些；不过本文虽简单，但是也只有熟练掌握了上面所讲的内容，才能进一步深入了解更多高阶的架构设计。</p>
 
-<p>接下来如果有时间考虑分析一下 Docker 及 K8s 网络相关的架构设计😆。</p>
+<p>接下来如果有时间就可以分析一下 Docker 及 K8s 网络相关的架构设计了😆。</p>
 
 <h2 id="参考">参考</h2>
 <ul>
