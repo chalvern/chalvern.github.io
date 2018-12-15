@@ -173,7 +173,7 @@ Author: Ray-Eldath
 </ul>
 
 <h2 id="写在前面">写在前面</h2>
-<p>上一篇博客《<a href="https://jingwei.link/2018/12/08/ssh-login-style.html">ubuntu-ssh用户名密码登录与证书免密登录</a>》简单地温习了一下使用ssh登录服务器的方法，可以知道通过证书免密登录服务器既方便又安全。不过这种 <code class="highlighter-rouge">ssh -i ~/.ssh/id_rsa -p 6004 -l jingwei 0.0.0.0</code> 这种通过指定证书、端口、用户名、主机IP的方式多少显得有些啰嗦，尤其在运维非常多主机的时候，仅仅把主机IP与证书对应起来就够费事的。本文就ssh的配置文件进行一些探索，看看如何方便地对多主机进行管理。</p>
+<p>上一篇博客《<a href="https://jingwei.link/2018/12/08/ssh-login-style.html">ubuntu-ssh用户名密码登录与证书免密登录</a>》简单地温习了一下使用ssh登录服务器的方法，可以知道通过证书免密登录服务器既方便又安全。不过这种 <code class="highlighter-rouge">ssh -i ~/.ssh/id_rsa -p 6004 -l jingwei 0.0.0.0</code> 通过指定证书、端口、用户名、主机IP的方式多少显得有些啰嗦，尤其在运维非常多主机的时候，仅仅把主机IP与证书对应起来就够费事的。本文就ssh的配置文件进行一些探索，看看如何方便地对多主机进行管理。</p>
 
 <h2 id="适用人群">适用人群</h2>
 <p><strong>入门√</strong>——初级——中级——高级；本文适应入门及以上。</p>
