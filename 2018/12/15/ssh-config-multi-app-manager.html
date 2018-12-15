@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSH的config配置之多账号简单管理 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="SSH的config配置之多账号简单管理">
+    <meta name="keywords"  content="DevOps, 经验, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="SSH的config配置之多账号简单管理 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/12/15/ssh-config-multi-app-manager.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>SSH的config配置之多账号简单管理</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-12-15"><i class="iconfont icon-date"></i>15 Dec 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">如何使用ssh方便地对多应用多主机进行管理</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#ssh的配置参数" id="markdown-toc-ssh的配置参数">SSH的配置参数</a>    <ul>
+      <li><a href="#配置参数的来源途径" id="markdown-toc-配置参数的来源途径">配置参数的来源途径</a></li>
+      <li><a href="#配置文件" id="markdown-toc-配置文件">配置文件</a>        <ul>
+          <li><a href="#host-字段" id="markdown-toc-host-字段">Host 字段</a></li>
+          <li><a href="#hostname-字段" id="markdown-toc-hostname-字段">HostName 字段</a></li>
+          <li><a href="#user-字段" id="markdown-toc-user-字段">User 字段</a></li>
+          <li><a href="#identityfile-字段" id="markdown-toc-identityfile-字段">IdentityFile 字段</a></li>
+          <li><a href="#port-字段" id="markdown-toc-port-字段">Port 字段</a></li>
+        </ul>
+      </li>
+      <li><a href="#几个实例" id="markdown-toc-几个实例">几个实例</a>        <ul>
+          <li><a href="#gitlab与github一起使用" id="markdown-toc-gitlab与github一起使用">gitlab与github一起使用</a></li>
+          <li><a href="#有规律的主机配置" id="markdown-toc-有规律的主机配置">有规律的主机配置</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>上一篇博客《<a href="https://jingwei.link/2018/12/08/ssh-login-style.html">ubuntu-ssh用户名密码登录与证书免密登录</a>》简单地温习了一下使用ssh登录服务器的方法，可以知道通过证书免密登录服务器既方便又安全。不过这种 <code class="highlighter-rouge">ssh -i ~/.ssh/id_rsa -p 6004 -l jingwei 0.0.0.0</code> 这种通过指定证书、端口、用户名、主机IP的方式多少显得有些啰嗦，尤其在运维非常多主机的时候，仅仅把主机IP与证书对应起来就够费事的。本文就ssh的配置文件进行一些探索，看看如何方便地对多主机进行管理。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p><strong>入门√</strong>——初级——中级——高级；本文适应入门及以上。</p>
+
+<h2 id="ssh的配置参数">SSH的配置参数</h2>
+<h3 id="配置参数的来源途径">配置参数的来源途径</h3>
+<p><code class="highlighter-rouge">ssh</code>程序可以从三个途径获取配置参数：</p>
+
+<ol>
+  <li>命令行选型，比如 <code class="highlighter-rouge">-i ~/.ssh/id_rsa</code>，<code class="highlighter-rouge">-p 6004</code>，<code class="highlighter-rouge">-l jingwei</code>；</li>
+  <li>用户配置文件，放置在 <code class="highlighter-rouge">~/.ssh/config</code>；</li>
+  <li>系统配置文件，放置在 <code class="highlighter-rouge">/etc/ssh/ssh_config</code>（区别于 <code class="highlighter-rouge">/etc/ssh/sshd_config</code>）。</li>
+</ol>
+
+<p>上面三个途径，前面的途径传入的参数可以覆盖后面的途径传入的参数（与 linux 里的大部分应用类似）。因为<code class="highlighter-rouge">/etc/ssh/ssh_config</code> 会影响 <code class="highlighter-rouge">ssh</code> 全局的配置，因此如果想对多主机进行管理（不影响别人的情况下），可以考虑修改自己家目录下的<code class="highlighter-rouge">~/.ssh/config</code> 文件（<code class="highlighter-rouge">~</code> 字符表示当前登录用户的家目录）。</p>
+
+<h3 id="配置文件">配置文件</h3>
+<p>首先看一个配置文件的 demo ：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cat ~/.ssh/config</span>
+Host docker<span class="k">*</span>
+  HostName 0.0.0.0
+  User jingwei
+  IdentityFile ~/.ssh/id_rsa
+  Port 6004
+</code></pre></div></div>
+
+<p>当在 <code class="highlighter-rouge">~/.ssh/config</code> 配置了上面的内容后，就可以通过 <code class="highlighter-rouge">ssh docker</code> 快速登录到我在 docker 中启动的容器了。接下来我们依次看一下配置文件中包含哪些项。</p>
+
+<h4 id="host-字段">Host 字段</h4>
+<p><code class="highlighter-rouge">Host</code> 字段配置了登录别名，比如 <code class="highlighter-rouge">ssh docker</code> 表示使用别名为 <code class="highlighter-rouge">docker</code> 的配置登录远端的服务器。这里需要注意的是，<code class="highlighter-rouge">Host</code> 是支持通配符的， <code class="highlighter-rouge">*</code> 代表0～n个非空白字符，<code class="highlighter-rouge">?</code> 代表一个非空白字符，<code class="highlighter-rouge">!</code> 表示例外通配。</p>
+
+<h4 id="hostname-字段">HostName 字段</h4>
+<p>指定远程主机名，可以直接使用 <code class="highlighter-rouge">IP</code> 地址。如果这个字段中包含 ‘%h’ ，则实际使用时会被命令行中的主机名替换。比如 demo 中如果设置 <code class="highlighter-rouge">HostName 0.0.0.0.%h</code>，在运行 <code class="highlighter-rouge">ssh docker</code> 后，会把主机名解析为 <code class="highlighter-rouge">0.0.0.0.docker</code>。</p>
+
+<h4 id="user-字段">User 字段</h4>
+<p>指定登录用户名。</p>
+
+<h4 id="identityfile-字段">IdentityFile 字段</h4>
+<p>指定密钥认证使用的私钥文件路径。默认为 <code class="highlighter-rouge">~/.ssh/id_dsa</code>，或  <code class="highlighter-rouge">~/.ssh/id_rsa</code>。这个字段可以指定多个密钥文件（以 <code class="highlighter-rouge">,</code> 分开），在连接的过程中会依次尝试这些密钥文件。和  HostName 字段一样，值也可以直接指定参数代替：</p>
+<ul>
+  <li>%d，本地用户目录 ~</li>
+  <li>%u，本地用户</li>
+  <li>%l，本地主机名</li>
+  <li>%h，远程主机名 （下面的示例中将主要使用这个参数）</li>
+  <li>%r，远程用户名</li>
+</ul>
+
+<h4 id="port-字段">Port 字段</h4>
+<p>指定远程主机端口号，默认为 22 。</p>
+
+<h3 id="几个实例">几个实例</h3>
+<h4 id="gitlab与github一起使用">gitlab与github一起使用</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 配置 config 文件如下所示</span>
+<span class="c"># cat ~/.ssh/config</span>
+Host git<span class="k">*</span>
+  HostName %h.com
+  IdentityFile ~/.ssh/%h_rsa
+  User git
+</code></pre></div></div>
+
+<p>按照上面的配置，当敲 <code class="highlighter-rouge">ssh github</code> 命令时，等价于 <code class="highlighter-rouge">ssh -i ~/.ssh/github_rsa git@github.com</code>；当敲 <code class="highlighter-rouge">ssh gitlab</code> 命令时， 等价于 <code class="highlighter-rouge">ssh -i ~/.ssh/gitlab_rsa git@gitlab.com</code>。也就是说，只需要在 <code class="highlighter-rouge">~/.ssh</code> 目录下为 <code class="highlighter-rouge">github</code> 和 <code class="highlighter-rouge">gitlab</code> 准备好对应的密钥就可以了。</p>
+
+<p>当然，为了配置更为灵活，完全可以把 <code class="highlighter-rouge">github</code> 与 <code class="highlighter-rouge">gitlab</code> 拆分开来配置，如下：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 配置 config 文件如下所示</span>
+<span class="c"># cat ~/.ssh/config</span>
+Host opensource
+  HostName github.com
+  IdentityFile ~/.ssh/pem-1
+  User git1
+
+Host working
+  HostName gitlab.com
+  IdentityFile ~/.ssh/smile-1
+  User smile
+</code></pre></div></div>
+
+<h4 id="有规律的主机配置">有规律的主机配置</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Host 1<span class="k">*</span>
+  HostName 172.231.%h
+  User smile
+  IdentityFile ~/.ssh/cluster-rsa
+  Port 22
+</code></pre></div></div>
+
+<p>对于一些基础设施（比如 <code class="highlighter-rouge">K8s</code>），一个集群会涉及到很多的节点，比如所有的节点在 <code class="highlighter-rouge">172.231.1.0/24</code> 网段，那么可以通过上面的配置实现敲 <code class="highlighter-rouge">ssh 1.10</code> 登录到 <code class="highlighter-rouge">172.231.1.10</code> 主机的目的。那么本地只需要维护一个机器与主机<code class="highlighter-rouge">IP</code>的列表即可。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文介绍了 <code class="highlighter-rouge">ssh</code> 配置文件的用法，通过一些简单的配置来实现对不同应用（比如 github、github）和不同主机（比如一个 k8s 集群的多个节点）的简单登录。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="http://daemon369.github.io/ssh/2015/03/21/using-ssh-config-file">使用 SSH config 文件</a></li>
+  <li><a href="https://www.ssh.com/ssh/config/">SSH config file for OpenSSH client | SSH.COM</a></li>
+  <li><a href="https://deepzz.com/post/how-to-setup-ssh-config.html">SSH Config 那些你所知道和不知道的事 | Deepzz’s Blog</a></li>
+  <li><a href="https://www.cnblogs.com/zhonghuasong/p/7236989.html">ssh的用户配置文件config管理ssh会话 - 博客园</a></li>
+  <li><a href="http://www.cnblogs.com/qingguo/p/5686247.html">一台电脑存放多个git账户的多个rsa秘钥 - 博客园</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/12/08/year-conclusion-of-myself.html" class="read-next-link"></a>
+          <section>
+            <span>以认真的态度做完美的事情（2018年总结）</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
