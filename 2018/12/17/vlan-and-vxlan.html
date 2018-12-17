@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简析VLAN和VxLAN两种网络虚拟技术 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="简析VLAN和VxLAN两种网络虚拟技术">
+    <meta name="keywords"  content="基础, 经验">
+    <!-- Open Graph -->
+    <meta property="og:title" content="简析VLAN和VxLAN两种网络虚拟技术 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/12/17/vlan-and-vxlan.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+        
+      </div>
+      <h1>简析VLAN和VxLAN两种网络虚拟技术</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-12-17"><i class="iconfont icon-date"></i>17 Dec 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">为了更好地研究 Docker 以及 Kubernetes 的网络模型</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#网络虚拟技术vlan" id="markdown-toc-网络虚拟技术vlan">网络虚拟技术——VLAN</a>    <ul>
+      <li><a href="#vlan存在的必要性" id="markdown-toc-vlan存在的必要性">VLAN存在的必要性</a></li>
+      <li><a href="#vlan的实现" id="markdown-toc-vlan的实现">VLAN的实现</a>        <ul>
+          <li><a href="#同一个交换机上的-vlan-的实现" id="markdown-toc-同一个交换机上的-vlan-的实现">同一个交换机上的 VLAN 的实现</a></li>
+          <li><a href="#跨越多台交换机的-vlan-的实现" id="markdown-toc-跨越多台交换机的-vlan-的实现">跨越多台交换机的 VLAN 的实现</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#网络虚拟技术vxlan" id="markdown-toc-网络虚拟技术vxlan">网络虚拟技术——VxLAN</a>    <ul>
+      <li><a href="#云计算" id="markdown-toc-云计算">云计算</a></li>
+      <li><a href="#虚拟技术对网络的要求" id="markdown-toc-虚拟技术对网络的要求">虚拟技术对网络的要求</a></li>
+      <li><a href="#一种overlay网络的实现vxlan" id="markdown-toc-一种overlay网络的实现vxlan">一种overlay网络的实现——VxLAN</a></li>
+      <li><a href="#责任越大权力也要越大" id="markdown-toc-责任越大权力也要越大">责任越大，权力也要越大</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>在写完上一篇博文《<a href="https://jingwei.link/2018/12/16/fundamental-network-principle.html">梦回课堂——重温基础网络拓扑原理</a>》后，本想着直接探究 Docker 的网络模型，继而探究 Kubernetes 的网络模型。但是心里琢磨着，在容器技术（Docker）出现之前已经有成熟的虚拟机技术，且支撑起当世最大的云计算供应商 Amazon，所以觉得有必要在正式细化 Docker 的网络模型前首先了解一下云计算涉及到的网络虚拟技术，如此再去研究 Docker 以及 Kubernetes 的网络模型也能更好理解一些。</p>
+
+<p>本文将对 VLAN（Virtual Local Area Network，虚拟局域网）和 VxLAN（Virtual eXtential LAN，虚拟可拓展局域网）进行探究。值得一提的是，虽然 VLAN 和VxLAN 这两个名字非常接近，不过其解决的问题范畴是不同。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——初级——<strong>中级√</strong>——高级；本文适应中级及以上。</p>
+
+<h2 id="网络虚拟技术vlan">网络虚拟技术——VLAN</h2>
+<p>就像上篇博文描述的那样，纯物理的网络拓扑结构具有良好的性能，但是这种写死在电路里的拓扑结构不易修改，所能承载的业务需求也非常有限，因此有必要通过软件化的方式来对网络拓扑进行改良，赋予其灵活性。</p>
+
+<h3 id="vlan存在的必要性">VLAN存在的必要性</h3>
+
+<p><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fya69fknwuj31440jgq6a.jpg" alt="" /></p>
+
+<p>在设计物理网络拓扑时，很难把需求一一对应到拓扑设计中，即使花了大力气按业务需求或组织架构把网络搭建起来，未来也非常大概率需求会发生变化或组织架构发生变化。这时候如果单一依靠物理网络拓扑就太难为网络架构师了。</p>
+
+<p>如上图所示，在网络搭建之初，通过<a href="https://baijiahao.baidu.com/s?id=1578115493866280873">交换机堆叠或级联</a>方式形成了一个大的二层网络，里面包含了 <code class="highlighter-rouge">PC with eth0-1~8</code> 共 8 个主机；后来业务需求发生了变化，同时为了 <a href="http://blog.51cto.com/6930123/2115373">安全和性能上的考虑</a>，需要把这些连接在同一个二层网络的机器区分开来，比如把 <code class="highlighter-rouge">eth0-1,6,7,8</code> 划分为 <code class="highlighter-rouge">vlan-1</code> 子网，把 <code class="highlighter-rouge">eth0-2,3,4,5</code> 划分为 <code class="highlighter-rouge">vlan-2</code> 子网。当 <code class="highlighter-rouge">eth0-1</code> 发送讯息时，它首先向交换机获取节点列表，这时候交换机返回给它的是 <code class="highlighter-rouge">eth0-6,7,8</code> 三个节点，其他的 <code class="highlighter-rouge">eth0-2~5</code> 则不会返回；也就是说，虽然这 8 个节点是连接在同一个物理层面的二层交换机群，但是逻辑上已经被分成了两个交换机网络，即两个 VLAN 网络。</p>
+
+<p>那么，如何让上图中展示的 <code class="highlighter-rouge">vlan-1</code> 中的机器与 <code class="highlighter-rouge">vlan-2</code> 中的节点互相通信呢？既然已经可以看做是两个分离的交换机网络了，通过《<a href="https://jingwei.link/2018/12/16/fundamental-network-principle.html">上一篇博文</a>》可以知道，必须通过设定 IP 并配置网关的方式才能让这两个子网里的节点连通。</p>
+
+<h3 id="vlan的实现">VLAN的实现</h3>
+<p>从原理上，可以把 VLAN 中节点的互通按照同一个交换机互通和跨交换机互通分别讨论。</p>
+<h4 id="同一个交换机上的-vlan-的实现">同一个交换机上的 VLAN 的实现</h4>
+<p>在一台未设置任何VLAN的二层交换机上，任何广播帧都会被转发给除接收端口外的所有其他端口（Flooding）。为了实现VLAN，① <strong>我们可以写一个配置文件，直接告诉交换机</strong>哪些端口属于 VLAN-1，哪些端口属于 VLAN-2。如果交换机比较高级，② 我们还可以<strong>通过 Mac 地址、IP地址 或其他用户信息来动态划分 VLAN</strong>，告诉交换机根据挂载到端口的节点的某个信息来动态地调整哪些节点属于 VLAN-1，哪些节点属于 VLAN-2。</p>
+
+<h4 id="跨越多台交换机的-vlan-的实现">跨越多台交换机的 VLAN 的实现</h4>
+<p>如果仅是同一个交换机，因为配置信息都写入了系统存储，决策哪个端口属于哪个 VLAN 是非常方便的。但是，一旦涉及到跨交换机，问题就变成了<strong>在多个大脑参与决策的情况下，如何实现信息的同步</strong>的问题。比如 <code class="highlighter-rouge">PC with eth0-2</code> 向交换机-a 询问 vlan-2 网络里的机器列表时，<strong>交换机-a 除了要返回自己身上挂载的节点外，还需要告知交换机-b 它期望得到 vlan-2 网络里的节点</strong>（而不是所有连通到交换机-b 的节点）。换句话说，势必要通过某种方式把 <strong>得到 vlan-2 网络里的节点而不是所有节点</strong> 这个信息在各交换机之间同步，否则就谈不上 vlan-2 是虚拟局域网了。（题外话，此刻应该能感受到<strong>合作的首要条件是信息同步</strong>！！！）</p>
+
+<p>进一步地，①<strong>我们可以在每当多划分出一个 VLAN 网络时各交换机之间就多拉出一条线出来</strong>（通过交换机上的<strong>访问连接</strong>）；比如在交换机-a 与交换机-b 之间拉起两条线，一条专门用于彼此获取 vlan-1 的节点列表，另一条专门用于彼此获取 vlan-2 的节点列表。这种方式对交换机的要求比较低，不过显然可扩展性低，试想如果我们此刻多了一个 vlan-3 网络，那岂不是还要再多拉一条线。因此有了另一种方式，②<strong>通过汇聚链接（只需一条线）把各个交换机连通起来，在不同交换机间获取节点列表时只需把特定 vlan 的信息加上</strong>；比如交换机-a 向交换机-b 发请求前，在请求中添加一个标识，标明当前请求索要的是 vlan-1 的节点，当交换机-b 接收到请求后，看到标识位是 vlan-1，于是向所有的 vlan-1 中的节点发起广播，从而只给交换机-a 传回 vlan-1 中的节点列表。</p>
+
+<p>对于多台交换机之间的 VLAN 的实现，业界有两个具有代表性的协议：1）一个是 IEEE802.1Q， 俗称“Dot One Q”，是经过IEEE认证的对数据帧附加VLAN识别信息的协议；2）另一个是 ISL（Inter Switch Link），是Cisco产品支持的一种与IEEE802.1Q类似的、用于在汇聚链路上附加VLAN信息的协议。（可以看出来为啥 Cisco 牛x了吧，有实力制定底层基础设施的协议！）具体协议的实现细节大家可以自行去搜索，这里就不详细描述了。</p>
+
+<h2 id="网络虚拟技术vxlan">网络虚拟技术——VxLAN</h2>
+<h3 id="云计算">云计算</h3>
+<p>十年前对云计算的论道，BAT 三家给出了不同的看法，并且各家在各自的执念中成长与发展（基于此是否可以认为一个人未来变成什么样子与Ta能向前看多远有正相关的关系？）；其实更早时间，Amazon已经发力在做云计算的产品并被业界视为典范了。那么什么是云计算呢？</p>
+
+<p>假如我想自己搭建一个网站，于是随便到一家云计算平台（Amazon、阿里云、华为云、腾讯云，等等）购买一台 2CPU 核 1G 内存的主机；云计算平台在我下单后马上就给了我一台云主机，而且CPU、内存、网络、磁盘等都是购物单子里填好的参数！我上线了网站以后，发现流量比较大，觉得有必要再扩一台主机来承载业务，于是又买了一台 4 CPU 核 8G 内存的主机，交完钱立马就获得了另一个期望配置的云主机，CPU、内存、网络、磁盘都是预期的配置，尤其新机器的网络与我的第一台主机在同一个网段里，方便我让两台主机之间进行耦合。后来有一天，云计算平台电源故障，我的其中一个云主机正好在故障的物理机柜上面，云计算平台的运维第一时间联系到我，跟我说已经把我的云主机迁移到了另一个机房，理论上服务不会感知到，可能部分请求会出现超时。</p>
+
+<p>上面描述的就是云计算的一种应用场景了。</p>
+
+<h3 id="虚拟技术对网络的要求">虚拟技术对网络的要求</h3>
+
+<p><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fya6a2e48oj317e0leq66.jpg" alt="" /></p>
+
+<p>云计算能够提供稳定的服务，给客户非常好的体验。不过云主机动态实例化并且能够几近零故障地在物理机上漂来漂去，它的网络该如何架构才能满足需求呢？</p>
+
+<p>既然我们已经知道是通过虚拟技术实现的，那么可以画一张上图所示的架构图示意云计算中的网络架构；其中物理层就是《<a href="https://jingwei.link/2018/12/16/fundamental-network-principle.html">梦回课堂——重温基础网络拓扑原理</a>》以及本文 “网络虚拟技术——VLAN” 涉及到的技术所在的层（虽然 VLAN 也是一种虚拟技术，不过它确实在物理层工作😆），虚拟层是云主机所在的层，也就是云计算平台给客户的交付物。</p>
+
+<p>假如 vm-1 和 vm-2 是我申请到的两台云主机，从图上可以看到它们两个是运行在不同的宿主机上面的（前者在 host-1 上面，后者在 host-2 上面）。那么当 vm-1 上的服务想要访问 vm-2 上的服务的时候，网络应该怎么走呢？必然要<strong>基于物理网络来实现</strong>！也就是图中红色虚线所示意的网路：<code class="highlighter-rouge">vm-1 &lt;=&gt; host-1 &lt;=&gt; 交换机+路由器 &lt;=&gt; host-3 &lt;=&gt; vm-2</code>。从图中还可以看到，vm-1 的 IP 被分配为 <code class="highlighter-rouge">172.0.1.1/24</code>，vm-2 的 IP 被分配为 <code class="highlighter-rouge">172.0.1.2/24</code>，假如这个时候 host-1 出现了故障，vm-1 漂到了 host-2 到了 <code class="highlighter-rouge">vm-1'</code> 的位置，网路变成了 <code class="highlighter-rouge">vm-1' &lt;=&gt; host-2 &lt;=&gt; 交换机+路由器 &lt;=&gt; host-3 &lt;=&gt; vm-2</code>， 但是为了保证云主机上服务的正常，需要保证  <code class="highlighter-rouge">vm-1'</code>  的 IP 依然为 <code class="highlighter-rouge">172.0.1.1/24</code>。</p>
+
+<h3 id="一种overlay网络的实现vxlan">一种overlay网络的实现——VxLAN</h3>
+<p>由上面的描述可以知道，在虚拟层里的云主机是感知不到物理层的存在的，这样才能保证自己的完整性；也就是说， 上图（虚拟网络架构图）中的 vm-1 只能看到网路中存在一个 vm-2， 但是无法知道自己运行在哪一台宿主机上，更不知道宿主机在什么样的网络环境中。业界把能够满足这种网络需求的技术叫做 overlay 网络，而 VxLAN 是 overlay 网络的一种具体的技术实现，所以 VxLAN 也没什么神秘的。</p>
+
+<p>不过既然物理层是透明的，那么虚拟层势必要在自己的层虚拟出交换机、路由器等基础设置，也就是上图中<strong>虚拟层基础设施层</strong>所包含的组件，从而保证虚拟层中的虚拟机集群正常工作。我们可以想象，这不是一件简单的工程实现。不过既然协议是分层的，那么我们可以参考 <a href="https://baike.baidu.com/item/%E7%BD%91%E7%BB%9C%E4%B8%83%E5%B1%82%E5%8D%8F%E8%AE%AE/6056879">OSI</a> 模型以及 TCP/IP 协议族的实现方式，给虚拟机之间的网络请求再封装一层 VxLAN 的协议来实现这一切。</p>
+
+<p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fya6aept8ej30ej0c2abp.jpg" alt="" /></p>
+
+<p>（图片来自《<a href="https://www.cnblogs.com/hbgzy/p/5279269.html">Vxlan学习笔记——原理 - 博客园</a>》）</p>
+
+<p>上图是从《<a href="https://www.cnblogs.com/hbgzy/p/5279269.html">Vxlan学习笔记——原理 - 博客园</a>》摘取的图片，示意 VxLAN 的报文格式。如果对  TCP/IP 协议比较熟悉，从报文里可以比较容易地看出来 VxLAN 的实现原理。这里我以<strong>虚拟网络架构图</strong>中 vm-1 与 vm-2 之间的通信为例描述一下数据封包的过程：1） vm-1 向 vm-2 发起请求，由于二者在同一个虚拟网段中，因此 vm-1 与 vm-2 互相知道彼此的 IP 地址和 MAC 地址，因此原始请求（假设为A）中包含了这些信息。2）由于 vm-1 与 vm-2 是运行在虚拟层的云主机，其请求归根结底还是要通过底层的物理网络进行传输的，因此请求 A 是无法进行传递的；但为了实现信息传递，在请求 A 经过时，<strong>虚拟层基础设施层</strong>势必会去一个<strong>全局的表里查找 vm-1 与 vm-2 各自对应的宿主机信息</strong>，并根据这个信息以及宿主机具体的网络环境把请求 A 在物理层的网路“画”出来，给请求 A 封装一层 VxLAN 的协议，然后就抛给物理层去处理了。3）物理层根据 VxLAN 协议封装的信息把请求转发到对应的宿主机 host-3， 然后经过<strong>虚拟层基础设施层</strong>解包后，把请求 A 发给 vm-2。vm-2 回复 vm-1 时会走一遍相似的过程，如此 vm-1 与 vm-2 便实现了通信。</p>
+
+<h3 id="责任越大权力也要越大">责任越大，权力也要越大</h3>
+<p>从上面的描述来看，<strong>虚拟层基础设施层</strong>是 VxLAN 中的关键实现。如果我们抛开物理层的细节，把物理层抽象成为多台物理机，那么<strong>虚拟层基础设施层</strong>需要在这些物理机上面重新实现一套二层网络（交换机所在层）。同时由于这个网络需要整合所有物理机的资源，因此<strong>虚拟层基础设施层</strong>需要对所有的物理机拥有管理权限，至少有所有物理机的特定状态的知情权。</p>
+
+<p>举个例子，当 vm-1 与 vm-2 添加到同一个网段的时候，理论上他们需要获取彼此的 MAC 信息，这个时候 vm-1 发起广播，这个时候就需要虚拟层基础设施层用“魔法”把广播的信息发送到 vm-2 去。更实际一点，假如这个时候虚拟层基础设施层还不知道该怎么传递信息，它将不得不给所有的物理机发送请求，遍历所有物理机上的所有虚拟机直到找到需要的所有虚拟机的列表为止（当然为了避免未来做重复的事情，或许会有缓存机制）。</p>
+
+<p>再举个例子，由于虚拟机可能运行在任何一台物理机上面，因此<strong>虚拟层基础设施层</strong>中的网关需要有权限获取所有的物理机上的虚拟机信息，这样才能在对的时间把请求路由到对的虚拟机。这也隐含着另外一层信息，假如<strong>虚拟层基础设施层</strong>需要把虚拟层以及物理层的复杂拓扑结构保存起来，存储数据的地方应该是一个集中化的数据库（比如ETCD），这样的话它的性能及稳定性就要考虑了。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文对 VLAN 和 VxLAN 技术进行了探究。 VLAN 技术的实现主要依托于交换机，在物理的二层网络上虚拟出逻辑上的二层网络；VxLAN 技术则在物理的三层和四层网络上虚拟出逻辑上的二层网络。了解完这两个概念及其原理以后，后面再去探究 Docker 以及 Kubernetes 的网络模型应该就不难了（但愿如此吧😆）。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://blog.csdn.net/octopusflying/article/details/77609199">关于VLAN和VXLAN的理解 - CSDN博客</a></li>
+  <li><a href="https://baijiahao.baidu.com/s?id=1578115493866280873">什么是交换机堆叠?</a></li>
+  <li><a href="https://blog.csdn.net/zhaihaifei/article/details/74340428">Overlay网络 - CSDN博客</a></li>
+  <li><a href="http://blog.51cto.com/6930123/2115373">图文并茂VLAN详解，让你看一遍就理解VLAN - 51CTO博客</a></li>
+  <li><a href="https://www.cnblogs.com/hbgzy/p/5279269.html">Vxlan学习笔记——原理 - 博客园</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/12/16/fundamental-network-principle.html" class="read-next-link"></a>
+          <section>
+            <span>梦回课堂——重温基础网络拓扑原理</span>
+            <p>  写在前面写在前面最近一段时间的工作偏运维开发，相对于纯粹的后端开发，关注的点由 CPU 和内存转到了更为宏观的...</p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "简析VLAN和VxLAN两种网络虚拟技术",
+      "tags"     : "基础 经验",
+      "url"      : "/2018/12/17/vlan-and-vxlan.html"
+    } ,
+  
+    {
       "title"    : "梦回课堂——重温基础网络拓扑原理",
       "tags"     : "经验 基础",
       "url"      : "/2018/12/16/fundamental-network-principle.html"
