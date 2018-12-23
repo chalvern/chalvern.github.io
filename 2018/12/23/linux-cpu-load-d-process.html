@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux的CPU-Load虚高之进程的D状态 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Linux的CPU-Load虚高之进程的D状态">
+    <meta name="keywords"  content="经验, DevOps, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Linux的CPU-Load虚高之进程的D状态 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/12/23/linux-cpu-load-d-process.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>Linux的CPU-Load虚高之进程的D状态</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-12-23"><i class="iconfont icon-date"></i>23 Dec 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">Linux中进程的D状态会引起CPU-Load虚高</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#linux中进程的d状态会引起cpu-load虚高" id="markdown-toc-linux中进程的d状态会引起cpu-load虚高">Linux中进程的D状态会引起CPU-Load虚高</a>    <ul>
+      <li><a href="#linux中的cpu-load-average" id="markdown-toc-linux中的cpu-load-average">Linux中的CPU-Load-Average</a></li>
+      <li><a href="#linux-load-average-的理解误区" id="markdown-toc-linux-load-average-的理解误区">Linux Load average 的理解误区</a></li>
+      <li><a href="#linux-进程的-d-状态uninterruptible-sleep" id="markdown-toc-linux-进程的-d-状态uninterruptible-sleep">Linux 进程的 D 状态（Uninterruptible Sleep）</a></li>
+      <li><a href="#一些工具命令示例" id="markdown-toc-一些工具命令示例">一些工具命令示例</a></li>
+    </ul>
+  </li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>前几天从同事手里接盘了一个 HHKB 的键盘，虽说是顶级的配置，但是如果不提一句的话估计大家都不会意识到码出这篇博文的工具如此高大上，同时我要持续吃土小半年了。</p>
+
+<p>就向之前<a href="https://jingwei.link/2018/12/16/fundamental-network-principle.html">博文</a>提到的，我工作的重心从业务开发逐渐向基础平台建设转移，关注的点从 CPU 和内存变成了更为宏观的系统架构、稳定性、性能等。一方面需要站的足够高，如此才能理清楚系统的整体脉络，避免在解决一个棘手问题的时候再引入另一个棘手问题；另一方面要看的够细，既要知其然也要知其所以然，如此才能保证方案中选用的组件是满足需求的。</p>
+
+<p>本文将对 Linux 中进程的 D 状态（ <code class="highlighter-rouge">uninterruptible sleep</code>）进行简单的探索，并探究由其引起的 CPU-Load 虚高的现象及影响。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——初级——<strong>中级√</strong>——高级；本文适应中级及以上。</p>
+
+<h2 id="linux中进程的d状态会引起cpu-load虚高">Linux中进程的D状态会引起CPU-Load虚高</h2>
+<p>有一天我去检查机器的负载，发现其中一台服务器的负载非常高，CPU 的 load-average  达到了 19 以上，查看机器的配置却只有4个 cpu 核，且这种状态已经持续了一段时期。这和我以往获取到的常识是相悖的；按照 Linux 的设定，4 个 CPU 核的正常 load-average 不应该大于 4，如果大于 4 很大程度上说明存在 IO 瓶颈。蹊跷的是出现这种负载异常的服务器除了数据有点难看，并未表现出明显的超负载现象，这就引起我很大的兴趣进一步追查其原因。</p>
+
+<h3 id="linux中的cpu-load-average">Linux中的CPU-Load-Average</h3>
+<p>在 Linux 系统中，我们可以通过好几种方式查看 CPU 的平均负载情况，比如 <code class="highlighter-rouge">w</code> 命令，比如<code class="highlighter-rouge">top</code> 命令 ，都会打印出 <code class="highlighter-rouge">load average: 1.57, 1.40, 1.32</code> 模样的数字。那么我们应该怎么理解 CPU-Load 所对应的数值呢？</p>
+
+<p>大家对 CPU-Load 的理解，主流的是把只有一个核（单核）的 CPU 比喻成一条单车道，不过对于不开车的人来说，可能不太好理解。其实我们可以用更通俗的包饺子来打比方。在老家，从擀面皮到包馅都是自己亲力亲为；对我家来说，一般都是我妈妈擀面皮，我爸爸包馅。假如把饺子皮看做进程，把我老爸看做 CPU 核，我们可以想象这样几种场景：1）老妈制作面皮的时候电视上正播放着《还珠格格》，她时不时看几眼电视屏幕，平均一分钟制作 5 个面皮，而老爸平均一分钟包 10 个饺子，他包完一个饺子后，发现面皮还没有做好，于是不得不在那里等；这种情况下，可以认为 CPU 核的负载是小于 1 的。原来 1 分钟能包出来 10 个饺子，现在因为饺子皮制作慢导致 1 分钟只能包好 5 个饺子，可以计算出 CPU 的负载是 0.5 （5/10）。2）假如这个时候老爸抱怨了一句，老妈把注意力收回来一些，平均一分钟制作 10 个面皮，与老爸包饺子的速度一致了，此时可以认为 CPU 核的负载正好等于 1.0（10/10）。3）又过了几分钟电视上开始播放广告了，老妈的注意力完全收回来，平均一分钟制作 15 个面皮，这个时候老爸包饺子的速度跟不上了，此时可以认为 CPU 的负载为 1.5（15/10）。4）过了一分钟电视上又开始播放《还珠格格》了，这个时候老妈的注意力又开始被吸引过去，于是饺子皮越来越少，老爸的负载也变得越来越小最后变成第一种情况（从 1.5 变成 1.0 最后变成 0.5）。5）老爸终于鼓起勇气拿起遥控器把频道换成了 CCTV-9 的《动物世界》，这个时候老妈（假设能强忍住怒气）不得不专注地擀面皮，大概坚持了十分钟，这段时间里面皮越来越多，相对来说老爸的负载从 0.5 到 1.0 到 3.0 最后到 5.0 ，只要老妈坚持的时间够久最后负载可能到 20.0 甚至更高。</p>
+
+<p>上面“包饺子”的比方，可以解释一般情况下 CPU-Load-Average 的含义，因此当系统管理员发现 CPU 负载高的时候，总要特别关注，如果发现当前的机器资源已经无法支撑当前的业务量，就需要排查是否被攻击或者考虑加机器了（以包饺子为例，可能就是老爸把我从被窝里拖出来和他一起包饺子，这中情况下相当于两个 CPU 核）。</p>
+
+<p>值得说明的一点是，当 Linux 拥有多个 CPU 核的时候，在展示 CPU-Load 的时候 Linux 并不会主动取平均值而只给出 Load 的总值。因此，对于有 4 个核的 CPU，可以认为 CPU-Load 小于 4 的时候都是没有满载的。</p>
+
+<h3 id="linux-load-average-的理解误区">Linux Load average 的理解误区</h3>
+<p>由于 CPU-Load 出问题很大程度是因为超载，因此这个值一般会作为一个发起告警的指标，当 <code class="highlighter-rouge">CPU-Load-Average</code> 大于某个值的时候触发告警。不过这个地方是有误区的，我从<a href="http://linuxperf.com/?p=176">这里</a>摘录了一段话，很精确的解释了这个误区：</p>
+
+<blockquote>
+  <p>Linux上的 load average 除了包括正在使用CPU的进程数量和正在等待 CPU 的进程数量之外，还包括 uninterruptible sleep 的进程数量。通常等待 IO 设备、等待网络的时候，进程会处于 uninterruptible sleep 状态。Linux 设计者的逻辑是，uninterruptible sleep 应该都是很短暂的，很快就会恢复运行，所以被等同于 runnable。然而uninterruptible sleep 即使再短暂也是 sleep，何况现实世界中 uninterruptible sleep 未必很短暂，大量的、或长时间的 uninterruptible sleep 通常意味着 IO 设备遇到了瓶颈。众所周知，sleep 状态的进程是不需要 CPU 的，即使所有的 CPU 都空闲，正在 sleep 的进程也是运行不了的，所以 sleep 进程的数量绝对不适合用作衡量 CPU 负载的指标，Linux 把 uninterruptible sleep 进程算进 load average 的做法直接颠覆了 load average 的本来意义。所以在 Linux 系统上，load average 这个指标基本失去了作用，因为你不知道它代表什么意思，当看到 load average 很高的时候，你不知道是 runnable 进程太多还是 uninterruptible sleep 进程太多，也就无法判断是 CPU 不够用还是 IO 设备有瓶颈。</p>
+</blockquote>
+
+<p>上面的文字虽然讲的很有道理，不过并无足够的论据说服我们把 CPU-Load 的告警去掉（最好不要去掉，可以认为这是个与理论不符的最佳实践）。话说回来，既然 CPU-Load 中包含了 <code class="highlighter-rouge">uninterruptible sleep</code> 的进程数量，那么什么是 <code class="highlighter-rouge">uninterruptible sleep</code> 呢？</p>
+
+<h3 id="linux-进程的-d-状态uninterruptible-sleep">Linux 进程的 D 状态（Uninterruptible Sleep）</h3>
+
+<p>我觉得<a href="http://justlinux.ca/tips/UninterruptableSleep">这篇文章</a>里讲的比较透，很多地方也引用了这篇文章里下面的图：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Executing process requests some service from kernel,
+    <span class="se">\ </span>  kernel suspends process and moves it to a parking queue
+     <span class="se">\ </span>
+      <span class="se">\ </span>             Kernel completes the service,
+       <span class="se">\ </span>            <span class="se">\ </span>   kernel moves suspended process to one of the runnable queues
+        <span class="se">\ </span>            <span class="se">\ </span>
+         <span class="se">\ </span>            <span class="se">\ </span>              Suspended process moves to top of runnable queue, 
+          <span class="se">\ </span>            <span class="se">\ </span>              <span class="se">\ </span>  kernel resumes the process execution
+           <span class="se">\ </span>            <span class="se">\ </span>              <span class="se">\</span>
+  Running <span class="nt">--</span><span class="p">;</span><span class="nt">--</span><span class="o">&gt;</span> Parked <span class="nt">--</span><span class="p">;</span><span class="nt">--</span><span class="o">&gt;</span> Runnable <span class="nt">--</span><span class="p">;</span><span class="nt">--</span><span class="o">&gt;</span> Running
+</code></pre></div></div>
+
+<p>简单来讲，1）内核 每隔一段时间都会统一接受所有进程的请求（这里可能与CPU时间片有关系，需要进一步确认），如果发现有进程发起了请求，首先内核会去<strong>获取进程所需要的资源</strong>，然后把这个进程暂时放到一个 parking 队列里；这里类似于<strong>需求收集阶段</strong>。2）在<strong>需求收集结束</strong>后，会把发起请求的进程放到一个<code class="highlighter-rouge">runnable</code> 队列里，等待执行。3）把 <code class="highlighter-rouge">runnable</code> 队列里的进程依次执行。</p>
+
+<p>进程的 D 状态（Uninterruptible Sleep）发生在<strong>需求收集阶段</strong>。试想在这个阶段，当内核去<strong>获取进程所需要的资源</strong>的时候，比如从磁盘读取某一个文件，这个时候突然磁盘驱动不干活了（可能因为区的数据太多驱动没反应过来，也可能因为磁盘出了故障），这个时候内核就为难了，场面变得比较尴尬。1）首先驱动是工作在内核态的，内核对驱动有绝对的信任权；其次，2）进程发起请求了，自己作为老大于情于理都应该应承；3）但是进程所要求的数据实在拿不到怎么办呢？4）这个时候内核只能把进程的状态临时转换为 D 状态，标明这个锅是内核自己的，内核正在尝试获取进程需要的资源，而且获取资源的途径是内核可控的（内核必须对全局的资源拥有控制权限，否则也不要当内核了😢）。</p>
+
+<p>上面的情况，如果进程所需要的数据很快就被内核拿到了还好（大部分情况下都是如此），如果拿不到（比如真的磁盘出现了故障，而驱动代码又没有考虑到这种情况，或者驱动抛出了信号但是内核不承认），那么相应的进程就会一直处于 D 状态。非常戏剧性的是，只有处于可运行状态（<code class="highlighter-rouge">Runnable</code>）的进程是可以接受终止信号（ <code class="highlighter-rouge">kill</code> 信号的），处于 D 状态的进程是没有办法被 <code class="highlighter-rouge">kill</code> 掉的。想一想也好理解，因为流程卡在内核那里，这个时候内核与进程是绑定的状态，内核限制进程不接受被 <code class="highlighter-rouge">kill</code> 的信号也是理所当然的。（我的理解是，这里的内核过于自信了，或许高版本的已经没有这个问题了，我的故障机是<code class="highlighter-rouge">4.4.0</code>内核版本）。</p>
+
+<h3 id="一些工具命令示例">一些工具命令示例</h3>
+<p>其实本文很多东西都没有讲透，需要大家具有一定的知识储备才能理解所讲的内容及意义。受到篇幅影响，我这里给出一些命令，大家可以自行去钻研相关的细节。</p>
+
+<ul>
+  <li><code class="highlighter-rouge">top</code> 命令，主要用来显示进程列表，顺便也会显示 CPU 负载情况，还包含内存、IO等情况。</li>
+  <li><code class="highlighter-rouge">w</code> 命令，主要用来打印登陆当前主机的用户列表，顺便会显示 CPU 负载情况。</li>
+  <li><code class="highlighter-rouge">ps -aux | awk '$8 == "D"'</code> 获取状态为 <code class="highlighter-rouge">D</code> 的进程列表，其中 <code class="highlighter-rouge">awk</code> 的应用可以参考《<a href="https://mp.weixin.qq.com/s/6YVC9hA2fMEjclWmseevXA">看示例学awk</a>》。</li>
+  <li><code class="highlighter-rouge">vmstat -a 2 10</code> 每2秒钟采样一次虚拟内存统计，采样10次（vmstat 是 Virtual Meomory Statistics 的缩写，可对操作系统的虚拟内存、进程、IO读写、CPU活动等进行监视，不过我实验发现展示出来的 D 状态的进程数量相对于上一条偏少）。</li>
+  <li><code class="highlighter-rouge">iotop -h</code> 类似于 <code class="highlighter-rouge">top</code> 命令专用于查 IO 。iotop的本质是一个python脚本，从proc中获取thread的IO信息，进行汇总。需要 <code class="highlighter-rouge">apt install iotop</code> 专门安装这个工具。</li>
+  <li><code class="highlighter-rouge">pidstat -d 1 2</code> 查看设备IO，每秒钟运行一次，采样 2 次。pidstat 主要用于监控全部或指定进程占用系统资源的情况，如CPU，内存、设备IO、任务切换、线程等。pidstat首次运行时显示自系统启动开始的各项统计信息，之后运行pidstat将显示自上次运行该命令以后的统计信息。需要 <code class="highlighter-rouge">apt install sysstat</code> 安装这个工具。</li>
+</ul>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://wheresmile.com/topic/81">本文在 WhereSmile.com 社区的地址，可留言讨论</a></li>
+  <li><a href="https://jingwei.link/2018/12/16/fundamental-network-principle.html">梦回课堂——重温基础网络拓扑原理 - 敬维</a> 前面写的博客</li>
+  <li><a href="http://blog.scoutapp.com/articles/2009/07/31/understanding-load-averages">Understanding Linux CPU Load - when should you be worried?</a> 介绍了 CPU-Load 的含义</li>
+  <li><a href="https://www.cnblogs.com/echo1937/p/6240020.html">%iowait和CPU使用率的正确认知 - 博客园</a></li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>[理解Linux load average的误区</td>
+          <td>Linux Performance](http://linuxperf.com/?p=176)</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>[Load (computing) - Wikipedia] 在维基百科搜索 <code class="highlighter-rouge">Load (computing)</code>，里面有对 <code class="highlighter-rouge">uninterruptible sleep</code>的描述</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>[Uninterruptable Sleep</td>
+          <td>Just Linux](http://justlinux.ca/tips/UninterruptableSleep) 对 <code class="highlighter-rouge">uninterruptible sleep</code> 有一个比较中肯的解释</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li><a href="https://www.cnblogs.com/xiaotengyi/p/7644336.html">Linux 进程的 Uninterruptible sleep(D) 状态 - 博客园</a></li>
+  <li><a href="http://blog.51cto.com/echo1937/1286437">Linux进程的Uninterruptible sleep（D）状态 -51CTO博客</a> 处于 D 状态的进程没辙。。</li>
+  <li><a href="https://www.cnblogs.com/feng0815/p/8613547.html">性能调优之vmstat命令 - 博客园</a> 介绍了 vmstat 的使用方法</li>
+  <li><a href="https://blog.csdn.net/xujintao1987/article/details/81224940">%iowait , uninterruptible sleep process , system load 关系 - CSDN博客</a> 状态为 D 的进程对 cpu-load 的影响</li>
+  <li><a href="https://blog.csdn.net/G7N3F/article/details/52673077">定位 iowait 占用的进程 - CSDN博客</a> 里面有一些脚本可以使用</li>
+  <li><a href="http://blog.51cto.com/professor/2052067">压力测试衡量CPU的三个指标：CPU Utilization、Load Average和Contex-Professor-51CTO博客</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/6YVC9hA2fMEjclWmseevXA">看示例学awk</a></li>
+  <li><a href="http://www.cnblogs.com/ggjucheng/archive/2013/01/13/2858874.html">Linux 运行进程实时监控pidstat命令详解 - 博客园</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/12/17/vlan-and-vxlan.html" class="read-next-link"></a>
+          <section>
+            <span>简析VLAN和VxLAN两种网络虚拟技术</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

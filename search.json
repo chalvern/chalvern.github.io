@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Linux的CPU-Load虚高之进程的D状态",
+      "tags"     : "经验 DevOps 实用",
+      "url"      : "/2018/12/23/linux-cpu-load-d-process.html"
+    } ,
+  
+    {
       "title"    : "简析VLAN和VxLAN两种网络虚拟技术",
       "tags"     : "基础 经验",
       "url"      : "/2018/12/17/vlan-and-vxlan.html"
