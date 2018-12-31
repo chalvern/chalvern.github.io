@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux系统调度原理浅析 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Linux系统调度原理浅析">
+    <meta name="keywords"  content="经验, DevOps, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Linux系统调度原理浅析 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>Linux系统调度原理浅析</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-12-30"><i class="iconfont icon-date"></i>30 Dec 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">关于进程与线程、多线程模型、时间片以及调度等内容</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#linux系统调度原理" id="markdown-toc-linux系统调度原理">Linux系统调度原理</a>    <ul>
+      <li><a href="#单核cpu内存-vs-四方小木桌" id="markdown-toc-单核cpu内存-vs-四方小木桌">单核CPU+内存 vs 四方小木桌</a></li>
+      <li><a href="#进程-vs-吃饭下棋" id="markdown-toc-进程-vs-吃饭下棋">进程 vs 吃饭下棋</a></li>
+      <li><a href="#线程-vs-和家人谈谈心" id="markdown-toc-线程-vs-和家人谈谈心">线程 vs 和家人谈谈心</a></li>
+      <li><a href="#时间片" id="markdown-toc-时间片">时间片</a></li>
+      <li><a href="#更合理的时间片划分" id="markdown-toc-更合理的时间片划分">更合理的时间片划分</a></li>
+      <li><a href="#内核调度是一个非常复杂的过程" id="markdown-toc-内核调度是一个非常复杂的过程">内核调度是一个非常复杂的过程</a></li>
+      <li><a href="#多线程模型" id="markdown-toc-多线程模型">多线程模型</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>元旦假期已经开始了，意味着 2018 年终是要溜走了。假期第一天，深圳的气温突然降下来，冬天总算证明了自己的尊严，而我则躲在熟悉的角落里继续码字。
+本想简单地写一写 Golang 的调度原理，不过看了几篇文章后发现，有必要在写 Go 调度器前先整理一下 Linux 的调度原理，复习一下进程、线程、时间片、内核调度等概念及其原理，然后再去探究 Go 调度器就容易理解了。</p>
+
+<p>现在就让我们把大学课堂上学习的知识点捡回来，复习一下进程与线程的概念、多线程模型、时间片以及调度等内容。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
+
+<h2 id="linux系统调度原理">Linux系统调度原理</h2>
+<h3 id="单核cpu内存-vs-四方小木桌">单核CPU+内存 vs 四方小木桌</h3>
+
+<p>记得在我很小的时候，家里买了一个新的四方小木桌，一家人吃饭的时候会把它用来做餐桌，我和老爸下象棋的时候会把它用来做象棋桌，除夕夜一家人打牌赢压岁钱的时候则会把它用来做牌桌。<strong>四方小木桌是一种通用的工具，我们可以在上面完成许许多多的事情，就像服务器上的 CPU 与内存，我们可以在服务器上运行许多进程。</strong></p>
+
+<p><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fypmevdgdzj31gy0fyaci.jpg" alt="" /></p>
+
+<h3 id="进程-vs-吃饭下棋">进程 vs 吃饭下棋</h3>
+<p>教科书里对<strong>进程</strong>的描述比较学院风，很多网络上的文章也把进程描述得很抽象，这导致让一些非计算机专业的同学理解起来并不是那么容易。如果接上一小节的比喻，把服务器的 CPU（假设只有一个核）和内存等资源比喻为四方<strong>小木桌</strong>，其实我们完全可以<strong>把进程理解为在这个小木桌上完成的事项——比如吃饭，下象棋，打牌，等等</strong>。</p>
+
+<p>可以在小木桌上做的这些事情，无论是吃饭、下象棋或者打牌，都需要花费一定的时间做准备。比如，为了在小木桌上吃饭我们需要先把碗、筷、盘子及饭菜等放到桌面上，为了在小木桌上下象棋我们需要先把棋盘、棋子摆放在桌面上，为了在小木桌上打牌我们需要先把扑克放在桌面上。当然，所有事情结束后还需要清理一下桌面，把各东西归位（比如饭后把碗筷和盘子收拾掉，下完象棋把象棋收好）。</p>
+
+<p>类似的，当跑一个进程的时候也有类似的步骤：需要1）首先把进程需要的相关资源加载到内存里，2）然后才能让进程真正地运行起来。</p>
+
+<h3 id="线程-vs-和家人谈谈心">线程 vs 和家人谈谈心</h3>
+<p>如果到了饭点的时候，大家一声不吭地围着小木桌吃饭，会显得气氛非常尴尬；如果下象棋的时候双方一声不吭地落棋，也会显得气氛局促。于是，我们可以借坐到一起的机会和家人谈谈心，聊一聊妈妈关心的柴米油盐（比如番茄炒蛋这道菜的味道怎么样），聊一聊爸爸关心的工作事业，聊一聊小朋友的烦恼疑惑。</p>
+
+<p>如果<strong>把吃饭这个进程里的 “吃” 这个动作看成一个线程，那么饭桌上 “谈心” 这个动作就可以看成是另一个线程</strong>。同样的道理，如果把下象棋这个进程里的 “落棋” 这个动作看成一个线程，那么棋桌上 “谈心” 这个动作就可以看成是另一个线程。我们当然可以在吃完饭或者下完棋并把小木桌收拾干净以后，然后大家再坐到一起谈心，不过那样的话<strong>时间成本就太高了</strong>。</p>
+
+<p><strong>线程是进程里的一个具体的动作</strong>，一个进程里可以只包含一个线程，也可以包含很多的线程，且属于同一个进程的所有线程共享当前进程的所有资源。当操作系统的内核只有<strong>进程</strong>的抽象概念时，完成一个过程总需要两步，1）把过程需要的相关资源加载到内存，2）执行过程。后来有了<strong>线程</strong>的抽象概念，再完成一个过程就有机会利用已经加载好的资源，节省资源加载到内存的时间而<strong>直接完成某个过程</strong>（比如饭菜准备好已经开始吃饭了，再顺便谈谈心就不需要再上一次饭菜了）。</p>
+
+<h3 id="时间片">时间片</h3>
+<p>如果把<strong>时间线</strong>拉的足够久，比如我们<strong>以年为单位</strong>来看四方小木桌，可以认为小木桌既能用来吃饭，也能用来下象棋。现在假设一种极端情况，比如家里有一个嗜好下象棋的爷爷，一年四季都把棋盘拜访在小木桌上面，小木桌成为下象棋专用的了，导致家里人没有吃饭和打牌的地方了，肯定不妥。于是爸爸不得不和爷爷商量，以 6 个小时为时间段交替使用小木桌，比如某6个小时里能连续使用小木桌来专门下棋，接下来的 6 个小时里可能就要用小木桌来专门吃饭或者打牌了，如此轮流进行。爷爷比较通情达理，觉得公平合理，于是答应了。</p>
+
+<p>上面的 <strong>6 个小时</strong>期限就是一种时间片的划分。对于 CPU 来说，可以把 50ms（毫秒）作为一个时间片，每个时间片用来运行不同的线程。因为 50ms 是一个相对人类生理时间来说非常短的值，所以<strong>让我们误觉得一颗 CPU 核可以同时做很多事情</strong>。</p>
+
+<h3 id="更合理的时间片划分">更合理的时间片划分</h3>
+<p>把吃饭、下象棋、打牌都分配成 6 个小时的时间片，而且每件事交替轮流进行，其实显得有些粗暴了。比如吃饭的过程一般不会持续 6 个小时，而一家人打牌的机会比较少，没有必要一直把打牌这件事情考虑在小木桌的使用事件列表。那么应该怎么分配时间才更合理呢——这就需要认真规划一下了。</p>
+
+<p>相同的道理，对于内核而言，也不能一刀切地把时间片统一切分成为 50ms，完全可以给不同的线程分配不同的时间片时长，既能保证 CPU 的使用效率最大化，同时也能保证让使用电脑的人满意。之所以这么讲，可以考虑这两种极端情况：内核把时间片全都给了计算密集型的进程（比如全都给了视频转码相关的线程），这种情况下 CPU 的使用效率是最大的；但是这个时候如果我正在写博客，发现敲键盘的响应速度异常慢，那么我就没有办法码字了。为了照顾键盘或鼠标的相应速度而把计算密集型的进程的时间片定义的非常小（比如 5ms），这个时候进程切换（上下文切换）的边界成本就变得非常高；假设上下文切换需要 5ms，时间片为 5ms 时 CPU 的有效运行效率就只有 50% = 5/(5+5) 。</p>
+
+<p>因此时间片的划分是一个很讲究的事情，具体的可以参考 <a href="https://blog.csdn.net/russell_tao/article/details/7103012">这篇博客</a> 的内容。</p>
+
+<h3 id="内核调度是一个非常复杂的过程">内核调度是一个非常复杂的过程</h3>
+<p>我花了一些时间尝试理清楚内核调度的细节，不过这个过程非常的复杂，不是一时半会儿就能理清楚的；但是我们可以先意识到这个问题，然后慢慢琢磨里面的原理。</p>
+
+<p>①<strong>上</strong>一小节提到，为了提升 CPU 的运行效率的同时增加对用户的响应速度，时间片的划分要非常考究。②<strong>当</strong>给所有的进程分配了时间片以后，CPU 依然需要到某个地方把进程取出来依次执行，那么取出的顺序应该怎么定义才能保证利用效率的同时保证响应速度呢？③<strong>或</strong>许我们知道可以通过中断抢占的方式来保证响应速度，以按下键盘的某个键为例，触发相应的中断后让 CPU 优先处理监听此中断的进程， 处理完相应的中断后再返回之前被中断的进程继续执行；不过这里面同样需要注意中断的时机，完全可以等到计算密集型的进程把 50ms 时间片用完以后再中断，此时已经没有必要把 50ms 再切分了。④<strong>虽</strong>然我敲击键盘的速度已经够快了，不过对 CPU 而言，敲击键盘的间隙也会显得非常非常慢；为了保证用户体验，可以给我码字所在的进程分配足够长的时间片，但是时间片用不完怎么办，总不能让 CPU 一直等我吧？这个时候必然需要引入某种状态来进一步细化内核调度的算法，优化上下文切换的时机。⑤当然，还有很多种情况需要考虑，希望以后有时间能深挖一下 Linux 的内核源码探究一下这部分的内容。</p>
+
+<h3 id="多线程模型">多线程模型</h3>
+
+<p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fypmedvqwej30go08zdgp.jpg" alt="" />
+（用户级和内核级线程）</p>
+
+<p>这部分的内容我认为 《<a href="https://www.cnblogs.com/varcp/p/5434716.html">这篇</a>》博客已经讲的比较透彻了，因此把相关部分摘录一下。</p>
+
+<p>线程的实现可以分为两类：用户级线程(User-LevelThread, ULT)和内核级线程(Kemel-LevelThread,  KLT)。内核级线程又称为内核支持的线程。</p>
+
+<p>在用户级线程中，有关线程管理的所有工作都由应用程序完成，内核意识不到线程的存在。应用程序可以通过使用线程库设计成多线程程序。通常，应用程序从单线程起始，在该线程中开始运行，在其运行的任何时刻，可以通过调用线程库中的派生例程创建一个在相同进程中运行的新线程。上图(a) 说明了用户级线程的实现方式。这种<strong>将多个用户级线程映射到一个内核级线程，线程管理在用户空间完成的方式，是线程模型中的多对一模型（N:1）</strong>；因为此种模型的线程管理是在用户空间进行的，因此效率比较高（因为管理更为灵活），<strong>但是</strong>当内核空间的进程被阻塞的时候，所有用户空间的线程都会被阻塞。</p>
+
+<p>在内核级线程中，线程管理的所有工作由内核完成，应用程序没有进行线程管理的代码，只有一个到内核级线程的编程接口。内核为进程及其内部的每个线程维护上下文信息，调度也是在内核基于线程架构的基础上完成。上图(b)说明了内核级线程的实现方式。这种<strong>将每个用户级线程映射到一个内核级线程的方式，是线程模型中的一对一模型（1:1）</strong>；这种模型可以充分利用内核线程的并发优势，内核空间的某个线程被阻塞，可以启用另一个线程继续执行，<strong>不好的地方</strong>是创建内核级线程的开销比较大，会影响到应用程序的性能。</p>
+
+<p>在一些系统中，使用组合方式的多线程实现。线程创建完全在用户空间中完成，线程的调度和同步也在应用程序中进行。一个应用程序中的多个用户级线程被映射到一些（小于或等于用户级线程的数目）内核级线程上。上图(c)说明了用户级与内核级的组合实现方式。这种<strong>将 n 个用户级线程映射到 m 个内核级线程上（m &lt;= n）的方式，是线程模型中的多对多模型（n:m）</strong>。这种模型集合了上面两种模型的优点于一身，不过这种模型所对应的调度系统会变得非常复杂（目前 Go 语言采用的就是这种模型，所以说 Go 的调度器实现很复杂）。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文简单地复习了计算机基本原理中的几个概念，涉及到进程与线程、多线程模型、时间片、以及调度等内容。这部分的内容基础而重要，但是如果非计算机专业科班出身（或者大学里没有好好听课），很容易成为架构、编码或运维的盲点。因为本人的水平有限，再加上文字篇幅限制，本文忽略了很多细节没有去探究，建议读者能够静下心来自己再去了解一下这部分的内容，可以参考下面的一些参考文章。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://www.cnblogs.com/fuchongjundream/p/3829508.html">进程、线程、多线程相关总结 - GavinJun - 博客园</a></li>
+  <li><a href="https://www.cnblogs.com/varcp/p/5434716.html">线程的概念和多线程模型  - 博客园</a> 多对一模型，一对一模型，多对多模型</li>
+  <li><a href="https://blog.csdn.net/russell_tao/article/details/7094287">linux内核调度算法（1）—快速找到最高优先级进程 - 陶辉的专栏 - CSDN博客</a> 结合linux内核源码讲优先队列讲调度</li>
+  <li><a href="https://blog.csdn.net/russell_tao/article/details/7103012">linux内核调度算法（2）—CPU时间片如何分配 - 陶辉的专栏 - CSDN博客</a>  比较好的分配文章</li>
+  <li><a href="https://blog.csdn.net/russell_tao/article/details/7102297">linux内核调度算法（3）—多核系统的负载均衡 - 陶辉的专栏 - CSDN博客</a></li>
+  <li><a href="https://blog.csdn.net/Caoyang_He/article/details/80791581">进程的基本状态及转换和阻塞及挂起的理解 - Trinity - CSDN博客</a> 线程状态很详细的描述</li>
+  <li><a href="http://blog.chinaunix.net/uid-24227137-id-3598913.html">Linux 时间片调度-cainiao413-ChinaUnix博客</a> 对时间片的另一种朴素的描述</li>
+  <li><a href="https://www.jianshu.com/p/c655e0a944ae">在阻塞式io中，如果一个线程在等待io操作，那么cpu还会分配时间片给该线程吗？ - 简书</a></li>
+  <li><a href="https://book.douban.com/subject/1896753/">深入理解计算机系统 (豆瓣)</a> 强烈推荐这本非常不错的参考书</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/12/23/linux-cpu-load-d-process.html" class="read-next-link"></a>
+          <section>
+            <span>Linux的CPU-Load虚高之进程的D状态</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+  2018
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
