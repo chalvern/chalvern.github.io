@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>从 Clean-Architecture 谈架构原理及其应用 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="从 Clean-Architecture 谈架构原理及其应用">
+    <meta name="keywords"  content="基础, 经验, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="从 Clean-Architecture 谈架构原理及其应用 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2018/12/31/thinking-of-architecture.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>从 Clean-Architecture 谈架构原理及其应用</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="18-12-31"><i class="iconfont icon-date"></i>31 Dec 2018</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">2018年另一篇个人总结</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#团队小王的疑惑" id="markdown-toc-团队小王的疑惑">团队小王的疑惑</a></li>
+  <li><a href="#clean-architectrue整洁架构" id="markdown-toc-clean-architectrue整洁架构">Clean-Architectrue（整洁架构）</a>    <ul>
+      <li><a href="#clean-architectrue的整体思想" id="markdown-toc-clean-architectrue的整体思想">Clean-Architectrue的整体思想</a>        <ul>
+          <li><a href="#分层思想" id="markdown-toc-分层思想">分层思想</a></li>
+          <li><a href="#依赖规则" id="markdown-toc-依赖规则">依赖规则</a></li>
+          <li><a href="#整洁架构中的术语介绍" id="markdown-toc-整洁架构中的术语介绍">整洁架构中的术语介绍</a></li>
+          <li><a href="#一个关键点控制反转" id="markdown-toc-一个关键点控制反转">一个关键点——控制反转</a></li>
+        </ul>
+      </li>
+      <li><a href="#知己知彼以后我设计的架构有问题吗" id="markdown-toc-知己知彼以后我设计的架构有问题吗">知己知彼以后，我设计的架构有问题吗</a></li>
+    </ul>
+  </li>
+  <li><a href="#架构是什么" id="markdown-toc-架构是什么">架构是什么</a>    <ul>
+      <li><a href="#几个流行的架构图" id="markdown-toc-几个流行的架构图">几个流行的架构图</a>        <ul>
+          <li><a href="#k8s的架构图" id="markdown-toc-k8s的架构图">k8s的架构图</a></li>
+          <li><a href="#istio-架构图" id="markdown-toc-istio-架构图">ISTIO 架构图</a></li>
+          <li><a href="#vxlan虚拟网络架构图" id="markdown-toc-vxlan虚拟网络架构图">VxLAN虚拟网络架构图</a></li>
+        </ul>
+      </li>
+      <li><a href="#架构存在的意义" id="markdown-toc-架构存在的意义">架构存在的意义</a></li>
+      <li><a href="#架构师养成方法" id="markdown-toc-架构师养成方法">架构师养成方法</a></li>
+      <li><a href="#领域驱动设计ddd" id="markdown-toc-领域驱动设计ddd">领域驱动设计（DDD）</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a>    <ul>
+      <li><a href="#个人小结" id="markdown-toc-个人小结">个人小结</a></li>
+      <li><a href="#本文小结" id="markdown-toc-本文小结">本文小结</a></li>
+    </ul>
+  </li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>今天是2018年的最后一天。前些日子和团队的小伙伴们分享了自己对架构的理解，当时准备的比较仓促，讲的也比较粗糙，很多点并没有表达清楚；欣慰的是大家的反馈都比较积极，证明分享的内容是有参考价值的。</p>
+
+<p>这篇博客主要把分享的内容进行整理重塑，并补充一些当时没有表达的细节，期望能够给更多人更多的启发。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——初级——<strong>中级√</strong>——高级；本文适应<strong>中高级</strong>及以上。</p>
+
+<h2 id="团队小王的疑惑">团队小王的疑惑</h2>
+<p>圣诞那天晚上我值班，时间已经很晚了，发现团队小王同学还没回，好奇心驱使于是走过去聊了几句：原来他等着与另一个系统同步发版，辛苦却无恙。不过我好为人师的臭毛病（主要对新同学）发作，于是各种问东问西。作为过来人我太清楚职场新人的处境了，疑惑多，如果性格偏内向还不喜欢表达困惑。了解后发现小王果然存在疑惑——<strong>如何通过架构设计降低业务代码修改的难度</strong>，并抛给我一篇<a href="https://manuel.kiessling.net/2012/09/28/applying-the-clean-architecture-to-go-applications/">博文链接</a> ，同时声称链接是我们组另一个技术大佬推荐的（<a href="https://jiajunhuang.com/">大佬博客地址</a>）。</p>
+
+<p>在打发了小王同学后，抱着“不知就要学”的心态，我打开了他给我的那个链接，主要讲的是用 Go 语言实现一种架构，内容可谓又臭又长。当天夜里无眠，我一边盯着监控面板一边理解那篇博客的内容。到第二天调班休息的时候，心里还放不下那篇博客，于是困了睡，睡醒了就打开电脑读几段，感觉到困了再继续睡，最后终于理解了文章的主旨思想及其实践的含义。</p>
+
+<p>这件事情触发了我几点思考：1）小王同学的疑惑是否值得探索并解答，即“如何通过架构设计降低业务代码修改的难度”；2）能够通过架构设计降低业务代码修改（对应功能的增删改）的难度吗？3）小王做的项目的架构最初是我参与设计的，如果让我对架构进行二次设计，我是否会采用其他的架构方案？4）这个项目使用了团队<strong>内部的研发模板</strong>进行初始化，而模板的原型我也是参与制定者之一，那么这个模板所包含的架构设计是最佳实践吗？5）如果让我二次设计研发模板，会改成另一种设计吗？</p>
+
+<p>通过思考得到上面问题的答案后，结合经验我又进一步深化琢磨了几个问题：a）团队应该采取什么样的方式来减少职场新人的困惑，并尽可能降低这种困惑给团队和当事人引起的不适感？b）职场新人应该如何提升自己从而拥有架构的能力？c）团队里的知识应该采取什么样的方式进行传递继承？d）对于一些高阶的方法论，如何让实践经验欠缺的同事吸收消化并运用到实际工作中？</p>
+
+<p>问题需要一个一个地解决。</p>
+
+<h2 id="clean-architectrue整洁架构">Clean-Architectrue（整洁架构）</h2>
+
+<p>过去对架构思考的比较少，不过最近两个月因为工作上遇到的一些问题我一直在琢磨“分层”的技巧，并尝试论证“分层”的好处，同时细化“分层”所应遵循的原则，目标是<strong>提升自己的效率，优化团队成员的合作效率</strong>。顺着小王同学给的链接了解到整洁架构（The Clean Architectrue）的理论，算是找到了“分层”的理论支持，真可谓一个意外的收获了，</p>
+
+<h3 id="clean-architectrue的整体思想">Clean-Architectrue的整体思想</h3>
+
+<p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fyq0t7scpgj30lg0frq5h.jpg" alt="" /></p>
+
+<p>Clean-Architectrue架构图，摘自<a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">The Clean Architecture</a></p>
+
+<h4 id="分层思想">分层思想</h4>
+<p>上图显示了整洁架构的示意图，其中每个同心圆层代表了软件开发中的不同层，越是靠近中心，同心圆层所代表的东西越抽象。可以这么理解，内部的圆层定义的是规则，外部的圆层定义的是实现机制。</p>
+
+<p>整洁架构试图聚合这样几个特点：1）框架无关，即架构设计不依赖任何一个既有的开发框架，因此理论上可以使用任何框架来实践整洁架构。2）业务规则的可测性，即可以方便地测试业务逻辑所涉及的代码，不依赖UI、数据库或者 Web 服务等外部元素。3）功能实现不依赖 UI 的实现细节，比如同样一套后台系统可以用在 Web 应用，也可以用在 App 原生应用。4）业务逻辑不依赖数据库的实现细节，可以把数据保存在 Oracle、SQL server、Mongo、Mysql 等任意一种数据库中，同时业务逻辑不需要做任何改变。5）总结起来就是：业务逻辑对外界实现完全没有依赖，任你外面的实现细节如何改变，核心业务逻辑不需修改。</p>
+
+<h4 id="依赖规则">依赖规则</h4>
+
+<p>为了实现上面所讲的特点，只需要遵循<strong>依赖规则</strong>：<strong>只允许外部圆层的代码依赖内部圆层的代码，反之则禁止</strong>。换言之，内部同心圆层的代码不知道任何外部同心圆层的代码，比如内层的代码一律禁止引用外层声明的函数、类、变量或其他任何元素。</p>
+
+<p>其实上面的规则还隐含着另一个规则：当有数据传递时，只允许外部圆层接受内部圆层的数据格式，反之则不允许。这也是为避免外部的代码逻辑影响内部的代码逻辑（思考一下为什么）。</p>
+
+<h4 id="整洁架构中的术语介绍">整洁架构中的术语介绍</h4>
+
+<ul>
+  <li>实体（Entities）层：主要封装企业范围的业务规则，可以认为是代码要实现的核心业务规则，比如电商里涉及到的购物规则。</li>
+  <li>用例（Use Cases）层：主要封装特定于应用的业务规则，比如电商里普通用户购物与管理员管理货物信息，二者所涉及的用例是不一样的。</li>
+  <li>接口适配（Interface Adapters）层：主要包含各种适配器，负责把从实体层和用例层流出来的数据转换成为更外面一层需要的数据格式（比如转换成为适合数据库保存的格式，或者适合 Web 页面展示的格式）。</li>
+  <li>框架与驱动（Frameworks and Drivers）层：这是最外面的一层，是很多工具（或库）的具体实现细节所在层，比如 Web 框架（考虑一个应用可以做成网页版应用，也可以做成单机版应用）、数据库工具包（考虑各种 ORM 的实现，以及各种数据库的驱动依赖包实现）等。</li>
+</ul>
+
+<p>值得说明的是，虽然整洁架构的示意图中只显示了四层结构，但是可以根据业务规模调节层数，也就是说层数不是关键，关键在于<strong>分层思想</strong>以及<strong>依赖规则</strong>。</p>
+
+<h4 id="一个关键点控制反转">一个关键点——控制反转</h4>
+<p>依赖规则里规定“只能外层的代码依赖内层代码”，但是在实际代码中势必会出现这种场景：外层的代码调用内层的代码处理数据，数据经过内层代码作用后需要再反传给外层进行其他处理（比如把处理好的数据保存到数据库，保存到数据库的逻辑在外层）。Clean-Architectrue架构图的右下角给出了一种示意，那么如何让这种场景满足依赖规则呢？答案就是控制反转。</p>
+
+<p>对于 Go 语言来说，大体的实现是在内层定义一个 <code class="highlighter-rouge">Interface</code> 类型的数据，内层代码通过操作 <code class="highlighter-rouge">Interface</code> 的方法来实现业务逻辑，在外层实现这个 <code class="highlighter-rouge">Interface</code> 类型所包含的方法，从而达到反向控制的目的。其实这是一种设计模式，有点类似<strong>工厂方法模式或者抽象工厂模式</strong>，不是 Go 的专属，其他语言（比如 Java）均可以实现。</p>
+
+<h3 id="知己知彼以后我设计的架构有问题吗">知己知彼以后，我设计的架构有问题吗</h3>
+<p>在领悟了整洁架构的思想后，我又把小王同学给我的<a href="https://manuel.kiessling.net/2012/09/28/applying-the-clean-architecture-to-go-applications/">又臭又长的博客</a>读了两遍，然后思考我做的项目架构以及参与制定的开发模板是否有必要修改，假如要修改的话如何修改？如果不需要修改的话理由是什么？</p>
+
+<p>经过一番分析后，我认为我做的那个项目架构没有问题（不排除一些细节存在疏漏），不需要修改。我是从具体的业务复杂度来考虑的，改进版的 MVC 架构已经足以应对。1）假如按照整洁架构的思路把项目重构一遍，并没有办法降低需求的增删改造成的开发量，该头疼的地方依然要头疼；2）项目采用小巧精悍的 MVC 架构也能够满足快速敏捷的要求，而<strong>整洁架构的定位是大型的企业级应用或应用生态</strong>，反而不适用于小复杂度的项目开发；3）重构是一件劳民伤财的事情，轻易不能做。这么分析以后，我参与自研的开发模板已经足够大部分项目使用，至少架构层没有修改的必要（其他的层面或许有改进的必要，比如通用依赖库的使用方法、测试用例编写规范等）。</p>
+
+<p>虽然思考到最后发现不需要做什么，但这次思考的意义在于，让我意识到架构这件事情，并开始思考架构的含义及意义。那么，架构是什么呢？</p>
+
+<h2 id="架构是什么">架构是什么</h2>
+<p>架构是什么呢，可能这个问题和“什么是最好的编程语言”一样，不同的架构师会有不同的观点。在 2018 年上半年的时候，我参与过一次雷达峰会，对其中一位讲师抛出来的观点比较认同（当时没有太大感触，思考完上面的问题后才开始反刍这些观点）：1）架构为业务而生；2）架构聚焦于解耦；3）架构意味着沟通与协作；4）架构需要为时间买单（可以理解为架构的进化）。</p>
+
+<p>我们可以先看几个流行的架构图来体会一下。</p>
+
+<h3 id="几个流行的架构图">几个流行的架构图</h3>
+<p>架构图的具体出处可以在最后的<strong>参考</strong>小节查看。</p>
+<h4 id="k8s的架构图">k8s的架构图</h4>
+<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fyq5vk3rrhj30ot0kotat.jpg" alt="" /></p>
+
+<p>相信每个了解云技术栈的开发者都见过上面的 k8s 架构图，至少听过其中部分组件的名称。这张图很清楚地描述了 k8s 包含的各个组件及其协同运作的方式，这不仅仅给 k8s 项目的开发者一些开发方向的指引，同时也让 k8s 的使用者能够方便地讨论各种问题。</p>
+
+<h4 id="istio-架构图">ISTIO 架构图</h4>
+<p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fyq5vz4htbj312z0u0tcc.jpg" alt="" /></p>
+
+<p>业界提到 Service Mesh 的时候必提 ISTIO，它的架构如上图所示。可以注意到在 ISTIO 的架构中，所有的流量都通过 <code class="highlighter-rouge">Proxy</code> 进行接管，而 <code class="highlighter-rouge">Proxy</code> 是作为一个独立的进程与业务进程运行在同一个实例中（多指k8s 里的 Pod），那么对这个 <code class="highlighter-rouge">Sidecar</code> 就有比较多的要求了，比如要轻量级、高效、便于配置部署等等。由架构图我们也可以反推得出，在微服务化改造的过程中，应该控制自己业务的复杂度不能拆的太细碎，否则边界成本会变得非常大。</p>
+
+<h4 id="vxlan虚拟网络架构图">VxLAN虚拟网络架构图</h4>
+<p><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fya6a2e48oj317e0leq66.jpg" alt="" /></p>
+
+<p>这是我之前的一篇博客的示例图，描述了 VxLAN 的虚拟网络架构，这张图让很多讨论变得十分容易。</p>
+
+<h3 id="架构存在的意义">架构存在的意义</h3>
+
+<ol>
+  <li>就像前面描述的，<strong>架构存在的主要意义是为了解决某个业务问题</strong>，最终都可以对应到某个具体的技术方案；换句话说，世上没有通用的架构方案，只有适合某个业务难题或某个领域难题的架构方案。面对架构的问题，我们不能生搬硬套，如果想得到适用的架构，必须要<strong>深入了解业务的细节</strong>，唯一的捷径是承认这个事实，没有其他捷径。</li>
+  <li>在把握了业务的所有细节后，接下来做的一件事情是解耦，把业务细节分类分组，拆分成不同的模块，继而放到不同的层里。</li>
+  <li>定义好了模块的边界和不同层的边界，接下来就可以派发工作了。有了详细完整的架构设计，大家协同开发也变得简单顺利；首先大家沟通的时候能够十分清楚彼此要表达的问题细节，其次各个模块开发完到功能对接的时候彼此也能快速理清楚关注的点（比如必须要实现哪些个方法、函数或接口）。</li>
+  <li>最后在大家的共同努力下，项目终于完成了，但是不要以为到此结束。根据实践经验来看，所有的项目都会有新需求，或需求更改，这个时候很大概率会对原有的架构造成冲击。架构上该如何应对呢？理论上只要业务没有彻底改变，在原有的架构上做调整就可以满足需求了。因此原有架构的资料（所有图文文档、音视频等）就变得很重要，甚至一些决策的细节参考标准有时候也能起到关键的作用（写文档是给架构方案舔砖加瓦的一种方式）。</li>
+</ol>
+
+<h3 id="架构师养成方法">架构师养成方法</h3>
+
+<p>架构设计，往往要求开发者拥有宏观的视角，<strong>在实践经验不足、业务了解不够全面的情况下，是谈不上做架构的</strong>。不过，大部分开发者虽然做不了大的架构，但是可以尝试做一些微小的架构设计，从而建立自己的信心，然后 1）努力刻苦锻炼自己的实战经验（下苦功夫了解所在技术栈里的框架细节、依赖库细节、中间件细节，等等），2）同时积极主动地了解、思考尽可能多的业务细节。如此坚持下去，成为牛 x 哄哄的架构师指日可待。</p>
+
+<h3 id="领域驱动设计ddd">领域驱动设计（DDD）</h3>
+
+<p><strong>领域驱动设计</strong>（DDD）是一种实用的<strong>架构</strong>实践方式，它是一个成体系的方法论，<a href="https://book.douban.com/subject/5344973/">这本书</a> 详细地介绍了这个实践。文本无法通过一个小节的文字详述它，仅通过它的两个前提和两个实践方法先大体了解一下它的概念。</p>
+
+<p>DDD 的两个前提：1）在⼤大多数软件项⽬目中，主要的焦点应该是<strong>领域和领域逻辑</strong>; 2）复杂的领域设计应该<strong>基于模型</strong>。这两个前提条件把领域驱动所关注的点变成了<strong>模型的创建</strong>，因此<a href="https://book.douban.com/subject/5344973/">这本书</a> 很大篇幅的内容都是在讲模型相关的内容。</p>
+
+<p>DDD 的两个实践：1）<strong>迭代开发</strong>；2）<strong>开发⼈人员与领域专家</strong>具有密切的关系 。第一条侧重技术上的持续性，第二条侧重业务上的理解。</p>
+
+<h2 id="小结">小结</h2>
+
+<h3 id="个人小结">个人小结</h3>
+
+<p>从小就认定了“好好学习”的道理，所以一直非常努力刻苦地对待学业，不过那时候除了有一个好成绩外并未感觉到对自己的影响，甚至在硕士学位结业的时候我还在怀疑自己刻苦那么多年的意义。参加了工作后，一切与钱挂钩，那种努力却看不见成长的感觉挺折磨人的，这一度让我感到迷茫，并且持续了好久好久。终于有一天，就好像从量变到了质变（我印象中是读瑞·达利欧的《原则》这本书那段时期，那段时期发生比较多的事情），一切都渐渐变得清晰明朗。我发现很多工作中需要的知识已经在课堂上学习过，生活中的很多道理也已经在课堂上学习过。我知道了自己所知道的，从而加以运用；同时也意识到自己所不知道的，从而有的放矢地学习精进自己的知识储备。</p>
+
+<h3 id="本文小结">本文小结</h3>
+<p>本文简单介绍了 Clean-Architecture 的思想，并通过几个示例介绍了架构原理及其应用实践，最后尝试着解答了职场新人对架构的一些疑问，并给出了一些精进才能的建议。最后小结部分感慨了一下自己的职业生涯，给自己的未来定了一个基调——<strong>向着另一个更高的未知层冲刺</strong>。</p>
+
+<p>2018年就要过去了，我很怀念它。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">The Clean Architecture</a> 一篇讲简洁架构的博客，文章简短但表意很清楚</li>
+  <li><a href="https://manuel.kiessling.net/2012/09/28/applying-the-clean-architecture-to-go-applications/">Applying The Clean Architecture to Go applications • Manuel Kiessling</a> 使用 Go 把简洁架构的思想实现了一遍，文章可谓又臭又长，不过具有一定的实践参考价值</li>
+  <li><a href="https://www.cnblogs.com/geek6/p/3951677.html">23种设计模式全解析 - codeTao - 博客园</a> 设计模式列表参考</li>
+  <li><a href="https://book.douban.com/subject/1052241/">设计模式——可复用面向对象软件的基础 (豆瓣)</a> 很经典的介绍设计模式的书</li>
+  <li><a href="https://www.kubernetes.org.cn/kubernetes%E8%AE%BE%E8%AE%A1%E6%9E%B6%E6%9E%84">Kubernetes（k8s）中文文档 Kubernetes设计架构_Kubernetes中文社区</a> k8s的架构图参考详细资料</li>
+  <li><a href="https://istio.io/docs/concepts/what-is-istio/">Istio / What is Istio?</a> ISTIO的架构图参考详细资料</li>
+  <li><a href="https://jingwei.link/2018/12/17/vlan-and-vxlan.html">简析VLAN和VxLAN两种网络虚拟技术 - 敬维</a>  VxLAN虚拟网络架构图详细参考资料</li>
+  <li><a href="https://book.douban.com/subject/5344973/">领域驱动设计 (豆瓣)</a> 详细介绍了 DDD 概念</li>
+  <li><a href="https://book.douban.com/subject/27608239/">原则 (豆瓣)</a> 瑞·达利欧所写的一本通俗易懂介绍他自己的方法论的书籍，具有非常高的参考价值</li>
+  <li><a href="https://book.douban.com/subject/30254993/">稻盛和夫哲学精要 (豆瓣)</a> 一本比较高阶的书，里面很多思想值得参考</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/12/30/linux-process-thread-schedule.html" class="read-next-link"></a>
+          <section>
+            <span>Linux系统调度原理浅析</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "从 Clean-Architecture 谈架构原理及其应用",
+      "tags"     : "基础 经验 实用",
+      "url"      : "/2018/12/31/thinking-of-architecture.html"
+    } ,
+  
+    {
       "title"    : "Linux系统调度原理浅析",
       "tags"     : "基础 经验 实用",
       "url"      : "/2018/12/30/linux-process-thread-schedule.html"
