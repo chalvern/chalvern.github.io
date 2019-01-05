@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>综述——微服务化解决的问题和引出的问题 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="综述——微服务化解决的问题和引出的问题">
+    <meta name="keywords"  content="DevOps, 经验, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="综述——微服务化解决的问题和引出的问题 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/01/06/summary-of-microservices-k8s.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>综述——微服务化解决的问题和引出的问题</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-01-06"><i class="iconfont icon-date"></i>06 Jan 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">微服务化的利弊及其解决方案</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#微服务化及其解决方案" id="markdown-toc-微服务化及其解决方案">微服务化及其解决方案</a>    <ul>
+      <li><a href="#应用进化趋势粒度越来越小" id="markdown-toc-应用进化趋势粒度越来越小">应用进化趋势——粒度越来越小</a></li>
+      <li><a href="#服务拆分的粒度越小越好吗" id="markdown-toc-服务拆分的粒度越小越好吗">服务拆分的粒度越小越好吗</a></li>
+      <li><a href="#微服务化的解决方案" id="markdown-toc-微服务化的解决方案">微服务化的解决方案</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>原打算分析一下K8s日志收集性能相关的内容（包含文件系统、Ext4格式、磁盘寻址等内容），顺便对比一下 SSD 和 HDD 的指标从而方便决策 <strong>①</strong>我的日志方案该怎么设计，②如何发挥各个组件的最大效能从而给公司省钱。不过在写背景的时候发现要表达的东西有点多，索性干脆先写一篇综述来给后面的文章做个铺垫。</p>
+
+<p>本文简单谈一谈我对微服务化的一些认识，包括它们解决的实际问题，以及由它们引出的一些实际问题，并引出微服务化的解决方案——Kubernetes 技术栈。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适应<strong>初、中级</strong>及以上。</p>
+
+<h2 id="微服务化及其解决方案">微服务化及其解决方案</h2>
+<h3 id="应用进化趋势粒度越来越小">应用进化趋势——粒度越来越小</h3>
+
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1fyw65mrt7xj31aq0kgwg6.jpg" alt="" /></p>
+
+<p>(应用进化示意图——粒度越来越小)</p>
+
+<p>如果了解 IT 技术的发展，同时对架构设计及其意义有一定的认识，可以这样总结过去几十年里应用的进化趋势：<strong>“单体应用”</strong> <code class="highlighter-rouge">-&gt;</code> <strong>“初步拆分的中小应用”</strong> <code class="highlighter-rouge">-&gt;</code> <strong>“进一步拆分的微应用（微服务）”</strong> ；也就是说应用被拆分得越来越细，粒度越来越小。</p>
+
+<p>如果进一步推敲能得出这个趋势里隐含着的<strong>两个特点</strong>：<strong>一、单个应用的代码越来越少，所需要的开发团队的规模越来越小（优点）</strong>。①在<strong>“单体应用”</strong>时代，单个应用的代码规模随随便便就可能到十万量级甚至百万量级，复杂度非常高，因此往往需要庞大的开发团队遵照<strong>需求梳理、架构设计、模块划分、开发、测试</strong>等一系列步骤，持续研发几个月甚至几年的时间才能实现应用的发布或交付。②到了<strong>“小应用”</strong>时代，按照业务分类把应用拆分为不同的小应用（或子模块），通过定义接口和协议淡化模块之间的耦合，一定程度降低应用的迭代成本，比如 SOA（面向服务的架构）。因为单个应用的代码规模变小了，于是可以把原来庞大的开发团队拆分为许多独立的小团队，让他们分别负责各个模块的开发，降低开发人员之间的沟通成本从而提升开发效率（参考《 <a href="https://book.douban.com/subject/2230248/">人月神话</a> 》）。③接下来到了当前的<strong>“微应用”</strong>时代，应用<strong>按照业务拆分</strong>后再<strong>按照功能进一步拆分</strong>，于是衍生出粒度更小的微服务，服务的迭代成本进一步降低；以电商购物为例，可以按照账号系统、货品详情系统、评价系统、通知系统等拆分，通知系统可进一步拆分为电话通知系统、短信通知系统、邮件通知系统等。此时，每个微应用所包含的代码规模进一步减小，开发团队也进一步缩小规模（可能一个人负责一个甚至多个应用的开发），开发成本进一步降低，单应用的开发效率进一步提升。</p>
+
+<p><strong>二、被拆的细碎以后，应用的边界越来越多，导致应用编排、运维管理变得越来越困难（缺点）</strong>。<strong>a）首先，单体应用被拆分成小、微服务以后，这些服务均需要单独部署，导致部署成本变高了</strong>。程序员把应用开发完成并测试通过后，一般由运维人员负责把应用部署到生产机器；然而，<strong>开发过程与部署过程</strong>的割裂大概率造成开发环境与部署环境不一致，从而导致部署时出现各种问题，无形中增加了开发角色与运维角色之间的协作成本。<strong>b）拆分后的应用分布在不同的地方运行，让运维工作变得棘手</strong>。应用的粒度越小，资源的划分粒度也要越小，资源分配变复杂了（考虑把一台性能强劲的服务器分给一个小应用的情况，非常浪费！）；应用日志分布在各种地方，日志查看变复杂了；各个应用之间通过网络互连，调用链路的跟踪变困难了，等等。<strong>c）拆分后的应用会强依赖一些公共服务，对架构和运维的要求比较高</strong>，比如被拆分的应用没有必要各自开发一套鉴权系统，可以依赖某个公共的鉴权服务对其他服务的调用进行鉴权。这类应用需要在做方案时考虑各种场景，满足所有微服务的各种需求；同时需要保证服务的高可靠性（或做好降级方案），否则很可能一个核心功能出问题整个业务出问题。<strong>d）应用拆分后，每个应用的开发团队变得非常小，团队知识积累变慢，个人成长变慢，代码质量下降</strong>。这个简单意会一下吧。</p>
+
+<h3 id="服务拆分的粒度越小越好吗">服务拆分的粒度越小越好吗</h3>
+<p>很多讲微服务化的文章大多都在①讲概念、②跑 Demo、③谈未来趋势，很少见到有文章讲服务拆分的方法论，比如：拆分粒度多大是合适的？服务拆分粒度越细越好吗？</p>
+
+<p>谈架构必须要考虑实际的应用领域，所以需要根据实际情况进行分析，推荐领域驱动开发（DDD）的方法论（参考上一篇博文《<a href="https://jingwei.link/2018/12/31/thinking-of-architecture.html">从 Clean-Architecture 谈架构原理及其应用</a>》）。</p>
+
+<p>微服务化是一种趋势，应用被拆分得越来越小，这带来了一些好处，也带来了一些问题。微服务化能够给企业带来一些好处，比如对人才的要求低了，功能迭代可以更迅捷，需求响应可以更及时；但是微服务化也带来了不少问题，比如增加了 DevOps 的难度，增加了抽象公共服务的难度及公共服务的运维成本，一定程度上还增加了人才培养的难度。所以<strong>微服务实际落地时，应根据具体情况对服务拆分的粒度进行权衡，应避免贪图时髦而把团队和业务开发带入坑</strong>。</p>
+
+<h3 id="微服务化的解决方案">微服务化的解决方案</h3>
+<p>目前业界对微服务管理的解决方案，一个是偏运维开发视角的 Kubernetes 技术栈（包括容器技术、CI/CD、Kubernetes 等），目标定位是解决微应用部署相关的问题（打包、发版、扩缩容、服务注册发现、负载均衡、服务暴露等）；另一个是偏架构师视角的微服务架构（比如以 <a href="https://istio.io/">Istio</a>、<a href="https://linkerd.io/">Linkerd</a>、<a href="https://www.envoyproxy.io/">Envoy</a>为代表的 ServiceMesh ，Java技术栈里的 <a href="http://spring.io/projects/spring-cloud">Spring Cloud</a>，腾讯开源的<a href="https://tars.tencent.com">TARS</a>，等等），目标定位是解决微应用之间的流量管控（调用协议、鉴权、分限流、遥测监控等）。</p>
+
+<p>这里提到的名词比较多，如果读者朋友感兴趣可以自行搜索 Docker、CICD、Kubernetes、Istio 这几个关键词（目前我是这个技术栈，以后可以一起讨论问题😆）。受到篇幅的限制，更细的就不在这里展开了。</p>
+
+<h2 id="小结">小结</h2>
+<p>微服务化降低了应用的<strong>开发难度</strong>，加快了应用的迭代速度，但同时增加了应用之间的边界，增加了运维的挑战。Kubernetes 技术栈的出现一定程度上解决了微服务的管理问题，是一个非常值得投入时间了解的技术栈。</p>
+
+<p>那么，微服务化以后应用分布在各处，如何把这些分散在各处的应用的日志收集起来从而便于查看分析呢？敬请期待下一篇博客。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://jingwei.link/2018/12/31/thinking-of-architecture.html">从 Clean-Architecture 谈架构原理及其应用</a></li>
+  <li><a href="https://book.douban.com/subject/2230248/">人月神话 (豆瓣)</a> 软件领域很有影响力的书籍</li>
+  <li><a href="https://kubernetes.io/">Production-Grade Container Orchestration - Kubernetes</a> K8s 官方网站</li>
+  <li><a href="http://docs.kubernetes.org.cn/">Kubernetes(K8S)中文文档_Kubernetes中文社区</a> K8s 中文文档</li>
+  <li><a href="http://www.servicemesher.com/">ServiceMesher · Service Mesh - 服务网格中文社区</a> 国内 ServiceMesh 的根据地</li>
+  <li><a href="http://spring.io/projects/spring-cloud">Spring Cloud</a> 对 Java 技术栈没有太多了解，不过这个框架的定位很契合微服务架构</li>
+  <li><a href="https://tars.tencent.com">TARS</a> 腾讯开源的高性能RPC框架，基调定的还挺高的。</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2018/12/31/thinking-of-architecture.html" class="read-next-link"></a>
+          <section>
+            <span>从 Clean-Architecture 谈架构原理及其应用</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
