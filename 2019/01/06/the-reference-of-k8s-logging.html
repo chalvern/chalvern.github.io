@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>如何使Kubernetes中的应用日志被收集得又快又稳 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="如何使Kubernetes中的应用日志被收集得又快又稳">
+    <meta name="keywords"  content="DevOps, 经验, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="如何使Kubernetes中的应用日志被收集得又快又稳 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/01/06/the-reference-of-k8s-logging.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>如何使Kubernetes中的应用日志被收集得又快又稳</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-01-06"><i class="iconfont icon-date"></i>06 Jan 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">为优化日志收集方案做参考</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#如何让日志收集得又快又稳" id="markdown-toc-如何让日志收集得又快又稳">如何让日志收集得又快又稳</a>    <ul>
+      <li><a href="#先看两种日志收集架构" id="markdown-toc-先看两种日志收集架构">先看两种日志收集架构</a></li>
+      <li><a href="#文件系统" id="markdown-toc-文件系统">文件系统</a></li>
+      <li><a href="#ext4文件系统一个100m的文件是如何保存在磁盘上的" id="markdown-toc-ext4文件系统一个100m的文件是如何保存在磁盘上的">Ext4文件系统——一个100M的文件是如何保存在磁盘上的</a></li>
+      <li><a href="#磁盘寻址主要指机械磁盘" id="markdown-toc-磁盘寻址主要指机械磁盘">磁盘寻址（主要指机械磁盘）</a></li>
+      <li><a href="#ssd的iops指标优于hdd" id="markdown-toc-ssd的iops指标优于hdd">SSD的IOPS指标优于HDD</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>部署到 K8s 后，应用将以 Pod 的形式运行在 K8s 集群任意的通用 Worker 节点上面，因此应用<strong>运行过程中打印的日志</strong>也分散在这些节点上，那么如何才能把这些分散在各处的日志收集起来继而查看分析呢？其实 K8s 官方有专门的文档描述 <a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/">日志收集的方案</a> ，且文档中几乎涵盖了所有的日志收集场景。日志收集的方案很容易理解，那么日志收集还有什么难的呢？<strong>难的是日志收集的工程实现！</strong></p>
+
+<p>本文将对日志收集过程中会用到的一些知识点（文件系统、Ext4、磁盘寻址、SSD/HDD 等）进行探究，并尝试讨论各个组件的理论极限值，从而为优化日志收集方案做参考。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——初级——<strong>中级√</strong>——高级；本文适应中级及以上。</p>
+
+<h2 id="如何让日志收集得又快又稳">如何让日志收集得又快又稳</h2>
+
+<h3 id="先看两种日志收集架构">先看两种日志收集架构</h3>
+
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79gy1fyx8er09e2j31ko0oetcs.jpg" alt="" /></p>
+
+<p>假设有上图中的两种方案，基本是官方文档中 <strong>A）</strong><a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/#using-a-node-logging-agent">普通代理模式</a> 和 <strong>B）</strong><a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/#using-a-sidecar-container-with-the-logging-agent">边车+代理模式</a> 这两个模型的微变体，从图中可以看到两种方案均存在 <strong>logging-agent</strong> 组件，用来<strong>异步地</strong>把日志推送到远端（Logging Backend，比如 Logstash 或者 Kafka 等）。方案 A 与 方案 B 的最大区别是：前者没有 <strong>Empty Dir</strong>（后面简称 <strong>ED</strong>），日志直接写到了 <strong>log-file.log</strong>；而后者有 <strong>ED</strong>，日志首先写入 <strong>ED</strong>，然后经由另一个容器（<strong>streaming-container</strong>）把日志转发到 <strong>log-file.log</strong>（方案 B 适用于那些没有办法把日志写入 stdout/stderr 的应用）。</p>
+
+<p>有了方案架构图，接下来就方便讨论了（架构的意义，见《<a href="https://jingwei.link/2018/12/31/thinking-of-architecture.html">从 Clean-Architecture 谈架构原理及其应用</a> 》）。</p>
+
+<h3 id="文件系统">文件系统</h3>
+<p>对于前面提到的方案 A （应用直写 <strong>log-file.log</strong>），其本质上是<strong>直写本地磁盘</strong>，因此无需考虑性能优化问题（如果写本地磁盘有性能瓶颈，直接查代码逻辑吧，最差情况是考虑换磁盘）。对于方案 B，虽说本质上它也是直写本地磁盘，但是存在两次落盘的过程（<strong>两次写操作一次读操作</strong>），这种情况会不会出现性能问题呢？这就需要了解一下 Linux 文件系统的工作机制了。</p>
+
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fyx8eybb7cj314m0k278f.jpg" alt="" /></p>
+
+<p>研究过 Linux 内核源码的开发者知道，Linux 文件系统有着非常复杂的运行机制（可参考《 <a href="https://book.douban.com/subject/2287506/">深入理解LINUX内核(第三版)</a>》文件系统相关的章节），为了能顺利完成此博文，我这里只画了一张简化版的示意图。其中① CPU通过内存作为媒介来获取磁盘（包括 SSD、HDD、Flash 等）中的内容；② 磁盘中的内容会首先加载到内存中，然后才能被 CPU 使用或处理；③ 普通文件可能会被加载到内存中的页高速缓存（buffer/cache），这样能够在内存中停留的时间久一些，方便多进程多次读写，从而减少与磁盘的交互频次。④ 值得说明的是，缓存并不适用所有的场景，比如数据库文件要实时落盘才有意义，实时落盘的应用场景下可以显式使用<strong>直接 I/O 传送</strong> 的模式来满足需求。</p>
+
+<p>通过上面的分析可以知道，方案 B 中<strong>两次落盘</strong>的过程所花费的时间大概率<strong>不会多于</strong>一次落盘过程所花时间的<strong>两倍</strong>，因为：① 第二次落盘与第一次落盘之间<strong>没有阻塞</strong>，即第一次落盘与第二次落盘有望同时进行（要看当时内核的调度情况，参考《<a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析</a> 》）。② 采用 Streaming 模式时，第二次落盘过程中的读操作大概率<strong>直接从内存中获取</strong>到日志的文件内容，此种情况的效率可谓非常高了。③ 内核有专门的线程处理内存中 buffer/cache 的落盘情况，因此两次落盘不会另外占用过多的 CPU 时间。</p>
+
+<p>不过可以明显注意到 方案 B 相对于 方案 A 多了一个 Straming 进程，这显然会增加宿主机的负担。因此<strong>方案 A 是最佳的日志收集方案，只有在方案 A 无法实施（比如那些没有办法把日志写入 stdout/stderr 的应用）的时候才建议考虑方案 B</strong>。</p>
+
+<h3 id="ext4文件系统一个100m的文件是如何保存在磁盘上的">Ext4文件系统——一个100M的文件是如何保存在磁盘上的</h3>
+<p>当前我所接触到的服务器的磁盘文件系统都是 Ext4 格式，那么 Ext4 存在性能瓶颈吗？有没有其他更好的文件系统选型呢？我浏览了一圈大家对 Ext4 的评价，确认了<strong>使用 Ext4 是最佳实践</strong>。不过好奇心驱使让我想进一步探究 Ext4 保存文件的方式：一个 100M 的文件是如何保存在磁盘上的？</p>
+
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fyx8f7z50bj30ug0f4ta2.jpg" alt="" /></p>
+
+<p>简单地讲（详细情况可阅读相关的参考文章），① 磁盘在初始化以后，磁盘上除了一些<strong>元数据</strong>还包含 <strong>data-block 和 Inode</strong> 这两种结构，其中 data-block 有固定大小（比如每个 4k），负责存放文件的内容体；Inode 则负责存放文件的元属性（比如归属、类型、权限、时间戳等）以及 data-block 的索引。② 当创建一个文件的时候，内核会参考 <strong>Inode bitmap</strong>（属于元数据之一）从空闲的 Inode 中获取一个 Inode 并与文件名进行绑定；③ 当向文件中添加数据时，内核会参考 <strong>Block bitmap</strong>（也属于元数据之一）从空闲的 data-block 中获取相应数量的 data-block 资源，然后把数据写到这些 data-block 中，最后更新 Inode 中 data-block 的索引值。</p>
+
+<p>这里面有一些值得思考的点，比如：data-block 的分布情况会影响文件的读写效率吗？data-block 的分布是如何决定的？如何优化 data-block 的分布情况？这里我只回答第一个问题，data-block 的分布情况会影响文件的读写效率，而这也是磁盘的<strong>顺序读写</strong>和<strong>随机读写</strong>两个指标存在的意义；其他两个问题已经属于比较高阶的 Ext4 文件系统的知识，如果感兴趣可以自己深挖一下，本文就不展开了，大家只需知道 Ext4 对 data-block 的分布做了很多优化方案。</p>
+
+<h3 id="磁盘寻址主要指机械磁盘">磁盘寻址（主要指机械磁盘）</h3>
+
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fyx8fhdmv2j30zk0ew771.jpg" alt="" /></p>
+
+<p>上一小节提到 data-block 的分布情况会影响文件的读写效率。那么为什么会这样呢？我以机械硬盘（HDD）为例（SSD 通过电路实现寻址，机制不一样），如上图所示，文件数据分布在磁盘的某条轨道的某个扇区里。可以简单把<strong>磁头读取特定扇区上的数据的过程</strong>分成三步：① 把磁头<strong>定位</strong>到相应的<strong>轨道</strong>；② 等待盘片旋转使<strong>扇区正对磁头</strong>下方；③ 磁头<strong>读取</strong>并传输扇区的数据。上面三步中每个步骤都需要耗时，而由于前两步涉及到了机械运动，因此耗时<strong>比第三步的耗时多</strong>。</p>
+
+<p>我们以读取一个文件为例，并假设文件数据分散在 3 个扇区中，那么可以对应到下面的三个场景：a）三个扇区分布在<strong>不同的轨道的不同扇区</strong>，这种情况下读每个扇区的数据都需要经历 “定位轨道”、“扇区正对磁头”、“读取数据”三步；b）三个扇区分布在<strong>同一个轨道上，但扇区随机分布</strong>，这种情况下除了读第一个扇区的数据时要经历上面提到的三个步骤，读后面两个扇区的数据时只需要“扇区正对磁头”、“读取数据”这两步就可以完成；c）三个扇区分布在<strong>同一个轨道上且连续</strong>，这种情况下除了读第一个扇区的数据要经历上面提到的三个步骤，读后面两个扇区的数据只需要“读取数据”这一步就可以了。对于上面提到的三个场景，很明显<strong>场景 c</strong> 的理论耗时将是最短的，这也是 data-block 的最优分布方式。</p>
+
+<p>对于磁盘寻址，业界把<strong>磁盘每秒钟能够实现的寻址动作（包含以上三种场景）定义为 IOPS</strong>（Input/Output Operations Per Second），并用它作为权衡磁盘性能的一个指标；通过上面的讨论可以知道，磁盘指标中随机读写的 IOPS 和按顺序读写的 IOPS 是不同的，理论上后者的数值要大于前者。如果商家比较黑，可能只给出顺序读写的 IOPS，数据看起来比较漂亮；如果商家比较良心，可能会给出两个参考值，分别对应随机读写的 IOPS 和 顺序读写的 IOPS。</p>
+
+<p>顺便提一下，对于机械硬盘来说，随机 IOPS 一般分布在 100-200 区间，也就是说<strong>机械硬盘每秒钟可以实现 100-200 次的随机寻址</strong>动作。</p>
+
+<h3 id="ssd的iops指标优于hdd">SSD的IOPS指标优于HDD</h3>
+<p>SSD 属于 Flash 的一种，通过逻辑电路实现 data-block 的寻址；而电路的速度肯定优于机械运动，因此 SSD 随机读写的 IOPS 指标比 HDD 的 IOPS 要高很多。我看几篇博客里给的数据，SSD 的 随机读写 IOPS 随随便便就可以飙到 10k （具体的也要看 SSD 的质量而定），从这个角度来看能用 SSD 的话就不要使用 HDD 了，真的会提速！当然 SSD 也有一些缺点，比如<strong>贵</strong>，一般 SSD 的价钱是 HDD 价钱的三倍；除了贵之外， <a href="http://blog.51cto.com/wushank/1708168">这篇博客</a> 还报告说 SSD 的最大响应时间浮动比较大（差的情况要到几十毫秒，当然也和 SSD 的质量相关），遇到这种情况时读写文件就会显得卡顿了，或许会让进程陷入 D 状态（参考《<a href="https://jingwei.link/2018/12/23/linux-cpu-load-d-process.html">Linux的CPU-Load虚高之进程的D状态</a>》。</p>
+
+<p>现在已经了解了 SSD 和 HDD 之间的差别了，可以根据具体情况对磁盘进行选型了。对于本文前面提到的日志收集方案来说，Empty-Dir 与 log-file.log <strong>直接与业务进程绑定</strong>，而同一台宿主机上面可能同时运行几十甚至上百个业务进程，因此<strong>这部分选用 SSD 作为存储媒介</strong>最合适。对于日志最终的归宿 Logging-Backend 来说，则完全可以<strong>基于 HDD 作为存储媒介</strong>做高可用方案。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文从 Kubernetes 日志收集的方案开始，对文件系统、Ext4、磁盘寻址、SSD/HDD 等概念进行了探索，为优化日志收集方案提供了参考。</p>
+
+<p>于我而言，其实是通过 Kubernetes 日志收集这件事情把很久以前学习的知识点串接起来，从而达到学以致用的目的。最后，希望本文能给大家一些启发和帮助。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/">Logging Architecture - Kubernetes</a> K8s 官方给出的日志收集方案列表，几乎涵盖了所有的场景</li>
+  <li><a href="https://jingwei.link/2018/12/31/thinking-of-architecture.html">从 Clean-Architecture 谈架构原理及其应用 - 敬维</a>  之前写的架构相关的文章</li>
+  <li><a href="https://book.douban.com/subject/2287506/">深入理解LINUX内核(第三版) (豆瓣)</a> 压箱底的书，讲的太细，不建议读，但可作为参考书</li>
+  <li><a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析 - 敬维</a> 之前写的 Linux 调度器相关的博客</li>
+  <li><a href="https://elf8848.iteye.com/blog/1995638">Linux 查看内存(free buffer cache) - 赵磊的技术博客 - ITeye博客</a> 可以解答 buff/cache 是什么</li>
+  <li><a href="https://linux.cn/article-8685-1.html">Linux 的 EXT4 文件系统的历史、特性以及最佳实践</a> 内容很全面，比如 EXT4 中可以减少碎片的特性</li>
+  <li><a href="https://www.cnblogs.com/alantu2018/p/8461272.html">Ext4文件系统架构分析(一) - AlanTu - 博客园</a></li>
+  <li><a href="http://blog.51cto.com/groot/1832283">linux中inode的工作原理-I’m Groot-51CTO博客</a></li>
+  <li><a href="https://blog.csdn.net/lovingprince/article/details/6118117">硬盘分区、寻址和系统启动过程 - 黄刚的专栏 - CSDN博客</a></li>
+  <li><a href="http://blog.51cto.com/wushank/1708168">磁盘性能指标—IOPS、吞吐量及测试-秋天的童话-51CTO博客</a> 介绍硬盘相关参数（IOPS）及测试数据的文章，很详细，强烈推荐</li>
+  <li><a href="https://baike.baidu.com/item/IOPS/3105194">IOPS_百度百科</a>  介绍 IOPS，给出了各种磁盘的参考指标数据</li>
+  <li><a href="https://jingwei.link/2018/12/23/linux-cpu-load-d-process.html">Linux的CPU-Load虚高之进程的D状态 - 敬维</a> 进程的 D 状态的表现，之前写的一篇博文</li>
+  <li><a href="https://jingyan.baidu.com/article/d169e18679d879436611d82f.html">SSD硬盘和HDD硬盘的对比_百度经验</a> 对比 SSD 以及 HDD</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/01/06/summary-of-microservices-k8s.html" class="read-next-link"></a>
+          <section>
+            <span>综述：微服务化解决的问题和引出的问题</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

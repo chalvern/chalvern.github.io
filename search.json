@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "如何使Kubernetes中的应用日志被收集得又快又稳",
+      "tags"     : "DevOps 经验 实用",
+      "url"      : "/2019/01/06/the-reference-of-k8s-logging.html"
+    } ,
+  
+    {
       "title"    : "综述：微服务化解决的问题和引出的问题",
       "tags"     : "DevOps 经验 实用",
       "url"      : "/2019/01/06/summary-of-microservices-k8s.html"
