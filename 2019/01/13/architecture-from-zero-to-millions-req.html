@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漫谈从零访问量到每秒千万访问量的架构设计 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="漫谈从零访问量到每秒千万访问量的架构设计">
+    <meta name="keywords"  content="DevOps, 实用, 经验">
+    <!-- Open Graph -->
+    <meta property="og:title" content="漫谈从零访问量到每秒千万访问量的架构设计 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/01/13/architecture-from-zero-to-millions-req.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#DevOps" class="post-tag">DevOps</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+        
+      </div>
+      <h1>漫谈从零访问量到每秒千万访问量的架构设计</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-01-13"><i class="iconfont icon-date"></i>13 Jan 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">底层技术的研究促使对高层架构的思考</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#每秒千万访问量web应用架构设计" id="markdown-toc-每秒千万访问量web应用架构设计">每秒千万访问量Web应用架构设计</a>    <ul>
+      <li><a href="#几个术语" id="markdown-toc-几个术语">几个术语</a>        <ul>
+          <li><a href="#rps" id="markdown-toc-rps">RPS</a></li>
+          <li><a href="#并发度" id="markdown-toc-并发度">并发度</a></li>
+          <li><a href="#qps" id="markdown-toc-qps">QPS</a></li>
+          <li><a href="#服务器平均请求处理时间-与-用户平均等待时间" id="markdown-toc-服务器平均请求处理时间-与-用户平均等待时间">服务器平均请求处理时间 与 用户平均等待时间</a></li>
+        </ul>
+      </li>
+      <li><a href="#wheresmilecom用go写的一个web网页" id="markdown-toc-wheresmilecom用go写的一个web网页">WhereSmile.com——用Go写的一个Web网页</a></li>
+      <li><a href="#假如下面的内容全是假如﹏" id="markdown-toc-假如下面的内容全是假如﹏">假如，下面的内容全是假如(╯﹏╰)</a></li>
+      <li><a href="#百rps升级机器配置" id="markdown-toc-百rps升级机器配置">百RPS——升级机器配置</a></li>
+      <li><a href="#千rps各组件拆分并优化" id="markdown-toc-千rps各组件拆分并优化">千RPS——各组件拆分并优化</a></li>
+      <li><a href="#万rps水平扩展" id="markdown-toc-万rps水平扩展">万RPS——水平扩展</a></li>
+      <li><a href="#十万百万千万rps终极拆分及扩展" id="markdown-toc-十万百万千万rps终极拆分及扩展">十万、百万、千万RPS——终极拆分及扩展</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>最近对 IT 架构的思考比较多。</p>
+
+<p>虽然做 Web 应用的架构并不是我的主业（当前工作重心是平台建设，见之前的博文），但是随着对底层技术了解的深入，却越发有兴趣思考一些宏观上的东西，或许这就是“以小见大”吧。</p>
+
+<p>本文是我在探究分布式存储系统（<a href="https://ceph.com/">Ceph</a>）时对 Web 应用高并发解决方案的思考小结。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
+
+<h2 id="每秒千万访问量web应用架构设计">每秒千万访问量Web应用架构设计</h2>
+<h3 id="几个术语">几个术语</h3>
+<p>在进行一切讨论前，有必要先看几个压测工程师经常提到的术语。</p>
+<h4 id="rps">RPS</h4>
+<p>RPS（Requests Per Second）指系统在单位时间内（每秒）处理请求的数量。比如在 100 秒内给一个系统发起 1000 个请求，而这些请求在这 100 秒时间内全部返回了，那么可以认为系统经受住了 1000/100 = 10 RPS 的流量。<strong>为了严谨性需要说明一下</strong>：这里用 100 秒而不是 1 秒，是考虑到减小时间边界引起的误差（考虑第 1 秒钟和第 100 秒钟的请求以及响应，他们一定概率是不完整的）。</p>
+
+<h4 id="并发度">并发度</h4>
+<p>指在同一个时间点发起的请求数量，比如 12306 统一在下午两点钟放票，<strong>100</strong> 个人在下午两点钟同时向 12306 发起请求，此时可以认为并发度为 <strong>100</strong>。</p>
+
+<h4 id="qps">QPS</h4>
+<p>QPS（Query Per Second） 是指在一定并发度下，服务器每秒可以处理的最大请求数。 QPS 与 RPS 的定义类似，但前者是后者的一个极限值，且前者受到并发度的约束。</p>
+
+<p><strong>为什么说 QPS 要受到并发度的约束呢？</strong>可以想象这样两个场景：① 一个系统在 1 个并发的情况下的 QPS 为 100，这就意味着每个请求的响应时间为 1/100 = 0.01 秒。② 一个系统在 10 个并发的情况下 QPS 为 100， 对于每个并发来说，每个请求的响应时间变成了 1/(100/10) = 0.1 秒。从上面可以看出，<strong>相同的 QPS 下，并发度不同，相应时间不同，用户的体验自然也不同。</strong></p>
+
+<h4 id="服务器平均请求处理时间-与-用户平均等待时间">服务器平均请求处理时间 与 用户平均等待时间</h4>
+<p><strong>服务器平均请求处理时间</strong> = 1/QPS（秒）。如果一个系统的 QPS 为 1000，无论请求是由 1 个并发发起的还是 100 个并发发起的， 均意味着服务器处理一个请求的平均时间为 1/1000 = 0.001 秒。但是在并发度不同时，相同的 QPS 数据用户感受到的响应时间是不同的，这就有了：<strong>用户平均等待时间</strong> = 1/(QPS/并发度) = 并发度/QPS（秒）。</p>
+
+<p>上面的简单推导让我想起了小学三年级做的“<strong>应用题</strong>”，虽然有点绕但是很有意义，大家多咂摸咂摸吧😆。</p>
+
+<h3 id="wheresmilecom用go写的一个web网页">WhereSmile.com——用Go写的一个Web网页</h3>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fz59tzdqyxj31600g8myp.jpg" alt="" /></p>
+
+<p>大概半年前，我在一个开源项目的基础上搭建了 <a href="https://wheresmile.com/">https://WhereSmile.com</a> 这个 Web 网页，用来满足我折腾各方面技术的需求（也满足了部分的虚荣心=。=）。<a href="https://wheresmile.com/">它</a> 是用 <a href="https://golang.google.cn/">Go</a> 写的（详见 <a href="https://github.com/chalvern/pybbs-go">GitHub - chalvern/pybbs-go</a>），底层存储用了 Mysql，目前部署在一台 1c2g 的云主机上面。</p>
+
+<p>由于网页功能简陋（主要作为我个人的公开笔记本使用），且没有做过宣传（主要是我朋友圈里的一些转发），因此基本上流量靠近零；同时考虑到 Go 语言的运行时性能，我评估 <a href="https://wheresmile.com/">WhereSmile</a> 网站短时间内不会遇到性能瓶颈。</p>
+
+<p>【题外话】：拜托大家<strong>不要去恶意压测、安全攻击</strong> <a href="https://wheresmile.com/">WhereSmile.com</a>，不然我就没地方记随笔了。</p>
+
+<h3 id="假如下面的内容全是假如﹏">假如，下面的内容全是假如(╯﹏╰)</h3>
+<p>现在 <a href="https://wheresmile.com/">WhereSmile.com</a> 每天的 RPS 最高时才个位数😑，<strong>假如</strong>它的流量慢慢变多起来，比如峰值达到几百 RPS，那么我该怎么改造它呢？如果峰值进一步增长到达了几万 RPS，这个时候又该怎么处理呢？如果流量更高了呢？让我说一下我的打算吧（开始 YY 了😆）。</p>
+
+<h3 id="百rps升级机器配置">百RPS——升级机器配置</h3>
+<p>对于一百 RPS 以内的流量，目测只需要考虑升级机器的配置即可。</p>
+
+<p>目前 1c2g 的机器配置同时支撑了 Web 应用以及 Mysql 应用以及一些其他用于监控的应用。流量增加后，可以先考虑升级机器的配置，比如升配到 8c16g 的机器。这种情况下，应用架构、部署方案等均不需要做大的修改。在使用了云主机的情况下，只需要①关机、②升配、③重启三步即可。</p>
+
+<h3 id="千rps各组件拆分并优化">千RPS——各组件拆分并优化</h3>
+<p>考虑到单台服务器的配置并不能无限的升级（升级 CPU、内存后可能其他指标也会出现瓶颈，比如磁盘IO），对于一千 RPS 以内的流量，可以考虑<strong>拆分各个组件并优化部署到专用的服务器</strong>。</p>
+
+<p>具体的：①修改原来的部署方案，比如把 Web 应用与 Mysql 数据库分别部署到不同的机器。② 对各个组件的性能进行重新评估，查找性能瓶颈的点以后对应用进行改造。比如 Mysql 数据查询遇到性能瓶颈，一方面考虑升级 Mysql 专用服务器的配置；另一方面对应用层进行改造，引入 Redis 做缓存，减少对 Mysql 的查询次数，从而降低它的压力。</p>
+
+<h3 id="万rps水平扩展">万RPS——水平扩展</h3>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79gy1fz59tn1sb6j31ig0ja77x.jpg" alt="" /></p>
+
+<p>在万RPS的时候，假如单个 Web 的吞度量被压榨到了极限，此时可以考虑水平扩展 Web 应用了，必要情况下考虑水平扩展 Database。</p>
+
+<p>对 Web 应用来说，引入 nginx 做一层<a href="https://jingwei.link/2018/12/16/fundamental-network-principle.html#%E6%9C%80%E5%90%8E%E7%AE%80%E5%8D%95%E8%81%8A%E4%B8%80%E4%B8%8B%E6%AD%A3%E5%90%91%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%9B%9B%E5%B1%82%E4%B8%8E%E4%B8%83%E5%B1%82%E7%BD%91%E7%BB%9C">反向代理</a>，把流量均发到后面的服务器去从而减少对每台服务器的压力。对于数据库来说，可以考虑进行<strong>主备设计</strong>，① Web 层对主库进行写操作，② 多个从库同时到主库同步数据，③ Web 层对主库和从库进行读操作。</p>
+
+<h3 id="十万百万千万rps终极拆分及扩展">十万、百万、千万RPS——终极拆分及扩展</h3>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1fz59t408m3j31fw0q6476.jpg" alt="" /></p>
+
+<p>在 RPS 到达了十万以上的时候，简单的水平扩展已经没有办法满足需求了，这个时候很多地方都会相继出现瓶颈。① <strong>反向代理的地方出现瓶颈</strong>。简单来说，由于用户实在太多了，一个入口已经无法满足需求，这个时候需要想办法对反向代理进行水平扩展。比如在不同地域的 DNS 服务器配置不同的 nginx 实例的地址，从而把不同地域用户的请求分发到不同的 nginx 实例上。</p>
+
+<p>② <strong>数据库遇到瓶颈</strong>。单个数据库已经无法响应所有的请求（因为数据量大，主从设计也不能满足需求了）；这个时候需要对数据库进行水平分割（或垂直分割），把不同的数据表拆分到不同的数据库（拆库），或者把同一个数据表里的数据拆分到不同数据库的不同表（拆表），从而增加数据库的吞吐量。</p>
+
+<p>③ 在拆库时，一般会根据功能模块把数据表拆分到不同的数据库，从而实现每类数据库对应不同的功能模块；这个时候<strong>需要考虑分布式事务的设计</strong>。比如一个系统中存在<strong>账户模块</strong>和<strong>商品模块</strong>，账户模块依赖的数据库中主要包含的是用户相关的数据表，商品模块依赖的数据库中主要包含的是商品相关的数据表。当某个用户购物时，其账户中的财富值与其购物单之间存在数据一致性的问题，必须限定 <strong>a)</strong> 只有在下单成功的情况下才允许扣除用户账户中的财富值，<strong>b)</strong> 否则下单失败同时账户的财富值也不会扣除。</p>
+
+<p>上面的讨论给出的是一种<strong>抽离了业务本身的粗线条架构方案</strong>，对应到实际的业务时需要<strong>根据具体的领域知识对架构进行细化</strong>，否则没有工程实践意义的。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文构思了一种架构设计，用于解决超高并发 Web 应用的性能瓶颈。首先解释了 RPS、并发度、QPS、服务器平均请求处理时间、用户平均等待时间等几个专业术语，接着从 <strong><a href="https://wheresmile.com/">https://WhereSmile.com</a></strong> 这个 Web 网页讲起，并假设在网页流量增加到不同的量级时分别考虑采取的应对措施，最后给出了一种终极解决方案以应对千万 RPS 的场景。</p>
+
+<p>最后，就像前面提到的，<strong><a href="https://wheresmile.com/">WhereSmile.com</a></strong> 在能看到的未来里不可能达到千万的 RPS，想一想真是又悲又喜的🙃。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://jingwei.link/2018/12/31/thinking-of-architecture.html">从 Clean-Architecture 谈架构原理及其应用 - 敬维</a> 对整洁架构的思考</li>
+  <li><a href="https://jingwei.link/2019/01/06/summary-of-microservices-k8s.html">综述：微服务化解决的问题和引出的问题 - 敬维</a> 对微服务架构的思考</li>
+  <li><a href="https://jingwei.link/2018/12/23/linux-cpu-load-d-process.html">Linux的CPU-Load虚高之进程的D状态 - 敬维</a> 我工作的重心从业务开发逐渐向基础平台建设转移</li>
+  <li><a href="https://ceph.com/">Ceph Homepage - Ceph</a> Ceph是一种开源的分布式存储系统</li>
+  <li><a href="http://www.cnblogs.com/coldplayerest/archive/2012/06/28/2567656.html">QPS,用户平均等待时间,服务器平均请求处理时间 - coldplayerest - 博客园</a> 写的比较简单，不过可以作为参考</li>
+  <li><a href="https://jingwei.link/2018/07/11/epoll-and-golang.html">应对百万访问量的epoll模式 - 敬维</a> 能够解释为什么 Nginx 可以应对高并发场景</li>
+  <li><a href="https://www.cnblogs.com/shijingxiang/articles/4601674.html">数据库的水平分割和垂直分割 - 博客园</a> 讲了水平分割和垂直分割的概念和应用场景</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/01/06/the-reference-of-k8s-logging.html" class="read-next-link"></a>
+          <section>
+            <span>如何使Kubernetes中的应用日志被收集得又快又稳</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
