@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "一个例子说明如何做技术方案",
+      "tags"     : "经验 实用 管理",
+      "url"      : "/2019/01/19/how-to-make-tech-scheme.html"
+    } ,
+  
+    {
       "title"    : "漫谈从零访问量到每秒千万访问量的架构设计",
       "tags"     : "DevOps 实用 经验",
       "url"      : "/2019/01/13/architecture-from-zero-to-millions-req.html"

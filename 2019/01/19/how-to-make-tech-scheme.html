@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一个例子说明如何做技术方案 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="一个例子说明如何做技术方案">
+    <meta name="keywords"  content="经验, 实用, 管理">
+    <!-- Open Graph -->
+    <meta property="og:title" content="一个例子说明如何做技术方案 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/01/19/how-to-make-tech-scheme.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E7%AE%A1%E7%90%86" class="post-tag">管理</a>
+          
+        
+      </div>
+      <h1>一个例子说明如何做技术方案</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-01-19"><i class="iconfont icon-date"></i>19 Jan 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">多问“怎样才能做的更好”</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#一个关于动物医院的需求" id="markdown-toc-一个关于动物医院的需求">一个关于动物医院的需求</a>    <ul>
+      <li><a href="#需求背景简介" id="markdown-toc-需求背景简介">需求背景简介</a></li>
+      <li><a href="#功能列表" id="markdown-toc-功能列表">功能列表</a></li>
+      <li><a href="#具体的规则描述" id="markdown-toc-具体的规则描述">具体的规则描述</a></li>
+    </ul>
+  </li>
+  <li><a href="#动物医院的技术方案数据表设计" id="markdown-toc-动物医院的技术方案数据表设计">动物医院的技术方案（数据表设计）</a>    <ul>
+      <li><a href="#第一种数据表设计直观的数据表" id="markdown-toc-第一种数据表设计直观的数据表">第一种数据表设计——直观的数据表</a></li>
+      <li><a href="#另一种数据表设计添加诊室表" id="markdown-toc-另一种数据表设计添加诊室表">另一种数据表设计——添加诊室表</a>        <ul>
+          <li><a href="#添加诊室表后的故事表述" id="markdown-toc-添加诊室表后的故事表述">添加诊室表后的故事表述</a></li>
+          <li><a href="#添加诊室辅助表后的逻辑推演" id="markdown-toc-添加诊室辅助表后的逻辑推演">添加诊室辅助表后的逻辑推演</a></li>
+        </ul>
+      </li>
+      <li><a href="#信息的组织方式" id="markdown-toc-信息的组织方式">信息的组织方式</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>周末，播放器里的歌放到最大声。我盘着腿坐在我的小床上，望着窗外远方陌生的高楼；三年，真的是望不见的未来。</p>
+
+<p>之前还在做业务开发的时候，有一天产品经理跑过来给我讲了一个好听的故事，故事听完了听懂了，我便开始做技术方案。不过，好听的故事的技术方案都不是那么容易做的。</p>
+
+<h2 id="一个关于动物医院的需求">一个关于动物医院的需求</h2>
+<h3 id="需求背景简介">需求背景简介</h3>
+<p>在一个很大的动物医院（animal-hospital）里，有好几位德高望重的动物医生（animal-doctor），他们每天会给很多很多不同种类（animal-kind）的动物（animal）治病。现在需要开发一个系统来维护每位医生接待的小动物种类及其数量，从而方便跟踪、统计每位医生的工作情况。</p>
+
+<h3 id="功能列表">功能列表</h3>
+<ol>
+  <li>开发一个电子系统，实现：</li>
+  <li>当有特定种类的小动物送到医院的时候，从系统中可以知道当前负责的哪位医生，从而方便把小动物送过去医治；</li>
+  <li>能够通过系统查看任何一位医生当前<strong>持续接待</strong>的各个种类的小动物的数量；</li>
+  <li>能够查看任何一位医生历史中接待过的各个种类的小动物总数量（如果一位新医生接管另一位离职医生的工作，小动物的数量算到离职的医生那里）；比如某医生历史上共医治过 23 只猪、100 只猫、68 只狗、2 匹马、33 只蜥蜴，等等。</li>
+</ol>
+
+<h3 id="具体的规则描述">具体的规则描述</h3>
+<p>出于各方面的考虑，动物医院有如下的规则：</p>
+
+<ol>
+  <li>每位医生同一时间负责最多不超过 3 个种类的动物。比如<strong>医生-A</strong> 当前负责了<strong>猪、狗</strong>两种动物，<strong>医生-B</strong> 当前负责了 <strong>马、鼠、猫</strong>三种动物，<strong>医生-C</strong> 当前负责 <strong>蜥蜴</strong>一种动物。</li>
+  <li>当有动物需要医治的时候，根据动物的种类送给特定的医生那里医治。比如根据第一条规则的情况，当有一只生病的<strong>小狗</strong>就医时，会直接送到<strong>医生-A</strong> 去医治；当有一只生病的<strong>小猫</strong>就医时，会直接送到<strong>医生-B</strong>去医治；依次类推。</li>
+  <li>某个医生<strong>持续接待</strong>的某个种类的动物超过 30 只的时候，会把当前医生所负责的这个动物种类按照一定的规则重新决策负责的医生。比如在某个时间段里，只要有生病的小狗被送到医院，都会被送到<strong>医生-A</strong> 那儿，持续这种情况，当小狗的数量超过了 30 只后，就不让医生-A 继续负责了。<strong>电子系统自动选出</strong>当前负责动物种类最少的<strong>医生-C</strong>（按照第一条规则的示例里，他只负责了 1 种动物），让医生-C 负责后面的小狗的医治。以后再有生病的小狗送到医院的时候，就会直接被送到<strong>医生-C</strong> 那里去，此时<strong>医生-C 持续接待</strong> 小狗的数量从 0 开始计数。</li>
+  <li>在以上规则实施的过程中，如果有医生离职，会有新的医生接替这位医生的工作，同时动物的<strong>持续接待数字</strong>归 0。比如<strong>医生-A</strong> 因为各方面原因不干了，那么医院会安排一位新的<strong>医生-D</strong> 来接替医生-A 的工作，假如这个时候医生-A 所接待的小狗还存在没有医治痊愈的情况，则由<strong>医生-D</strong> 负责为这些小狗进行医治。假设此时<strong>医生-A</strong> 已经<strong>持续接待</strong>了 10 只小狗，当<strong>医生-D</strong> 接手工作后，这个持续的数字将<strong>归零</strong>，即重新从 0 开始计数。</li>
+</ol>
+
+<h2 id="动物医院的技术方案数据表设计">动物医院的技术方案（数据表设计）</h2>
+<p>在充分理解了产品经理的需求以后，我和产品经理分头行动，他去做原型设计，我则负责技术方案的设计。</p>
+
+<p>接下来就尝试着给上面的需求做一下技术方案，按照<a href="https://jingwei.link/2018/10/03/web-def-flow-summary.html">之前的文章</a>，一个技术方案包含很多的内容，但是受到篇幅的限制，本文将侧重数据表的设计部分，其他的则不涉及（对大部分需求，数据表成型后很多东西就确定了🐽）。</p>
+
+<h3 id="第一种数据表设计直观的数据表">第一种数据表设计——直观的数据表</h3>
+
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fzc3x0ubl0j31he0mun16.jpg" alt="" /></p>
+
+<p>根据产品经理讲的故事原型以及故事中的规则可以<strong>抽象出三个实体</strong>——具体就医的小动物、小动物的种类、小动物的主治医生，并能够在此基础上拟定出三张数据表——**<Animal>、<Animal-kinds>、<Animal-doctors>、<Animal-kind-logs>**——分别用来保存每个实体的数据（ <Animal-kind-logs> 是 <Animal-kinds> 的日志表，后者用来记录前者的变更）。</Animal-kinds></Animal-kind-logs></Animal-kind-logs></Animal-doctors></Animal-kinds></Animal></p>
+
+<ol>
+  <li>当每只小动物来就医时，根据其种类到 <Animal-kinds> 中查找当前此类动物该由哪位医生负责，从而在 <Animal> 表中给相应的字段置位。</Animal></Animal-kinds></li>
+  <li>同时修改 <Animal-kinds> 表中对应记录的“持续就诊的数量”（加 1），然后判定这个值的大小；如果“持续就诊的数量”值小于等于 30 ，则不做任何改变；</Animal-kinds></li>
+  <li>如果“持续就诊的数量”值大于 30，则需要重新在所有活跃的医生中<strong>挑选一个医生</strong>，把 <Animal-kinds> 表中对应的记录的 “当前主治医生” 修改为选中的医生。</Animal-kinds></li>
+  <li>当<strong>给动物种类挑选医生</strong>时，在 <Animal-kinds> 表中按照“当前主治医生”字段来分组统计，得到活跃的医生及其负责的种类数目，然后找出当前负责的动物种类数目最少的医生（假如存在条件一模一样的多个医生，随机挑选一个）。</Animal-kinds></li>
+  <li>当<strong>有动物医生离职时</strong>，① 首先要修改 <Animal-docters> 表中该医生的状态，② 然后在该表中添加一条新的记录（新的医生），③ 把 <Animal-kinds> 中**所有**涉及到的记录的 “当前主治医生” 设置为新的医生；④ 把所有这些记录中的“持续就诊的数量”值设置为 0。</Animal-kinds></Animal-docters></li>
+  <li>为了让<strong>挑选医生</strong>和<strong>医生人员变动</strong>这两种情况可追溯，考虑在修改  <Animal-kinds> 表中“当前主治医生”字段时，在 <Animal-kind-logs> 表插入相应的记录。</Animal-kind-logs></Animal-kinds></li>
+  <li>通过  <Animal-kinds>  可以实时查询每个医生持续接待的各类小动物的数量。</Animal-kinds></li>
+  <li>可以通过 <Animal> 中的记录来统计每位医生医治的各个种类的小动物总数量。</Animal></li>
+</ol>
+
+<p>通过情景模拟，可以知道上面的数据表设计能够满足<strong>需求</strong>以及<strong>故事中的规则</strong>。逻辑推演是自恰的，因此可以基于这个设计完善技术方案，继而完成开发。</p>
+
+<p>虽然如此，但是总觉得方案中存在别扭的点，比如上面 <strong>a)</strong> 第 4 步<strong>给动物种类挑选医生</strong>时，要一次次对  <Animal-kinds> 表进行 group （分组统计）的操作；**b)** 第 5 步需要修改  <Animal-kinds> 中**所有** 涉及的记录的“当前主治医生” 的值。</Animal-kinds></Animal-kinds></p>
+
+<p>按照以往的编码经验来看，设计方案中<strong>使人别扭的点</strong>往往会增加编码的难度，从而增加引入 Bug 的概率。那么有没有更好的设计方案呢？</p>
+
+<h3 id="另一种数据表设计添加诊室表">另一种数据表设计——添加诊室表</h3>
+
+<h4 id="添加诊室表后的故事表述">添加诊室表后的故事表述</h4>
+
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79gy1fzc3x83k0pj31kq0n60y1.jpg" alt="" /></p>
+
+<p>根据数据表设计的经验，为了解决上一小节提到的<strong>使人感觉别扭的点</strong>，可以考虑在 <Animal-docters> 和 <Animal-kinds> 中间引入一个**诊室表 <Animal-clinics>**用来进行优化。对应到原来的故事，就是引入“诊室”的概念，在不改变需求的前提下稍微修改一下故事的描述（可以和产品经理进行二次确认，避免理解偏差导致技术方案出现差错；因为大部分的故事是产品经理想出来以方便各方沟通的，在**不改变需求**的前提下换一种讲法也无伤大雅。）</Animal-clinics></Animal-kinds></Animal-docters></p>
+
+<ol>
+  <li>每个诊室里可以包容一位医生坐诊；除非这个医生离职，否则坐诊医生不会改变。</li>
+  <li>每个诊室同一时间负责接待最多不超过 3 个种类的动物。</li>
+  <li>当有动物需要医治的时候，根据动物的种类分配到特定的诊室就医。</li>
+  <li>某个诊室<strong>持续接待</strong>的某个种类的动物超过 30 只的时候，会把当前诊室所负责的这个动物种类拿出来，并按照一定的规则重新决策负责的诊室。</li>
+  <li>在以上规则实施的过程中，如果有医生离职离开他所在的诊室，会有新的医生接替这位医生的工作入驻这个诊室，此时这个诊室负责的动物的<strong>持续接待数字</strong>归 0。</li>
+</ol>
+
+<h4 id="添加诊室辅助表后的逻辑推演">添加诊室辅助表后的逻辑推演</h4>
+
+<ol>
+  <li>当每只小动物来就医时，根据其种类到 <Animal-kinds> 中查到当前此种类的动物由哪个诊室负责，从  <Animal-clinics>  中找到对应的记录后再对应地找到 <Animal-docters> 中的记录，从而在 <Animal> 表中给相应的字段置位。</Animal></Animal-docters></Animal-clinics></Animal-kinds></li>
+  <li>同时修改 <Animal-kinds> 中当前记录的“持续就诊的数量”（加 1），然后判定这个值的大小；如果“持续就诊的数量”值小于等于 30 ，则不做任何改变；</Animal-kinds></li>
+  <li>如果“持续就诊的数量”值大于 30，则需要重新在所有的诊室中<strong>挑选一个诊室</strong>，把 <Animal-kinds> 表中对应的 “当前负责的诊室” 修改成为选中的诊室，同时更改 <Animal-clinics> 记录中两个相关记录的“负责接待的动物种类数值” 。</Animal-clinics></Animal-kinds></li>
+  <li>当<strong>给动物种类挑选诊室</strong>时，根据 <Animal-clinics> 中的所有记录选择当前负责种类数目最少的诊室（假如存在条件一模一样的多个诊室，随机挑选一个），然后按照第 3 步所描述的处理。</Animal-clinics></li>
+  <li>当<strong>有动物医生离职时</strong>，① 首先要修改 <Animal-docters> 表中该医生的状态，② 然后在表中添加一条新的记录（新的医生），③ 把相应诊室的坐诊医生改为新医生；④ 把 <Animal-kinds> 中对应记录的“持续就诊的数量”值设置为 0。</Animal-kinds></Animal-docters></li>
+  <li>为了让<strong>挑选诊室</strong>和<strong>医生人员变动</strong>这两种情况可追溯，考虑在修改  <Animal-kinds> 表中“当前主治医生”字段时，在 <Animal-kind-logs> 表插入相应的记录。</Animal-kind-logs></Animal-kinds></li>
+  <li>通过  <Animal-kinds>  可以实时查询每位医生（对应到每个诊室）持续接待的各类小动物的数量。</Animal-kinds></li>
+  <li>可以通过 <Animal> 中的记录来统计每位医生医治的各个种类的小动物总数量。</Animal></li>
+</ol>
+
+<h3 id="信息的组织方式">信息的组织方式</h3>
+
+<p>通过上面的讨论可以知道，<strong>存在不同的技术方案同时满足同一个需求列表</strong>。第一种技术方案基于对<strong>需求友好</strong>的故事，从产品经理的第一版故事直接进行设计；第二种技术方案对应的是<strong>对开发友好的故事</strong>，更利于开发人员设计代码逻辑，从而写出稳定可靠的代码。</p>
+
+<p>目前的故事复杂度，还没有办法看出来哪一种技术方案更优，只是基于的故事不太一样，更进一步，是<strong>信息的组织方式不同而已，并没有本质的区别</strong>。不过我个人会倾向于选择第二种设计方案，因为我认为第二种设计方案的实践性和扩展性更好一些：① 让开发者容易理解，容易编码，能加快产品开发的速度；② 多抽出一层诊所的概念，解耦了<strong>医生</strong>与<strong>动物种类</strong> 之间的关系，增加了故事复杂度的弹性。</p>
+
+<h2 id="小结">小结</h2>
+<p>早几年，年轻的我问得最多的问题是“我哪里做错了”，喜欢较真；后来经历了失去与收获却发现，<strong>一段美好的感情，一个美好的前程，是需要多问“怎样才能做的更好”来追求的。</strong></p>
+
+<p>本文顺着这样的觉悟，对一个虚拟的动物医院的故事进行了两种技术方案的设计。并认为在做技术方案时应该遵循<strong>对开发友好的故事</strong>，从而利于开发人员写出稳定可靠的代码。当然，这需要花费一些心思，动一些脑筋😋。</p>
+
+<p>最后，上面的两种方案中依然存在一个可以明显优化的点，大家可以找出来吗？</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://jingwei.link/2018/11/16/best-practice-of-team-construction.html">工作观察之融于团队最佳实践 - 敬维</a></li>
+  <li><a href="https://jingwei.link/2018/12/08/year-conclusion-of-myself.html">以认真的态度做完美的事情（2018年总结） - 敬维</a></li>
+  <li><a href="https://jingwei.link/2018/10/03/web-def-flow-summary.html">Web类技术研发流程小结 - 敬维</a></li>
+  <li><a href="https://jingwei.link/2018/12/31/thinking-of-architecture.html">从 Clean-Architecture 谈架构原理及其应用 - 敬维</a> 做架构的前提是领域知识的充分了解</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="//github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/01/13/architecture-from-zero-to-millions-req.html" class="read-next-link"></a>
+          <section>
+            <span>漫谈从零访问量到每秒千万访问量的架构设计</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+  <script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document,
+        s = d.createElement('script');
+      s.src = 'https://jingwei-link.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
