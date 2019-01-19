@@ -206,22 +206,22 @@ Author: Ray-Eldath
 
 <p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fzc3x0ubl0j31he0mun16.jpg" alt="" /></p>
 
-<p>根据产品经理讲的故事原型以及故事中的规则可以<strong>抽象出三个实体</strong>——具体就医的小动物、小动物的种类、小动物的主治医生，并能够在此基础上拟定出三张数据表——**<Animal>、<Animal-kinds>、<Animal-doctors>、<Animal-kind-logs>**——分别用来保存每个实体的数据（ <Animal-kind-logs> 是 <Animal-kinds> 的日志表，后者用来记录前者的变更）。</Animal-kinds></Animal-kind-logs></Animal-kind-logs></Animal-doctors></Animal-kinds></Animal></p>
+<p>根据产品经理讲的故事原型以及故事中的规则可以<strong>抽象出三个实体</strong>——具体就医的小动物、小动物的种类、小动物的主治医生，并能够在此基础上拟定出三张数据表——<strong>[Animal]、[Animal-kinds]、[Animal-doctors]、[Animal-kind-logs]</strong>——分别用来保存每个实体的数据（ [Animal-kind-logs] 是 [Animal-kinds] 的日志表，后者用来记录前者的变更）。</p>
 
 <ol>
-  <li>当每只小动物来就医时，根据其种类到 <Animal-kinds> 中查找当前此类动物该由哪位医生负责，从而在 <Animal> 表中给相应的字段置位。</Animal></Animal-kinds></li>
-  <li>同时修改 <Animal-kinds> 表中对应记录的“持续就诊的数量”（加 1），然后判定这个值的大小；如果“持续就诊的数量”值小于等于 30 ，则不做任何改变；</Animal-kinds></li>
-  <li>如果“持续就诊的数量”值大于 30，则需要重新在所有活跃的医生中<strong>挑选一个医生</strong>，把 <Animal-kinds> 表中对应的记录的 “当前主治医生” 修改为选中的医生。</Animal-kinds></li>
-  <li>当<strong>给动物种类挑选医生</strong>时，在 <Animal-kinds> 表中按照“当前主治医生”字段来分组统计，得到活跃的医生及其负责的种类数目，然后找出当前负责的动物种类数目最少的医生（假如存在条件一模一样的多个医生，随机挑选一个）。</Animal-kinds></li>
-  <li>当<strong>有动物医生离职时</strong>，① 首先要修改 <Animal-docters> 表中该医生的状态，② 然后在该表中添加一条新的记录（新的医生），③ 把 <Animal-kinds> 中**所有**涉及到的记录的 “当前主治医生” 设置为新的医生；④ 把所有这些记录中的“持续就诊的数量”值设置为 0。</Animal-kinds></Animal-docters></li>
-  <li>为了让<strong>挑选医生</strong>和<strong>医生人员变动</strong>这两种情况可追溯，考虑在修改  <Animal-kinds> 表中“当前主治医生”字段时，在 <Animal-kind-logs> 表插入相应的记录。</Animal-kind-logs></Animal-kinds></li>
-  <li>通过  <Animal-kinds>  可以实时查询每个医生持续接待的各类小动物的数量。</Animal-kinds></li>
-  <li>可以通过 <Animal> 中的记录来统计每位医生医治的各个种类的小动物总数量。</Animal></li>
+  <li>当每只小动物来就医时，根据其种类到 [Animal-kinds] 中查找当前此类动物该由哪位医生负责，从而在 [Animal] 表中给相应的字段置位。</li>
+  <li>同时修改 [Animal-kinds] 表中对应记录的“持续就诊的数量”（加 1），然后判定这个值的大小；如果“持续就诊的数量”值小于等于 30 ，则不做任何改变；</li>
+  <li>如果“持续就诊的数量”值大于 30，则需要重新在所有活跃的医生中<strong>挑选一个医生</strong>，把 [Animal-kinds] 表中对应的记录的 “当前主治医生” 修改为选中的医生。</li>
+  <li>当<strong>给动物种类挑选医生</strong>时，在 [Animal-kinds] 表中按照“当前主治医生”字段来分组统计，得到活跃的医生及其负责的种类数目，然后找出当前负责的动物种类数目最少的医生（假如存在条件一模一样的多个医生，随机挑选一个）。</li>
+  <li>当<strong>有动物医生离职时</strong>，① 首先要修改 [Animal-docters] 表中该医生的状态，② 然后在该表中添加一条新的记录（新的医生），③ 把 [Animal-kinds] 中<strong>所有</strong>涉及到的记录的 “当前主治医生” 设置为新的医生；④ 把所有这些记录中的“持续就诊的数量”值设置为 0。</li>
+  <li>为了让<strong>挑选医生</strong>和<strong>医生人员变动</strong>这两种情况可追溯，考虑在修改  [Animal-kinds] 表中“当前主治医生”字段时，在 [Animal-kind-logs] 表插入相应的记录。</li>
+  <li>通过  [Animal-kinds]  可以实时查询每个医生持续接待的各类小动物的数量。</li>
+  <li>可以通过 [Animal] 中的记录来统计每位医生医治的各个种类的小动物总数量。</li>
 </ol>
 
 <p>通过情景模拟，可以知道上面的数据表设计能够满足<strong>需求</strong>以及<strong>故事中的规则</strong>。逻辑推演是自恰的，因此可以基于这个设计完善技术方案，继而完成开发。</p>
 
-<p>虽然如此，但是总觉得方案中存在别扭的点，比如上面 <strong>a)</strong> 第 4 步<strong>给动物种类挑选医生</strong>时，要一次次对  <Animal-kinds> 表进行 group （分组统计）的操作；**b)** 第 5 步需要修改  <Animal-kinds> 中**所有** 涉及的记录的“当前主治医生” 的值。</Animal-kinds></Animal-kinds></p>
+<p>虽然如此，但是总觉得方案中存在别扭的点，比如上面 <strong>a)</strong> 第 4 步<strong>给动物种类挑选医生</strong>时，要一次次对  [Animal-kinds] 表进行 group （分组统计）的操作；<strong>b)</strong> 第 5 步需要修改  [Animal-kinds] 中<strong>所有</strong> 涉及的记录的“当前主治医生” 的值。</p>
 
 <p>按照以往的编码经验来看，设计方案中<strong>使人别扭的点</strong>往往会增加编码的难度，从而增加引入 Bug 的概率。那么有没有更好的设计方案呢？</p>
 
@@ -231,7 +231,7 @@ Author: Ray-Eldath
 
 <p><img src="https://ws3.sinaimg.cn/large/006tNc79gy1fzc3x83k0pj31kq0n60y1.jpg" alt="" /></p>
 
-<p>根据数据表设计的经验，为了解决上一小节提到的<strong>使人感觉别扭的点</strong>，可以考虑在 <Animal-docters> 和 <Animal-kinds> 中间引入一个**诊室表 <Animal-clinics>**用来进行优化。对应到原来的故事，就是引入“诊室”的概念，在不改变需求的前提下稍微修改一下故事的描述（可以和产品经理进行二次确认，避免理解偏差导致技术方案出现差错；因为大部分的故事是产品经理想出来以方便各方沟通的，在**不改变需求**的前提下换一种讲法也无伤大雅。）</Animal-clinics></Animal-kinds></Animal-docters></p>
+<p>根据数据表设计的经验，为了解决上一小节提到的<strong>使人感觉别扭的点</strong>，可以考虑在 [Animal-docters] 和 [Animal-kinds] 中间引入一个<strong>诊室表 [Animal-clinics]</strong>用来进行优化。对应到原来的故事，就是引入“诊室”的概念，在不改变需求的前提下稍微修改一下故事的描述（可以和产品经理进行二次确认，避免理解偏差导致技术方案出现差错；因为大部分的故事是产品经理想出来以方便各方沟通的，在<strong>不改变需求</strong>的前提下换一种讲法也无伤大雅。）</p>
 
 <ol>
   <li>每个诊室里可以包容一位医生坐诊；除非这个医生离职，否则坐诊医生不会改变。</li>
@@ -244,14 +244,14 @@ Author: Ray-Eldath
 <h4 id="添加诊室辅助表后的逻辑推演">添加诊室辅助表后的逻辑推演</h4>
 
 <ol>
-  <li>当每只小动物来就医时，根据其种类到 <Animal-kinds> 中查到当前此种类的动物由哪个诊室负责，从  <Animal-clinics>  中找到对应的记录后再对应地找到 <Animal-docters> 中的记录，从而在 <Animal> 表中给相应的字段置位。</Animal></Animal-docters></Animal-clinics></Animal-kinds></li>
-  <li>同时修改 <Animal-kinds> 中当前记录的“持续就诊的数量”（加 1），然后判定这个值的大小；如果“持续就诊的数量”值小于等于 30 ，则不做任何改变；</Animal-kinds></li>
-  <li>如果“持续就诊的数量”值大于 30，则需要重新在所有的诊室中<strong>挑选一个诊室</strong>，把 <Animal-kinds> 表中对应的 “当前负责的诊室” 修改成为选中的诊室，同时更改 <Animal-clinics> 记录中两个相关记录的“负责接待的动物种类数值” 。</Animal-clinics></Animal-kinds></li>
-  <li>当<strong>给动物种类挑选诊室</strong>时，根据 <Animal-clinics> 中的所有记录选择当前负责种类数目最少的诊室（假如存在条件一模一样的多个诊室，随机挑选一个），然后按照第 3 步所描述的处理。</Animal-clinics></li>
-  <li>当<strong>有动物医生离职时</strong>，① 首先要修改 <Animal-docters> 表中该医生的状态，② 然后在表中添加一条新的记录（新的医生），③ 把相应诊室的坐诊医生改为新医生；④ 把 <Animal-kinds> 中对应记录的“持续就诊的数量”值设置为 0。</Animal-kinds></Animal-docters></li>
-  <li>为了让<strong>挑选诊室</strong>和<strong>医生人员变动</strong>这两种情况可追溯，考虑在修改  <Animal-kinds> 表中“当前主治医生”字段时，在 <Animal-kind-logs> 表插入相应的记录。</Animal-kind-logs></Animal-kinds></li>
-  <li>通过  <Animal-kinds>  可以实时查询每位医生（对应到每个诊室）持续接待的各类小动物的数量。</Animal-kinds></li>
-  <li>可以通过 <Animal> 中的记录来统计每位医生医治的各个种类的小动物总数量。</Animal></li>
+  <li>当每只小动物来就医时，根据其种类到 [Animal-kinds] 中查到当前此种类的动物由哪个诊室负责，从  [Animal-clinics]  中找到对应的记录后再对应地找到 [Animal-docters] 中的记录，从而在 [Animal] 表中给相应的字段置位。</li>
+  <li>同时修改 [Animal-kinds] 中当前记录的“持续就诊的数量”（加 1），然后判定这个值的大小；如果“持续就诊的数量”值小于等于 30 ，则不做任何改变；</li>
+  <li>如果“持续就诊的数量”值大于 30，则需要重新在所有的诊室中<strong>挑选一个诊室</strong>，把 [Animal-kinds] 表中对应的 “当前负责的诊室” 修改成为选中的诊室，同时更改 [Animal-clinics] 记录中两个相关记录的“负责接待的动物种类数值” 。</li>
+  <li>当<strong>给动物种类挑选诊室</strong>时，根据 [Animal-clinics] 中的所有记录选择当前负责种类数目最少的诊室（假如存在条件一模一样的多个诊室，随机挑选一个），然后按照第 3 步所描述的处理。</li>
+  <li>当<strong>有动物医生离职时</strong>，① 首先要修改 [Animal-docters] 表中该医生的状态，② 然后在表中添加一条新的记录（新的医生），③ 把相应诊室的坐诊医生改为新医生；④ 把 [Animal-kinds] 中对应记录的“持续就诊的数量”值设置为 0。</li>
+  <li>为了让<strong>挑选诊室</strong>和<strong>医生人员变动</strong>这两种情况可追溯，考虑在修改  [Animal-kinds] 表中“当前主治医生”字段时，在 [Animal-kind-logs] 表插入相应的记录。</li>
+  <li>通过  [Animal-kinds]  可以实时查询每位医生（对应到每个诊室）持续接待的各类小动物的数量。</li>
+  <li>可以通过 [Animal] 中的记录来统计每位医生医治的各个种类的小动物总数量。</li>
 </ol>
 
 <h3 id="信息的组织方式">信息的组织方式</h3>
