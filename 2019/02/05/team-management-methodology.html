@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浅谈团队管理最佳实践 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="浅谈团队管理最佳实践">
+    <meta name="keywords"  content="管理, 经验, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="浅谈团队管理最佳实践 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/02/05/team-management-methodology.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%AE%A1%E7%90%86" class="post-tag">管理</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>浅谈团队管理最佳实践</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-02-05"><i class="iconfont icon-date"></i>05 Feb 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">用合适的管理方法提升团队效率</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#用合适的管理方法提升团队效率" id="markdown-toc-用合适的管理方法提升团队效率">用合适的管理方法提升团队效率</a>    <ul>
+      <li><a href="#团队管理是否存在最佳实践" id="markdown-toc-团队管理是否存在最佳实践">团队管理是否存在最佳实践？</a></li>
+      <li><a href="#一每个人都需要关怀" id="markdown-toc-一每个人都需要关怀">一、每个人都需要关怀</a></li>
+      <li><a href="#二公平公正公开的价值评判标准" id="markdown-toc-二公平公正公开的价值评判标准">二、公平公正公开的价值评判标准</a></li>
+      <li><a href="#三团队沉淀文档与流程标准化" id="markdown-toc-三团队沉淀文档与流程标准化">三、团队沉淀——文档与流程标准化</a></li>
+      <li><a href="#四具象化团队这台机器的样貌" id="markdown-toc-四具象化团队这台机器的样貌">四、具象化团队这台机器的样貌</a></li>
+      <li><a href="#再谈领导者的价值" id="markdown-toc-再谈领导者的价值">再谈领导者的价值</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>不久前和大佬谈心，从个人成长到团队管理取了很多经，这次坐绿皮车回老家过春节，在漫漫路途中消化了一下，加上自己的一些观察和思考后总结出来<strong>以备后用</strong>，也希望能给大家一些启发。</p>
+
+<p>今天是农历己亥猪年的正月初一（春节），猪（祝）大家新的一年<strong>“努力有成长，付出有回报”</strong>，万事如意节节高 😄。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——初级——<strong>中级√</strong>——高级；本文适应中级及以上。</p>
+
+<h2 id="用合适的管理方法提升团队效率">用合适的管理方法提升团队效率</h2>
+<h3 id="团队管理是否存在最佳实践">团队管理是否存在最佳实践？</h3>
+<p>像我在  <a href="https://jingwei.link/2018/12/08/year-conclusion-of-myself.html">2018 年的总结</a>里所描述的，瑞·达利欧的《原则》这本书给了我很大的感触。其实在那之前我就一直在琢磨“最佳实践”的事情，在读完《原则》这本书后，让我对最佳实践的思考更进一步，这部分的思考未来如果有机会的话可以聊很多，这次只聚焦在团队管理上面。</p>
+
+<p>那么，团队管理是否有最佳实践呢？这是一个“仁者见仁智者见智”的问题。不过我相信是有的，而且可以具象为三条原则：① 总结一套自己认为的团队管理的最佳实践；② 向大家公布这个最佳实践；③ 根据大家的反馈修正自己的最佳实践（🙃）。</p>
+
+<h3 id="一每个人都需要关怀">一、每个人都需要关怀</h3>
+
+<p>人才的重要性不言而喻。</p>
+
+<p>领导者应确认团队中每个成员的职业发展规划，并适时地给予“人文上的关怀”。固定时间的谈心是必要的，这也是很多团队都会有的“规矩”；但也正因为是“规矩”，很容易被人们忽略其作用。对一位职业者来说，无论其有何种教育、工作背景，“成长”都是其职业规划中存在的一个重要的关键词（二十几岁到三十岁露头的职业者尤其明显）。当看不见某个成员某段时间里的任何精进的时候，就要考虑一次交心的谈话了。了解其感知感会，并就自己宏观上的认识给予一定的指导或帮助，争取达成共识，促进其精进。</p>
+
+<h3 id="二公平公正公开的价值评判标准">二、公平公正公开的价值评判标准</h3>
+
+<p>明确公平公正公开的价值评判标准。</p>
+
+<p>俗话说：“条条大路通罗马”。我相信每条路上的职业者有自己的执着，我们也应该尊重每个人的选择。问题在于这么多“大路”里有没有一条比较近的路呢？站在团队的角度，有没有性价比更高的一条路呢？（换句话说，每条道路的价值其实是不一样的）</p>
+
+<p>更进一步，每个人有不同的追求，从而演变出不同的职业规划：有的人看重学习的进度，有的人看重探索的机会，有的人则为了生存看重收益。对于一个特定的目标，根据这个目标的属性可以确定出每条“大路”的价值，为了公平公正，应尽可能公开这种价值。需要注意的是，这并不是强调某种工作方式优于另一种工作方式。有些目标需要成员在同一个岗位上默默无闻付出好久才能达成，有的目标需要成员进行短时间高强度的思辨才能达成，有的目标需要大量的经验和知识储备才能够达成，等等，因此可以认为<strong>工作方式的价值是随着目标而定的</strong>；目标不同，需要达成目标的最佳工作方式也不同。理想情况下，每种类型的成员使用自己轻车熟路的工作方式达成各自擅长的目标，从而实现自身价值的最大化，同时也实现了团队成员效率最大化。</p>
+
+<p>可以认为一个成员的价值增值包含两个层面：① 随着熟练度的提升所带来的价值增值（深度上靠点边）； ② 解决特殊领域问题的经验价值（深度+广度）。每个人都可以用这两条标准来标准化自己的投入产出，从而做出优化调整并努力实践。</p>
+
+<h3 id="三团队沉淀文档与流程标准化">三、团队沉淀——文档与流程标准化</h3>
+<p>一个应届生，有学习的动力，有闯劲，引导得当也能够胜任一些枯燥乏味的工作，但是其价值（以薪资论）比起那些技术专家要少好几成。究其根本原因，是因为技术专家的<strong>经验价值</strong>太多太多了。</p>
+
+<p>评判一个团队的技术实力，只需要看这两个指标：① 有多少行业大牛，② 有多少相关的文档积累。经验的价值是非常巨大的，因此需要想办法让这种价值在团队里沉淀。第一个指标是可遇而不可求的，但是可以在第二个指标上面下苦功夫（这也是我看重文档建设的原因）。</p>
+
+<p>对于一个优秀的团队来说，其成员大部分都是在造轮子或在为造轮子做准备；少部分的人在使用轮子，同时想办法把轮子组装成为更庞大的作业机器。对于一般的团队来说，会有相当一部分人做着经验驱动的重复性工作。理论上可以通过文档和流程标准化的方式有效降低做重复性工作的成员的替备成本，从而避免团队变得臃肿冗余。此外，详尽的文档可以为<strong>方案的二次设计优化</strong>提供丰富的参考资料（原方案的考量、大量的实例参考等），从而缩短信息收集的成本，为新方案的制定争取时间。</p>
+
+<h3 id="四具象化团队这台机器的样貌">四、具象化团队这台机器的样貌</h3>
+
+<p>我之前有抛出一个过论点——<strong>决策是领导者存在的最大价值</strong>。这里其实是有前提的，即领导者所掌握的信息往往是最多最丰富的，而决策的先前条件是<strong>尽可能多的情报</strong>，因此领导者有做决策的责任和义务，也是他的最大价值（不过这并不意味着领导者要决策所有的事情，里面存在一些技巧，往往这也是衡量一个领导者向更高阶的领导进阶的关键素质）。</p>
+
+<p>假如把团队建设比喻为一台庞大机器的建设，领导者应该努力<strong>具象出这台机器的样貌（蓝图）</strong>并广而告之（像广告那样宣传这件事情，见缝插针的那种）。就像文档的存在是为了具象化某个事务的细节从而方便其他成员参阅实践一样，团队建设的蓝图定义了团队的责任与目标、架构设计、合理组成、团队的演进等，方便成员参考辅助自己的实践。站在另一个角度看，把这一切具象出来，① 首先证明领导者是明智的（至少自己想清楚了），② 其次方便与成员的沟通，③ 再次可以在这个过程中下放一些责任从而解放自己的精力去做更重要的事情。</p>
+
+<h3 id="再谈领导者的价值">再谈领导者的价值</h3>
+<p>通过上面的讨论，可以推导出一个领导者的价值。如果未来我能成为一个 CXO（😝），基本会从下面几个维度来衡量：</p>
+
+<ul>
+  <li><strong>人才梯度建设</strong>。团队中能看到明显的人才，能看到明显的人才苗子。</li>
+  <li>每个人各司其职做最擅长的事情，达到<strong>人才效率的最大化</strong>。</li>
+  <li><strong>团队有积淀，包含文档建设以及流程建设</strong>。这里需要表明一下个人态度，流程建设只有一个目的，降低人力替备成本，否则就有炫技的可能性。</li>
+  <li>在人力资源受限情况下，<strong>优先级的排定</strong>。一个团队里的人力总是紧缺的，而对于 <strong>重复劳动 vs 造轮子</strong>的人力配比，10:0 和 8:2 的安排，最终的效果是不一样的。用少量的损失换取更大的收益，对上怎么交代，对下怎么安排，怎么驱动自己主动承受这种压力的苦，可以说是一门艺术活儿了。</li>
+  <li><strong>在团队建设方面有自己成熟的方法论</strong>。不唯书，但要成熟；里面包含的是对信息流、个人及他人情绪的掌控以及大局观。</li>
+</ul>
+
+<h2 id="小结">小结</h2>
+<p>这次春节回家预订到了一张软卧，临出行前除了准备电脑、平板，还往包里塞了一本纸质笔记本和一支笔。人在旅途的时候难免感叹比较多，由此使得一些灵感显现出来，有灵感却不记录是可惜的，有大块的时间不利用起来也有点可惜的。于是，火车一路北上，我则整理了自己的一些思考并记在了纸质笔记本上，到了大年初一这一天，于是有了这篇博客。（其实还有一篇散文随笔，后面看看是不是也适合整理成博文 😋）</p>
+
+<p>综合上面的讨论，可以这样评判一个团队的管理：几个人组在一起，能解决一定的问题，这是普通的团队；几个人组在一起，在解决问题的同时有沉淀，有人才的梯度建设，这是好的团队；几个人组在一起，在解决问题的同时有沉淀、人才梯度建设，同时每个人清楚团队的蓝图并向着一个更高阶的部门奋进，这是一个优秀的团队。</p>
+
+<p>最后，再给大家拜个年，祝大家春季快乐~</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://jingwei.link/2018/12/08/year-conclusion-of-myself.html">以认真的态度做完美的事情（2018年总结） - 敬维</a></li>
+  <li><a href="https://jingwei.link/2019/01/19/how-to-make-tech-scheme.html">一个例子说明如何做技术方案 - 敬维</a>  多问“怎样才能做的更好”</li>
+  <li><a href="https://jingwei.link/2018/11/16/best-practice-of-team-construction.html">工作观察之融于团队最佳实践 - 敬维</a> 决策是leader存在的最大价值</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/01/19/how-to-make-tech-scheme.html" class="read-next-link"></a>
+          <section>
+            <span>一个例子说明如何做技术方案</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
