@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux系统调度原理浅析（二） - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Linux系统调度原理浅析（二）">
+    <meta name="keywords"  content="基础, 经验, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Linux系统调度原理浅析（二） - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/02/13/linux-process-thread-schedule-2.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>Linux系统调度原理浅析（二）</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-02-13"><i class="iconfont icon-date"></i>13 Feb 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('https://ws4.sinaimg.cn/large/006tNc79ly1fzxnby5s8pj31aq0u013m.jpg') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">进一步谈进程、线程、调度以及Goroutine的调度</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#到底谁被调度了为什么调度它" id="markdown-toc-到底谁被调度了为什么调度它">到底谁被调度了？为什么调度它？</a>    <ul>
+      <li><a href="#再谈进程为什么出现进程的概念" id="markdown-toc-再谈进程为什么出现进程的概念">再谈进程——为什么出现进程的概念？</a></li>
+      <li><a href="#再谈时间片有进程就有进程的调度" id="markdown-toc-再谈时间片有进程就有进程的调度">再谈时间片——有进程就有进程的调度</a></li>
+      <li><a href="#异步编程在同一个程序里同时做多件事" id="markdown-toc-异步编程在同一个程序里同时做多件事">异步编程——在同一个程序里“同时”做多件事</a></li>
+      <li><a href="#异步编程二内核态与用户态" id="markdown-toc-异步编程二内核态与用户态">异步编程（二）——内核态与用户态</a></li>
+      <li><a href="#内核线程与轻量级进程lwp" id="markdown-toc-内核线程与轻量级进程lwp">内核线程与轻量级进程（LWP）</a></li>
+      <li><a href="#单核cpu与多核cpu" id="markdown-toc-单核cpu与多核cpu">单核CPU与多核CPU</a></li>
+      <li><a href="#再谈调度" id="markdown-toc-再谈调度">再谈调度</a></li>
+      <li><a href="#goroutine本质是对cpu资源的进一步压榨" id="markdown-toc-goroutine本质是对cpu资源的进一步压榨">Goroutine——本质是对CPU资源的进一步压榨</a>        <ul>
+          <li><a href="#如果时间片用不完会触发系统调度" id="markdown-toc-如果时间片用不完会触发系统调度">如果时间片用不完会触发系统调度</a></li>
+          <li><a href="#goroutine调度模型" id="markdown-toc-goroutine调度模型">Goroutine调度模型</a></li>
+          <li><a href="#goroutine调度实现" id="markdown-toc-goroutine调度实现">Goroutine调度实现</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fzxnby5s8pj31aq0u013m.jpg" alt="" /></p>
+
+<p>这次春节请了比较长的假，主要想多陪陪父母，同时关注关注下一代的成长——毕竟到了反哺的年纪😋。不过话虽这么讲，其实享受的还是自己：享受长辈们的关照、美食，享受小辈们的陪伴、吹捧。当前自己能做的事情还是太少太少了，不过也没什么办法，<strong>“成长如飞高，是个没有捷径的过程”</strong>，想成大事的话急不来，必须要一步一步地前进。</p>
+
+<p>之前的文章《<a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析</a>》写了写自己对进程、线程、时间片、多线程模型的理解，后来就一直规划着写写 “Golang 的调度”。趁着春节后的这几天假期抽空看了几篇文章和一些源码，在对比分析了几个知识点后却发现最终还是牵涉到 <strong>Linux 的调度原理</strong>这里来；换句话说，理解 Golang 的调度原理，本质是理解 Linux 系统调度原理。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适合初级及以上。</p>
+
+<h2 id="到底谁被调度了为什么调度它">到底谁被调度了？为什么调度它？</h2>
+<p>我在《<a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析</a>》里把 CPU（单核）与内存比喻成为一个四方小木桌：四方小木桌是一种通用的工具，我们可以在上面完成许许多多的事情（比如吃饭、下象棋、打牌等），就像服务器上的 CPU 与内存，我们可以在上面运行许多进程。但是文章里一直在避讳<strong>多核 CPU</strong> 的事情——因为讲不通——当时我认为是比喻的局限性导致的，因此没有深究。现在来看，只是当时没有想清楚而已……</p>
+
+<h3 id="再谈进程为什么出现进程的概念">再谈进程——为什么出现进程的概念？</h3>
+
+<p>如果 CPU 只处理一件事情——比如根据信号控制电机转速——就不需要有进程的概念了；这种情况下，CPU <strong>不是</strong>在根据信号控制电机转速，<strong>就是</strong>在<strong>等着</strong>信号从而处理信号控制电机转速。如果四方小木桌只处理一件事情——比如吃饭，就不需要折腾小木桌上的摆设了：小木桌<strong>不是</strong>在用来吃饭，<strong>就是</strong>在<strong>等着</strong>被用来吃饭，盘子、碗一直放在桌面上就好了。</p>
+
+<p>基于绿色环保的理念，不能让 CPU 闲着！也不能让小木桌闲着！无论是 CPU 还是小木桌，<strong>等着</strong>做某件事情的时候都可以做其他的事情，<strong>于是进程出现了</strong>。</p>
+
+<p>按照科班里的说法：进程（Process）是计算机中的程序关于某<strong>数据集合</strong>上的一次<strong>运行活动</strong>，是系统进行<strong>资源分配</strong>和<strong>调度</strong>的基本单位，是操作系统结构的基础。可以简单认为:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 进程 <span class="o">=</span> 数据集合 + 运行逻辑
+</code></pre></div></div>
+<p>其中<strong>数据集合</strong>对应到内存中进程的堆、栈，<strong>运行逻辑</strong>对应到 CPU 中运行的逻辑。</p>
+
+<h3 id="再谈时间片有进程就有进程的调度">再谈时间片——有进程就有进程的调度</h3>
+
+<p>进程出现后，就有进程的调度问题。比如同时有进程 A、B、C，到底让哪个进程先运行，哪个进程后运行呢？</p>
+
+<p>有了时间片的概念以后，就可以给每个进程分配一定时间（比如 50ms）的 CPU 使用权，每个进程可以轮流使用 CPU 处理事情。当然，为了更为合理地利用 CPU 资源，可以根据优先级给进程分配不同长度的时间片。</p>
+
+<h3 id="异步编程在同一个程序里同时做多件事">异步编程——在同一个程序里“同时”做多件事</h3>
+<p>因为早期的 CPU 只有一个核，这一小节就<strong>只考虑一个核的情况</strong>。</p>
+
+<p>假如只有一个 CPU 核，如果一个应用想要“同时”做多件事情，由应用编写者决策① 要么顺序执行代码逻辑，② 要么另外创建一个子进程“异步”执行代码逻辑，对于异步的情况，其实所有的逻辑还是<strong>一个一个地排序执行</strong>的（只有一个核嘛）。比如要计算10个斐波那契序列，在一个 CPU 核的情况下，顺序依次计算和多个子进程异步计算，最终花费的时间是相当的，反而<strong>多个子进程异步计算</strong>因为进程切换导致时间的消耗更大，理论上更耗时。</p>
+
+<p>在只有一个 CPU 核的情况下，虽然<strong>异步计算</strong>的编程方式会增加进程切换的时间消耗，但是这种编程模型可以大大降低编码的难度（解放程序员的生产力），因此具有非常大的魅力。试想，我们开发一个图形界面的浏览器时，需要同时兼顾<strong>获取远程数据、本地图形界面渲染、响应用户点击</strong>等多个事件。假如 ① 采用同步编程的方式，需要手动编码专门对三个事件进行时时轮询检查，也就是用人脑来维持三个事件之间的触发秩序；而如果 ② 采用异步编程的方式，则只需要写各个事件的代码逻辑，由操作系统或框架维持事件的触发秩序即可。</p>
+
+<p>上面讨论的都是基于<strong>只有一个 CPU 核</strong>的情况，如果有多个 CPU 核，情况会改变吗？继续往后看。</p>
+
+<h3 id="异步编程二内核态与用户态">异步编程（二）——内核态与用户态</h3>
+
+<p>内核态和用户态与编程模式没有太大的直接关系，这两个概念的出现是<strong>为了减少有限资源的访问和使用冲突</strong>，从而对不同的操作赋予不同的<strong>执行等级</strong>。运行于用户态的进程可以执行的操作和访问的资源都会受到极大的限制，而运行在内核态的进程则可以执行任何操作并且在资源的使用上没有限制。</p>
+
+<p>在异步编程这里提内核态与用户态的概念，是因为<strong>异步编程既可以在内核态实现，也可以在用户态实现</strong>。如果 ① 顺着内核态实现的思路，可以推演出<strong>内核线程</strong>存在的必要性，而内核线程又是<strong>轻量级进程（LWP，用户可操作的内核态线程）</strong>的实现基础；而如果 ② 顺着用户态实现的思路，则可以推演出<strong>事件驱动、非阻塞式 I/O 的模型</strong>，这又是 NodeJs 及类似框架实现的基础。</p>
+
+<h3 id="内核线程与轻量级进程lwp">内核线程与轻量级进程（LWP）</h3>
+<p>前面提到，<code class="highlighter-rouge">进程 = 数据集合 + 运行逻辑</code>。如果不对进程进行特殊抽象处理，采用子进程的方式进行<strong>异步编程</strong>会导致<strong>冗余的数据集合</strong>，占用大量的内存空间<strong>同时</strong>消耗大量的 CPU 时间初始化这些内存空间。异步编程大多数期望的是<strong>不同的运行逻辑处理同一份数据集合</strong>，那么为什么还要创建那么多<strong>数据集合</strong>呢？这时候轻量级进程（LWP）出现了；可以认为它是一种侧重<strong>运行逻辑</strong>的进程（包含的数据非常少），也可以认为它是一种<strong>运行在内核态、但用户可操作的线程</strong>。</p>
+
+<p>需要说明的是，轻量级进程需要内核的支持，这种支持上的抽象便是<strong>内核线程</strong>。简单讲，<strong>内核线程是内核的分身</strong>，一个分身可以处理一件特定事情。因为内核线程唯一使用的资源就是内核栈和上下文切换时保存寄存器的空间，因此<strong>它的使用是廉价的</strong>。</p>
+
+<p>不过，在内核堆栈有限的情况下，内核线程是有数量限制的，而且后面会发现内核线程并没有想象中的那么廉价（有更廉价的实现方式，比如 golang 中的 goroutine）。</p>
+
+<h3 id="单核cpu与多核cpu">单核CPU与多核CPU</h3>
+<p>把<strong>数据集合</strong>与<strong>运行逻辑</strong>拆分开，即从操作系统（内核态）抽象出轻量级进程（侧重运行逻辑，即线程）的概念，为多核 CPU 的出现及使用奠定了基础。</p>
+
+<p>如果没有轻量级进程（线程）的出现，要充分利用多核 CPU 就必须为每个<strong>核</strong>创建一个进程，这就势必会造成大量的资源消耗（冗余的数据集合）。有了线程的出现，把数据集合保存在一块内存里，多个线程在多个 CPU 核上对同一块内存（同一个数据集合）进行处理，这就大大节省了内存资源（当然也会引入竞争问题，这也是各种锁出现的原因）。</p>
+
+<h3 id="再谈调度">再谈调度</h3>
+<p>我们可以从很多地方看到<strong>线程是处理器调度和分派的基本单位</strong>类似的说法，那么想这么一个问题：有了线程的概念后，内核在分配时间片的时候，把<strong>时间片分给了进程还是线程</strong>呢？</p>
+
+<p>其实这个问题是存在误导的，正确的问题描述应该是“内核把时间片分给了<strong>进程</strong>还是<strong>轻量级进程</strong>”，答案显然是后者——轻量级进程（内核态线程）。因此可以知道，<strong>内核调度的对象也是轻量级进程</strong>。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>轻量级进程 <span class="o">=</span> 内核态线程 ≈ 大家所谓的线程
+<span class="c">#（其实应该区分一下内核态线程和用户态线程或协程）</span>
+</code></pre></div></div>
+
+<p>进一步推导可以知道：如果一个应用创建了大量的内核态线程，一定程度会干扰内核调度从而影响其他应用的运行，因此<strong>需要限制每个应用创建的内核态线程的数量</strong>。再考虑到不同内核态线程切换的时间消耗，就有必要考虑一种更为轻量级的用户态线程（或协程）——比如 Golang 中的 goroutine——从而绕开内核态线程的限制。</p>
+
+<h3 id="goroutine本质是对cpu资源的进一步压榨">Goroutine——本质是对CPU资源的进一步压榨</h3>
+<p><a href="http://morsmachine.dk/go-scheduler">The Go scheduler</a> 这边文章对 Go 的调度介绍的很详细了，并衍生出一些很好的中文博客。因此我这里就不对 Go 的调度进行展开了，只就其中一些点进行简单的阐述。</p>
+
+<h4 id="如果时间片用不完会触发系统调度">如果时间片用不完会触发系统调度</h4>
+<p>当内核把 50ms 分给内核态线程，而运行在这个线程上的业务逻辑只用了 20ms 就结束了，这时会<strong>触发系统调度</strong>（发生内核态线程切换）。</p>
+
+<p>能不能把内核分配的 50ms 全部用完，<strong>减少线程切换的频次从而减少切换造成的时间消耗</strong>呢？</p>
+
+<h4 id="goroutine调度模型">Goroutine调度模型</h4>
+
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1g04owp7pm0j30av02vaa5.jpg" alt="" />
+（图片摘自  <a href="http://morsmachine.dk/go-scheduler">The Go scheduler</a> ）</p>
+
+<p>Go的调度器内部有三个重要的结构：M，P，S。其中：</p>
+
+<ul>
+  <li><strong>M</strong>：M 全称是 Machine，代表内核级线程，一个 M 就是一个内核级线程，其最大数量受到内核的限制。</li>
+  <li><strong>P</strong>：P 全称是Processor，代表处理器内核，一个 P 就是一个 CPU 核。</li>
+  <li><strong>G</strong>：G全称是 Goroutine，代表一个 goroutine，又称 Go 的协程，可以认为一个 G 就是一个<strong>用户态线程</strong>，数量由用户自由决定。</li>
+</ul>
+
+<h4 id="goroutine调度实现">Goroutine调度实现</h4>
+
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1g04t50vzsgj30b40avdhi.jpg" alt="" />
+（图片摘自  <a href="http://morsmachine.dk/go-scheduler">The Go scheduler</a> ）</p>
+
+<p>Goroutine 的调度其实就是围绕一个问题展开的：<strong>如何通过 P 把无限多的 G 均衡地分配到有限的 M 上执行</strong>。</p>
+
+<p>主要考虑下面几种情况：</p>
+<ol>
+  <li>当某个 M 陷入阻塞时，如何处理？</li>
+  <li>当阻塞的 M 恢复正常时，如何处理？</li>
+  <li>各个 P 上的 G 分配不均时如何处理？</li>
+  <li>其他。</li>
+</ol>
+
+<p>具体的细节大家可以参考  <a href="http://morsmachine.dk/go-scheduler">The Go scheduler</a> ，如果英文不太好，可以参考《<a href="https://www.cnblogs.com/wdliu/p/9272220.html">golang核武器goroutine调度原理、channel详解</a>》相关部分的内容，或自行查找其他博文；理解了本文的内容后，Go 调度器相关的文章理解起来应该都会比较简单。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文在《 <a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析</a>》的基础上进一步分析了进程、轻量级进程（线程）、时间片、调度等概念，给出了 <code class="highlighter-rouge">进程 = 数据集合 + 运行逻辑</code> 和 <code class="highlighter-rouge">轻量级进程 = 内核态线程 ≈ 大家所谓的线程</code> 两个简易公式，并在最后引出了 Go 语言中 Goroutine 的概念及其调度相关的问题，希望能给大家一些帮助。</p>
+
+<p>节后的几天假期马上就要结束了，没想到临行前天上飘起了小雪，老话讲“瑞雪兆丰年”，希望自己未来的这一年里一切都顺利吧。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析 - 敬维</a> 之前的文章，关于进程、线程、多线程模型、时间片以及调度等概念</li>
+  <li><a href="https://baike.baidu.com/item/%E8%BF%9B%E7%A8%8B/382503">进程_百度百科</a> 介绍了进程的概念</li>
+  <li><a href="https://www.cnblogs.com/bakari/p/5520860.html">Linux探秘之用户态与内核态 - CloudDeveloper - 博客园</a> 介绍了 Linux 的用户态与内核态</li>
+  <li><a href="https://www.cnblogs.com/zhaoyl/p/3620204.html">linux线程的实现 - aitao - 博客园</a> 介绍了 Linux 线程的实现，内核线程、轻量级进程、用户线程，介绍了几种线程实现的细节</li>
+  <li><a href="https://blog.csdn.net/luoweifu/article/details/46595285">编程思想之多线程与多进程(1)——以操作系统的角度述说线程与进程 - 阳光日志 - CSDN博客</a> 介绍了进程与线程的概念</li>
+  <li><a href="https://blog.csdn.net/luoweifu/article/details/46701167">编程思想之多线程与多进程(2)——线程优先级与线程安全 - 阳光日志 - CSDN博客</a> 提到了各种锁</li>
+  <li><a href="https://baike.baidu.com/item/%E5%A4%9A%E6%A0%B8%E6%97%B6%E4%BB%A3/5379889">多核时代_百度百科</a> CPU双核大概出现在 2005 年，关注这个时间点</li>
+  <li><a href="https://mirrors.edge.kernel.org/pub/linux/kernel/v2.5/ChangeLog-2.5.32">linux-kernel-ChangeLog-2.5.32</a> linux的 2.5.32 版本的详细changelog，同理可以搜出其他的版本的 changelog 内容，关注这个版本的时间点，与多核的出现做参照</li>
+  <li><a href="https://kernelnewbies.org/LinuxVersions">LinuxVersions - Linux Kernel Newbies</a> linux各个版本的changelog简化版，关注其时间线，与多核的出现做参照</li>
+  <li><a href="http://www.cnblogs.com/acool/p/6882644.html">cgroup原理简析:进程调度 - 不爱洗脸 - 博客园</a> 从<strong>源码</strong>入手介绍了进程调度及cgroup进程调度相关内容</li>
+  <li><a href="http://morsmachine.dk/go-scheduler">The Go scheduler - Morsing’s blog</a> 很经典的讲解 Go 调度器的博文</li>
+  <li><a href="https://www.cnblogs.com/wdliu/p/9272220.html">go语言之行—golang核武器goroutine调度原理、channel详解 - W-D - 博客园</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/02/05/team-management-methodology.html" class="read-next-link"></a>
+          <section>
+            <span>浅谈团队管理最佳实践</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
