@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go 反序列化 JSON 字符串的两种常见用法 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Go 反序列化 JSON 字符串的两种常见用法">
+    <meta name="keywords"  content="golang, 经验, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Go 反序列化 JSON 字符串的两种常见用法 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/03/15/golang-json-unmarshal-using.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>Go 反序列化 JSON 字符串的两种常见用法</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-03-15"><i class="iconfont icon-date"></i>15 Mar 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">两个例子说明 JSON 字符串的反序列化</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#go-反序列化-json-字符串的两种常见用法" id="markdown-toc-go-反序列化-json-字符串的两种常见用法">Go 反序列化 JSON 字符串的两种常见用法</a>    <ul>
+      <li><a href="#先看一个-json-字符串" id="markdown-toc-先看一个-json-字符串">先看一个 JSON 字符串</a></li>
+      <li><a href="#第一种用法带标签tag的结构体struct" id="markdown-toc-第一种用法带标签tag的结构体struct">第一种用法：带标签（tag）的结构体（struct）</a></li>
+      <li><a href="#第二种用法interface与断言的组合" id="markdown-toc-第二种用法interface与断言的组合">第二种用法：interface{}与断言的组合</a></li>
+      <li><a href="#两种用法的对比" id="markdown-toc-两种用法的对比">两种用法的对比</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>看过《<a href="https://jingwei.link/2019/01/06/the-reference-of-k8s-logging.html">如何使 Kubernetes 中的应用日志被收集得又快又稳</a>》的朋友应该知道，我最近在做云平台的日志收集方案及其工程实施。</p>
+
+<p>不得不说，做基础设施建设对开发者的考验还是非常大的，技术方案中的每一个细节都变得非常重要，忽略某个细节可能就意味着方案中选型的改进甚至重新选型。至少在工程实施的过程中，有那么几天时间里我都是在这种担惊受怕中度过的。</p>
+
+<p>当然，<strong>带有思考的付出总会有收获的</strong>，不仅仅对于团队如此（项目收益），对于个人来说亦如此（复习旧知识、学习新知识）。本文就借此机会复习一下旧知识——Go 反序列化 JSON 字符串的两种常见用法——为下一篇文章（关于 Go 标准库对 JSON 的处理效率）做铺垫。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
+
+<h2 id="go-反序列化-json-字符串的两种常见用法">Go 反序列化 JSON 字符串的两种常见用法</h2>
+
+<p>反序列化 JSON 字符串，一般是为了能够获取得到 JSON 字符串中的信息（这句是废话）。比如我们希望通过一种<strong>便捷的方式</strong>获取某个 key 对应的值（value），从而用它完成接下来的代码逻辑。</p>
+
+<p>那么这种<strong>“便捷的方式”</strong>是什么样的方式呢？</p>
+
+<h3 id="先看一个-json-字符串">先看一个 JSON 字符串</h3>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// text-content-of-json JSON 字符串，一般的日志中会是这种格式</span>
+<span class="p">{</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"chalvern.github.io"</span><span class="p">,</span><span class="s2">"full_name"</span><span class="p">:</span><span class="s2">"chalvern/chalvern.github.io"</span><span class="p">,</span><span class="s2">"private"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="s2">"owner"</span><span class="p">:{</span><span class="s2">"login"</span><span class="p">:</span><span class="s2">"chalvern"</span><span class="p">,</span><span class="s2">"html_url"</span><span class="p">:</span><span class="s2">"https://github.com/chalvern"</span><span class="p">},</span><span class="s2">"html_url"</span><span class="p">:</span><span class="s2">"https://github.com/chalvern/chalvern.github.io"</span><span class="p">,</span><span class="s2">"description"</span><span class="p">:</span><span class="s2">"jingwei.link blog"</span><span class="p">}</span>
+
+<span class="c1">// string-content 另一种 JSON 字符串，</span>
+<span class="c1">// 大家可以思考一下与上面内容的区别（怀疑很多人分不清楚）</span>
+<span class="c1">// 其实 text-content-of-json 与 string-content 是</span>
+<span class="c1">// 代表同样 JSON 内容的不同表现形式（后者有转义符而已）</span>
+<span class="c1">// 他们反序列化后会得到同样的结果（下一篇文章会再次提到此知识点）</span>
+<span class="s2">"{</span><span class="se">\"</span><span class="s2">name</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">chalvern.github.io</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">full_name</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">chalvern/chalvern.github.io</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">private</span><span class="se">\"</span><span class="s2">:false,</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">:{</span><span class="se">\"</span><span class="s2">login</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">chalvern</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">html_url</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">https://github.com/chalvern</span><span class="se">\"</span><span class="s2">},</span><span class="se">\"</span><span class="s2">html_url</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">https://github.com/chalvern/chalvern.github.io</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">description</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">jingwei.link blog</span><span class="se">\"</span><span class="s2">}"</span>
+
+<span class="c1">// echo ```text-content-of-json``` | python -m json.tool</span>
+<span class="c1">// 可以得到下面 Pretty 后的 JSON 格式</span>
+<span class="c1">// Pretty 样式给人看起来比较舒服</span>
+<span class="p">{</span>
+  <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"chalvern.github.io"</span><span class="p">,</span>
+  <span class="s2">"full_name"</span><span class="p">:</span> <span class="s2">"chalvern/chalvern.github.io"</span><span class="p">,</span>
+  <span class="s2">"private"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="s2">"owner"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"login"</span><span class="p">:</span> <span class="s2">"chalvern"</span><span class="p">,</span>
+    <span class="s2">"html_url"</span><span class="p">:</span> <span class="s2">"https://github.com/chalvern"</span>
+  <span class="p">},</span>
+  <span class="s2">"html_url"</span><span class="p">:</span> <span class="s2">"https://github.com/chalvern/chalvern.github.io"</span><span class="p">,</span>
+  <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"jingwei.link blog"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>上面的 JSON 是我通过 <code class="highlighter-rouge">curl -H "Accept: application/vnd.github.mercy-preview+json" https://api.github.com/search/repositories?q=chalvern</code> 命令在结果中抽取出来的（参考 <a href="https://developer.github.com/v3/search/#search-repositories">Search - GitHub Developer Guide</a>），其实是 <a href="https://jingwei.link">jingwei.link</a> 这个博客内容的托管仓库相关的信息。</p>
+
+<h3 id="第一种用法带标签tag的结构体struct">第一种用法：带标签（tag）的结构体（struct）</h3>
+
+<p>不废话，直接上代码：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat $GOPATH/src/jingwei.link/stuct/main.go</span><span class="x">
+</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"encoding/json"</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">a</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="s">`{"name":"chalvern.github.io","full_name":"chalvern/chalvern.github.io","private":false,"owner":{"login":"chalvern","html_url":"https://github.com/chalvern"},"html_url":"https://github.com/chalvern/chalvern.github.io","description":"jingwei.link blog"}`</span><span class="x">
+
+	</span><span class="c">// OwnerS 会被嵌套在 JingweiS 中</span><span class="x">
+	</span><span class="c">// 在每个字段后的 `json:xxx` 即 tag，与 json 中的 key 对应</span><span class="x">
+	</span><span class="k">type</span><span class="x"> </span><span class="n">OwnerS</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">Login</span><span class="x">   </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"login"`</span><span class="x">
+		</span><span class="n">HTMLURL</span><span class="x"> </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"html_url"`</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+
+	</span><span class="c">//  JingweiS 中嵌套了 OwnerS 用来对应 a 变量 json 字符串中的嵌套的 json 内容</span><span class="x">
+	</span><span class="k">type</span><span class="x"> </span><span class="n">JingweiS</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">Name</span><span class="x">        </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"name"`</span><span class="x">
+		</span><span class="n">FullName</span><span class="x">    </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"full_name"`</span><span class="x">
+		</span><span class="n">Private</span><span class="x">     </span><span class="kt">bool</span><span class="x">   </span><span class="s">`json:"private"`</span><span class="x">
+		</span><span class="n">Owner</span><span class="x">       </span><span class="n">OwnerS</span><span class="x"> </span><span class="s">`json:"owner"`</span><span class="x">
+		</span><span class="n">HTMLURL</span><span class="x">     </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"html_url"`</span><span class="x">
+		</span><span class="n">Description</span><span class="x"> </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"description"`</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+
+	</span><span class="k">var</span><span class="x"> </span><span class="n">jingwei</span><span class="x"> </span><span class="n">JingweiS</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Unmarshal</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">a</span><span class="p">),</span><span class="x"> </span><span class="o">&amp;</span><span class="n">jingwei</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v </span><span class="se">\n</span><span class="s"> %#v </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">,</span><span class="x"> </span><span class="n">jingwei</span><span class="p">)</span><span class="x">
+  </span><span class="c">// 接下来可以通过 “.” 运算符获取期望的值了</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">jingwei</span><span class="o">.</span><span class="n">Owner</span><span class="o">.</span><span class="n">Login</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>把上面的代码复制到一个文本中，然后运行代码可以得到下面的输出：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cd $GOPATH/src/jingwei.link/stuct/ &amp;&amp; go run main.go</span>
+<span class="c"># 下面为输出的内容</span>
+&lt;nil&gt; 
+ main.JingweiS<span class="o">{</span>Name:<span class="s2">"chalvern.github.io"</span>, FullName:<span class="s2">"chalvern/chalvern.github.io"</span>, Private:false, Owner:main.OwnerS<span class="o">{</span>Login:<span class="s2">"chalvern"</span>, HTMLURL:<span class="s2">"https://github.com/chalvern"</span><span class="o">}</span>, HTMLURL:<span class="s2">"https://github.com/chalvern/chalvern.github.io"</span>, Description:<span class="s2">"jingwei.link blog"</span><span class="o">}</span> 
+<span class="s2">"chalvern"</span>
+</code></pre></div></div>
+
+<h3 id="第二种用法interface与断言的组合">第二种用法：interface{}与断言的组合</h3>
+
+<p>不废话，还是直接上代码：</p>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat $GOPATH/src/jingwei.link/interface/main.go</span><span class="x">
+</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"encoding/json"</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">a</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="s">`{"name":"chalvern.github.io","full_name":"chalvern/chalvern.github.io","private":false,"owner":{"login":"chalvern","html_url":"https://github.com/chalvern"},"html_url":"https://github.com/chalvern/chalvern.github.io","description":"jingwei.link blog"}`</span><span class="x">
+
+	</span><span class="k">var</span><span class="x"> </span><span class="n">jingweiI</span><span class="x"> </span><span class="k">interface</span><span class="p">{}</span><span class="x">
+	</span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Unmarshal</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">a</span><span class="p">),</span><span class="x"> </span><span class="o">&amp;</span><span class="n">jingweiI</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v </span><span class="se">\n</span><span class="s"> %#v </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">,</span><span class="x"> </span><span class="n">jingweiI</span><span class="p">)</span><span class="x">
+	</span><span class="c">// 获取某个 key 的值</span><span class="x">
+	</span><span class="n">jingweiM</span><span class="p">,</span><span class="x"> </span><span class="n">ok</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">jingweiI</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="o">!</span><span class="n">ok</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"DO SOMETHING!"</span><span class="p">)</span><span class="x">
+		</span><span class="k">return</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">jingweiM</span><span class="p">[</span><span class="s">"name"</span><span class="p">])</span><span class="x">
+	</span><span class="c">//  获取嵌套的内容</span><span class="x">
+	</span><span class="n">owner</span><span class="p">,</span><span class="x"> </span><span class="n">ok</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">jingweiM</span><span class="p">[</span><span class="s">"owner"</span><span class="p">]</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="o">!</span><span class="n">ok</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"DO SOMETHING!"</span><span class="p">)</span><span class="x">
+		</span><span class="k">return</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">owner</span><span class="p">[</span><span class="s">"login"</span><span class="p">])</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>把上面的代码复制到一个文本中，然后运行代码可以得到下面的输出：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cd $GOPATH/src/jingwei.link/interface/ &amp;&amp; go run main.go</span>
+<span class="c"># 下面为输出的内容</span>
+&lt;nil&gt; 
+ map[string]interface <span class="o">{}{</span><span class="s2">"description"</span>:<span class="s2">"jingwei.link blog"</span>, <span class="s2">"full_name"</span>:<span class="s2">"chalvern/chalvern.github.io"</span>, <span class="s2">"html_url"</span>:<span class="s2">"https://github.com/chalvern/chalvern.github.io"</span>, <span class="s2">"name"</span>:<span class="s2">"chalvern.github.io"</span>, <span class="s2">"owner"</span>:map[string]interface <span class="o">{}{</span><span class="s2">"html_url"</span>:<span class="s2">"https://github.com/chalvern"</span>, <span class="s2">"login"</span>:<span class="s2">"chalvern"</span><span class="o">}</span>, <span class="s2">"private"</span>:false<span class="o">}</span> 
+<span class="s2">"chalvern.github.io"</span>
+<span class="s2">"chalvern"</span>
+</code></pre></div></div>
+
+<h3 id="两种用法的对比">两种用法的对比</h3>
+
+<p>通过上面的代码可以知道，通过 <strong>① 带标签（tag）的结构体（struct）和 ② interface{}与断言的组合</strong> 都可以拿到 JSON 中的某个 Key 的值。前者逻辑上更为严密，也是我个人比较喜欢的一种模式（心里踏实），多用来处理服务之间接口调用相关的逻辑（实际上也是 gRPC 的用法）；后者相对要灵活一些，尤其在 Key 非常多或者经常改变的情况下，被认为可扩展性强一些（在使用的过程中需要特别注意断言的用法，考虑各种边界条件，否则很容易出错 =。=）。</p>
+
+<h2 id="小结">小结</h2>
+<p>懂得的东西越多，越发现有那么多的知识（包括常识与一些“熟视无睹”的道理）值得把玩。</p>
+
+<p>可能是因为到了啰里啰嗦的年纪，越来越觉得细节很重要！细节很重要！很重要！要！</p>
+
+<p>扣细节，并且乐在其中，不知达到了何种境界🤔。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://jingwei.link/2019/01/06/the-reference-of-k8s-logging.html">如何使Kubernetes中的应用日志被收集得又快又稳 - 敬维</a> 之前介绍日志收集方案的博文</li>
+  <li><a href="https://www.cnblogs.com/faunjoe88/p/8058124.html">GoLang structTag说明 - faunjoe88 - 博客园</a> 介绍了 Go 中的结构体及其标签</li>
+  <li><a href="https://code.tutsplus.com/tutorials/json-serialization-with-golang--cms-30209">JSON Serialization With Golang</a> 比较详细地介绍 JSON 序列号方法（golang 标准库中的 json 库相关）</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/02/13/linux-process-thread-schedule-2.html" class="read-next-link"></a>
+          <section>
+            <span>Linux系统调度原理浅析（二）</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="https://ws4.sinaimg.cn/large/006tNc79ly1fzxnby5s8pj31aq0u013m.jpg" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
