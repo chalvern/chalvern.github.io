@@ -163,7 +163,7 @@ Author: Ray-Eldath
 </ul>
 
 <h2 id="写在前面">写在前面</h2>
-<p>在实践 Kubernetes 中应用日志的收集方案时，发现有一些日志无法收集到 <strong>E</strong>lastic<strong>S</strong>earch（ELK 技术栈中的 <strong>S</strong>，其他两个是 <strong>L</strong>ogstash 和 <strong>K</strong>ibana）。查了原因后发现原来是因为业务打印的日志“不合规”，不仅无法保存到 ES 中，还会影响 ES 保存日志的效率；业务方不乐意，负责 ES 的同事也不乐意  😔</p>
+<p>在实践 Kubernetes 中应用日志的收集方案时，发现有一些日志无法收集到 <strong>E</strong>lastic<strong>S</strong>earch（ELK 技术栈中的 <strong>E</strong>，其他两个是 <strong>L</strong>ogstash 和 <strong>K</strong>ibana）。查了原因后发现原来是因为业务打印的日志“不合规”，不仅无法保存到 ES 中，还会影响 ES 保存日志的效率；业务方不乐意，负责 ES 的同事也不乐意  😔</p>
 
 <p>承接《<a href="https://jingwei.link/2019/03/15/golang-json-unmarshal-using.html">Go 反序列化 JSON 字符串的两种常见用法</a>》，谈谈 Go 标准库对 JSON 的处理效率。</p>
 
@@ -271,8 +271,9 @@ Author: Ray-Eldath
 	</span><span class="n">d</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">da</span><span class="p">)</span><span class="x">
 	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">))</span><span class="x">
 </span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -v -timeout 30s . -run ^Test_Unmarshal$</span><span class="x">
-</span><span class="c">// map[employees:map[first:map[firstName:Bill lastName:Gates] second:map[firstName:George lastName:Bush] third:map[firstName:Thomas lastName:Carter]]]</span><span class="x">
+</span><span class="c">// go test -v -timeout 30s . -run ^Test_Marshal$</span><span class="x">
+</span><span class="c">// {"employees":{"first":{"firstName":"Bill","lastName":"Gates"},"second":{"firstName":"George","lastName":"Bush"},"third":{"firstName":"Thomas","lastName":"Carter"}}}</span><span class="x">
+
 
 </span><span class="k">func</span><span class="x"> </span><span class="n">Benchmark_Marshal</span><span class="p">(</span><span class="n">b</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
 	</span><span class="n">da</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
