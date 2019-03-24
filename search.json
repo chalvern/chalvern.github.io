@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "容器化 Go 开发环境的尝试",
+      "tags"     : "golang 容器 经验",
+      "url"      : "/2019/03/24/docker-golang-development.html"
+    } ,
+  
+    {
       "title"    : "浅谈 Go 标准库对 JSON 的处理效率",
       "tags"     : "golang 基础 经验",
       "url"      : "/2019/03/16/golang-json-performance.html"

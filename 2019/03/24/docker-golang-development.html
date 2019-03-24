@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>容器化 Go 开发环境的尝试 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="容器化 Go 开发环境的尝试">
+    <meta name="keywords"  content="golang, 容器, 经验">
+    <!-- Open Graph -->
+    <meta property="og:title" content="容器化 Go 开发环境的尝试 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/03/24/docker-golang-development.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%B9%E5%99%A8" class="post-tag">容器</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+        
+      </div>
+      <h1>容器化 Go 开发环境的尝试</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-03-24"><i class="iconfont icon-date"></i>24 Mar 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">通过容器技术降低探索 Golang 技术的门槛</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#容器化-go-开发环境" id="markdown-toc-容器化-go-开发环境">容器化 Go 开发环境</a>    <ul>
+      <li><a href="#容器化的价值" id="markdown-toc-容器化的价值">容器化的价值</a></li>
+      <li><a href="#容器化的-go-开发环境" id="markdown-toc-容器化的-go-开发环境">容器化的 Go 开发环境</a>        <ul>
+          <li><a href="#定制化-go-开发环境镜像" id="markdown-toc-定制化-go-开发环境镜像">定制化 Go 开发环境镜像</a></li>
+          <li><a href="#运行-go-开发环境镜像" id="markdown-toc-运行-go-开发环境镜像">运行 Go 开发环境镜像</a></li>
+        </ul>
+      </li>
+      <li><a href="#环境上下文一致的必要性" id="markdown-toc-环境上下文一致的必要性">环境（上下文）一致的必要性</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>昨天上午“起早”到附近的影院看《<a href="https://movie.douban.com/subject/5300054/">波西米亚狂想曲</a>》，选的座位比较靠前，最后的二十分钟里愣是没好意思把裤兜里的纸巾掏出来 👀。未来打算用三到五年的时间去开创自己的事业，想必道路不会平坦，不过认真做事的态度不变，大概率这段人生会有一个“酣畅淋漓”的收尾吧。</p>
+
+<p>本文是我在思考“如何组建团队”时候的一个小尝试，旨在通过容器技术（docker）降低<strong>探索</strong> Golang 技术开发的门槛。目前的效果还不是很明显，不过作为一种新思路，非常值得大家了解。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p><strong>入门√</strong>——初级——中级——高级，本文适合所有对技术感兴趣的开发者。</p>
+
+<h2 id="容器化-go-开发环境">容器化 Go 开发环境</h2>
+<h3 id="容器化的价值">容器化的价值</h3>
+<p>搭建开发环境往往是一个啰嗦繁杂的过程。对职业开发者如此，对知识学习者和探索者亦如此。</p>
+
+<p>职业编码工作中，代码编辑测试完成后部署到生产环境，需要按照自己本地的开发环境重新配置生产环境的机器。由于本地开发环境的搭建比较随性，往往，本地能够跑起来的代码部署到生产环境后跑不起来，或并未达到预期的运行效果。</p>
+
+<p>对于一个刚刚开始学习 《C 语言程序设计》课程的大学生来说，编译出自己的 “Hello World” 往往意味着很多事先的准备工作（至少先把课堂上老师三言两语带过的开发环境搭建起来）。</p>
+
+<p>之前因为项目的需要我魔改过日志收集工具 <a href="https://github.com/fluent/fluent-bit">fluent/fluent-bit</a> ，这是一个主要由 <code class="highlighter-rouge">C</code> 语言进行开发的项目，而我对 <code class="highlighter-rouge">C</code> 语言的认识还停留在大学课堂的水平，更何况我本地没有搭建过开发 C 的环境。</p>
+
+<p>容器化技术能很好地解决上面的问题。职业开发者使用 Docker（容器化技术的一种）把环境搭建的过程封装到容器里，并以镜像的形式复制到生产环境得以“复现”相同的环境。作为知识学习者，完全可以利用相似的技术“复现”老师课堂上使用的环境。而作为知识探索者，在修改了 fluent-bit 的源码后，我利用其源码中提供的 Dockerfile 很方便地实现了定制化源码的编译，快速验证了思路可行性及定制化功能的可用性。</p>
+
+<p>如果读者未使用过 Docker，可以参考《<a href="https://jingwei.link/2018/06/30/how-to-play-docker-simplly.html">如何用一个例子上手docker</a>》这篇博客的内容及其参考中列出的地址了解并尝试一下，应该会被甜到。</p>
+
+<h3 id="容器化的-go-开发环境">容器化的 Go 开发环境</h3>
+
+<p>为了说明问题并方便读者能容易地在自己机器上验证，我在《<a href="https://jingwei.link/2019/03/15/golang-json-unmarshal-using.html">Go 反序列化 JSON 字符串的两种常见用法</a>》和 《<a href="https://jingwei.link/2019/03/16/golang-json-performance.html">浅谈 Go 标准库对 JSON 的处理效率</a>》两篇博客里刻意贴了<strong>完整</strong>而冗长的源码内容。虽说 <code class="highlighter-rouge">package</code> 和 <code class="highlighter-rouge">import</code> 语句对博客的内容并没有任何作用，但是如果因为多这样几句内容就能让代码成为完整可运行的源码，从而节省读者自己构造完整源代码的时间，我认为是值得且必要的。</p>
+
+<p>可以把思考更进一步，如果读者朋友没有 Go 开发环境（或者与作者本地的开发环境不一致），如何才能以一种低成本的方式开始这一切呢？不知不觉就想到了 Docker 技术（都是套路😀）。</p>
+
+<h4 id="定制化-go-开发环境镜像">定制化 Go 开发环境镜像</h4>
+
+<p>想要低成本获取 Go 开发环境，思路很简单，把 Go 开发环境打包到容器里（其实 <a href="https://hub.docker.com/_/golang">官方</a> 已经存在这种镜像），大家只需要拉取相应的镜像然后运行就可以了。如下面的<a href="https://github.com/chalvern/smile/blob/master/docker/Dockerfile">源码</a>所示，为了方便编辑并调试 Go 源码，我在 Go 官方镜像的基础上安装并简单配置了 <code class="highlighter-rouge">vim</code> 和 <code class="highlighter-rouge">delve</code>，并把镜像推送到了 <a href="https://hub.docker.com/r/chalvern/golang">Docker Hub</a> 仓库中。更详尽的内容可以参考 <a href="https://github.com/chalvern/smile">GitHub - chalvern/smile</a> 。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cat https://github.com/chalvern/smile/blob/master/docker/Dockerfile</span>
+FROM golang:1.12
+
+<span class="c">## vim</span>
+RUN apt-get update <span class="se">\</span>
+  <span class="o">&amp;&amp;</span> apt-get <span class="nb">install</span> <span class="nt">-y</span> vim <span class="se">\</span>
+  <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> /var/lib/apt/lists/<span class="k">*</span>
+
+<span class="c"># vim setting</span>
+COPY vimrc /root/.vimrc
+
+RUN go get <span class="nt">-u</span> github.com/derekparker/delve/cmd/dlv
+
+WORKDIR <span class="nv">$GOPATH</span>
+</code></pre></div></div>
+
+<h4 id="运行-go-开发环境镜像">运行 Go 开发环境镜像</h4>
+
+<ol>
+  <li>拉取镜像：<code class="highlighter-rouge">docker pull chalvern/golang:1.12</code></li>
+  <li>以 privileged 方式运行镜像：<code class="highlighter-rouge">docker run -it --privileged chalvern/golang:1.12 bash</code></li>
+  <li>此时便有了一个 Go 开发环境。</li>
+</ol>
+
+<h3 id="环境上下文一致的必要性">环境（上下文）一致的必要性</h3>
+<p>我在学生时代发现一个很有趣的现象，国外的教材往往页码很足整本书很厚，而中文的教材页码比较少相对要薄一些。排除一部分语言表达力的因素，主要是因为国外的教材喜欢包含比较多知识之外的细节。</p>
+
+<p>以《C 语言程序设计》类似的书籍来说，是直接从 <code class="highlighter-rouge">Hello World</code> 讲起好呢？还是从详细的环境搭建步骤讲起好呢？我记得当年在学习 C 语言编程的时候，为了搭建开发环境到图书馆找了很多资料，最终也未“复现”教科书上一模一样的开发环境，导致在学习过程中产生非常多的疑惑。有的同学在疑惑面前退缩了，渐渐失去了编码的兴趣，最终的成绩自然也不如人意。</p>
+
+<p>国外教材比较厚重的另一个原因，是国外教材中喜欢包含比较详细的参考文献。那么，书籍或者博客中，是否应该把参考文献放进正文呢？我认为是必要的。把参考文献列出来，一方面可以表达对相关论点提出者的尊重，另一方面则方便让读者能够进一步了解论点的渊源或者进一步考证“真相”。书里或博客里所论述的是“集百家之长的一家之言”呢？还是纯碎个人思考得出来的“一家之言”呢？不同的分类，其说服力以及可采纳率其实是不一样的；如果混淆在一起使人不可分辨，容易让人忽视共识的力量，</p>
+
+<h2 id="小结">小结</h2>
+
+<p>本文尝试通过容器技术（docker）降低<strong>探索</strong> Golang 技术开发的门槛。相比于把开发环境直接安装到自己的电脑上“尝鲜”，容器化技术能够很好地避免 Go 开发环境及其依赖项（比如 <code class="highlighter-rouge">$GOPATH</code>、<code class="highlighter-rouge">$GOROOT</code> 等变量）对电脑的污染，同时容器化技术能够很好地“复现”一致可用的开发环境，避免引入其他变量，从而降低技术探索的难度。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://jingwei.link/2018/12/08/year-conclusion-of-myself.html">以认真的态度做完美的事情（2018年总结） - 敬维</a> 之前写的 2018 年的总结</li>
+  <li><a href="https://jingwei.link/2018/07/18/docker-namespace-cgroups-aufs.html">Docker基本原理简析 - 敬维</a>  简单介绍了 docker 涉及到的三种技术：Namespace、CGroup与AUFS</li>
+  <li><a href="https://jingwei.link/2018/06/30/how-to-play-docker-simplly.html">如何用一个例子上手docker - 敬维</a> 用一个例子来上手使用 docker。</li>
+  <li><a href="https://github.com/fluent/fluent-bit">GitHub - fluent/fluent-bit</a> 轻量级日志收集应用</li>
+  <li><a href="https://jingwei.link/2019/03/15/golang-json-unmarshal-using.html">Go 反序列化 JSON 字符串的两种常见用法 - 敬维</a>  两种反序列化 JSON 字符串的方法，包含了复制黏贴即可运行的源码</li>
+  <li><a href="https://jingwei.link/2019/03/16/golang-json-performance.html">浅谈 Go 标准库对 JSON 的处理效率 - 敬维</a> 探究 Go 标准库对 JSON 的处理效率，包含了复制黏贴即可运行的源码</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/03/16/golang-json-performance.html" class="read-next-link"></a>
+          <section>
+            <span>浅谈 Go 标准库对 JSON 的处理效率</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
