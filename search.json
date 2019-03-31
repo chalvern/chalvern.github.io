@@ -1,7 +1,7 @@
 [
   
     {
-      "title"    : "一个示例引出 Go 应用的优雅中止",
+      "title"    : "一个示例阐述 Go 应用的优雅中止",
       "tags"     : "golang 实用 基础",
       "url"      : "/2019/03/31/golang-graceful-ending.html"
     } ,
