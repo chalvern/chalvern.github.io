@@ -151,11 +151,11 @@ Author: Ray-Eldath
       <ul id="markdown-toc">
   <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
   <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
-  <li><a href="#浅谈-go-应用的优雅中止" id="markdown-toc-浅谈-go-应用的优雅中止">浅谈 Go 应用的优雅中止</a>    <ul>
+  <li><a href="#代码级支持优雅中止是必要的" id="markdown-toc-代码级支持优雅中止是必要的">代码级支持优雅中止是必要的</a>    <ul>
       <li><a href="#优雅中止的含义" id="markdown-toc-优雅中止的含义">优雅中止的含义</a></li>
       <li><a href="#kubernetes-中-pod-的终止机制" id="markdown-toc-kubernetes-中-pod-的终止机制">Kubernetes 中 Pod 的终止机制</a></li>
       <li><a href="#优雅中止的-go-代码示例" id="markdown-toc-优雅中止的-go-代码示例">优雅中止的 Go 代码示例</a></li>
-      <li><a href="#源码解读-处理思路" id="markdown-toc-源码解读-处理思路">源码解读-处理思路</a></li>
+      <li><a href="#源码解读-优雅中止的处理思路" id="markdown-toc-源码解读-优雅中止的处理思路">源码解读-优雅中止的处理思路</a></li>
       <li><a href="#源码解读-值得关注的几个点" id="markdown-toc-源码解读-值得关注的几个点">源码解读-值得关注的几个点</a></li>
     </ul>
   </li>
@@ -164,25 +164,27 @@ Author: Ray-Eldath
 </ul>
 
 <h2 id="写在前面">写在前面</h2>
-<p>按照一般的设计原则， 每个 HTTP 请求都是独立存在的，因此一般情况下 Web 应用都很容易做水平扩展；同时这也意味着 HTTP 请求发起重试的成本是很低的，从而使得大家在开发 Web 接口的时候很少关注应用的优雅中止。</p>
+<p>按照一般的设计原则， 每个 HTTP 请求都是无状态的，因此大多情况下 Web 应用都很容易做水平扩展。“无状态”也意味着 HTTP 请求发起重试的成本是很低的，从而使得 Web 接口的开发很少关注优雅中止（一部分也因为 Web 框架做了这部分的考虑）。</p>
 
 <p>不过，业务中 ① 总会存在对<strong>中止</strong>比较敏感的接口（比如支付相关），并且 ② 总会存在一些带状态的服务，此时优雅中止就显得比较重要了。</p>
 
-<p>本文通过一个<strong>Go 定时任务示例</strong>来简单介绍优雅中止的处理思路。</p>
+<p>本文通过一个<strong>Go 定时任务示例</strong>来简单介绍 Go 技术栈中优雅中止的处理思路。</p>
 
 <h2 id="适用人群">适用人群</h2>
 <p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
 
-<h2 id="浅谈-go-应用的优雅中止">浅谈 Go 应用的优雅中止</h2>
+<h2 id="代码级支持优雅中止是必要的">代码级支持优雅中止是必要的</h2>
 <h3 id="优雅中止的含义">优雅中止的含义</h3>
-<p>所谓“优雅中止”，是指应用接收到特定的中止信号（比如 <code class="highlighter-rouge">INT</code>、<code class="highlighter-rouge">TERM</code>）后，不再接受外部的新请求，也不再创建内部的新任务，保持应用进程一直到旧需求和旧任务执行完成后再终止退出。</p>
+<p>所谓“优雅中止”，是指应用接收到特定的中止信号（比如 <code class="highlighter-rouge">INT</code>、<code class="highlighter-rouge">TERM</code>）后，不再接受外部的新请求，也不再创建内部的新任务，保持应用进程运行直到旧需求和旧任务执行完成后再终止退出。</p>
 
 <h3 id="kubernetes-中-pod-的终止机制">Kubernetes 中 Pod 的终止机制</h3>
-<p>k8s 定义了终止   <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods">Pod</a> （业务进程在 Pod 中运行）的基本步骤：当主动删除 pod 时，系统会在强制终止 Pod 之前将 <code class="highlighter-rouge">TERM</code> 信号发送到每个容器中的主进程，过一段时间后（默认为 30 秒），再把 <code class="highlighter-rouge">KILL</code> 信号发送到这些进程。除此之外， k8s 通过钩子方法提供了对 <a href="https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/">容器生命周期</a> 的管理能力，允许容器启动后和终止前执行一些特殊的命令。</p>
+<p>作为高可靠的服务平台，k8s 定义了终止   <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods">Pod</a> （业务进程在 Pod 中运行）的基本步骤：当主动删除 pod 时，系统会在强制终止 Pod 之前将 <code class="highlighter-rouge">TERM</code> 信号发送到每个容器中的主进程，过一段时间后（默认为 30 秒），再把 <code class="highlighter-rouge">KILL</code> 信号发送到这些进程。除此之外， k8s 还通过钩子方法提供了对 <a href="https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/">容器生命周期</a> 的管理能力，允许用户通过自定义的方式配置容器启动后或终止前执行的操作。</p>
 
-<p>当应用被打包进镜像且运行在 k8s 中的时候，如果应用实现了优雅中止的机制，就可以充分地利用 k8s 提供的高可用功能，在应用升级（发新版本）和 Pod 管理（宿主机维护时把 Pod 漂移到另一个宿主机，或者流量闲时动态收缩 Pod 的数量从而把资源省出来另作他用）的过程中实现服务的零中断。</p>
+<p>当打包进镜像的应用运行在 k8s 中的时候，如果应用实现了优雅中止的机制，就可以充分利用上面提到的 k8s 的能力，在升级应用（发新版本）和管理 Pod （宿主机维护时把 Pod 漂移到另一个宿主机，或者在闲时动态地收缩 Pod 数量从而把资源省出来另作他用）的过程中实现服务的零中断。</p>
 
 <h3 id="优雅中止的-go-代码示例">优雅中止的 Go 代码示例</h3>
+
+<p>下面的代码定义了两个定时任务：<code class="highlighter-rouge">mySecondJobs</code> 每秒钟会触发一次，每次持续约 1 秒钟；<code class="highlighter-rouge">myMinuteJobs</code> 每分钟会触发一次，每次持续约 2 秒钟。具体地可以阅读下面的代码（可以直接复制下面的代码到自己的环境中运行）：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
 
@@ -236,24 +238,25 @@ Author: Ray-Eldath
 </span><span class="p">}</span><span class="x">
 </span></code></pre></div></div>
 
-<h3 id="源码解读-处理思路">源码解读-处理思路</h3>
+<h3 id="源码解读-优雅中止的处理思路">源码解读-优雅中止的处理思路</h3>
 <ol>
   <li>通过 <code class="highlighter-rouge">signal.Notify</code> 捕获特定的信号；</li>
-  <li>通过 <code class="highlighter-rouge">for + select</code> 来实现循环任务，同时检测  <code class="highlighter-rouge">signal.Notify</code> 欲捕获的信号；</li>
-  <li>当发现指定的信号时，跳出 <code class="highlighter-rouge">for</code> 循环，并采取一定措施结束异步任务。</li>
+  <li>通过 <code class="highlighter-rouge">for + select</code> 来实现循环任务，同时检测上步中欲捕获的信号；</li>
+  <li>如果定时器被触发，则执行对应的任务；</li>
+  <li>如果发现收到了指定的信号，则跳出 <code class="highlighter-rouge">for</code> 循环，并采取一定措施结束异步任务。</li>
 </ol>
 
 <h3 id="源码解读-值得关注的几个点">源码解读-值得关注的几个点</h3>
 <ol>
-  <li>代码中采用了 <code class="highlighter-rouge">go mySecondJobs()</code> 和 <code class="highlighter-rouge">go myMinuteJobs()</code> 异步任务的方式，如果采用同步的方式将无法捕获信号（主线程在处理业务逻辑，没有空闲处理信号捕获逻辑）；</li>
-  <li>源码中偷懒地采取简单等待的方式来保证异步任务正常结束，非普适方法，实际开发中需要根据情况做定制；</li>
-  <li><code class="highlighter-rouge">time.Ticker</code> 的使用是有注意事项的（参考文献中最后一篇有讲到），不过上面的代码不会触发这个问题。</li>
+  <li>代码中采用了 <code class="highlighter-rouge">go mySecondJobs()</code> 和 <code class="highlighter-rouge">go myMinuteJobs()</code> 异步任务的方式；如果采用同步的方式将无法捕获信号，因为此时主线程在处理业务逻辑，没有空闲处理信号捕获逻辑。</li>
+  <li>源码中偷懒地采取简单等待的方式来保证异步任务正常结束，非普适方法，实际开发中需要根据情况做定制。</li>
+  <li><code class="highlighter-rouge">time.Ticker</code> 的使用是有注意事项的，当 <code class="highlighter-rouge">select</code> 语句中同一时刻有多个分支满足条件时会随机取一个执行，从而导致信息丢失（参考文献中最后一篇有讲到），不过本文的代码不会触发这个问题，大家可以思考一下原因。</li>
 </ol>
 
 <h2 id="小结">小结</h2>
-<p>默认情况下，Go 应用在接收到 <code class="highlighter-rouge">TERM</code> 信号后直接退出，如果此时有过程没处理完（接收到请求后尚未返回响应，异步任务尚未结束），则会导致过程的异常中断，影响服务质量。通过在代码中显式地捕获 <code class="highlighter-rouge">TERM</code> 信号及其他信号，能够感知到操作系统对进程的处理，从而主动采取措施优雅地结束应用进程。</p>
+<p>默认情况下，Go 应用在接收到 <code class="highlighter-rouge">TERM</code> 信号后直接退出主进程，如果此时有过程没处理完（比如 接收到外部请求后尚未返回响应，或者内部的异步任务尚未结束），则会导致过程的异常中断，影响服务质量。通过在代码中显式地捕获 <code class="highlighter-rouge">TERM</code> 信号及其他信号，感知操作系统对进程的处理，可以主动采取措施优雅地结束应用进程。</p>
 
-<p>随着 k8s 的普及，考虑到期对进程生命周期的规范化管理，<strong>应用支持代码级的优雅中止</strong>（尤其是容器化的应用）有必要成为一种开发规范，值得引起每一位开发者的注意。</p>
+<p>随着 k8s 的普及，考虑到其对进程生命周期的规范化管理，<strong>应用支持代码级的优雅中止</strong>（尤其是容器化的应用）有必要成为一种开发规范，值得引起每一位开发者的注意。</p>
 <h2 id="参考">参考</h2>
 <ul>
   <li><a href="https://baike.baidu.com/item/%E4%BF%A1%E5%8F%B7/7927794">信号（LINUX信号机制）_百度百科</a> 介绍 Linux 中的信号（比如 SIGINT、SIGTERM 等）</li>
