@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "一个示例引出 Go 应用的优雅中止",
+      "tags"     : "golang 实用 基础",
+      "url"      : "/2019/03/31/golang-graceful-ending.html"
+    } ,
+  
+    {
       "title"    : "容器化 Go 开发环境的尝试",
       "tags"     : "golang 容器 经验",
       "url"      : "/2019/03/24/docker-golang-development.html"

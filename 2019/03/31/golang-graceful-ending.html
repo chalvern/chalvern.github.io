@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一个示例引出 Go 应用的优雅中止 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="一个示例引出 Go 应用的优雅中止">
+    <meta name="keywords"  content="golang, 实用, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="一个示例引出 Go 应用的优雅中止 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/03/31/golang-graceful-ending.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>一个示例引出 Go 应用的优雅中止</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-03-31"><i class="iconfont icon-date"></i>31 Mar 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">阐述代码级支持优雅中止的必要性</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#浅谈-go-应用的优雅中止" id="markdown-toc-浅谈-go-应用的优雅中止">浅谈 Go 应用的优雅中止</a>    <ul>
+      <li><a href="#优雅中止的含义" id="markdown-toc-优雅中止的含义">优雅中止的含义</a></li>
+      <li><a href="#kubernetes-中-pod-的终止机制" id="markdown-toc-kubernetes-中-pod-的终止机制">Kubernetes 中 Pod 的终止机制</a></li>
+      <li><a href="#优雅中止的-go-代码示例" id="markdown-toc-优雅中止的-go-代码示例">优雅中止的 Go 代码示例</a></li>
+      <li><a href="#源码解读-处理思路" id="markdown-toc-源码解读-处理思路">源码解读-处理思路</a></li>
+      <li><a href="#源码解读-值得关注的几个点" id="markdown-toc-源码解读-值得关注的几个点">源码解读-值得关注的几个点</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>按照一般的设计原则， 每个 HTTP 请求都是独立存在的，因此一般情况下 Web 应用都很容易做水平扩展；同时这也意味着 HTTP 请求发起重试的成本是很低的，从而使得大家在开发 Web 接口的时候很少关注应用的优雅中止。</p>
+
+<p>不过，业务中 ① 总会存在对<strong>中止</strong>比较敏感的接口（比如支付相关），并且 ② 总会存在一些带状态的服务，此时优雅中止就显得比较重要了。</p>
+
+<p>本文通过一个<strong>Go 定时任务示例</strong>来简单介绍优雅中止的处理思路。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
+
+<h2 id="浅谈-go-应用的优雅中止">浅谈 Go 应用的优雅中止</h2>
+<h3 id="优雅中止的含义">优雅中止的含义</h3>
+<p>所谓“优雅中止”，是指应用接收到特定的中止信号（比如 <code class="highlighter-rouge">INT</code>、<code class="highlighter-rouge">TERM</code>）后，不再接受外部的新请求，也不再创建内部的新任务，保持应用进程一直到旧需求和旧任务执行完成后再终止退出。</p>
+
+<h3 id="kubernetes-中-pod-的终止机制">Kubernetes 中 Pod 的终止机制</h3>
+<p>k8s 定义了终止   <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods">Pod</a> （业务进程在 Pod 中运行）的基本步骤：当主动删除 pod 时，系统会在强制终止 Pod 之前将 <code class="highlighter-rouge">TERM</code> 信号发送到每个容器中的主进程，过一段时间后（默认为 30 秒），再把 <code class="highlighter-rouge">KILL</code> 信号发送到这些进程。除此之外， k8s 通过钩子方法提供了对 <a href="https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/">容器生命周期</a> 的管理能力，允许容器启动后和终止前执行一些特殊的命令。</p>
+
+<p>当应用被打包进镜像且运行在 k8s 中的时候，如果应用实现了优雅中止的机制，就可以充分地利用 k8s 提供的高可用功能，在应用升级（发新版本）和 Pod 管理（宿主机维护时把 Pod 漂移到另一个宿主机，或者流量闲时动态收缩 Pod 的数量从而把资源省出来另作他用）的过程中实现服务的零中断。</p>
+
+<h3 id="优雅中止的-go-代码示例">优雅中止的 Go 代码示例</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"os"</span><span class="x">
+	</span><span class="s">"os/signal"</span><span class="x">
+	</span><span class="s">"syscall"</span><span class="x">
+	</span><span class="s">"time"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">c</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">chan</span><span class="x"> </span><span class="n">os</span><span class="o">.</span><span class="n">Signal</span><span class="p">)</span><span class="x">
+	</span><span class="c">// Go 不允许监听 SIGKILL/SIGSTOP 信号</span><span class="x">
+	</span><span class="c">// 参考 https://github.com/golang/go/issues/9463</span><span class="x">
+	</span><span class="n">signal</span><span class="o">.</span><span class="n">Notify</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="x"> </span><span class="n">syscall</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span><span class="x"> </span><span class="n">syscall</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">)</span><span class="x">
+
+	</span><span class="n">second</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">NewTicker</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span><span class="x">
+	</span><span class="n">minute</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">NewTicker</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Minute</span><span class="p">)</span><span class="x">
+
+</span><span class="n">A</span><span class="o">:</span><span class="x"> </span><span class="c">// 由于 for-select 嵌套使用，设置跳出 for 循环的标记</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">select</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">case</span><span class="x"> </span><span class="n">s</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="o">&lt;-</span><span class="n">c</span><span class="o">:</span><span class="x">
+			</span><span class="c">// 收到 SIGTERM/SIGINT 信号，跳出 for 循环结束进程</span><span class="x">
+			</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"get signal %s, graceful ending...</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">s</span><span class="p">)</span><span class="x">
+			</span><span class="k">break</span><span class="x"> </span><span class="n">A</span><span class="x">
+		</span><span class="k">case</span><span class="x"> </span><span class="o">&lt;-</span><span class="n">second</span><span class="o">.</span><span class="n">C</span><span class="o">:</span><span class="x">
+			</span><span class="k">go</span><span class="x"> </span><span class="n">mySecondJobs</span><span class="p">()</span><span class="x">
+		</span><span class="k">case</span><span class="x"> </span><span class="o">&lt;-</span><span class="n">minute</span><span class="o">.</span><span class="n">C</span><span class="o">:</span><span class="x">
+			</span><span class="k">go</span><span class="x"> </span><span class="n">myMinuteJobs</span><span class="p">()</span><span class="x">
+		</span><span class="p">}</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"graceful ending"</span><span class="p">)</span><span class="x">
+	</span><span class="c">// 做一些操作让异步任务正常结束，这里偷懒地采取简单等待的方式 😆</span><span class="x">
+	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="x"> </span><span class="o">*</span><span class="x"> </span><span class="m">10</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"graceful ended."</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">mySecondJobs</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">tS</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">String</span><span class="p">()</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"starting second job: %s </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">tS</span><span class="p">)</span><span class="x">
+	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="x"> </span><span class="o">*</span><span class="x"> </span><span class="m">1</span><span class="p">)</span><span class="x"> </span><span class="c">// 假设每个任务消耗 1 秒时间</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"second job %s are done. </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">tS</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">myMinuteJobs</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">tS</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">String</span><span class="p">()</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"starting minute job: %s </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">tS</span><span class="p">)</span><span class="x">
+	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="x"> </span><span class="o">*</span><span class="x"> </span><span class="m">2</span><span class="p">)</span><span class="x"> </span><span class="c">// 假设每个任务消耗 2 秒时间</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"minute job %s are done. </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">tS</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h3 id="源码解读-处理思路">源码解读-处理思路</h3>
+<ol>
+  <li>通过 <code class="highlighter-rouge">signal.Notify</code> 捕获特定的信号；</li>
+  <li>通过 <code class="highlighter-rouge">for + select</code> 来实现循环任务，同时检测  <code class="highlighter-rouge">signal.Notify</code> 欲捕获的信号；</li>
+  <li>当发现指定的信号时，跳出 <code class="highlighter-rouge">for</code> 循环，并采取一定措施结束异步任务。</li>
+</ol>
+
+<h3 id="源码解读-值得关注的几个点">源码解读-值得关注的几个点</h3>
+<ol>
+  <li>代码中采用了 <code class="highlighter-rouge">go mySecondJobs()</code> 和 <code class="highlighter-rouge">go myMinuteJobs()</code> 异步任务的方式，如果采用同步的方式将无法捕获信号（主线程在处理业务逻辑，没有空闲处理信号捕获逻辑）；</li>
+  <li>源码中偷懒地采取简单等待的方式来保证异步任务正常结束，非普适方法，实际开发中需要根据情况做定制；</li>
+  <li><code class="highlighter-rouge">time.Ticker</code> 的使用是有注意事项的（参考文献中最后一篇有讲到），不过上面的代码不会触发这个问题。</li>
+</ol>
+
+<h2 id="小结">小结</h2>
+<p>默认情况下，Go 应用在接收到 <code class="highlighter-rouge">TERM</code> 信号后直接退出，如果此时有过程没处理完（接收到请求后尚未返回响应，异步任务尚未结束），则会导致过程的异常中断，影响服务质量。通过在代码中显式地捕获 <code class="highlighter-rouge">TERM</code> 信号及其他信号，能够感知到操作系统对进程的处理，从而主动采取措施优雅地结束应用进程。</p>
+
+<p>随着 k8s 的普及，考虑到期对进程生命周期的规范化管理，<strong>应用支持代码级的优雅中止</strong>（尤其是容器化的应用）有必要成为一种开发规范，值得引起每一位开发者的注意。</p>
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://baike.baidu.com/item/%E4%BF%A1%E5%8F%B7/7927794">信号（LINUX信号机制）_百度百科</a> 介绍 Linux 中的信号（比如 SIGINT、SIGTERM 等）</li>
+  <li><a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods">Pods - Kubernetes</a>  Kubernetes 官网对 pod 的介绍，包含对 pod 生命周期的介绍</li>
+  <li><a href="https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/">Container Lifecycle Hooks - Kubernetes</a> Kubernetes 官方对容器生命周期中的钩子的介绍</li>
+  <li><a href="https://www.jianshu.com/p/e642e646719b">优雅地关闭kubernetes中的nginx - 简书</a> 介绍了信号、 k8s 中 pod 的终止流程，以及 nginx 的优雅终止</li>
+  <li><a href="http://www.01happy.com/golang-signal/">golang信号signal的处理 - 快乐编程</a></li>
+  <li><a href="http://www.cnblogs.com/ghj1976/p/4272442.html">Golang的 signal - 蝈蝈俊 - 博客园</a></li>
+  <li><a href="https://github.com/golang/go/issues/9463">os/signal: Prevent developers from catching SIGKILL and SIGSTOP · Issue #9463 · golang/go · GitHub</a> Go 中不允许捕获 SIGKILL 和 SIGSTOP 信号</li>
+  <li><a href="https://blog.csdn.net/wk3368/article/details/42678497">go里面select-case和time.Ticker的使用注意事项 - CSDN博客</a> 虽然本文的示例不会触发，不过 time.Ticker 使用时还是要注意一下这个小坑</li>
+  <li><a href="https://github.com/gin-gonic/gin/issues/1329">how to get a graceful shutdown of an server. · Issue #1329 · gin-gonic/gin · GitHub</a> Go 的 Web 框架 Gin 对优雅中止的支持示例</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/03/24/docker-golang-development.html" class="read-next-link"></a>
+          <section>
+            <span>容器化 Go 开发环境的尝试</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
