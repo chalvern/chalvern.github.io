@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS 简介及其在 Ubuntu 上的搭建 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="DNS 简介及其在 Ubuntu 上的搭建">
+    <meta name="keywords"  content="Linux, 实用, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="DNS 简介及其在 Ubuntu 上的搭建 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/04/26/dns-server-setup-on-ubuntu.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#Linux" class="post-tag">Linux</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>DNS 简介及其在 Ubuntu 上的搭建</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-04-26"><i class="iconfont icon-date"></i>26 Apr 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">介绍 DNS 在网络请求中扮演的角色及其搭建</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#当我们以域名请求某服务的时候" id="markdown-toc-当我们以域名请求某服务的时候">当我们以域名请求某服务的时候</a>    <ul>
+      <li><a href="#具体步骤" id="markdown-toc-具体步骤">具体步骤</a></li>
+    </ul>
+  </li>
+  <li><a href="#dns-服务器" id="markdown-toc-dns-服务器">DNS 服务器</a>    <ul>
+      <li><a href="#在-ubuntu-上搭建-dns-服务器" id="markdown-toc-在-ubuntu-上搭建-dns-服务器">在 Ubuntu 上搭建 DNS 服务器</a>        <ul>
+          <li><a href="#安装-dns-serverbind9" id="markdown-toc-安装-dns-serverbind9">安装 DNS server（bind9）</a></li>
+          <li><a href="#配置-etcbindnamedconfoptions-文件" id="markdown-toc-配置-etcbindnamedconfoptions-文件">配置 /etc/bind/named.conf.options 文件</a></li>
+          <li><a href="#配置-etcbindnamedconflocal-文件" id="markdown-toc-配置-etcbindnamedconflocal-文件">配置 /etc/bind/named.conf.local 文件</a></li>
+          <li><a href="#配置-varcachebindjingweilink-文件" id="markdown-toc-配置-varcachebindjingweilink-文件">配置 /var/cache/bind/jingwei.link 文件</a></li>
+          <li><a href="#重启-bind9" id="markdown-toc-重启-bind9">重启 bind9</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="当我们以域名请求某服务的时候">当我们以域名请求某服务的时候</h2>
+<p>当我们从浏览器里敲入百度网址 <code class="highlighter-rouge">www.baidu.com</code> 并按下回车键（Enter/Return 键），浏览器在与百度的服务器建立连接之前，首先需要把 <code class="highlighter-rouge">www.baidu.com</code> 转换成为 <code class="highlighter-rouge">IP</code>，然后根据这个 <code class="highlighter-rouge">IP</code> 与百度的服务器建立连接，继而完成接下来的数据传输。</p>
+
+<h3 id="具体步骤">具体步骤</h3>
+
+<p>把整个过程简化后，如下图所示：</p>
+
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1g2gglc8fzhj311c0jmgpl.jpg" alt="" /></p>
+
+<ol>
+  <li>手机（或电脑）首先请求 DNS 服务器获取百度的 IP；</li>
+  <li>DNS 服务器从 www.baidu.com 对应的表里按照一定的算法返回某个 IP（假设为 <code class="highlighter-rouge">220.181.57.142</code>）；</li>
+  <li>手机或电脑拿到 <code class="highlighter-rouge">220.181.57.142</code> 后就发起与 <code class="highlighter-rouge">baidu-server-2</code> 的连接，形成一个 <code class="highlighter-rouge">61.147.108.199 &lt;=&gt; 220.181.57.142</code> 的连接；</li>
+  <li>连接建立起来后，此时才进行请求数据和响应数据的传输。</li>
+</ol>
+
+<h2 id="dns-服务器">DNS 服务器</h2>
+<p>在上图中可以看到 <code class="highlighter-rouge">DNS server</code>做的主要事情就是简单地把 <code class="highlighter-rouge">www.baidu.com</code> 转换成为对应的 <code class="highlighter-rouge">IP</code>。那么这个 IP 是如何来的呢？</p>
+
+<p>当我们在某个云平台（比如 <code class="highlighter-rouge">jingwei.link</code> 这个域名是在阿里云买的）购买了一个域名后，我们就可以给这个域名添加相应的<strong>解析</strong>。把我们服务器的 <code class="highlighter-rouge">IP</code> 绑定到这个域名下面后，信息同步到相应的 DNS 服务器上，我们就可以通过域名找到我们的服务器 <code class="highlighter-rouge">IP</code> 继而访问我们的服务了。</p>
+
+<h3 id="在-ubuntu-上搭建-dns-服务器">在 Ubuntu 上搭建 DNS 服务器</h3>
+
+<p>大多数情况下，我们的手机（或电脑）都会自动连接公共的 DNS 服务器，并使用这些<strong>公共的 DNS 服务器</strong>完成所有域名到 <code class="highlighter-rouge">IP</code> 的映射查询。不过，如果我们希望在某个区域（比如在公司或者大家庭里）搭建由特定人群访问的服务，这个时候就可以搭建自己的 DNS 服务器，从而自由地配置 DNS 服务器添加个性化解析的记录。</p>
+
+<p>本文主要描述在 Ubuntu 的服务器上搭建一个 DNS 服务器的步骤（因为我给团队里拥有的几台服务器安装的都是这个系统），有的团队喜欢使用其他发行版本，比如 centOS 等，对于这些系统的配置可以根据本文的内容进一步探索。</p>
+
+<h4 id="安装-dns-serverbind9">安装 DNS server（bind9）</h4>
+
+<p><a href="https://www.isc.org/downloads/bind/">BIND 9</a> 是一个开源的 DNS 服务器，在 Ubuntu-Server 版本里其实是包含这个服务的，可以在安装系统时选择性地安装它，也可以通过下面的命令后期安装：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 更新软件源的数据</span>
+<span class="nb">sudo </span>apt-get update
+
+<span class="c"># 安装 bind9 </span>
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>bind9
+</code></pre></div></div>
+
+<h4 id="配置-etcbindnamedconfoptions-文件">配置 /etc/bind/named.conf.options 文件</h4>
+
+<p><code class="highlighter-rouge">named.conf.options</code> 文件中包含一些基本的配置，比如定义 <strong>解析</strong> 文件的位置（<code class="highlighter-rouge">directory</code>）、DNS 上游服务器（<code class="highlighter-rouge">forwarders</code>）、以及一些安全性格的参数配置等。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// cat /etc/bind/named.conf.options</span>
+<span class="n">options</span> <span class="p">{</span>
+        <span class="c1">// 这个目录决定了我们域名解析数据配置的目录，记住这个目录，后面会用到</span>
+        <span class="n">directory</span> <span class="s">"/var/cache/bind"</span><span class="p">;</span>
+        <span class="c1">// 配置 bind9 上游的 DNS 服务器</span>
+        <span class="c1">// 如果 bind9 中找不到某个域名的解析，会把域名解析请求发送到上游 DNS 服务器</span>
+        <span class="c1">// 192.168.8.1 这个是我家里的路由器的 IP，这个路由器提供了 DNS 服务能力</span>
+        <span class="n">forwarders</span> <span class="p">{</span>
+                <span class="mi">192</span><span class="p">.</span><span class="mi">168</span><span class="p">.</span><span class="mi">8</span><span class="p">.</span><span class="mi">1</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">allow</span><span class="o">-</span><span class="n">query</span> <span class="p">{</span>
+                <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="o">/</span><span class="mi">0</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="c1">// 因为 192.168.8.1 是本地路由器，安全性不是很高</span>
+        <span class="c1">// 需要关闭下面这几个安全相关参数才可以使用</span>
+        <span class="n">dnssec</span><span class="o">-</span><span class="n">enable</span> <span class="n">no</span><span class="p">;</span>
+        <span class="n">dnssec</span><span class="o">-</span><span class="n">validation</span> <span class="n">no</span><span class="p">;</span>
+        <span class="n">dnssec</span><span class="o">-</span><span class="n">lookaside</span> <span class="k">auto</span><span class="p">;</span>
+
+        <span class="n">auth</span><span class="o">-</span><span class="n">nxdomain</span> <span class="n">no</span><span class="p">;</span>    <span class="err">#</span> <span class="n">conform</span> <span class="n">to</span> <span class="n">RFC1035</span>
+        <span class="n">listen</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">v6</span> <span class="p">{</span> <span class="n">any</span><span class="p">;</span> <span class="p">};</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h4 id="配置-etcbindnamedconflocal-文件">配置 /etc/bind/named.conf.local 文件</h4>
+
+<p>可以在 <code class="highlighter-rouge">named.conf.local</code> 文件中添加自定义的域名信息（<code class="highlighter-rouge">zone</code>）以及相应的解析文件（<code class="highlighter-rouge">file</code>）。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// cat /etc/bind/named.conf.local</span>
+
+<span class="c1">// 这里定义在 bind9 中添加 www.jingwei.link 解析</span>
+<span class="n">zone</span> <span class="s">"www.jingwei.link"</span><span class="p">{</span>
+        <span class="n">type</span> <span class="n">master</span><span class="p">;</span>
+        <span class="c1">// 这里定义了在哪个文件中配置了 IP 信息</span>
+        <span class="n">file</span> <span class="s">"jingwei.link"</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h4 id="配置-varcachebindjingweilink-文件">配置 /var/cache/bind/jingwei.link 文件</h4>
+
+<p>① <code class="highlighter-rouge">/etc/bind/named.conf.options</code> 中的  <code class="highlighter-rouge">directory</code> 和 ② <code class="highlighter-rouge">/etc/bind/named.conf.local </code> 中的 <code class="highlighter-rouge">file</code> 共同指定了 <code class="highlighter-rouge">www.jingwei.link</code> 的域名解析记录包含在 <code class="highlighter-rouge">/var/cache/bind/jingwei.link</code> 文件。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$TTL</span>	604800
+@	IN	SOA	localhost. root.localhost. <span class="o">(</span>
+			      2		<span class="p">;</span> Serial
+			 604800		<span class="p">;</span> Refresh
+			  86400		<span class="p">;</span> Retry
+			2419200		<span class="p">;</span> Expire
+			 604800 <span class="o">)</span>	<span class="p">;</span> Negative Cache TTL
+<span class="p">;</span> 假设在 192.168.8.12 中搭建了某个服务，并希望以 www.jingwei.link 暴露出去
+@	IN	NS	localhost.
+@	IN	A	192.168.8.12
+</code></pre></div></div>
+
+<h4 id="重启-bind9">重启 bind9</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 重新载入配置</span>
+<span class="nb">sudo </span>systemctl daemon-reload
+<span class="c"># 重启 bind9</span>
+<span class="nb">sudo </span>systemctl restart bind9.service
+</code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+<p>本文首先简单介绍了 DNS 服务器在网络请求中扮演的角色，接着介绍了在 Ubuntu 中安装并配置 DNS 服务器（bind9）的大体步骤。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://blog.csdn.net/change_on/article/details/78376830">ubuntu16.04 搭建 dns 服务器 - 小浩子的博客 - CSDN博客</a> 具有高参考价值</li>
+  <li><a href="https://blog.csdn.net/Jammg/article/details/51027219">Ubuntu搭建DNS服务器 - 依然那霖哥 - CSDN博客</a></li>
+  <li><a href="http://www.361way.com/bind-dnscache/4802.html">centos6下BIND配置DNS缓存服务 - 运维之路</a> 配置 时</li>
+  <li><a href="https://www.isc.org/downloads/bind/">BIND 9 Open Source DNS Server</a> DNS 服务器 bind9 的官方页面，可以了解一下 bind9 这个项目</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/03/31/golang-graceful-ending.html" class="read-next-link"></a>
+          <section>
+            <span>一个示例阐述 Go 应用的优雅中止</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
