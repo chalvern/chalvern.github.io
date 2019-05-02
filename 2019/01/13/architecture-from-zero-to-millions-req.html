@@ -201,7 +201,7 @@ Author: Ray-Eldath
 <p>上面的简单推导让我想起了小学三年级做的“<strong>应用题</strong>”，虽然有点绕但是很有意义，大家多咂摸咂摸吧😆。</p>
 
 <h3 id="wheresmilecom用go写的一个web网页">WhereSmile.com——用Go写的一个Web网页</h3>
-<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fz59tzdqyxj31600g8myp.jpg" alt="" /></p>
+<p><img src="/assets/pic/architecture-from-zero-to-millions-req-01.jpg" alt="" /></p>
 
 <p>大概半年前，我在一个开源项目的基础上搭建了 <a href="https://wheresmile.com/">https://WhereSmile.com</a> 这个 Web 网页，用来满足我折腾各方面技术的需求（也满足了部分的虚荣心=。=）。<a href="https://wheresmile.com/">它</a> 是用 <a href="https://golang.google.cn/">Go</a> 写的（详见 <a href="https://github.com/chalvern/pybbs-go">GitHub - chalvern/pybbs-go</a>），底层存储用了 Mysql，目前部署在一台 1c2g 的云主机上面。</p>
 
@@ -223,14 +223,14 @@ Author: Ray-Eldath
 <p>具体的：①修改原来的部署方案，比如把 Web 应用与 Mysql 数据库分别部署到不同的机器。② 对各个组件的性能进行重新评估，查找性能瓶颈的点以后对应用进行改造。比如 Mysql 数据查询遇到性能瓶颈，一方面考虑升级 Mysql 专用服务器的配置；另一方面对应用层进行改造，引入 Redis 做缓存，减少对 Mysql 的查询次数，从而降低它的压力。</p>
 
 <h3 id="万rps水平扩展">万RPS——水平扩展</h3>
-<p><img src="https://ws3.sinaimg.cn/large/006tNc79gy1fz5spsdf4yj317i0fawhb.jpg" alt="" /></p>
+<p><img src="/assets/pic/architecture-from-zero-to-millions-req-02.jpg" alt="" /></p>
 
 <p>在万RPS的时候，假如单个 Web 的吞度量被压榨到了极限，此时可以考虑水平扩展 Web 应用了，必要情况下考虑水平扩展 Database。</p>
 
-<p>对 Web 应用来说，引入 nginx 做一层<a href="https://jingwei.link/2018/12/16/fundamental-network-principle.html#%E6%9C%80%E5%90%8E%E7%AE%80%E5%8D%95%E8%81%8A%E4%B8%80%E4%B8%8B%E6%AD%A3%E5%90%91%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%9B%9B%E5%B1%82%E4%B8%8E%E4%B8%83%E5%B1%82%E7%BD%91%E7%BB%9C">反向代理</a>，把流量均发到后面的服务器去从而减少对每台服务器的压力。对于数据库来说，可以考虑进行<strong>主备设计</strong>，① Web 层对主库进行写操作，② 多个从库同时到主库同步数据，③ Web 层对主库和从库进行读操作。</p>
+<p>对 Web 应用来说，引入 nginx 做一层<a href="/2018/12/16/fundamental-network-principle.html#%E6%9C%80%E5%90%8E%E7%AE%80%E5%8D%95%E8%81%8A%E4%B8%80%E4%B8%8B%E6%AD%A3%E5%90%91%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%9B%9B%E5%B1%82%E4%B8%8E%E4%B8%83%E5%B1%82%E7%BD%91%E7%BB%9C">反向代理</a>，把流量均发到后面的服务器去从而减少对每台服务器的压力。对于数据库来说，可以考虑进行<strong>主备设计</strong>，① Web 层对主库进行写操作，② 多个从库同时到主库同步数据，③ Web 层对主库和从库进行读操作。</p>
 
 <h3 id="十万百万千万rps终极拆分及扩展">十万、百万、千万RPS——终极拆分及扩展</h3>
-<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1fz59t408m3j31fw0q6476.jpg" alt="" /></p>
+<p><img src="/assets/pic/architecture-from-zero-to-millions-req-03.jpg" alt="" /></p>
 
 <p>在 RPS 到达了十万以上的时候，简单的水平扩展已经没有办法满足需求了，这个时候很多地方都会相继出现瓶颈。① <strong>反向代理的地方出现瓶颈</strong>。简单来说，由于用户实在太多了，一个入口已经无法满足需求，这个时候需要想办法对反向代理进行水平扩展。比如在不同地域的 DNS 服务器配置不同的 nginx 实例的地址，从而把不同地域用户的请求分发到不同的 nginx 实例上。</p>
 

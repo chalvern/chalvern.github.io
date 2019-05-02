@@ -170,7 +170,7 @@ Author: Ray-Eldath
 
 <h3 id="从网线直连到交换机连通二层网络">从网线直连到交换机连通（二层网络）</h3>
 
-<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fy7xbpbswaj311y0ectap.jpg" alt="" /></p>
+<p><img src="/assets/pic/fundamental-network-principle-01.jpg" alt="" /></p>
 
 <p>假如世界上只有两台电脑，为了能够让这两台电脑能够互相通信，可以使用一根网线把它们连接起来，如上图 A 所示，由 1 发出的所有信息通过网线直接到达 2，反之亦然，真是干脆利落。</p>
 
@@ -182,7 +182,7 @@ Author: Ray-Eldath
 
 <h3 id="ip与网关三层网络">IP与网关（三层网络）</h3>
 
-<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fy7xc6zpj3j31270u0797.jpg" alt="" /></p>
+<p><img src="/assets/pic/fundamental-network-principle-02.jpg" alt="" /></p>
 
 <p>上图的上半部分描述了两个节点群 M 与 N 之间的拓扑图，如果 M 中的 <code class="highlighter-rouge">PC with eth0-1</code> 想给 N 中的 <code class="highlighter-rouge">PC with eth0-9</code> 发送讯息，该以一种什么样的方式实现呢？如果不对拓扑结构进行扩展，其实 <code class="highlighter-rouge">eth0-1</code> 甚至不知道有 <code class="highlighter-rouge">eth0-9</code> 的存在。在上一节已经描述过，为了与外界沟通，<code class="highlighter-rouge">eth0-1</code>节点要首先向交换器<strong>询问连通到交换机的其他节点列表</strong>，由于 <code class="highlighter-rouge">eth0-9</code> 在另一个交换机上面，因此 <code class="highlighter-rouge">eth0-1</code> 所获取得到的<strong>节点列表里是不包含</strong><code class="highlighter-rouge">eth0-9</code>的。其实即使 <code class="highlighter-rouge">eth0-1</code>知道了<code class="highlighter-rouge">eth0-9</code>的存在，它对交换机说“帮我对 <code class="highlighter-rouge">eth0-9</code> 说一句‘你好’”，交换机也不知道该怎么办，只能傻掉。</p>
 
@@ -192,7 +192,7 @@ Author: Ray-Eldath
 
 <h3 id="路由router依然是三层网络">路由（Router，依然是三层网络）</h3>
 
-<p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fy7xcj987tj30z20lojuv.jpg" alt="" /></p>
+<p><img src="/assets/pic/fundamental-network-principle-03.jpg" alt="" /></p>
 
 <p>当子网越来越多，相应的网关也会越来越多，这个时候如果在每个网关上配置路由信息（根据请求中的目的 IP 或者响应中的 IP 决策发送到哪个子网或网关），也会显得比较累赘。比如上图中网关-1、网关-6与网关-7之间的路由关系，因为拓扑简单因此路由信息直接维护在网关服务器上；而网关1-5则通过一个集中的 Router（类比家里用的路由器，不过企业里用的要高级很多）来转发网络请求。</p>
 

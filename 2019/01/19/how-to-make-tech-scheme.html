@@ -208,7 +208,7 @@ Author: Ray-Eldath
 
 <h3 id="第一种数据表设计直观的数据表">第一种数据表设计——直观的数据表</h3>
 
-<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fzc3x0ubl0j31he0mun16.jpg" alt="" /></p>
+<p><img src="/assets/pic/how-to-make-tech-scheme-01.jpg" alt="" /></p>
 
 <p>根据产品经理讲的故事原型以及故事中的规则可以<strong>抽象出三个实体</strong>——具体就医的小动物、小动物的种类、小动物的主治医生，并能够在此基础上拟定出三张数据表——<strong>[Animal]、[Animal-kinds]、[Animal-doctors]、[Animal-kind-logs]</strong>——分别用来保存每个实体的数据（ [Animal-kind-logs] 是 [Animal-kinds] 的日志表，后者用来记录前者的变更）。</p>
 
@@ -233,7 +233,7 @@ Author: Ray-Eldath
 
 <h4 id="添加诊室表后的故事表述">添加诊室表后的故事表述</h4>
 
-<p><img src="https://ws3.sinaimg.cn/large/006tNc79gy1fzc3x83k0pj31kq0n60y1.jpg" alt="" /></p>
+<p><img src="/assets/pic/how-to-make-tech-scheme-02.jpg" alt="" /></p>
 
 <p>根据数据表设计的经验，为了解决上一小节提到的<strong>使人感觉别扭的点</strong>，可以考虑在 [Animal-docters] 和 [Animal-kinds] 中间引入一个<strong>诊室表 [Animal-clinics]</strong>用来进行优化。对应到原来的故事，就是引入“诊室”的概念，在不改变需求的前提下稍微修改一下故事的描述（可以和产品经理进行二次确认，避免理解偏差导致技术方案出现差错；因为大部分的故事是产品经理想出来以方便各方沟通的，在<strong>不改变需求</strong>的前提下换一种讲法也无伤大雅。）</p>
 

@@ -175,7 +175,7 @@ Author: Ray-Eldath
 
 <h3 id="先看两种日志收集架构">先看两种日志收集架构</h3>
 
-<p><img src="https://ws3.sinaimg.cn/large/006tNc79gy1fyx8er09e2j31ko0oetcs.jpg" alt="" /></p>
+<p><img src="/assets/pic/the-reference-of-k8s-logging-01.jpg" alt="" /></p>
 
 <p>假设有上图中的两种方案，基本是官方文档中 <strong>A）</strong><a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/#using-a-node-logging-agent">普通代理模式</a> 和 <strong>B）</strong><a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/#using-a-sidecar-container-with-the-logging-agent">边车+代理模式</a> 这两个模型的微变体，从图中可以看到两种方案均存在 <strong>logging-agent</strong> 组件，用来<strong>异步地</strong>把日志推送到远端（Logging Backend，比如 Logstash 或者 Kafka 等）。方案 A 与 方案 B 的最大区别是：前者没有 <strong>Empty Dir</strong>（后面简称 <strong>ED</strong>），日志直接写到了 <strong>log-file.log</strong>；而后者有 <strong>ED</strong>，日志首先写入 <strong>ED</strong>，然后经由另一个容器（<strong>streaming-container</strong>）把日志转发到 <strong>log-file.log</strong>（方案 B 适用于那些没有办法把日志写入 stdout/stderr 的应用）。</p>
 
@@ -184,7 +184,7 @@ Author: Ray-Eldath
 <h3 id="文件系统">文件系统</h3>
 <p>对于前面提到的方案 A （应用直写 <strong>log-file.log</strong>），其本质上是<strong>直写本地磁盘</strong>，因此无需考虑性能优化问题（如果写本地磁盘有性能瓶颈，直接查代码逻辑吧，最差情况是考虑换磁盘）。对于方案 B，虽说本质上它也是直写本地磁盘，但是存在两次落盘的过程（<strong>两次写操作一次读操作</strong>），这种情况会不会出现性能问题呢？这就需要了解一下 Linux 文件系统的工作机制了。</p>
 
-<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fyx8eybb7cj314m0k278f.jpg" alt="" /></p>
+<p><img src="/assets/pic/the-reference-of-k8s-logging-02.jpg" alt="" /></p>
 
 <p>研究过 Linux 内核源码的开发者知道，Linux 文件系统有着非常复杂的运行机制（可参考《 <a href="https://book.douban.com/subject/2287506/">深入理解LINUX内核(第三版)</a>》文件系统相关的章节），为了能顺利完成此博文，我这里只画了一张简化版的示意图。其中① CPU通过内存作为媒介来获取磁盘（包括 SSD、HDD、Flash 等）中的内容；② 磁盘中的内容会首先加载到内存中，然后才能被 CPU 使用或处理；③ 普通文件可能会被加载到内存中的页高速缓存（buffer/cache），这样能够在内存中停留的时间久一些，方便多进程多次读写，从而减少与磁盘的交互频次。④ 值得说明的是，缓存并不适用所有的场景，比如数据库文件要实时落盘才有意义，实时落盘的应用场景下可以显式使用<strong>直接 I/O 传送</strong> 的模式来满足需求。</p>
 
@@ -195,7 +195,7 @@ Author: Ray-Eldath
 <h3 id="ext4文件系统一个100m的文件是如何保存在磁盘上的">Ext4文件系统——一个100M的文件是如何保存在磁盘上的</h3>
 <p>当前我所接触到的服务器的磁盘文件系统都是 Ext4 格式，那么 Ext4 存在性能瓶颈吗？有没有其他更好的文件系统选型呢？我浏览了一圈大家对 Ext4 的评价，确认了<strong>使用 Ext4 是最佳实践</strong>。不过好奇心驱使让我想进一步探究 Ext4 保存文件的方式：一个 100M 的文件是如何保存在磁盘上的？</p>
 
-<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fyx8f7z50bj30ug0f4ta2.jpg" alt="" /></p>
+<p><img src="/assets/pic/the-reference-of-k8s-logging-03.jpg" alt="" /></p>
 
 <p>简单地讲（详细情况可阅读相关的参考文章），① 磁盘在初始化以后，磁盘上除了一些<strong>元数据</strong>还包含 <strong>data-block 和 Inode</strong> 这两种结构，其中 data-block 有固定大小（比如每个 4k），负责存放文件的内容体；Inode 则负责存放文件的元属性（比如归属、类型、权限、时间戳等）以及 data-block 的索引。② 当创建一个文件的时候，内核会参考 <strong>Inode bitmap</strong>（属于元数据之一）从空闲的 Inode 中获取一个 Inode 并与文件名进行绑定；③ 当向文件中添加数据时，内核会参考 <strong>Block bitmap</strong>（也属于元数据之一）从空闲的 data-block 中获取相应数量的 data-block 资源，然后把数据写到这些 data-block 中，最后更新 Inode 中 data-block 的索引值。</p>
 
@@ -203,7 +203,7 @@ Author: Ray-Eldath
 
 <h3 id="磁盘寻址主要指机械磁盘">磁盘寻址（主要指机械磁盘）</h3>
 
-<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fyx8fhdmv2j30zk0ew771.jpg" alt="" /></p>
+<p><img src="/assets/pic/the-reference-of-k8s-logging-04.jpg" alt="" /></p>
 
 <p>上一小节提到 data-block 的分布情况会影响文件的读写效率。那么为什么会这样呢？我以机械硬盘（HDD）为例（SSD 通过电路实现寻址，机制不一样），如上图所示，文件数据分布在磁盘的某条轨道的某个扇区里。可以简单把<strong>磁头读取特定扇区上的数据的过程</strong>分成三步：① 把磁头<strong>定位</strong>到相应的<strong>轨道</strong>；② 等待盘片旋转使<strong>扇区正对磁头</strong>下方；③ 磁头<strong>读取</strong>并传输扇区的数据。上面三步中每个步骤都需要耗时，而由于前两步涉及到了机械运动，因此耗时<strong>比第三步的耗时多</strong>。</p>
 

@@ -138,7 +138,7 @@ Author: Ray-Eldath
     </div>
     
     <div class="filter"></div>
-      <div class="post-cover" style="background: url('https://ws2.sinaimg.cn/large/006tNbRwgy1fwnntpufmuj30dx08ut91.jpg') center no-repeat; background-size: cover;"></div>
+      <div class="post-cover" style="background: url('/assets/pic/gin-radix-tree-router-01.jpg') center no-repeat; background-size: cover;"></div>
     
   </header>
 
@@ -185,7 +185,7 @@ Author: Ray-Eldath
 
 <p>如果a和b是位串（二进制串），则根据规则①，有<code class="highlighter-rouge">10100 &lt; 10110</code>；根据规则②，有<code class="highlighter-rouge">10100 &lt; 101000</code>。</p>
 
-<p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fwnntpufmuj30dx08ut91.jpg" alt="" /></p>
+<p><img src="/assets/pic/gin-radix-tree-router-01.jpg" alt="" /></p>
 
 <p>上图示出的是基数树的数据结构，其中存储了位串1011、10、011、100和0。当查找某个关键字a = a0a1……ap时，在深度为i的一个结点处，若ai = 0则向左转；若ai = 1则向右转。设S为一组不同的二进制串构成的集合，各串的长度之和为n。说明如何利用基数树，在O(n)时间内对S按字典序排序。例如，对上图中每个结点的关键字，排序的输出应该是序列0、011、10、100、1011。</p>
 

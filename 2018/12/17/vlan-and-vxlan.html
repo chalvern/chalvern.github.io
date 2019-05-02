@@ -182,7 +182,7 @@ Author: Ray-Eldath
 
 <h3 id="vlan存在的必要性">VLAN存在的必要性</h3>
 
-<p><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fya69fknwuj31440jgq6a.jpg" alt="" /></p>
+<p><img src="/assets/pic/vlan-and-vxlan-01.jpg" alt="" /></p>
 
 <p>在设计物理网络拓扑时，很难把需求一一对应到拓扑设计中，即使花了大力气按业务需求或组织架构把网络搭建起来，未来也非常大概率需求会发生变化或组织架构发生变化。这时候如果单一依靠物理网络拓扑就太难为网络架构师了。</p>
 
@@ -212,7 +212,7 @@ Author: Ray-Eldath
 
 <h3 id="虚拟技术对网络的要求">虚拟技术对网络的要求</h3>
 
-<p><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fya6a2e48oj317e0leq66.jpg" alt="" /></p>
+<p><img src="/assets/pic/vlan-and-vxlan-02.jpg" alt="" /></p>
 
 <p>云计算能够提供稳定的服务，给客户非常好的体验。不过云主机动态实例化并且能够几近零故障地在物理机上漂来漂去，它的网络该如何架构才能满足需求呢？</p>
 
@@ -225,7 +225,7 @@ Author: Ray-Eldath
 
 <p>不过既然物理层是透明的，那么虚拟层势必要在自己的层虚拟出交换机、路由器等基础设置，也就是上图中<strong>虚拟层基础设施层</strong>所包含的组件，从而保证虚拟层中的虚拟机集群正常工作。我们可以想象，这不是一件简单的工程实现。不过既然协议是分层的，那么我们可以参考 <a href="https://baike.baidu.com/item/%E7%BD%91%E7%BB%9C%E4%B8%83%E5%B1%82%E5%8D%8F%E8%AE%AE/6056879">OSI</a> 模型以及 TCP/IP 协议族的实现方式，给虚拟机之间的网络请求再封装一层 VxLAN 的协议来实现这一切。</p>
 
-<p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fya6aept8ej30ej0c2abp.jpg" alt="" /></p>
+<p><img src="/assets/pic/vlan-and-vxlan-03.jpg" alt="" /></p>
 
 <p>（图片来自《<a href="https://www.cnblogs.com/hbgzy/p/5279269.html">Vxlan学习笔记——原理 - 博客园</a>》）</p>
 

@@ -208,7 +208,7 @@ Author: Ray-Eldath
 
 <h3 id="clean-architectrue的整体思想">Clean-Architectrue的整体思想</h3>
 
-<p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fyq0t7scpgj30lg0frq5h.jpg" alt="" /></p>
+<p><img src="/assets/pic/thinking-of-architecture-01.jpg" alt="" /></p>
 
 <p>Clean-Architectrue架构图，摘自<a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">The Clean Architecture</a></p>
 
@@ -254,17 +254,17 @@ Author: Ray-Eldath
 <h3 id="几个流行的架构图">几个流行的架构图</h3>
 <p>架构图的具体出处可以在最后的<strong>参考</strong>小节查看。</p>
 <h4 id="k8s的架构图">k8s的架构图</h4>
-<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fyq5vk3rrhj30ot0kotat.jpg" alt="" /></p>
+<p><img src="/assets/pic/thinking-of-architecture-02.jpg" alt="" /></p>
 
 <p>相信每个了解云技术栈的开发者都见过上面的 k8s 架构图，至少听过其中部分组件的名称。这张图很清楚地描述了 k8s 包含的各个组件及其协同运作的方式，这不仅仅给 k8s 项目的开发者一些开发方向的指引，同时也让 k8s 的使用者能够方便地讨论各种问题。</p>
 
 <h4 id="istio-架构图">ISTIO 架构图</h4>
-<p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fyq5vz4htbj312z0u0tcc.jpg" alt="" /></p>
+<p><img src="/assets/pic/thinking-of-architecture-03.jpg" alt="" /></p>
 
 <p>业界提到 Service Mesh 的时候必提 ISTIO，它的架构如上图所示。可以注意到在 ISTIO 的架构中，所有的流量都通过 <code class="highlighter-rouge">Proxy</code> 进行接管，而 <code class="highlighter-rouge">Proxy</code> 是作为一个独立的进程与业务进程运行在同一个实例中（多指k8s 里的 Pod），那么对这个 <code class="highlighter-rouge">Sidecar</code> 就有比较多的要求了，比如要轻量级、高效、便于配置部署等等。由架构图我们也可以反推得出，在微服务化改造的过程中，应该控制自己业务的复杂度不能拆的太细碎，否则边界成本会变得非常大。</p>
 
 <h4 id="vxlan虚拟网络架构图">VxLAN虚拟网络架构图</h4>
-<p><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fya6a2e48oj317e0leq66.jpg" alt="" /></p>
+<p><img src="/assets/pic/vlan-and-vxlan-02.jpg" alt="" /></p>
 
 <p>这是我之前的一篇博客的示例图，描述了 VxLAN 的虚拟网络架构，这张图让很多讨论变得十分容易。</p>
 

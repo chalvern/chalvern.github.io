@@ -183,7 +183,7 @@ Author: Ray-Eldath
 
 <h3 id="一次grpc调用总览">一次gRPC调用总览</h3>
 
-<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fvu3s59sqvj30my0eeti5.jpg" alt="gRPC调用总览" />
+<p><img src="/assets/pic/grpc-wireshark-analysis-01.jpg" alt="gRPC调用总览" />
 【图-gRPC调用总览】</p>
 
 <p>从上图可以大体看出，在gRPC的helloworld中从client端调用server端，会有多次的HTTP2请求，大体上可以分为：<code class="highlighter-rouge">Magic-&gt;Settings-&gt;Headers-&gt;Data-&gt;Settings-&gt;Window-update,Ping-&gt;Ping-&gt;Headers,Data,Headers-&gt;Window_update,ping-&gt;Ping</code>。</p>
@@ -191,7 +191,7 @@ Author: Ray-Eldath
 <h3 id="settings">Settings</h3>
 <p>从gRPC调用总览图可以看到，总共有两次的Settings设置，不过两次setting有相同的数据，具体数据如下：</p>
 
-<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fvu5drkj5mj30sc0e6dmy.jpg" alt="Settings.png" /></p>
+<p><img src="/assets/pic/grpc-wireshark-analysis-02.jpg" alt="Settings.png" /></p>
 
 <h3 id="headers">Headers</h3>
 <p>gRPC发送请求的Header的截图如下，可以发现其中一些细节：</p>
@@ -201,50 +201,50 @@ Author: Ray-Eldath
   <li>Header中包含了method(POST)、scheme(http)、path(/helloword.Greeter/SayHello)、content-type(application/grpc)等，很全。</li>
 </ol>
 
-<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fvu5ljrsqxj30v80ifdoq.jpg" alt="Headers" /></p>
+<p><img src="/assets/pic/grpc-wireshark-analysis-03.jpg" alt="Headers" /></p>
 
 <h3 id="data">Data</h3>
 <p>Headers部分主要由client向server发送请求相关的数据，在Data部分由server向client发送数据。</p>
 
-<p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1fvu6lhjvlgj30s80d043m.jpg" alt="data" /></p>
+<p><img src="/assets/pic/grpc-wireshark-analysis-04.jpg" alt="data" /></p>
 
 <h3 id="再一次的settings">再一次的Settings</h3>
 <p>再一次的settings与第一次基本上没有区别，除了ACK的标识位为<em>True</em>。</p>
 
-<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fvu6x94k59j30qk0a5jve.jpg" alt="settings-2" /></p>
+<p><img src="/assets/pic/grpc-wireshark-analysis-05.jpg" alt="settings-2" /></p>
 
 <h3 id="window_update-ping">Window_update, Ping</h3>
 <p>从下面可以看到，在HTTP/2的一次请求中，可以包含两个stream块。</p>
 
-<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fvu738tmmej30qp0f20yy.jpg" alt="window_update-ping" /></p>
+<p><img src="/assets/pic/grpc-wireshark-analysis-06.jpg" alt="window_update-ping" /></p>
 
 <h3 id="pingpong">ping(pong)</h3>
 <p>当client向server端发送了一个ping请求，server端会发回pong响应。上面的ping为client发起的，下面的ping为server端发起的。</p>
 
-<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fvu7b4l2taj30st0bh43x.jpg" alt="pong" /></p>
+<p><img src="/assets/pic/grpc-wireshark-analysis-07.jpg" alt="pong" /></p>
 
 <h3 id="headersdataheaders">headers,data,headers</h3>
 <p>这里的数据为server向client端发送的数据（包含了header及body），具体截图如下图所示。
-<img src="https://ws2.sinaimg.cn/large/006tNc79ly1fvu7e53vrkj30r70lnn5c.jpg" alt="data-2" /></p>
+<img src="/assets/pic/grpc-wireshark-analysis-08.jpg" alt="data-2" /></p>
 
 <h3 id="window_updateping">window_update,ping</h3>
 <p>可以发现，不仅仅client可以向server发起ping，也可以反向由server向client进行ping的操作。</p>
 
-<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1fvu7ifa5nhj30ka0dqjwu.jpg" alt="window_update" /></p>
+<p><img src="/assets/pic/grpc-wireshark-analysis-09.jpg" alt="window_update" /></p>
 
 <h3 id="再一次pingpong">再一次ping(pong)</h3>
 <p>当然，在server发起ping操作后，client会发起pong操作。</p>
 
-<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fvu7qlx8w7j30lb09kjv3.jpg" alt="pong-2" /></p>
+<p><img src="/assets/pic/grpc-wireshark-analysis-10.jpg" alt="pong-2" /></p>
 
 <h2 id="grpc中的context数据">gRPC中的context数据</h2>
-<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fvu7wu9w1kj30tk0a9td0.jpg" alt="context源码" /></p>
+<p><img src="/assets/pic/grpc-wireshark-analysis-11.jpg" alt="context源码" /></p>
 
 <p>有一天，小黄老师跑过来问：如果在gRPC从client调用server端服务时，在context中添加了一些数据，那么这些数据是如何传输到server端的？其实这些context中的数据会以header头的形式进行传输，比如上面图中所展示的代码，在context中塞了<code class="highlighter-rouge">abc=&gt;ccc</code>的键值对。</p>
 
 <p>通过抓包可以看到，<code class="highlighter-rouge">abc=&gt;ccc</code>的键值对写入了header中，如下图：</p>
 
-<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1fvu801b9m5j30n10i8n7s.jpg" alt="context-wireshark" /></p>
+<p><img src="/assets/pic/grpc-wireshark-analysis-12.jpg" alt="context-wireshark" /></p>
 
 <h2 id="小结">小结</h2>
 <p>本文通过对gRPC的helloworld进行抓包，跟踪了一次gRPC调用过程可能包含的数据流过程。在学习了gRPC的理论性知识后，再结合本文的抓包内容，应该能对gRPC（侧重HTTP/2技术）有一个更好的理解。</p>
