@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>浅谈 Golang 中数据的并发同步问题（一） - 敬维</title>
+    <title>浅谈 Golang 中数据的并发同步问题（二） - 敬维</title>
     <meta name="author"  content="敬维">
-    <meta name="description" content="浅谈 Golang 中数据的并发同步问题（一）">
+    <meta name="description" content="浅谈 Golang 中数据的并发同步问题（二）">
     <meta name="keywords"  content="golang, 实用, 基础">
     <!-- Open Graph -->
-    <meta property="og:title" content="浅谈 Golang 中数据的并发同步问题（一） - 敬维">
+    <meta property="og:title" content="浅谈 Golang 中数据的并发同步问题（二） - 敬维">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jingwei.link/2019/05/11/golang-concurrency-01.html">
+    <meta property="og:url" content="https://jingwei.link/2019/05/11/golang-concurrency-02.html">
     <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
     <meta property="og:site_name" content="敬维">
     <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
@@ -130,7 +130,7 @@ Author: Ray-Eldath
           
         
       </div>
-      <h1>浅谈 Golang 中数据的并发同步问题（一）</h1>
+      <h1>浅谈 Golang 中数据的并发同步问题（二）</h1>
       <div class="post-meta">
         <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
         <time class="post-meta-item" datetime="19-05-11"><i class="iconfont icon-date"></i>11 May 2019</time>
@@ -144,16 +144,16 @@ Author: Ray-Eldath
 
   <div class="post-content visible">
     
-    <h2 class="post-subtitle">介绍如何通过加读写锁的方式避免数据竞争</h2>
+    <h2 class="post-subtitle">介绍原子性的概念及 atomic 包的使用</h2>
     
 
     <article class="markdown-body">
       <ul id="markdown-toc">
   <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
-  <li><a href="#从一个例子看线程安全与数据竞争问题" id="markdown-toc-从一个例子看线程安全与数据竞争问题">从一个例子看线程安全与数据竞争问题</a>    <ul>
-      <li><a href="#一个非常原始的数据竞争问题" id="markdown-toc-一个非常原始的数据竞争问题">一个非常原始的数据竞争问题</a></li>
-      <li><a href="#通过加锁的方式优化有数据竞争的代码" id="markdown-toc-通过加锁的方式优化有数据竞争的代码">通过加锁的方式优化有数据竞争的代码</a></li>
-      <li><a href="#示例代码的进一步阐释" id="markdown-toc-示例代码的进一步阐释">示例代码的进一步阐释</a></li>
+  <li><a href="#原子性及-go-中-atomic-包的使用" id="markdown-toc-原子性及-go-中-atomic-包的使用">原子性及 Go 中 atomic 包的使用</a>    <ul>
+      <li><a href="#再提非常原始的数据竞争问题" id="markdown-toc-再提非常原始的数据竞争问题">再提非常原始的数据竞争问题</a></li>
+      <li><a href="#原子性概念及其实现原理" id="markdown-toc-原子性概念及其实现原理">原子性概念及其实现原理</a></li>
+      <li><a href="#使用-atomic-包来避免数据竞争" id="markdown-toc-使用-atomic-包来避免数据竞争">使用 atomic 包来避免数据竞争</a></li>
     </ul>
   </li>
   <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
@@ -161,13 +161,12 @@ Author: Ray-Eldath
 </ul>
 
 <h2 id="写在前面">写在前面</h2>
-<p>过去 Web 开发的工作比较少涉及到并发的问题，每个用户请求在独立的线程里面进行，偶尔涉及到异步任务但是线程间数据同步模型非常简单，因此并未深入探究过并发这一块。最近在写游戏相关的服务端代码时发现数据的并发同步场景非常多，因此花了一点时间来探索。</p>
+<p>过去 Web 开发的工作比较少涉及到并发的问题，每个用户请求在独立的线程里面进行，偶尔涉及到异步任务但是线程间数据同步模型非常简单，因此并未深入探究过并发这一块。最近在写游戏相关的服务端代码时发现数据的并发同步场景非常多，因此花了一点时间来探索。这是一个系列文章，本文为第二篇。</p>
 
-<p>本文通过一个例子来简单引出 Golang 中的数据并发同步问题，并通过简单加锁的方式来避免数据竞争问题。</p>
+<p>本文通过一个例子来引出 Golang 中的数据并发同步问题，并通过使用 <code class="highlighter-rouge">atomic</code> 包的方式来避免数据竞争问题。</p>
 
-<h2 id="从一个例子看线程安全与数据竞争问题">从一个例子看线程安全与数据竞争问题</h2>
-
-<h3 id="一个非常原始的数据竞争问题">一个非常原始的数据竞争问题</h3>
+<h2 id="原子性及-go-中-atomic-包的使用">原子性及 Go 中 atomic 包的使用</h2>
+<h3 id="再提非常原始的数据竞争问题">再提非常原始的数据竞争问题</h3>
 
 <p>下面的代码模拟了为一个用户（<code class="highlighter-rouge">Person</code>）发放金币（<code class="highlighter-rouge">Money</code>）的代码，其中金币发放与读取分别再不同的线程里完成（读取在主线程，发放在一个子线程）。</p>
 
@@ -187,95 +186,80 @@ Author: Ray-Eldath
 	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
 		</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="x"> </span><span class="o">+=</span><span class="x"> </span><span class="m">1000</span><span class="x">
 	</span><span class="p">}()</span><span class="x">
+	</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="x"> </span><span class="o">+=</span><span class="x"> </span><span class="m">1000</span><span class="x">
 	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">)</span><span class="x">
 </span><span class="p">}</span><span class="x">
 </span></code></pre></div></div>
 
-<p>运行上面的代码：</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 只是运行上面的代码</span>
-go run main.go
-<span class="c"># Money: 100</span>
+<p><code class="highlighter-rouge">go run</code> 时使用 <code class="highlighter-rouge">-race</code> 标志运行上面的代码可以发现数据竞争提醒：</p>
 
-<span class="c"># 添加 -race 后检测竞争状态，可以看到 race 的提醒</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 添加 -race 后检测竞争状态，可以看到 race 的提醒</span>
 go run <span class="nt">-race</span> main.go
-<span class="c"># Money: 100</span>
+<span class="c"># Money: 1100</span>
 <span class="c"># ==================</span>
 <span class="c"># WARNING: DATA RACE</span>
 <span class="c"># Write at 0x00c00001c0a0 by goroutine 6:</span>
-<span class="c"># ....</span>
 <span class="c"># Previous read at 0x00c00001c0a0 by main goroutine</span>
-<span class="c"># ....</span>
 </code></pre></div></div>
 
-<p>通过运行代码并查看输出可以确认：① 代码可以正常运行（并没有因为多个线程读写同一个变量而崩溃），② 由于数据没有同步最后输出的数据  <code class="highlighter-rouge">Money: 100</code> 与预期的数据<code class="highlighter-rouge">1100</code>存在误差，③  通过 <code class="highlighter-rouge">go run -race main.go</code> 添加 <code class="highlighter-rouge">-race</code> 标识可以发现 <strong>数据竞争</strong> 问题。</p>
+<p>根据《 <a href="http://yanyiwu.com/work/2015/02/07/golang-concurrency-safety.html">谈谈go语言编程的并发安全</a>》 和 《 <a href="https://software.intel.com/en-us/blogs/2013/01/06/benign-data-races-what-could-possibly-go-wrong">benign-data-races-what-could-possibly-go-wrong</a> 》的讨论，上面的代码无法保证 <code class="highlighter-rouge">fmt.Printf("Money: %d\n", p.Money)</code> 这一句会输出什么，同时存在严重的问题（高并发下可能出现严重问题导致代码崩溃），因此有必要通过一定的措施避免这种不确定性。</p>
 
-<h3 id="通过加锁的方式优化有数据竞争的代码">通过加锁的方式优化有数据竞争的代码</h3>
+<h3 id="原子性概念及其实现原理">原子性概念及其实现原理</h3>
 
-<p>下面的代码里给 <code class="highlighter-rouge">Person</code> 添加了一个读写锁 <code class="highlighter-rouge">mutext sync.RWMutex</code>，并通过添加两个方法 <code class="highlighter-rouge">GetMoney</code> 和 <code class="highlighter-rouge">AddMoney</code> 来达到读取和修改 <code class="highlighter-rouge">Money</code> 的数值的目的。</p>
+<p>原子操作是指不会被线程调度机制打断的操作；原子操作一旦开始，就一直运行到结束，中间不会有任何 context switch（上下文切换，从当前线程切换到另一个线程）。（from 百度百科）</p>
+
+<p>对于编程语言中变量的修改，可以认为原子操作需满足下面的条件：① 变量的读写过程不可中断（不可以读到一半做其他事情，也不可写到一半做其他事情），② 变量的读写过程不可同时进行（不可以写变量的同时读取变量，防止读取到仅更新了一半的变量值；也不可以写变量的同时另一个线程也在写这个变量，防止其中一个更新无效）。</p>
+
+<p>根据 Golang 官方 <a href="https://golang.google.cn/ref/mem">内存模型</a> 文档中的描述  <code class="highlighter-rouge">Programs that modify data being simultaneously accessed by multiple goroutines must serialize such access.</code>  以及 <a href="https://golang.google.cn/pkg/sync/atomic/">atomic</a> 包的存在，可以认为 Golang 对同一块内存的并发读写访问<strong>并不是原子性</strong>的。简而言之，Golang 中对一个变量进行更新时，另一个线程可以并发地读这个变量的值，而读取到的值是内存不确定的（即不一定读到什么东西）。</p>
+
+<h3 id="使用-atomic-包来避免数据竞争">使用 atomic 包来避免数据竞争</h3>
+
+<p>上篇文章《 <a href="/2019/05/11/golang-concurrency-01.html">浅谈 Golang 中数据的并发同步问题（一）</a> 》采用 <strong>添加读写锁</strong> 的方式避免了数据竞争。对于 <strong>用户</strong>-&gt;<strong>金币</strong> 这种模型（金币是一个数值而非其他的复杂类型），其实也可以采用 <code class="highlighter-rouge">atomic</code> 包来避免数据竞争问题。</p>
+
+<p>下面的代码引入了 <code class="highlighter-rouge">atomic</code> 的使用，由于其仅支持 <code class="highlighter-rouge">int32</code> 和 <code class="highlighter-rouge">int64</code> 这种显式定义字节长度的类型，因此代码中把 <code class="highlighter-rouge">Money</code> 修改为了 <code class="highlighter-rouge">int64</code> 类型。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
 
 </span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
 	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"sync"</span><span class="x">
+	</span><span class="s">"sync/atomic"</span><span class="x">
 </span><span class="p">)</span><span class="x">
 
 </span><span class="k">type</span><span class="x"> </span><span class="n">Person</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">Money</span><span class="x">  </span><span class="kt">int</span><span class="x">
-	</span><span class="n">mutext</span><span class="x"> </span><span class="n">sync</span><span class="o">.</span><span class="n">RWMutex</span><span class="x">
-</span><span class="p">}</span><span class="x">
-
-</span><span class="c">// GetMoney 获取用户金钱</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">p</span><span class="x"> </span><span class="o">*</span><span class="n">Person</span><span class="p">)</span><span class="x"> </span><span class="n">GetMoney</span><span class="p">()</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">RUnlock</span><span class="p">()</span><span class="x">
-	</span><span class="n">money</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="x">
-	</span><span class="k">return</span><span class="x"> </span><span class="n">money</span><span class="x">
-</span><span class="p">}</span><span class="x">
-
-</span><span class="c">// AddMoney 设置用户金钱</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">p</span><span class="x"> </span><span class="o">*</span><span class="n">Person</span><span class="p">)</span><span class="x"> </span><span class="n">AddMoney</span><span class="p">(</span><span class="n">diff</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span><span class="x">
-	</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="x"> </span><span class="o">+=</span><span class="x"> </span><span class="n">diff</span><span class="x">
+	</span><span class="n">Money</span><span class="x"> </span><span class="kt">int64</span><span class="x">
 </span><span class="p">}</span><span class="x">
 
 </span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
 	</span><span class="n">p</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span><span class="x"> </span><span class="m">100</span><span class="p">}</span><span class="x">
 	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">p</span><span class="o">.</span><span class="n">AddMoney</span><span class="p">(</span><span class="m">1000</span><span class="p">)</span><span class="x">
+		</span><span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span><span class="x"> </span><span class="m">1000</span><span class="p">)</span><span class="x">
 	</span><span class="p">}()</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">GetMoney</span><span class="p">())</span><span class="x">
+	</span><span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span><span class="x"> </span><span class="m">1000</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">atomic</span><span class="o">.</span><span class="n">LoadInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">))</span><span class="x">
 </span><span class="p">}</span><span class="x">
 </span></code></pre></div></div>
 
-<p>运行上面的代码：</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 添加 -race 后检测竞争状态，此时已经看不到 race 的告警</span>
+<p><code class="highlighter-rouge">go run -race main.go</code> 运行上面的代码可以发现数据竞争的提醒消失了：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 添加 -race 后检测竞争状态，可以看到 race 的提醒</span>
 go run <span class="nt">-race</span> main.go
-<span class="c"># Money: 100</span>
+<span class="c"># Money: 1100</span>
 </code></pre></div></div>
 
-<p>通过运行代码并查看输出可以确认：① 代码可以正常运行（并没有因为多个线程读写同一个变量而崩溃），② 由于数据没有同步最后输出的数据  <code class="highlighter-rouge">Money: 100</code> 与预期的数据<code class="highlighter-rouge">1100</code>存在误差 ③  已经没有了 <strong>数据竞争</strong> 问题。</p>
-
-<h3 id="示例代码的进一步阐释">示例代码的进一步阐释</h3>
-
-<p>上面的代码逻辑，<strong>加锁前</strong> 与 <strong>加锁后</strong>最大的区别是：加锁前 <strong>存在数据竞争问题</strong>，加锁后<strong>不存在数据竞争问题</strong>。而无论是否加锁，代码均可以正常运行，且最终同步的数据与预期的数据均存在偏差。</p>
-
-<p>之所以强调代码可以正常运行，是因为代码一定概率是会崩溃的，只是一般类型（<code class="highlighter-rouge">map</code> 类型除外）不那么容易出现崩溃的情况（任何类型变量的使用都可能会出现这个问题，详见《 <a href="http://yanyiwu.com/work/2015/02/07/golang-concurrency-safety.html">谈谈go语言编程的并发安全</a>》 和 《 <a href="https://software.intel.com/en-us/blogs/2013/01/06/benign-data-races-what-could-possibly-go-wrong">benign-data-races-what-could-possibly-go-wrong</a> 》的讨论）。</p>
-
-<p>由于运行时序的存在，读取得到的数据与预期的数据存在偏差可以这样解释：虽然期望里给用户加了 1000 金钱，但是如果读取是在 <strong>加 1000 金钱</strong> 之前发生的，也确实是感知不到 <strong>加 1000 金钱</strong> 这个事件的。</p>
-
 <h2 id="小结">小结</h2>
-<p>本文简单介绍了 Golang 中数据的并发同步问题，并通过加锁的方式避免了 <strong>数据竞争</strong> 问题。加锁在各个语言中都是一种常见的方式，理解起来是比较容易的，因此本文并没有对加锁机制进行进一步的阐述。</p>
+<p><a href="https://golang.google.cn/pkg/sync/atomic/">atomic</a> 包主要局限在 <strong>数值类型</strong> 的赋值、修改、读取、交换等操作，不可以处理像 <code class="highlighter-rouge">struct</code>、<code class="highlighter-rouge">map</code> 这种高级类型，因此 <code class="highlighter-rouge">atomic</code> 的使用具有比较大的局限性。</p>
 
-<p>不过，数据的并发同步是一个涉及很广泛的问题，接下来需要继续总结。</p>
+<p>就像文档中描述的： <code class="highlighter-rouge">These functions (of atomics) require great care to be used correctly. Except for special, low-level applications, synchronization is better done with channels or the facilities of the sync package. Share memory by communicating; don't communicate by sharing memory.</code></p>
+
+<p>除非知道自己在做什么，否则更推荐使用 <code class="highlighter-rouge">channel</code>（通道） 和 <code class="highlighter-rouge">sync</code>（锁）的方式处理数据同步问题。</p>
 
 <h2 id="参考">参考</h2>
 <ul>
-  <li><a href="http://yanyiwu.com/work/2015/02/07/golang-concurrency-safety.html">谈谈go语言编程的并发安全</a> 比较透彻地介绍了 Golang 中并发安全的问题（加锁场景）</li>
-  <li><a href="https://software.intel.com/en-us/blogs/2013/01/06/benign-data-races-what-could-possibly-go-wrong">benign-data-races-what-could-possibly-go-wrong</a>  Intel 工程师讲数据竞争问题</li>
-  <li><a href="https://golang.google.cn/pkg/sync/">sync - The Go Programming Language</a> Golang 官方提供的 sync 包的文档</li>
-  <li><a href="https://golang.google.cn/ref/mem#tmp_1">The Go Memory Model - The Go Programming Language</a> Golang 中内存模型的建议（Advice）</li>
+  <li><a href="/2019/05/11/golang-concurrency-01.html">浅谈 Golang 中数据的并发同步问题（一）</a> 系列文章的第一篇</li>
+  <li><a href="https://baike.baidu.com/item/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C">原子操作_百度百科</a>  词条，理解什么是原子操作</li>
+  <li><a href="https://www.jianshu.com/p/67f4d12c0400">原子操作的实现原理及CAS分析 - 简书</a> 词条</li>
+  <li><a href="https://golang.google.cn/ref/mem">The Go Memory Model - The Go Programming Language</a> Golang 官方内存模型的文档</li>
+  <li><a href="https://golang.google.cn/pkg/sync/atomic/">atomic - The Go Programming Language</a> Golang 中 atomic 包官方文档</li>
 </ul>
 
     </article>
@@ -322,24 +306,12 @@ go run <span class="nt">-race</span> main.go
     </section>
     <section class="post-footer-item read-next">
       
-      <div class="read-next-item">
-        <a href="/2019/05/11/golang-concurrency-02.html" class="read-next-link"></a>
-        <section>
-          <span>浅谈 Golang 中数据的并发同步问题（二）</span>
-          <p></p>
-        </section>
-        
-        <div class="filter"></div>
-        <img src="" alt="">
-        
-     </div>
-      
 
       
       <div class="read-next-item">
-        <a href="/2019/04/26/dns-server-setup-on-ubuntu.html" class="read-next-link"></a>
+        <a href="/2019/05/11/golang-concurrency-01.html" class="read-next-link"></a>
           <section>
-            <span>DNS 简介及其在 Ubuntu 上的搭建</span>
+            <span>浅谈 Golang 中数据的并发同步问题（一）</span>
             <p></p>
           </section>
           
