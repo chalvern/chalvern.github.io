@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浅谈 Golang 中数据的并发同步问题（三） - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="浅谈 Golang 中数据的并发同步问题（三）">
+    <meta name="keywords"  content="golang, 实用, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="浅谈 Golang 中数据的并发同步问题（三） - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/05/12/golang-concurrency-03-map.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>浅谈 Golang 中数据的并发同步问题（三）</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-05-12"><i class="iconfont icon-date"></i>12 May 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">简单介绍 Map 类型的安全使用</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#golang-中-map-的使用" id="markdown-toc-golang-中-map-的使用">Golang 中 map 的使用</a>    <ul>
+      <li><a href="#不允许并发读写的-map" id="markdown-toc-不允许并发读写的-map">不允许并发读写的 map</a></li>
+      <li><a href="#安全使用-map显而易见地加锁" id="markdown-toc-安全使用-map显而易见地加锁">安全使用 map——显而易见地加锁</a></li>
+      <li><a href="#为什么-map-并发读写时会在运行时异常退出" id="markdown-toc-为什么-map-并发读写时会在运行时异常退出">为什么 map 并发读写时会在运行时异常退出</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>过去 Web 开发的工作比较少涉及到并发的问题，每个用户请求在独立的线程里面进行，偶尔涉及到异步任务但是线程间数据同步模型非常简单，因此并未深入探究过并发这一块。最近在写游戏相关的服务端代码时发现数据的并发同步场景非常多，因此花了一点时间来探索。这是一个系列文章，本文为第三篇。</p>
+
+<p>本文简单介绍 Golang 中 map 类型的安全使用。</p>
+
+<h2 id="golang-中-map-的使用">Golang 中 map 的使用</h2>
+<p>在业务逻辑中保存 <code class="highlighter-rouge">key-value</code> 是一个非常普遍的需求，因此 <code class="highlighter-rouge">Map</code> 的使用场景非常多。</p>
+
+<h3 id="不允许并发读写的-map">不允许并发读写的 map</h3>
+
+<p>在 Golang 源码实现中对 map 的要求比较高（见《 <a href="https://blog.golang.org/go-maps-in-action">Go maps in action</a>》）：<code class="highlighter-rouge">Maps are not safe for concurrent use: it's not defined what happens when you read and write to them simultaneously</code>（当并发使用时 Maps 是不安全的，当并发地读写 map 的时候无法预知会发生啥 ）。</p>
+
+<p>如果不加保护地在不同的线程中读写 <code class="highlighter-rouge">map</code> 类型的数据，代码会直接崩溃并异常退出。比如下面的代码：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">m</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span><span class="x">
+	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="n">_</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">m</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="x">
+		</span><span class="p">}</span><span class="x">
+	</span><span class="p">}()</span><span class="x">
+	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="n">m</span><span class="p">[</span><span class="m">2</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="m">1</span><span class="x">
+		</span><span class="p">}</span><span class="x">
+	</span><span class="p">}()</span><span class="x">
+	</span><span class="k">select</span><span class="x"> </span><span class="p">{}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>运行上面的代码可以得到下面类似的结果：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go run map/main.go 
+<span class="c"># fatal error: concurrent map read and map write</span>
+<span class="c"># ....(省略异常堆栈)</span>
+</code></pre></div></div>
+
+<p>从输出结果来看，Golang 运行时明确禁止 <code class="highlighter-rouge">map</code> 的并发读写，且在检测到这种情况后直接异常退出。这不同于其他数据类型，比如 <code class="highlighter-rouge">int</code>、<code class="highlighter-rouge">string</code> 等，对比下面的代码（说明：下面的代码存在隐形的并发问题，具体参考《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》）：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 运行下面的代码并不会异常退出，不同于上面 map 类型的 m 的使用</span><span class="x">
+</span><span class="c">// go run main.go </span><span class="x">
+</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="n">m</span><span class="x"> </span><span class="kt">int</span><span class="x">
+	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="n">_</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">m</span><span class="x">
+		</span><span class="p">}</span><span class="x">
+	</span><span class="p">}()</span><span class="x">
+	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="n">m</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="m">1</span><span class="x">
+		</span><span class="p">}</span><span class="x">
+	</span><span class="p">}()</span><span class="x">
+	</span><span class="k">select</span><span class="x"> </span><span class="p">{}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>再次<strong>需要说明</strong>，虽然上面的代码在不同的线程中访问 <code class="highlighter-rouge">int</code> 类型的数据并未直接异常退出，但是这种不加任何安全措施的并发读写是存在安全风险的，具体参考《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》。</p>
+
+<h3 id="安全使用-map显而易见地加锁">安全使用 map——显而易见地加锁</h3>
+
+<p>既然 Golang 在运行时不允许对 map 的并发读写，当需要在多个线程中读写 map 时，显而易见的方式是<strong>加锁</strong>（如《<a href="/2019/05/11/golang-concurrency-01.html">浅谈 Golang 中数据的并发同步问题（一）</a>》所描述的）。</p>
+
+<p>下面的代码把 <code class="highlighter-rouge">map</code> 类型的 <code class="highlighter-rouge">m</code> 封装在一个匿名的 <code class="highlighter-rouge">struct</code> 中，同时整个匿名的 <code class="highlighter-rouge">struct</code> 继承了 <code class="highlighter-rouge">sync.RWMutex</code> 结构，因此拥有了 <strong>加读写锁</strong> 的功能，从而安全地实现了多个线程对 <code class="highlighter-rouge">map</code> 的 “并发读写”：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"sync"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="n">counter</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">sync</span><span class="o">.</span><span class="n">RWMutex</span><span class="x">
+		</span><span class="n">m</span><span class="x"> </span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="x">
+	</span><span class="p">}{</span><span class="n">m</span><span class="o">:</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)}</span><span class="x">
+
+	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="n">counter</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span><span class="x">
+			</span><span class="n">_</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">counter</span><span class="o">.</span><span class="n">m</span><span class="p">[</span><span class="s">"some_key"</span><span class="p">]</span><span class="x">
+			</span><span class="n">counter</span><span class="o">.</span><span class="n">RUnlock</span><span class="p">()</span><span class="x">
+		</span><span class="p">}</span><span class="x">
+	</span><span class="p">}()</span><span class="x">
+	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="n">counter</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span><span class="x">
+			</span><span class="n">counter</span><span class="o">.</span><span class="n">m</span><span class="p">[</span><span class="s">"some_key"</span><span class="p">]</span><span class="o">++</span><span class="x">
+			</span><span class="n">counter</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span><span class="x">
+		</span><span class="p">}</span><span class="x">
+	</span><span class="p">}()</span><span class="x">
+	</span><span class="k">select</span><span class="x"> </span><span class="p">{}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h3 id="为什么-map-并发读写时会在运行时异常退出">为什么 map 并发读写时会在运行时异常退出</h3>
+
+<p>最后提一下这个问题：<strong>为什么 int、string、slice 等变量在多个线程读写时运行正常，而 map 在多个线程并发读写时会运行时异常退出？</strong> 其实这个涉及到 <code class="highlighter-rouge">map</code> 的具体实现（我知道这是一句废话 +_+）。</p>
+
+<p>简单来讲，可以从Go 源码中  <a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/map.go">map 运行时相关的部分</a> 窥见一些依据：<code class="highlighter-rouge">map</code> 的增改删查可以分别对应到 <code class="highlighter-rouge">func mapassign()</code>、<code class="highlighter-rouge">func mapaccess1()</code>、<code class="highlighter-rouge">func mapdelete()</code>这几个函数，每个函数都有非常长的执行逻辑；如果多个线程并发读写同一个 <code class="highlighter-rouge">map</code>，大概率会出现 ① <code class="highlighter-rouge">mapassign</code> 函数（增加某个 <code class="highlighter-rouge">key</code> 的值）执行到一半的时候 <code class="highlighter-rouge">mapaccess1</code> 读取到一个相应的零值，②  <code class="highlighter-rouge">mapaccess1</code> 函数（读取某个 <code class="highlighter-rouge">key</code> 的值）执行到一半的时候 <code class="highlighter-rouge">mapdelete</code> 已经删除了对应的 <code class="highlighter-rouge">key</code>，等等。</p>
+
+<p><strong>同时</strong>考虑到增删数据时底层数据的改变（比如扩容重分配，这一块还没深入研究，可以自行查看源码=。=），因此保持 map 的单纯变得很重要；为避免出现难以 debug 的异常，<strong>运行时环境显式地并发异常退出也就可以理解了。</strong></p>
+
+<h2 id="小结">小结</h2>
+<p>Golang 的运行时会<strong>在 map 的增改删查过程中检测是否有并发读写的情况，当发现并发读写时直接异常退出</strong>。相对于其他数据类型（比如 int、string、slice 等），map 的并发使用是比较严苛的（安全&amp;性能的折中）；可以认为 map 的这种严苛很大程度上降低了诡异 bug 的产生，增加代码的鲁棒性。</p>
+
+<p>最后，当提到 map 的并发使用时，很多时候会提到 <code class="highlighter-rouge">sync.Map</code> 的使用，不过由于它大量使用了 <code class="highlighter-rouge">interface{}</code> 类型，使用起来并不是那么方便；目前为止，<strong>我更喜欢加读写锁的方式</strong>来使用 map 而不是使用线程安全的 <code class="highlighter-rouge">sync.Map</code> 😆</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="/2019/05/11/golang-concurrency-01.html">浅谈 Golang 中数据的并发同步问题（一）</a> 介绍通过加锁的方式保证线程安全</li>
+  <li><a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a> 介绍了 atomic 包的使用及其局限性</li>
+  <li><a href="https://blog.golang.org/go-maps-in-action">Go maps in action - The Go Blog</a> 官方文档中介绍 map 的博客（需要自备梯子）</li>
+  <li><a href="https://www.jianshu.com/p/10a998089486">go语言坑之并发访问map</a> 浅显易懂地介绍了 map 的坑及并发访问方法</li>
+  <li><a href="https://coolshell.cn/articles/9606.html">疫苗：Java HashMap的死循环</a> 了解 Java 中 HashMap 的实现机制，可以知道 Map 的线程不安全的实现是一个普遍现象</li>
+  <li><a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/map.go">src/runtime/map.go</a> Go 源码中 map 相关的部分（运行时）</li>
+  <li><a href="https://golang.google.cn/pkg/sync/#Map">sync - The Go Programming Language</a> Golang 官方 sync 包中包含线程安全的 <code class="highlighter-rouge">sync.Map</code></li>
+  <li><a href="https://www.jianshu.com/p/1d45e31343d8">go map的线程安全使用</a> 介绍了 <code class="highlighter-rouge">sync.Map</code> 的使用</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/05/11/golang-concurrency-02.html" class="read-next-link"></a>
+          <section>
+            <span>浅谈 Golang 中数据的并发同步问题（二）</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
