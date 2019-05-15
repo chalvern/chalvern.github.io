@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang 并发问题（四）之单核上的并发问题 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Golang 并发问题（四）之单核上的并发问题">
+    <meta name="keywords"  content="golang, 实用, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Golang 并发问题（四）之单核上的并发问题 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/05/15/golang-concurrency-04-single-core.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>Golang 并发问题（四）之单核上的并发问题</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-05-15"><i class="iconfont icon-date"></i>15 May 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">Golang 在单核上的“并发”及其引发的误导现象</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#golang-在单核上的并发问题" id="markdown-toc-golang-在单核上的并发问题">Golang 在单核上的“并发”问题</a>    <ul>
+      <li><a href="#gotour上的乌龙案例" id="markdown-toc-gotour上的乌龙案例">gotour上的乌龙案例</a></li>
+      <li><a href="#单个物理核心上的并发" id="markdown-toc-单个物理核心上的并发">单个物理核心上的“并发”</a></li>
+      <li><a href="#runtimegomaxprocs1-方法" id="markdown-toc-runtimegomaxprocs1-方法">runtime.GOMAXPROCS(1) 方法</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>过去 Web 开发的工作比较少涉及到并发的问题，每个用户请求在独立的线程里面进行，偶尔涉及到异步任务但是线程间数据同步模型非常简单，因此并未深入探究过并发这一块。最近在写游戏相关的服务端代码时发现数据的并发同步场景非常多，因此花了一点时间来探索和总结。这是一个系列文章，本文为第四篇。</p>
+
+<p>本文简单介绍 Golang 中配置可用 CPU 核的方法及其可能导致的误解。</p>
+
+<h2 id="golang-在单核上的并发问题">Golang 在单核上的“并发”问题</h2>
+<h3 id="gotour上的乌龙案例">gotour上的乌龙案例</h3>
+<p>在<a href="/2019/05/12/golang-concurrency-03-map.html">上一篇博客</a>中介绍了 Golang 并发编程中 <code class="highlighter-rouge">map</code> 类型的“脆弱”性。具体地，Golang 的运行时（<code class="highlighter-rouge">runtime</code>）会强校验并发读写的状态，如果发现有协程（<code class="highlighter-rouge">goroutine</code>）读 <code class="highlighter-rouge">map</code> 同时有其他协程读或者写同一个 <code class="highlighter-rouge">map</code>，程序就会直接异常退出。</p>
+
+<p>然而蹊跷的是，在 Golang 官方教程中，并发部分有一个示例（见<a href="https://tour.golang.org/concurrency/9">这里</a>，需自备梯子）却并没有因为多个协程并发写同一个 <code class="highlighter-rouge">map</code> 变量而异常退出。示例的主要内容是通过一个 <code class="highlighter-rouge">Mutex</code> 锁来限定 <code class="highlighter-rouge">SafeCounter</code> 结构体中的 <code class="highlighter-rouge">v</code> 变量（<code class="highlighter-rouge">map</code>类型）的并发读写，其源码如下：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"sync"</span><span class="x">
+	</span><span class="s">"time"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="c">// SafeCounter is safe to use concurrently.</span><span class="x">
+</span><span class="k">type</span><span class="x"> </span><span class="n">SafeCounter</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">v</span><span class="x">   </span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="x">
+	</span><span class="n">mux</span><span class="x"> </span><span class="n">sync</span><span class="o">.</span><span class="n">Mutex</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="c">// Inc increments the counter for the given key.</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">c</span><span class="x"> </span><span class="o">*</span><span class="n">SafeCounter</span><span class="p">)</span><span class="x"> </span><span class="n">Inc</span><span class="p">(</span><span class="n">key</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span><span class="x">
+	</span><span class="c">// Lock so only one goroutine at a time can access the map c.v.</span><span class="x">
+	</span><span class="n">c</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">++</span><span class="x">
+	</span><span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="c">// Value returns the current value of the counter for the given key.</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">c</span><span class="x"> </span><span class="o">*</span><span class="n">SafeCounter</span><span class="p">)</span><span class="x"> </span><span class="n">Value</span><span class="p">(</span><span class="n">key</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span><span class="x">
+	</span><span class="c">// Lock so only one goroutine at a time can access the map c.v.</span><span class="x">
+	</span><span class="k">defer</span><span class="x"> </span><span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="n">c</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">c</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">SafeCounter</span><span class="p">{</span><span class="n">v</span><span class="o">:</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)}</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="m">1000</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">go</span><span class="x"> </span><span class="n">c</span><span class="o">.</span><span class="n">Inc</span><span class="p">(</span><span class="s">"somekey"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+
+	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s">"somekey"</span><span class="p">))</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>如果去掉 <code class="highlighter-rouge">Inc</code>  函数中 <code class="highlighter-rouge">mux</code> 加锁与解锁的过程（如下面的代码所示），理论上示例代码会报出 <code class="highlighter-rouge">concurrent map writes</code> 错误，但是如果登录<a href="https://tour.golang.org/concurrency/9">官方对应的 tour 页面</a>，修改 <code class="highlighter-rouge">Inc</code> 方法后运行却并未报出 <strong>并发写 map</strong> 的错误（此结论截止到 2019/05/15，已经提了 issue，官方可能会做修复）</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 修改后的 Inc 函数，此处去掉了锁相关的过程</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">c</span><span class="x"> </span><span class="o">*</span><span class="n">SafeCounter</span><span class="p">)</span><span class="x"> </span><span class="n">Inc</span><span class="p">(</span><span class="n">key</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">c</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">++</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h3 id="单个物理核心上的并发">单个物理核心上的“并发”</h3>
+<p>如果 <code class="highlighter-rouge">CPU</code> 只有单个物理核，Golang 运行时（<code class="highlighter-rouge">runtime</code>）如何才能实现逻辑上的 <strong>“并发”</strong> 呢？ 其实我们可以类比操作系统的多进程模型（参考《 <a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析</a> 》和《 <a href="https://jingwei.link/2019/02/13/linux-process-thread-schedule-2.html">Linux系统调度原理浅析（二）</a> 》），引入 时间片 的概念，把一个物理核的使用权按时间片划分并分配给所有的协程（<code class="highlighter-rouge">goroutine</code>），每个协程消耗自己的时间片 <strong>轮流交替</strong> 在同一个物理核上运行，从而实现逻辑上的 “并发”。</p>
+
+<p>其实这里面就涉及到一个问题，如果 Golang 代码运行时只被分配了一个物理核（比如宿主机只有一个物理核，或者通过 <code class="highlighter-rouge">runtime.GOMAXPROCS(1)</code>显式配置 Golang 进程只能使用一个核），那么是否就意味着 Golang 运行时（<code class="highlighter-rouge">runtime</code>）对  <code class="highlighter-rouge">map</code> 的读写都变成了顺序的从而避免了并发错误呢？</p>
+
+<p>目前来看，一个物理核的运行时配置确实会让 map 表现的不那么 “脆弱”。Golang 官方 <code class="highlighter-rouge">https://tour.golang.org/concurrency/9</code> 这个示例所运行的服务器很大概率默认添加了单个物理核的限制（可能考虑到节省资源），从而导致上面提到的乌龙示例。不过这里<strong>需要特别说明</strong>一下，按照进程调度的基本原理，假设每个协程可以在任意过程被中断，理论上单个物理核上也可能会引发 map 的并发错误从而导致进程异常退出（因为 map 的读与写过程都很复杂，二者都不是原子性的），从这个角度配置单个核并不能保证 Go 线程安全（<strong>此项有待进一步确认</strong>）。</p>
+
+<p>上面所提到的乌龙示例一般不会碰到，因为大部分的开发环境都是多核心的；不过如果开发环境是单核配置的虚拟机就会遇到了（我周围就有朋友用单核的虚拟机作为开发环境学习 Golang）。</p>
+
+<h3 id="runtimegomaxprocs1-方法">runtime.GOMAXPROCS(1) 方法</h3>
+<p>翻译官方对 <code class="highlighter-rouge">GOMAXPROCS</code> 的描述：<code class="highlighter-rouge">GOMAXPROCS</code> 可设置能够同时运行代码逻辑的最大 CPU 数量。</p>
+
+<p>在了解了单个 <code class="highlighter-rouge">CPU</code> 核心 对 <code class="highlighter-rouge">map</code> 类型变量的影响后，可能有的同学会考虑通过 <code class="highlighter-rouge">runtime.GOMAXPROCS(1)</code> 限制 Golang 应用可使用的 <code class="highlighter-rouge">CPU</code> 核心从而增加代码的健壮性——其实这种考虑是比较危险的。</p>
+
+<p>首先， <code class="highlighter-rouge">map</code> 的读写过程都不是原子性的（原子性的概念参考《 <a href="https://jingwei.link/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a> 》中的阐述），这就导致读写过程可能被在任意过程中断，从而引发 <code class="highlighter-rouge">map</code> 的并发读写校验生效导致程序异常退出（<strong>这一条有待进一步确认 goroutine 的调度机制</strong>）。其次，在低成本创建 <code class="highlighter-rouge">goroutine</code> 的编程模型中，单核心的配置可能造成逻辑死锁，比如下面的代码就会僵死：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"runtime"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">var</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="n">flag</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="no">false</span><span class="x">
+	</span><span class="n">str</span><span class="x">  </span><span class="kt">string</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">foo</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">flag</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="no">true</span><span class="x">
+	</span><span class="n">str</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="s">"setup complete!"</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">runtime</span><span class="o">.</span><span class="n">GOMAXPROCS</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
+	</span><span class="k">go</span><span class="x"> </span><span class="n">foo</span><span class="p">()</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">if</span><span class="x"> </span><span class="n">flag</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="k">break</span><span class="x">
+		</span><span class="p">}</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">str</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+<p>Golang 运行时默认会启用所有的 <code class="highlighter-rouge">CPU</code> 核心，可以通过 <code class="highlighter-rouge">runtime.GOMAXPROCS()</code> 方法配置可用的最大 <code class="highlighter-rouge">CPU</code>核心数量。当只有一个 <code class="highlighter-rouge">CPU</code> 核的时候（比如虚拟机只配置了一个物理核，或者通过  <code class="highlighter-rouge">runtime.GOMAXPROCS(1)</code> 配置只使用一个物理核），会对 <code class="highlighter-rouge">map</code> 类型变量的并发稳定性产生一些影响（不加锁的情况下也不会出现并发读写问题），但是<strong>开发者不应该依赖这个特性来试图增加代码的健壮性</strong>，否则会造成无法预料的结果。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析 - 敬维</a>  简单介绍了 进程、线程、多线程模型、时间片以及调度等概念</li>
+  <li><a href="https://jingwei.link/2019/02/13/linux-process-thread-schedule-2.html">Linux系统调度原理浅析（二） - 敬维</a> 简单介绍了 进程、线程、调度以及Goroutine的调度</li>
+  <li><a href="https://jingwei.link/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二） - 敬维</a> 介绍了原子性</li>
+  <li><a href="https://studygolang.com/articles/5025">golang多核设置</a> 介绍了 golang 的多核配置方法（<code class="highlighter-rouge">runtime.GOMAXPROCS(1)</code>）及示例</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/05/12/golang-concurrency-03-map.html" class="read-next-link"></a>
+          <section>
+            <span>浅谈 Golang 中数据的并发同步问题（三）</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
