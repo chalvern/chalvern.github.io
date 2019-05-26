@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang 并发问题（五）goroutine 的调度及抢占 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Golang 并发问题（五）goroutine 的调度及抢占">
+    <meta name="keywords"  content="golang, 实用, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Golang 并发问题（五）goroutine 的调度及抢占 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/05/26/golang-routine-scheduler.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>Golang 并发问题（五）goroutine 的调度及抢占</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-05-26"><i class="iconfont icon-date"></i>26 May 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">简单介绍协程（goroutine） 的调度以及抢占</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#先看两段代码" id="markdown-toc-先看两段代码">先看两段代码</a>    <ul>
+      <li><a href="#第一段代码" id="markdown-toc-第一段代码">第一段代码</a></li>
+      <li><a href="#第二段代码" id="markdown-toc-第二段代码">第二段代码</a></li>
+    </ul>
+  </li>
+  <li><a href="#协程-goroutine-的抢占" id="markdown-toc-协程-goroutine-的抢占">协程 goroutine 的抢占</a>    <ul>
+      <li><a href="#gpm-模型" id="markdown-toc-gpm-模型">G/P/M 模型</a></li>
+      <li><a href="#goroutine-发生调度的时机" id="markdown-toc-goroutine-发生调度的时机">goroutine 发生调度的时机</a></li>
+      <li><a href="#goroutine-的抢占" id="markdown-toc-goroutine-的抢占">goroutine 的抢占</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>过去 Web 开发的工作比较少涉及到并发的问题，每个用户请求在独立的线程里面进行，偶尔涉及到异步任务但是线程间数据同步模型非常简单，因此并未深入探究过并发这一块。最近在写游戏相关的服务端代码时发现数据的并发同步场景非常多，因此花了一点时间来探索和总结。这是一个系列文章，本文为第五篇。</p>
+
+<p>就像前面几篇文章所描述的，开发者在日常开发中对并发的关注点主要是锁、管道（channel），比较少涉及到协程（goroutine） 的调度。不过了解协程的调度机制能够让开发者更好地认识并发的本质，从而在日常编码过程中做出更好的并发保证措施。本文简单介绍 Golang 中协程（goroutine）的调度及其抢占。</p>
+
+<h2 id="先看两段代码">先看两段代码</h2>
+<h3 id="第一段代码">第一段代码</h3>
+<p>下面的代码是《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》中的一个示例 demo，为了说明问题增加了对单核的限制。运行 <code class="highlighter-rouge">go run -race main.go</code> 可以看到 <code class="highlighter-rouge">Money: 1100</code> 的输出。</p>
+
+<p>下面的代码中包含两条 <code class="highlighter-rouge">atomic.AddInt64</code> 语句，分别在两个协程中运行。如果在 <code class="highlighter-rouge">fmt.Printf</code> 语句执行时子协程已经执行，输出结果是 <code class="highlighter-rouge">Money: 2100</code>；当然，上面的代码极大概率会输出 <code class="highlighter-rouge">Money: 1100</code> ，即在 <code class="highlighter-rouge">fmt.Printf</code> 语句执行时子协程尚未执行。<strong>那么， Golang 调度器何时才会调度并运行子协程呢？</strong></p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span><span class="x">
+</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"runtime"</span><span class="x">
+	</span><span class="s">"sync/atomic"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">type</span><span class="x"> </span><span class="n">Person</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">Money</span><span class="x"> </span><span class="kt">int64</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">runtime</span><span class="o">.</span><span class="n">GOMAXPROCS</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
+	</span><span class="n">p</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span><span class="x"> </span><span class="m">100</span><span class="p">}</span><span class="x">
+	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span><span class="x"> </span><span class="m">1000</span><span class="p">)</span><span class="x">
+	</span><span class="p">}()</span><span class="x">
+	</span><span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span><span class="x"> </span><span class="m">1000</span><span class="p">)</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">atomic</span><span class="o">.</span><span class="n">LoadInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">))</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h3 id="第二段代码">第二段代码</h3>
+<p>我们可以构造一段与上一小节结构类似的代码，如下面的代码所示。通过 <code class="highlighter-rouge">go run main.go</code> 运行下面的代码可以看到输出结果中的 <code class="highlighter-rouge">panic: hello goroutine</code> ，却找不到<code class="highlighter-rouge">sum: xxxxxx</code>（如果看到的结果不一致，可以考虑增加 <code class="highlighter-rouge">for</code> 循环的终止判定条件）。<strong>也就是说，下面的代码的子协程在代码退出前被成功调度。</strong></p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span><span class="x">
+</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"runtime"</span><span class="x">
+	</span><span class="s">"time"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">printTime</span><span class="p">(</span><span class="n">n</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">now</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Index: %d, Second: %d, NanoSecond: %d </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">n</span><span class="p">,</span><span class="x"> </span><span class="n">now</span><span class="o">.</span><span class="n">Second</span><span class="p">(),</span><span class="x"> </span><span class="n">now</span><span class="o">.</span><span class="n">Nanosecond</span><span class="p">())</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">runtime</span><span class="o">.</span><span class="n">GOMAXPROCS</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
+	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">printTime</span><span class="p">(</span><span class="m">2</span><span class="p">)</span><span class="x">
+		</span><span class="nb">panic</span><span class="p">(</span><span class="s">"hello goroutine"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}()</span><span class="x">
+	</span><span class="n">printTime</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
+	</span><span class="n">sum</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="m">666666666</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">sum</span><span class="x"> </span><span class="o">+=</span><span class="x"> </span><span class="n">i</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"sum: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">sum</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h2 id="协程-goroutine-的抢占">协程 goroutine 的抢占</h2>
+<p>在 Golang 中可以非常方便地创建协程（goroutine），在可用核心一定的条件下，协程该如何有效地利用 CPU 资源呢？在《<a href="/2019/02/13/linux-process-thread-schedule-2.html">Linux系统调度原理浅析（二）</a>》中简单描述过 Linux 内核的调度机制以及 goroutine 的调度机制：其中 Linux 内核通过时间片的方式给不同的系统线程分配 CPU 资源，Golang 则引入了 G/P/M 模型来实现调度，那么 Golang 的运行时（runtime）如何实现对 goroutine 的调度从而合理分配 CPU 资源呢？</p>
+
+<h3 id="gpm-模型">G/P/M 模型</h3>
+
+<p><img src="/assets/pic/golang-routine-scheduler.png" alt="" /></p>
+
+<p>（图片摘自《<a href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/">也谈goroutine调度器 - Tony Bai</a>》）</p>
+
+<p>P 是一个“逻辑 Proccessor”，每个 G 要想真正运行起来，首先需要被分配一个 P（进入到 P 的 local runq 中，这里暂忽略 global runq 那个环节）。对于 G 来说，P 就是运行它的 “CPU”，可以说：G 的眼里只有 P。但从 Go scheduler 视角来看，真正的 “CPU” 是 M，只有将 P 和 M 绑定才能让 P 的 runq 中 G 得以真实运行起来。这样的 P 与 M 的关系，就好比 Linux 操作系统调度层面用户线程 (user thread) 与核心线程 (kernel thread) 的对应关系那样，都是 （n × m） 模型。具体地：</p>
+
+<ul>
+  <li>G: 表示 goroutine，存储了 goroutine 的执行 stack 信息、goroutine 状态以及 goroutine 的任务函数等；另外 G 对象是可以重用的。</li>
+  <li>P: 表示逻辑 processor，P的数量决定了系统内最大可并行的 G 的数量（前提是系统的物理 CPU 核数&gt;=P 的数量，可以 <code class="highlighter-rouge">runtime.GOMAXPROCS(20)</code>增加 P 数量大于 CPU 核数）；P 的最大作用还是其拥有的各种 G 对象队列、链表、一些 cache 和状态。</li>
+  <li>M: M代表着真正的执行计算资源。在绑定有效的 P 后，进入 schedule 循环；而 schedule 循环的机制大致是从各种队列、P 的本地队列中获取 G，切换到 G 的执行栈上并执行G的函数，调用 goexit 做清理工作并回到 M，如此反复。M并不保留 G 状态，这是 G 可以跨 M 调度的基础。</li>
+</ul>
+
+<h3 id="goroutine-发生调度的时机">goroutine 发生调度的时机</h3>
+<p>假如忽略（G、P、M）模型的复杂性，可以想象一个 goroutine 获得计算资源（CPU）后一般不能一直运行到完毕，它们往往可能要<strong>等待</strong>其他资源才能执行完成，比如读取磁盘文件内容、通过 RPC 调用远程服务等，在<strong>等待</strong>的过程中 goroutine 是不需要消耗计算资源的，因此调度器可以把计算资源给其他的 goroutine 使用。</p>
+
+<p>参考《<a href="https://www.jianshu.com/p/fc35e081d900">Golang goroutine</a>》可以知道，goroutine 遇到下面的情况下可能会产生重新调度（大家判断哪些代码属于下面这些情况）：</p>
+
+<ul>
+  <li>阻塞 I/O</li>
+  <li>select操作</li>
+  <li>阻塞在channel</li>
+  <li>等待锁</li>
+  <li>主动调用 runtime.Gosched()</li>
+</ul>
+
+<h3 id="goroutine-的抢占">goroutine 的抢占</h3>
+<p>如果一个 goroutine 不包含上面提到的几种情况，那么其他的 goroutine 就无法被调度到相应的 CPU 上面运行，这是不应该发生的。这时候就需要抢占机制来打断长时间占用 CPU 资源的 goroutine ，发起重新调度。</p>
+
+<p>Golang 运行时（runtime）中的系统监控线程 <code class="highlighter-rouge">sysmon</code> 可以找出“长时间占用”的 goroutine，从而“提醒”相应的 goroutine 该中断了。</p>
+
+<p><strong>特别说明-1</strong>：<code class="highlighter-rouge">sysmon</code>在独立的 M（线程）中运行，且不需要绑定 P。这意味着，<code class="highlighter-rouge">runtime.GOMAXPROCS(1)</code>限制 P 的数量为 1 的情况下，即使一个 goroutine 一直占用这个 P 进行密集型计算（意味着 goroutine 一直占有唯一的 P），依然不影响 <code class="highlighter-rouge">sysmon</code> 的正常运行。</p>
+
+<p><strong>特别说明-2</strong>：<code class="highlighter-rouge">sysmon</code> 可以找到“长时间占用 P”的 goroutine，但也只是标记 goroutine 应该被抢占了，并无法强制进行 goroutine 的切换。因此本文的 “第二段代码” 在进行 <code class="highlighter-rouge">for</code> 循环时并不会被抢占，而是在 <code class="highlighter-rouge">for</code> 循环结束后执行 <code class="highlighter-rouge">fmt.Printf("sum: %d\n", sum)</code> 的时候才被抢占（因为 <code class="highlighter-rouge">for</code> 循环里没有被插入抢占检查点，也就是说抢占检查点是编译器预先插入的，在非内联的函数的前面，具体可以查看最后几篇参考文章）。</p>
+
+<h2 id="小结">小结</h2>
+<p>本文从两段代码切入，探究了 goroutine 的调度以及抢占。对于本文的第一段代码，主协程的代码并不需要消耗 <code class="highlighter-rouge">forcePreemptNS</code>（默认为 10 ms）时长的资源，而主线程也没有主动把资源让出来，因此子协程没有运行。对于本文的第二段代码，由于 <code class="highlighter-rouge">for</code> 循环消耗了大量的计算资源，满足了 <code class="highlighter-rouge">forcePreemptNS</code> 时间阈值，调用 <code class="highlighter-rouge">fmt.Printf</code> 时触发了抢占，因此子协程得以运行。</p>
+
+<p>本文的编写历时好几天，期间查阅了大量的资料，修修改改好几次，导致本文的架构比较松散；如果大家对本文有什么疑问，可以直接邮件我进行交流 🤝。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="http://skoo.me/go/2013/11/29/golang-schedule">skoo  goroutine与调度器</a> 比较经典的比喻，描述了调度的机制</li>
+  <li><a href="https://www.jianshu.com/p/fc35e081d900">Golang goroutine - 简书</a> 介绍了抢占式调度的机制</li>
+  <li><a href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/">也谈goroutine调度器 - Tony Bai</a> 比较系统地介绍了 goroutine 的调度</li>
+  <li><a href="https://jingwei.link/2019/02/13/linux-process-thread-schedule-2.html">Linux系统调度原理浅析（二） - 敬维</a> 简单介绍了 linux 系统调度</li>
+  <li><a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/proc.go#L4378">go/proc.go at release-branch.go1.12 · golang/go · GitHub</a> <code class="highlighter-rouge">forcePreemptNS</code> 强制协程调度的变量，默认为 <code class="highlighter-rouge">10 ms</code>。</li>
+  <li><a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/proc.go#L4378">go/proc.go at release-branch.go1.12 · golang/go · GitHub</a> 如果一个 goroutine 长时间占用计算资源，<code class="highlighter-rouge">sysmon</code>可以触发抢占；<code class="highlighter-rouge">sysmon</code>在独立的 M（线程）中运行，且不需要绑定 P。</li>
+  <li><a href="https://github.com/golang/go/blob/dev.boringcrypto.go1.12/src/runtime/stack.go#L911">go/stack.go at release-branch.go1.12 · golang/go · GitHub</a> Golang 编译器会在每个非内联函数前面运行栈溢出检查，如果栈溢出则扩展栈，从而执行 <code class="highlighter-rouge">newstack()</code>函数，继而触发抢占机制</li>
+  <li><a href="https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs">Debugging performance issues in Go programs - Intel® Software</a></li>
+  <li><a href="https://github.com/golang/go/issues/10958">runtime: tight loops should be preemptible · Issue #10958 · golang/go · GitHub</a> 介绍了空 for 的不可中断</li>
+  <li><a href="https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html">Scheduling In Go : Part II - Go Scheduler</a> if you run any tight loops that are not making function calls, you will cause latencies within the scheduler and garbage collection</li>
+  <li><a href="https://stackoverflow.com/questions/12413510/why-is-this-go-code-blocking">goroutine - Why is this Go code blocking? - Stack Overflow</a> 介绍了为什么 for{} 无限</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/05/15/golang-concurrency-04-single-core.html" class="read-next-link"></a>
+          <section>
+            <span>Golang 并发问题（四）之单核上的并发问题</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
