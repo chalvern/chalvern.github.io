@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "Golang 闭包内的外部变量",
+      "tags"     : "golang 实用 基础",
+      "url"      : "/2019/06/01/golang-outer-variable-in-clousure.html"
+    } ,
+  
+    {
       "title"    : "Golang 并发问题（五）goroutine 的调度及抢占",
       "tags"     : "golang 实用 基础",
       "url"      : "/2019/05/26/golang-routine-scheduler.html"

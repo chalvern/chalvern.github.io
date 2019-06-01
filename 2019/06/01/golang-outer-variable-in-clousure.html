@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang 闭包内的外部变量 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Golang 闭包内的外部变量">
+    <meta name="keywords"  content="golang, 实用, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Golang 闭包内的外部变量 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/06/01/golang-outer-variable-in-clousure.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>Golang 闭包内的外部变量</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-06-01"><i class="iconfont icon-date"></i>01 Jun 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">闭包内的外部变量会跟随外部变量变化（类似指针传入）</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#golang-闭包内的外部变量" id="markdown-toc-golang-闭包内的外部变量">Golang 闭包内的外部变量</a>    <ul>
+      <li><a href="#闭包匿名函数" id="markdown-toc-闭包匿名函数">闭包（匿名函数）</a></li>
+      <li><a href="#先看一段代码" id="markdown-toc-先看一段代码">先看一段代码</a></li>
+      <li><a href="#golang-闭包内的外部变量-1" id="markdown-toc-golang-闭包内的外部变量-1">Golang 闭包内的外部变量</a></li>
+    </ul>
+  </li>
+  <li><a href="#汇编代码的分析" id="markdown-toc-汇编代码的分析">汇编代码的分析</a>    <ul>
+      <li><a href="#汇编代码的生成" id="markdown-toc-汇编代码的生成">汇编代码的生成</a></li>
+      <li><a href="#mainmain-函数的汇编代码" id="markdown-toc-mainmain-函数的汇编代码">main.main 函数的汇编代码</a></li>
+      <li><a href="#myfunc-匿名函数的汇编代码" id="markdown-toc-myfunc-匿名函数的汇编代码">myfunc （匿名函数）的汇编代码</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>为了在不同的线程之间转移任务，最近项目代码中大量地使用了闭包：在一个 goroutine（协程）中把一段逻辑封装成为匿名函数，然后传入到另一个线程的 channel（通道）变量去排队运行。</p>
+
+<p>在业务逻辑的测试过程中发现了一个怪异的点，查证后发现原来是闭包的使用认知存在问题，这里作为一个知识点总结一下。</p>
+
+<h2 id="golang-闭包内的外部变量">Golang 闭包内的外部变量</h2>
+<h3 id="闭包匿名函数">闭包（匿名函数）</h3>
+<p>教科书式的定义可以这么理解闭包：</p>
+
+<blockquote>
+  <p>闭包是可以包含自由（未绑定到特定对象）变量的代码块，这些变量不在这个代码块内或者任何全局上下文中定义，而是在定义代码块的环境中定义。要执行的代码块（由于自由变量包含在代码块中，所以这些自由变量以及它们引用的对象没有被释放）为自由变量提供绑定的计算环境（作用域）。（摘自《Go语言编程》）</p>
+</blockquote>
+
+<p>如果大家对闭包的细节感兴趣希望深入理解其设计，可以自行查阅资料；本文中提到的闭包可以简单地理解为“匿名函数”。</p>
+
+<h3 id="先看一段代码">先看一段代码</h3>
+<p>下面的代码中定义了一个匿名函数并赋值给 <code class="highlighter-rouge">myfunc</code> 变量，同时在代码的后面连续调用了两次 <code class="highlighter-rouge">myfunc</code> 函数。大家可以先考虑一下代码的输出是什么，然后再查看文章后面的内容。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span><span class="x">
+</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">a1</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">1</span><span class="x">
+	</span><span class="n">a2</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">2</span><span class="x">
+	</span><span class="n">myfunc</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">sum</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">a1</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="n">a2</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"a1: %d, a2:%d, sum: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">a1</span><span class="p">,</span><span class="x"> </span><span class="n">a2</span><span class="p">,</span><span class="x"> </span><span class="n">sum</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">myfunc</span><span class="p">()</span><span class="x">
+	</span><span class="n">a1</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="m">11</span><span class="x">
+	</span><span class="n">a2</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="m">22</span><span class="x">
+	</span><span class="n">myfunc</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>运行上面的代码，可以看到上面代码的输出为：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># go run main.go </span>
+a1: 1, a2:2, <span class="nb">sum</span>: 3
+a1: 11, a2:22, <span class="nb">sum</span>: 33
+</code></pre></div></div>
+
+<h3 id="golang-闭包内的外部变量-1">Golang 闭包内的外部变量</h3>
+<p>在上面的代码中， myfunc 指向了一个匿名函数（闭包），在这个匿名函数中，<code class="highlighter-rouge">a1</code> 和 <code class="highlighter-rouge">a2</code> 均是外部变量。</p>
+
+<p>从上面代码的运行输出可以知道，<strong>闭包内的外部变量并不是被“锁死”的，而是会随着外部变量的变化而变化</strong>。这个特性应该与函数参数的传值特性进行区分：① Golang 中函数的参数以及返回都是数值的传递，而非引用的传递；也就是说，即使入参是一个指针，在函数运行的时候起作用的也是一个被拷贝出来的指针。② 闭包内的外部变量会跟随外部变量的变化，就<strong>好像</strong>在闭包内引用的永远是变量的指针（哪怕变量是一个普普通通的数值）；比如上面代码中 <code class="highlighter-rouge">a1</code> 和  <code class="highlighter-rouge">a2</code> 均是 <code class="highlighter-rouge">int</code> 类型的值，但在闭包内的使用就好像是指针。</p>
+
+<h2 id="汇编代码的分析">汇编代码的分析</h2>
+<p>如果想要进一步分析闭包内外部变量的作用方式，可以在汇编层面进行进一步的探究，研究其本质。</p>
+<h3 id="汇编代码的生成">汇编代码的生成</h3>
+<p>把上面的代码保存到某个目录中，运行下面的指令可以得到相应的汇编文件：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下面的指令标明把 main.go 生成 linux 下的 amd64 二进制文件</span>
+<span class="c"># 其中 -N 指定编译器不要进行优化，-l 指定编译器不要对函数进行内联处理</span>
+<span class="c"># 其中 -o testl 指定输出二进制文件到 testl 中</span>
+<span class="c"># -gcflags 的参数可以通过 go tool compile --help 获取</span>
+<span class="nv">CGO_ENABLED</span><span class="o">=</span>0 <span class="nv">GOOS</span><span class="o">=</span>linux <span class="nv">GOARCH</span><span class="o">=</span>amd64 go build <span class="nt">--gcflags</span> <span class="s2">"-N -l"</span> <span class="nt">-o</span> testl main.go
+
+<span class="c"># 可以通过 go tool objdump --help 来查看 objdump 的 -s 用法</span>
+<span class="c"># 比如 go tool objdump -s "^main.main$" testl 只返回 main.main 函数的汇编代码</span>
+<span class="c"># 下面的指令标明把 上一步生成的 testl 提取汇编代码到 ojbl.S 文件中</span>
+go tool objdump <span class="nt">-S</span> testl <span class="o">&gt;</span> objl.S
+</code></pre></div></div>
+
+<h3 id="mainmain-函数的汇编代码">main.main 函数的汇编代码</h3>
+<p>函数体对应的汇编语言如下，大家可以看里面的注释进行理解。<strong>需要重点关注的点</strong>是：在 myfunc 函数定义的地方， <code class="highlighter-rouge">a1</code> 与 <code class="highlighter-rouge">a2</code> 都是地址传递（地址传递）而非数值传递。</p>
+
+<p>从下面的汇编代码还可以看出第二次调用 myfunc 函数与第一次调用的方式不一样，主要考虑是 <code class="highlighter-rouge">DX</code> 寄存器的纯粹性，第一次调用 <code class="highlighter-rouge">myfunc</code> 时 <code class="highlighter-rouge">DX</code> 是满足需求的，第二次就需要专门置位了。</p>
+
+<div class="language-as highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">TEXT</span> <span class="nx">main</span><span class="p">.</span><span class="nx">main</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span> <span class="o">/</span><span class="nx">golang</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">jingwei</span><span class="p">.</span><span class="nx">link</span><span class="o">/</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span>
+<span class="nx">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="mh">0x488300</span>		<span class="mi">64488</span><span class="nx">b0c25f8ffffff</span>	<span class="nx">MOVQ</span> <span class="nx">FS</span><span class="o">:</span><span class="mh">0xfffffff8</span><span class="p">,</span> <span class="nx">CX</span>	
+  <span class="mh">0x488309</span>		<span class="mi">483</span><span class="nx">b6110</span>		<span class="nx">CMPQ</span> <span class="mh">0x10</span><span class="p">(</span><span class="nx">CX</span><span class="p">),</span> <span class="nx">SP</span>	
+  <span class="mh">0x48830d</span>		<span class="mi">0</span><span class="nx">f8690000000</span>		<span class="nx">JBE</span> <span class="mh">0x4883a3</span>		<span class="o">;</span> <span class="err">上面三是对栈进行扩容判定，如果栈不够用了，会进行扩容</span>
+  <span class="mh">0x488313</span>		<span class="mi">4883</span><span class="nx">ec40</span>		<span class="nx">SUBQ</span> <span class="nx">$0x40</span><span class="p">,</span> <span class="nx">SP</span>		<span class="o">;</span> <span class="err">预留出</span> <span class="mh">0x40</span> <span class="err">的栈空间供</span> <span class="nx">main</span> <span class="err">函数使用</span>
+  <span class="mh">0x488317</span>		<span class="mi">48896</span><span class="nx">c2438</span>		<span class="nx">MOVQ</span> <span class="nx">BP</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>	
+  <span class="mh">0x48831c</span>		<span class="mi">488</span><span class="nx">d6c2438</span>		<span class="nx">LEAQ</span> <span class="mh">0x38</span><span class="p">(</span><span class="nx">SP</span><span class="p">),</span> <span class="nx">BP</span>	<span class="o">;</span> <span class="err">上面两句待探究，应该是为了保存某个场景为未来恢复某个状态做准备</span>
+	<span class="nl">a1</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span>
+  <span class="mh">0x488321</span>		<span class="mi">48</span><span class="nx">c744240801000000</span>	<span class="nx">MOVQ</span> <span class="nx">$0x1</span><span class="p">,</span> <span class="mh">0x8</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>	<span class="o">;</span> <span class="err">把</span> <span class="mi">1</span> <span class="err">赋值到</span> <span class="mh">0x8</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址，即</span> <span class="nx">a1</span>
+	<span class="nl">a2</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span>
+  <span class="mh">0x48832a</span>		<span class="mi">48</span><span class="nx">c7042402000000</span>	<span class="nx">MOVQ</span> <span class="nx">$0x2</span><span class="p">,</span> <span class="mi">0</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>	<span class="o">;</span> <span class="err">把</span> <span class="mi">2</span> <span class="err">赋值到</span> <span class="mh">0x8</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址，即</span> <span class="nx">a2</span>
+	<span class="nl">myfunc</span> <span class="p">:</span><span class="o">=</span> <span class="nx">func</span><span class="p">()</span> <span class="p">{</span>
+  <span class="mh">0x488332</span>		<span class="mi">48</span><span class="nx">c744242000000000</span>	<span class="nx">MOVQ</span> <span class="nx">$0x0</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>		
+  <span class="mh">0x48833b</span>		<span class="mi">0</span><span class="nx">f57c0</span>			<span class="nx">XORPS</span> <span class="nx">X0</span><span class="p">,</span> <span class="nx">X0</span>			
+  <span class="mh">0x48833e</span>		<span class="mi">0</span><span class="nx">f11442428</span>		<span class="nx">MOVUPS</span> <span class="nx">X0</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>		
+  <span class="mh">0x488343</span>		<span class="mi">488</span><span class="nx">d542420</span>		<span class="nx">LEAQ</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">),</span> <span class="nx">DX</span>		<span class="o">;</span> <span class="err">把</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址加载到</span> <span class="nx">DX</span> <span class="err">中</span>
+  <span class="mh">0x488348</span>		<span class="mi">4889542418</span>		<span class="nx">MOVQ</span> <span class="nx">DX</span><span class="p">,</span> <span class="mh">0x18</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>		<span class="o">;</span> <span class="err">把</span> <span class="nx">DX</span> <span class="err">的值，即</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的值，赋值到</span> <span class="mh">0x18</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中</span><span class="o">;</span> <span class="mh">0x18</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中保存的是</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址</span>
+  <span class="mh">0x48834d</span>		<span class="mi">8402</span>			<span class="nx">TESTB</span> <span class="nx">AL</span><span class="p">,</span> <span class="mi">0</span><span class="p">(</span><span class="nx">DX</span><span class="p">)</span>			
+  <span class="mh">0x48834f</span>		<span class="mi">488</span><span class="nx">d05ca000000</span>		<span class="nx">LEAQ</span> <span class="nx">main</span><span class="p">.</span><span class="nx">main</span><span class="p">.</span><span class="nx">func1</span><span class="p">(</span><span class="nx">SB</span><span class="p">),</span> <span class="nx">AX</span>	<span class="o">;</span> <span class="err">把</span> <span class="nx">func1</span><span class="err">（我们定义的闭包函数体）</span> <span class="err">的地址赋值到</span> <span class="nx">AX</span>
+  <span class="mh">0x488356</span>		<span class="mi">4889442420</span>		<span class="nx">MOVQ</span> <span class="nx">AX</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>		<span class="o">;</span> <span class="err">把</span> <span class="nx">AX</span> <span class="err">的值，即</span> <span class="nx">func1</span> <span class="err">的地址，赋值到</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中；</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中保存的是</span> <span class="nx">func1</span> <span class="err">的调用地址</span>
+  <span class="mh">0x48835b</span>		<span class="mi">8402</span>			<span class="nx">TESTB</span> <span class="nx">AL</span><span class="p">,</span> <span class="mi">0</span><span class="p">(</span><span class="nx">DX</span><span class="p">)</span>			
+  <span class="mh">0x48835d</span>		<span class="mi">488</span><span class="nx">d442408</span>		<span class="nx">LEAQ</span> <span class="mh">0x8</span><span class="p">(</span><span class="nx">SP</span><span class="p">),</span> <span class="nx">AX</span>		<span class="o">;</span> <span class="err">把</span> <span class="mh">0x8</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址，即</span> <span class="nx">a1</span> <span class="err">的地址（指针）赋值到</span> <span class="nx">AX</span>
+  <span class="mh">0x488362</span>		<span class="mi">4889442428</span>		<span class="nx">MOVQ</span> <span class="nx">AX</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>		<span class="o">;</span> <span class="err">把</span> <span class="nx">a1</span> <span class="err">赋值到</span> <span class="mh">0x28</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中；</span><span class="mh">0x28</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中保存的是</span> <span class="nx">a1</span> <span class="err">的地址</span>
+  <span class="mh">0x488367</span>		<span class="mi">8402</span>			<span class="nx">TESTB</span> <span class="nx">AL</span><span class="p">,</span> <span class="mi">0</span><span class="p">(</span><span class="nx">DX</span><span class="p">)</span>			
+  <span class="mh">0x488369</span>		<span class="mi">488</span><span class="nx">d0424</span>		<span class="nx">LEAQ</span> <span class="mi">0</span><span class="p">(</span><span class="nx">SP</span><span class="p">),</span> <span class="nx">AX</span>			<span class="o">;</span> <span class="err">把</span> <span class="mi">0</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址，即</span> <span class="nx">a2</span> <span class="err">的地址（指针）赋值到</span> <span class="nx">AX</span>
+  <span class="mh">0x48836d</span>		<span class="mi">4889442430</span>		<span class="nx">MOVQ</span> <span class="nx">AX</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>		<span class="o">;</span> <span class="err">把</span> <span class="nx">a2</span> <span class="err">赋值到</span> <span class="mh">0x30</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中；</span><span class="mh">0x30</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中保存的是</span> <span class="nx">a2</span> <span class="err">的地址</span>
+  <span class="mh">0x488372</span>		<span class="mi">4889542410</span>		<span class="nx">MOVQ</span> <span class="nx">DX</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>		<span class="o">;</span> <span class="err">把</span> <span class="nx">DX</span> <span class="err">的值，即</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址，赋值到</span> <span class="mh">0x10</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中；</span><span class="mh">0x10</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中保存的是</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址</span>
+	<span class="nx">myfunc</span><span class="p">()</span>
+  <span class="mh">0x488377</span>		<span class="mi">488</span><span class="nx">b442420</span>		<span class="nx">MOVQ</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">),</span> <span class="nx">AX</span>	<span class="o">;</span> <span class="err">把</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>  <span class="err">中的内容，即</span> <span class="nx">func1</span> <span class="err">的地址加载到</span> <span class="nx">AX</span> <span class="err">寄存器</span>
+  <span class="mh">0x48837c</span>		<span class="nx">ffd0</span>			<span class="nx">CALL</span> <span class="nx">AX</span>			<span class="o">;</span> <span class="err">调用</span> <span class="nx">func1</span> <span class="err">函数</span>
+	<span class="nx">a1</span> <span class="o">=</span> <span class="mi">11</span>
+  <span class="mh">0x48837e</span>		<span class="mi">48</span><span class="nx">c74424080b000000</span>	<span class="nx">MOVQ</span> <span class="nx">$0xb</span><span class="p">,</span> <span class="mh">0x8</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>	<span class="o">;</span> <span class="err">把</span> <span class="mi">11</span> <span class="err">赋值到</span> <span class="mh">0x8</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址，即更新</span> <span class="nx">a1</span>
+	<span class="nx">a2</span> <span class="o">=</span> <span class="mi">22</span>
+  <span class="mh">0x488387</span>		<span class="mi">48</span><span class="nx">c7042416000000</span>	<span class="nx">MOVQ</span> <span class="nx">$0x16</span><span class="p">,</span> <span class="mi">0</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>	<span class="o">;</span> <span class="err">把</span> <span class="mi">22</span> <span class="err">赋值到</span> <span class="mi">0</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址，即更新</span> <span class="nx">a2</span>
+	<span class="nx">myfunc</span><span class="p">()</span>
+  <span class="mh">0x48838f</span>		<span class="mi">488</span><span class="nx">b542410</span>		<span class="nx">MOVQ</span> <span class="mh">0x10</span><span class="p">(</span><span class="nx">SP</span><span class="p">),</span> <span class="nx">DX</span>	<span class="o">;</span> <span class="err">这里把</span> <span class="mh">0x10</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">中的值，即</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址加载到</span> <span class="nx">DX</span> <span class="err">寄存器</span>
+  <span class="mh">0x488394</span>		<span class="mi">488</span><span class="nx">b02</span>			<span class="nx">MOVQ</span> <span class="mi">0</span><span class="p">(</span><span class="nx">DX</span><span class="p">),</span> <span class="nx">AX</span>		<span class="o">;</span> <span class="err">把</span> <span class="mi">0</span><span class="p">(</span><span class="nx">DX</span><span class="p">)</span> <span class="err">中的值，即</span> <span class="nx">func1</span> <span class="err">的地址加载到</span> <span class="nx">AX</span> <span class="err">寄存器</span>
+  <span class="mh">0x488397</span>		<span class="nx">ffd0</span>			<span class="nx">CALL</span> <span class="nx">AX</span>			<span class="o">;</span> <span class="err">调用</span> <span class="nx">func</span> <span class="mi">1</span> <span class="err">函数。</span>
+<span class="p">}</span>
+  <span class="mh">0x488399</span>		<span class="mi">488</span><span class="nx">b6c2438</span>		<span class="nx">MOVQ</span> <span class="mh">0x38</span><span class="p">(</span><span class="nx">SP</span><span class="p">),</span> <span class="nx">BP</span>	
+  <span class="mh">0x48839e</span>		<span class="mi">4883</span><span class="nx">c440</span>		<span class="nx">ADDQ</span> <span class="nx">$0x40</span><span class="p">,</span> <span class="nx">SP</span>		
+  <span class="mh">0x4883a2</span>		<span class="nx">c3</span>			<span class="nx">RET</span>			
+<span class="nx">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="mh">0x4883a3</span>		<span class="nx">e83869fcff</span>		<span class="nx">CALL</span> <span class="nx">runtime</span><span class="p">.</span><span class="nx">morestack_noctxt</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span>	<span class="o">;</span> <span class="err">申请更多的栈空间的地方，也是</span> <span class="nx">goroutine</span> <span class="err">抢占的检查点</span>
+  <span class="mh">0x4883a8</span>		<span class="nx">e953ffffff</span>		<span class="nx">JMP</span> <span class="nx">main</span><span class="p">.</span><span class="nx">main</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span>			
+</code></pre></div></div>
+
+<h3 id="myfunc-匿名函数的汇编代码">myfunc （匿名函数）的汇编代码</h3>
+
+<p>从下面的汇编代码可以看到，匿名函数在每次调用时，都会 ① 首先根据闭包内的外部变量的地址（<code class="highlighter-rouge">a1</code> 和 <code class="highlighter-rouge">a2</code> 的地址）获取得到外部变量的值，然后才 ② 利用获取得到的值进行闭包内逻辑的运算。</p>
+
+<div class="language-as highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">TEXT</span> <span class="nx">main</span><span class="p">.</span><span class="nx">main</span><span class="p">.</span><span class="nx">func1</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span> <span class="o">/</span><span class="nx">golang</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">jingwei</span><span class="p">.</span><span class="nx">link</span><span class="o">/</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span>
+	<span class="nl">myfunc</span> <span class="p">:</span><span class="o">=</span> <span class="nx">func</span><span class="p">()</span> <span class="p">{</span>
+  <span class="mh">0x488420</span>		<span class="mi">64488</span><span class="nx">b0c25f8ffffff</span>	<span class="nx">MOVQ</span> <span class="nx">FS</span><span class="o">:</span><span class="mh">0xfffffff8</span><span class="p">,</span> <span class="nx">CX</span>	
+  <span class="mh">0x488429</span>		<span class="mi">488</span><span class="nx">d4424a8</span>		<span class="nx">LEAQ</span> <span class="mi">-0</span><span class="nx">x58</span><span class="p">(</span><span class="nx">SP</span><span class="p">),</span> <span class="nx">AX</span>	
+  <span class="mh">0x48842e</span>		<span class="mi">483</span><span class="nx">b4110</span>		<span class="nx">CMPQ</span> <span class="mh">0x10</span><span class="p">(</span><span class="nx">CX</span><span class="p">),</span> <span class="nx">AX</span>	
+  <span class="mh">0x488432</span>		<span class="mi">0</span><span class="nx">f86ab010000</span>		<span class="nx">JBE</span> <span class="mh">0x4885e3</span>		<span class="o">;</span> <span class="err">上面三是对栈进行扩容判定，如果栈不够用了，会进行扩容</span>
+  <span class="mh">0x488438</span>		<span class="mi">4881</span><span class="nx">ecd8000000</span>		<span class="nx">SUBQ</span> <span class="nx">$0xd8</span><span class="p">,</span> <span class="nx">SP</span>		<span class="o">;</span> <span class="err">预留出</span> <span class="mh">0xd8</span> <span class="err">的栈空间供</span> <span class="nx">func1</span><span class="p">(</span><span class="nx">myfunc</span><span class="p">)</span> <span class="err">函数使用</span>
+  <span class="mh">0x48843f</span>		<span class="mi">4889</span><span class="nx">ac24d0000000</span>	<span class="nx">MOVQ</span> <span class="nx">BP</span><span class="p">,</span> <span class="mh">0xd0</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>	
+  <span class="mh">0x488447</span>		<span class="mi">488</span><span class="nx">dac24d0000000</span>	<span class="nx">LEAQ</span> <span class="mh">0xd0</span><span class="p">(</span><span class="nx">SP</span><span class="p">),</span> <span class="nx">BP</span>	<span class="o">;</span> <span class="err">上面两句待探究，应该是为了保存某个场景为恢复某个状态做准备</span>
+  <span class="o">;</span> <span class="err">下面重点关注</span> <span class="nx">DX</span> <span class="err">的值，是</span> <span class="nx">main</span><span class="p">.</span><span class="nx">mian</span> <span class="err">中</span> <span class="mh">0x20</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span> <span class="err">的地址（区别于本函数的</span> <span class="nx">SP</span> <span class="err">地址，本函数的</span> <span class="nx">SP</span> <span class="err">地址已经由</span> <span class="nx">SUBQ</span> <span class="err">改变过了）</span>
+  <span class="mh">0x48844f</span>		<span class="mi">488</span><span class="nx">b4208</span>		<span class="nx">MOVQ</span> <span class="mh">0x8</span><span class="p">(</span><span class="nx">DX</span><span class="p">),</span> <span class="nx">AX</span>	<span class="o">;</span> <span class="mh">0x8</span><span class="p">(</span><span class="nx">DX</span><span class="p">)</span><span class="err">，其实就是</span> <span class="nx">main</span><span class="p">.</span><span class="nx">main</span> <span class="err">中的</span> <span class="mh">0x28</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span><span class="err">，即</span> <span class="nx">a1</span> <span class="err">的地址，把这个地址里的值赋值到</span> <span class="nx">AX</span>
+  <span class="mh">0x488453</span>		<span class="mi">4889842480000000</span>	<span class="nx">MOVQ</span> <span class="nx">AX</span><span class="p">,</span> <span class="mh">0x80</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>	<span class="o">;</span> <span class="err">把</span> <span class="nx">a1</span> <span class="err">的值赋值到</span> <span class="mh">0x80</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>
+  <span class="mh">0x48845b</span>		<span class="mi">488</span><span class="nx">b4210</span>		<span class="nx">MOVQ</span> <span class="mh">0x10</span><span class="p">(</span><span class="nx">DX</span><span class="p">),</span> <span class="nx">AX</span>	<span class="o">;</span> <span class="mh">0x10</span><span class="p">(</span><span class="nx">DX</span><span class="p">)</span><span class="err">，其实就是</span> <span class="nx">main</span><span class="p">.</span><span class="nx">main</span> <span class="err">中的</span> <span class="mh">0x30</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span><span class="err">，即</span> <span class="nx">a2</span> <span class="err">的地址，把这个地址里的值赋值到</span> <span class="nx">AX</span>
+  <span class="mh">0x48845f</span>		<span class="mi">4889442478</span>		<span class="nx">MOVQ</span> <span class="nx">AX</span><span class="p">,</span> <span class="mh">0x78</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>	<span class="o">;</span> <span class="err">把</span> <span class="nx">a2</span> <span class="err">的值赋值到</span> <span class="mh">0x80</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>
+	<span class="nl">sum</span> <span class="p">:</span><span class="o">=</span> <span class="nx">a1</span> <span class="o">+</span> <span class="nx">a2</span>
+  <span class="mh">0x488464</span>		<span class="mi">488</span><span class="nx">b8c2480000000</span>	<span class="nx">MOVQ</span> <span class="mh">0x80</span><span class="p">(</span><span class="nx">SP</span><span class="p">),</span> <span class="nx">CX</span>	<span class="o">;</span> <span class="err">接下来就是很容易理解的加法运算了</span>
+  <span class="mh">0x48846c</span>		<span class="mi">488</span><span class="nx">b09</span>			<span class="nx">MOVQ</span> <span class="mi">0</span><span class="p">(</span><span class="nx">CX</span><span class="p">),</span> <span class="nx">CX</span>		
+  <span class="mh">0x48846f</span>		<span class="mi">480308</span>			<span class="nx">ADDQ</span> <span class="mi">0</span><span class="p">(</span><span class="nx">AX</span><span class="p">),</span> <span class="nx">CX</span>		
+  <span class="mh">0x488472</span>		<span class="mi">48894</span><span class="nx">c2440</span>		<span class="nx">MOVQ</span> <span class="nx">CX</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">(</span><span class="nx">SP</span><span class="p">)</span>	
+	<span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s2">"a1: %d, a2:%d, sum: %d\n"</span><span class="p">,</span> <span class="nx">a1</span><span class="p">,</span> <span class="nx">a2</span><span class="p">,</span> <span class="nx">sum</span><span class="p">)</span>
+<span class="o">;</span> <span class="err">再往下就是复杂的</span> <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span> <span class="err">函数了，代码很长很臭，就不贴了</span>
+</code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+<p>本文就闭包中外部变量的使用进行展开，首先 ① 介绍了闭包内的外部变量会随着外部变量的变化而变化（类比于指针的使用），然后 ② 在汇编语句层面进行了进一步的分析，道明了闭包中外部变量使用的本质。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://www.cnblogs.com/hzhuxin/p/9199332.html">Go语言中的闭包</a> 介绍了 Golang 中的闭包</li>
+  <li><a href="https://9p.io/sys/doc/asm.html">A Manual for the Plan 9 assembler</a>  神奇的汇编器，还没来得及研究，放这里作为后面的参考</li>
+  <li><a href="https://9p.io/sys/doc/asm.pdf">Plan9 的 asm.PDF</a>  PDF 文档，可以作为理解 Golang 汇编语句的参考</li>
+  <li><a href="https://lrita.github.io/2017/12/12/golang-asm/">golang 汇编 — 源代码</a> 很不错的讲汇编的内容</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/05/26/golang-routine-scheduler.html" class="read-next-link"></a>
+          <section>
+            <span>Golang 并发问题（五）goroutine 的调度及抢占</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
