@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang 异步任务执行器——Gochan - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="Golang 异步任务执行器——Gochan">
+    <meta name="keywords"  content="golang, 实用, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Golang 异步任务执行器——Gochan - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/06/02/gochan-of-chalvern.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>Golang 异步任务执行器——Gochan</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-06-02"><i class="iconfont icon-date"></i>02 Jun 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">应用场景：并发执行部分任务之间存在依赖的异步任务</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#项目背景" id="markdown-toc-项目背景">项目背景</a></li>
+  <li><a href="#设计的思路" id="markdown-toc-设计的思路">设计的思路</a>    <ul>
+      <li><a href="#平常的设计" id="markdown-toc-平常的设计">平常的设计</a></li>
+      <li><a href="#状态无依赖的并发设计" id="markdown-toc-状态无依赖的并发设计">状态无依赖的并发设计</a></li>
+      <li><a href="#状态存在依赖的并发设计-gochan" id="markdown-toc-状态存在依赖的并发设计-gochan">状态存在依赖的并发设计 (gochan)</a></li>
+    </ul>
+  </li>
+  <li><a href="#使用示例" id="markdown-toc-使用示例">使用示例</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>在最近编码过程中，大量使用了异步任务。在自己需求的基础上抽象出一个异步任务执行器，应该有挺多类似的需求，于是开源出来。项目地址为《<a href="https://github.com/chalvern/gochan">GitHub - chalvern/gochan</a>》，还希望大家能够不吝 <code class="highlighter-rouge">star</code> ✨。</p>
+
+<h2 id="项目背景">项目背景</h2>
+<p>一般情况下，我们可以通过定义一个带缓冲的 channel 变量接收某种事件，然后通过一个专用的 goroutine 消费执行这个 channel 中的事件。</p>
+
+<p>但是如果相关事件很多的时候，一个 goroutine 不够用了怎么办呢？或许我们会想到多创建几个专用的 goroutine 来并发地消费执行这个 channel 中的事件；如果 channel 中各个事件之间是独立的，是可行的，但是如果某些事件之间具有某种顺序上的约束，那么就需要对事件进行特定的分类。</p>
+
+<p>比如，一个订单的支付与货物发货，两个事件是需要保序的；但是不同的订单之间又是可以并发执行；其实就是实现一个微型的按特定主题分类的 pub-sub（发布-订阅）系统。以订单为例，可以根据订单单号，把相同单号的事件推送到同一个队列（channel），一个特定的执行器（goroutine）来消费执行这个队列中的事件，如此平行扩展多个类似的组合，实现并发。</p>
+
+<h2 id="设计的思路">设计的思路</h2>
+<h3 id="平常的设计">平常的设计</h3>
+
+<p>通过定义一个带缓冲的 channel 变量接收某种事件，然后通过一个专用的 goroutine 消费执行这个 channel 中的事件。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+event -&gt;
+        |
+event -&gt; buffer-channel -&gt; goroutine
+        |
+event -&gt;
+
+</code></pre></div></div>
+
+<h3 id="状态无依赖的并发设计">状态无依赖的并发设计</h3>
+
+<p>事件之间完全没有状态依赖，因此可以简单扩展 goroutine 进行加快事件执行速度。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+event -&gt;                 -&gt;goroutine
+        |               |
+event -&gt; buffer-channel -&gt; goroutine
+        |               |
+event -&gt;                 -&gt;goroutine
+
+</code></pre></div></div>
+
+<h3 id="状态存在依赖的并发设计-gochan">状态存在依赖的并发设计 (gochan)</h3>
+
+<p>引入一层分发器（dispatcher），根据某个特性（比如 uuid）把事件分发到相应的队列（buffer-channel）中。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+event -&gt;              -&gt; buffer-channel -&gt; goroutine
+        |            |
+event <span class="nt">--</span><span class="o">&gt;</span> dispatcher -&gt; buffer-channel -&gt; goroutine
+        |            |
+event -&gt;              -&gt; buffer-channel -&gt; goroutine
+
+</code></pre></div></div>
+
+<h2 id="使用示例">使用示例</h2>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">
+</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"errors"</span><span class="x">
+	</span><span class="s">"math/rand"</span><span class="x">
+	</span><span class="s">"time"</span><span class="x">
+
+	</span><span class="s">"github.com/chalvern/gochan"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">type</span><span class="x"> </span><span class="n">Manager</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">gochanNum</span><span class="x">  </span><span class="kt">int</span><span class="x">
+	</span><span class="n">bufferNum</span><span class="x">  </span><span class="kt">int</span><span class="x">
+	</span><span class="n">dispatcher</span><span class="x"> </span><span class="o">*</span><span class="n">gochan</span><span class="o">.</span><span class="n">Dispatcher</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">m</span><span class="x"> </span><span class="o">*</span><span class="n">Manager</span><span class="p">)</span><span class="x"> </span><span class="n">Dispatch</span><span class="p">(</span><span class="n">objID</span><span class="x"> </span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="n">task</span><span class="x"> </span><span class="n">gochan</span><span class="o">.</span><span class="n">TaskFunc</span><span class="p">)</span><span class="x"> </span><span class="kt">error</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">objID</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="m">0</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">objID</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">rand</span><span class="o">.</span><span class="n">Intn</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">gochanNum</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="n">m</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">Dispatch</span><span class="p">(</span><span class="n">objID</span><span class="p">,</span><span class="x"> </span><span class="n">task</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">m</span><span class="x"> </span><span class="o">*</span><span class="n">Manager</span><span class="p">)</span><span class="x"> </span><span class="n">Close</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">m</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">gochanNum</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">3</span><span class="x">
+	</span><span class="n">bufferNum</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">10</span><span class="x">
+	</span><span class="n">manager</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Manager</span><span class="p">{</span><span class="x">
+		</span><span class="n">gochanNum</span><span class="o">:</span><span class="x">  </span><span class="n">gochanNum</span><span class="p">,</span><span class="x">
+		</span><span class="n">bufferNum</span><span class="o">:</span><span class="x">  </span><span class="n">bufferNum</span><span class="p">,</span><span class="x">
+		</span><span class="n">dispatcher</span><span class="o">:</span><span class="x"> </span><span class="n">gochan</span><span class="o">.</span><span class="n">NewDispatcher</span><span class="p">(</span><span class="n">gochanNum</span><span class="p">,</span><span class="x"> </span><span class="n">bufferNum</span><span class="p">),</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+
+	</span><span class="n">objID</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">1</span><span class="x">
+	</span><span class="n">task1</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="kt">error</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">return</span><span class="x"> </span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"task 1"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">manager</span><span class="o">.</span><span class="n">Dispatch</span><span class="p">(</span><span class="n">objID</span><span class="p">,</span><span class="x"> </span><span class="n">task1</span><span class="p">)</span><span class="x">
+	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span></code></pre></div></div>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://github.com/chalvern/gochan">GitHub - chalvern/gochan: pool of goroutine with buffer channel, for concurrent execution but events of individual object running sequentially</a> gochan 代码库</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/06/01/golang-outer-variable-in-clousure.html" class="read-next-link"></a>
+          <section>
+            <span>Golang 闭包内的外部变量</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
