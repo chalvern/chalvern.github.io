@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>给 Golang 日志打印加点糖——sugar - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="给 Golang 日志打印加点糖——sugar">
+    <meta name="keywords"  content="golang, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="给 Golang 日志打印加点糖——sugar - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/06/10/golang-logger-sugar.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>给 Golang 日志打印加点糖——sugar</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-06-10"><i class="iconfont icon-date"></i>10 Jun 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">封装 zap 日志中间件使其使用更方便简洁</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#日志打印中间件-sugar-简介" id="markdown-toc-日志打印中间件-sugar-简介">日志打印中间件 sugar 简介</a></li>
+  <li><a href="#一些注意点" id="markdown-toc-一些注意点">一些注意点</a></li>
+  <li><a href="#方法" id="markdown-toc-方法">方法</a></li>
+  <li><a href="#logs-格式预先看" id="markdown-toc-logs-格式预先看">logs 格式预先看</a>    <ul>
+      <li><a href="#默认的开发模式" id="markdown-toc-默认的开发模式">默认的开发模式</a></li>
+      <li><a href="#生产模式下的-json-格式输出" id="markdown-toc-生产模式下的-json-格式输出">生产模式下的 json 格式输出</a></li>
+    </ul>
+  </li>
+  <li><a href="#例子" id="markdown-toc-例子">例子</a>    <ul>
+      <li><a href="#默认配置" id="markdown-toc-默认配置">默认配置</a></li>
+      <li><a href="#定制化配置" id="markdown-toc-定制化配置">定制化配置</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="日志打印中间件-sugar-简介">日志打印中间件 sugar 简介</h2>
+
+<p>项目地址见 <a href="https://github.com/chalvern/sugar">这里</a> 。</p>
+
+<p>在 Golang 的日志库中，之前使用较多的是 <a href="https://github.com/sirupsen/logrus">logrus</a>。后来了解到还有一个性能更佳的 <a href="https://github.com/uber-go/zap">zap</a>，于是探究了一番，发现 zap 的使用比较啰嗦，应用示例也不是很简洁，于是封装 zap 成为 sugar 项目。 具体的使用示例大家可以参考 <a href="./golang-logger-sugar.html#例子">例子</a>。</p>
+
+<p>Sugar 封装了 zap 日志库，让开发者能够更方便、快捷地使用这个插件。
+本库只是简单的封装，如果使用过程中遇到问题，推荐阅读 <a href="https://github.com/uber-go/zap">zap</a> 的相关文档寻找答案。</p>
+
+<p>当然，欢迎大家提 issue 来一起完善这个仓库。</p>
+
+<h2 id="一些注意点">一些注意点</h2>
+
+<ul>
+  <li>Sugar 使用 zap 仓库的 <code class="highlighter-rouge">zap.NewDevelopmentConfig()</code> 方法返回的配置作为默认配置（开发环境），这个配置使用 console 类型的输出格式（平铺的那种，区别于 json 类型的日志）</li>
+  <li>我曾经的工作阅历，认为服务容器化会是未来的趋势，因此觉得开发环境也有必要配置 json 格式的输出，通过 <code class="highlighter-rouge">InitDevelopmentSugar()</code> 可以达到目的。这样大家写容器化的服务时可以直接使用这个库而不需要定制日志路径。</li>
+  <li>生产环境默认就是 json 格式，主要是为了方便地把日志收集到 ELK 中去。</li>
+</ul>
+
+<h2 id="方法">方法</h2>
+
+<p>Sugar 封装了 sugared-zap 的所有方法，如下（如果有疏漏，可以提 issue 通知我）：</p>
+
+<ul>
+  <li>Debug/Debugf</li>
+  <li>Info/Infof</li>
+  <li>Warn/Warnf</li>
+  <li>Error/Errorf</li>
+  <li>Fatal/Fatalf</li>
+  <li>Panic/Panicf</li>
+</ul>
+
+<h2 id="logs-格式预先看">logs 格式预先看</h2>
+
+<p>我之所以喜欢使用 zap，主要因为它漂亮的输出格式（根据官方的描述，它的输出效率也很高，不过我还没有遇到这个瓶颈）</p>
+
+<h3 id="默认的开发模式">默认的开发模式</h3>
+
+<p>这种模式的输出是 console 样式，就是说日志平铺展示（开发模式也可以配置 json 格式的输出，见 <a href="#一些注意点">一些注意点</a>。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2019-06-10T09:13:03.672+0800    DEBUG   default/main.go:7       default development sugar of chalvern   <span class="o">{</span><span class="s2">"unit"</span>: <span class="s2">"main"</span><span class="o">}</span>
+2019-06-10T09:13:03.672+0800    INFO    default/main.go:20      log of myCustomLogger info      <span class="o">{</span><span class="s2">"unit"</span>: <span class="s2">"my_custom_logger"</span><span class="o">}</span>
+2019-06-10T09:13:03.672+0800    WARN    default/main.go:21      log of myCustomLogger warn      <span class="o">{</span><span class="s2">"unit"</span>: <span class="s2">"my_custom_logger"</span><span class="o">}</span>
+github.com/chalvern/sugar.<span class="o">(</span><span class="k">*</span>Logger<span class="o">)</span>.Warn
+        /Users/Chalvern/developer/golang/src/github.com/chalvern/sugar/logger.go:51
+main.myCustomLogger
+        /Users/Chalvern/developer/golang/src/github.com/chalvern/sugar/examples/default/main.go:21
+main.main
+        /Users/Chalvern/developer/golang/src/github.com/chalvern/sugar/examples/default/main.go:8
+runtime.main
+        /usr/local/go/src/runtime/proc.go:200
+2019-06-10T09:13:03.672+0800    INFO    default/main.go:26      log of myCustomLogger2 info     <span class="o">{</span><span class="s2">"unit"</span>: <span class="s2">"my_custom_logger_2"</span><span class="o">}</span>
+2019-06-10T09:13:03.672+0800    WARN    default/main.go:27      log of myCustomLogger2 warn     <span class="o">{</span><span class="s2">"unit"</span>: <span class="s2">"my_custom_logger_2"</span><span class="o">}</span>
+github.com/chalvern/sugar.<span class="o">(</span><span class="k">*</span>Logger<span class="o">)</span>.Warn
+        /Users/Chalvern/developer/golang/src/github.com/chalvern/sugar/logger.go:51
+main.myCustomLogger2
+        /Users/Chalvern/developer/golang/src/github.com/chalvern/sugar/examples/default/main.go:27
+main.main
+        /Users/Chalvern/developer/golang/src/github.com/chalvern/sugar/examples/default/main.go:9
+runtime.main
+        /usr/local/go/src/runtime/proc.go:200
+</code></pre></div></div>
+
+<h3 id="生产模式下的-json-格式输出">生产模式下的 json 格式输出</h3>
+
+<p>生产模式默认是 json 格式的输出，从而方便把日志收集起来集中处理。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="s2">"level"</span><span class="p">:</span><span class="s2">"info"</span><span class="p">,</span><span class="s2">"ts"</span><span class="p">:</span><span class="mf">1560129183.672966</span><span class="p">,</span><span class="s2">"caller"</span><span class="p">:</span><span class="s2">"default/main.go:13"</span><span class="p">,</span><span class="s2">"msg"</span><span class="p">:</span><span class="s2">"default production sugar of chalvern"</span><span class="p">,</span><span class="s2">"unit"</span><span class="p">:</span><span class="s2">"main"</span><span class="p">}</span>
+<span class="p">{</span><span class="s2">"level"</span><span class="p">:</span><span class="s2">"info"</span><span class="p">,</span><span class="s2">"ts"</span><span class="p">:</span><span class="mf">1560129183.673015</span><span class="p">,</span><span class="s2">"caller"</span><span class="p">:</span><span class="s2">"default/main.go:20"</span><span class="p">,</span><span class="s2">"msg"</span><span class="p">:</span><span class="s2">"log of myCustomLogger info"</span><span class="p">,</span><span class="s2">"unit"</span><span class="p">:</span><span class="s2">"my_custom_logger"</span><span class="p">}</span>
+<span class="p">{</span><span class="s2">"level"</span><span class="p">:</span><span class="s2">"warn"</span><span class="p">,</span><span class="s2">"ts"</span><span class="p">:</span><span class="mf">1560129183.6730392</span><span class="p">,</span><span class="s2">"caller"</span><span class="p">:</span><span class="s2">"default/main.go:21"</span><span class="p">,</span><span class="s2">"msg"</span><span class="p">:</span><span class="s2">"log of myCustomLogger warn"</span><span class="p">,</span><span class="s2">"unit"</span><span class="p">:</span><span class="s2">"my_custom_logger"</span><span class="p">}</span>
+<span class="p">{</span><span class="s2">"level"</span><span class="p">:</span><span class="s2">"info"</span><span class="p">,</span><span class="s2">"ts"</span><span class="p">:</span><span class="mf">1560129183.673059</span><span class="p">,</span><span class="s2">"caller"</span><span class="p">:</span><span class="s2">"default/main.go:26"</span><span class="p">,</span><span class="s2">"msg"</span><span class="p">:</span><span class="s2">"log of myCustomLogger2 info"</span><span class="p">,</span><span class="s2">"unit"</span><span class="p">:</span><span class="s2">"my_custom_logger_2"</span><span class="p">}</span>
+<span class="p">{</span><span class="s2">"level"</span><span class="p">:</span><span class="s2">"warn"</span><span class="p">,</span><span class="s2">"ts"</span><span class="p">:</span><span class="mf">1560129183.673182</span><span class="p">,</span><span class="s2">"caller"</span><span class="p">:</span><span class="s2">"default/main.go:27"</span><span class="p">,</span><span class="s2">"msg"</span><span class="p">:</span><span class="s2">"log of myCustomLogger2 warn"</span><span class="p">,</span><span class="s2">"unit"</span><span class="p">:</span><span class="s2">"my_custom_logger_2"</span><span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="例子">例子</h2>
+
+<p>下面的例子也可以在 <a href="./examples">examples</a> 目录找到。</p>
+
+<h3 id="默认配置">默认配置</h3>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat ./examples/default/main.go</span><span class="x">
+</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="s">"github.com/chalvern/sugar"</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+
+	</span><span class="n">sugar</span><span class="o">.</span><span class="n">Debug</span><span class="p">(</span><span class="s">"default development sugar of chalvern"</span><span class="p">)</span><span class="x">
+	</span><span class="n">myCustomLogger</span><span class="p">()</span><span class="x">
+	</span><span class="n">myCustomLogger2</span><span class="p">()</span><span class="x">
+
+	</span><span class="n">sugar</span><span class="o">.</span><span class="n">InitProductionSugar</span><span class="p">()</span><span class="x">
+	</span><span class="n">sugar</span><span class="o">.</span><span class="n">Debug</span><span class="p">(</span><span class="s">"should not be printed"</span><span class="p">)</span><span class="x">
+	</span><span class="n">sugar</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"default production sugar of chalvern"</span><span class="p">)</span><span class="x">
+	</span><span class="n">myCustomLogger</span><span class="p">()</span><span class="x">
+	</span><span class="n">myCustomLogger2</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">myCustomLogger</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">myLogger</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">sugar</span><span class="o">.</span><span class="n">NewLoggerOf</span><span class="p">(</span><span class="s">"my_custom_logger"</span><span class="p">)</span><span class="x">
+	</span><span class="n">myLogger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"log of myCustomLogger info"</span><span class="p">)</span><span class="x">
+	</span><span class="n">myLogger</span><span class="o">.</span><span class="n">Warn</span><span class="p">(</span><span class="s">"log of myCustomLogger warn"</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">myCustomLogger2</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">myLogger</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">sugar</span><span class="o">.</span><span class="n">NewLoggerOf</span><span class="p">(</span><span class="s">"my_custom_logger_2"</span><span class="p">)</span><span class="x">
+	</span><span class="n">myLogger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"log of myCustomLogger2 info"</span><span class="p">)</span><span class="x">
+	</span><span class="n">myLogger</span><span class="o">.</span><span class="n">Warn</span><span class="p">(</span><span class="s">"log of myCustomLogger2 warn"</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h3 id="定制化配置">定制化配置</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"github.com/chalvern/sugar"</span><span class="x">
+	</span><span class="s">"go.uber.org/zap"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">config</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">zap</span><span class="o">.</span><span class="n">NewProductionConfig</span><span class="p">()</span><span class="x">
+	</span><span class="n">config</span><span class="o">.</span><span class="n">OutputPaths</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"./production.log"</span><span class="p">}</span><span class="x">
+	</span><span class="n">config</span><span class="o">.</span><span class="n">ErrorOutputPaths</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"./production_err.log"</span><span class="p">}</span><span class="x">
+	</span><span class="n">sugar</span><span class="o">.</span><span class="n">SetSugar</span><span class="p">(</span><span class="o">&amp;</span><span class="n">config</span><span class="p">)</span><span class="x">
+
+	</span><span class="n">sugar</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"main info"</span><span class="p">)</span><span class="x">
+
+	</span><span class="n">myCustomLogger</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">myCustomLogger</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">myLogger</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">sugar</span><span class="o">.</span><span class="n">NewLoggerOf</span><span class="p">(</span><span class="s">"my_custom_logger"</span><span class="p">)</span><span class="x">
+	</span><span class="n">myLogger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"log of myCustomLogger info"</span><span class="p">)</span><span class="x">
+	</span><span class="n">myLogger</span><span class="o">.</span><span class="n">Warn</span><span class="p">(</span><span class="s">"log of myCustomLogger warn"</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span></code></pre></div></div>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/06/02/gochan-of-chalvern.html" class="read-next-link"></a>
+          <section>
+            <span>Golang 异步任务执行器——Gochan</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

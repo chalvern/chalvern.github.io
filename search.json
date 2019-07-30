@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "给 Golang 日志打印加点糖——sugar",
+      "tags"     : "golang 实用",
+      "url"      : "/2019/06/10/golang-logger-sugar.html"
+    } ,
+  
+    {
       "title"    : "Golang 异步任务执行器——Gochan",
       "tags"     : "golang 实用 基础",
       "url"      : "/2019/06/02/gochan-of-chalvern.html"
