@@ -1,7 +1,7 @@
 [
   
     {
-      "title"    : "汇闲麻将后端架构里的多并发模型",
+      "title"    : "麻将游戏后端架构里的多并发模型",
       "tags"     : "基础 实用 golang",
       "url"      : "/2019/07/30/huixian-mahjong-server-summary.html"
     } ,
