@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汇闲麻将后端架构里的多并发模型 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="汇闲麻将后端架构里的多并发模型">
+    <meta name="keywords"  content="基础, 实用, golang">
+    <!-- Open Graph -->
+    <meta property="og:title" content="汇闲麻将后端架构里的多并发模型 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/07/30/huixian-mahjong-server-summary.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+        
+      </div>
+      <h1>汇闲麻将后端架构里的多并发模型</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-07-30"><i class="iconfont icon-date"></i>30 Jul 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('/assets/pic/huixian-mahjong-server-summary.png') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">简单介绍汇闲麻将后端的并发架构</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#汇闲麻将的后端架构" id="markdown-toc-汇闲麻将的后端架构">汇闲麻将的后端架构</a>    <ul>
+      <li><a href="#信息收集" id="markdown-toc-信息收集">信息收集</a>        <ul>
+          <li><a href="#三个要求" id="markdown-toc-三个要求">三个要求</a></li>
+          <li><a href="#汇闲麻将后台中的核心对象" id="markdown-toc-汇闲麻将后台中的核心对象">汇闲麻将后台中的核心对象</a></li>
+          <li><a href="#需要考虑的几个关键问题" id="markdown-toc-需要考虑的几个关键问题">需要考虑的几个关键问题</a></li>
+          <li><a href="#历史经验" id="markdown-toc-历史经验">历史经验</a></li>
+        </ul>
+      </li>
+      <li><a href="#信息分析与结论" id="markdown-toc-信息分析与结论">信息分析与结论</a></li>
+      <li><a href="#汇闲麻将后端架构里的并发模型" id="markdown-toc-汇闲麻将后端架构里的并发模型">汇闲麻将后端架构里的并发模型</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>受到政策因素影响，经历了近三个月封闭开发的<strong>汇闲麻将</strong>最终还是没能成功上线。当前的感悟，创业的路上有很多槛，技术研发只是其中的一个槛。</p>
+
+<p>这里仅以一名程序员的角色总结一下<strong>汇闲麻将</strong>的后端架构，也算是给过去三个月的自己一个交代。</p>
+
+<p><img src="/assets/pic/huixian-mahjong-server-summary-1.png" alt="" /></p>
+
+<h2 id="汇闲麻将的后端架构">汇闲麻将的后端架构</h2>
+<h3 id="信息收集">信息收集</h3>
+<p>就我个人的方法论，拿到一个问题后，① 首先要做的是尽可能多地收集情报，② 然后分析情报，有必要的情况下还要进一步收集情报，③ 接着才是制定方案，④ 最后实施方案。</p>
+
+<h4 id="三个要求">三个要求</h4>
+<p>在后端架构初期，负责产品的同事就给后端的架构提了三个老生常谈的要求：</p>
+<ul>
+  <li>支持高并发（单台服务器至少大几百并发）</li>
+  <li>高可扩展性（方便产品迭代添加新特性）</li>
+  <li>支持平行扩容（多台服务器同时提供服务）</li>
+</ul>
+
+<h4 id="汇闲麻将后台中的核心对象">汇闲麻将后台中的核心对象</h4>
+<ul>
+  <li><strong>玩家</strong>：每一个进到游戏中的用户都是玩家，当然也包含陪真人玩家打牌的机器人玩家；</li>
+  <li><strong>牌桌</strong>：每 4 个玩家加入到一个牌桌进行游戏；</li>
+  <li><strong>大厅</strong>：每个玩家进入游戏后，会首先到达大厅，参与转盘、签到、每日任务等功能；</li>
+  <li><strong>其他</strong>：其他一些小的对象，比如麻将、色子等，这些就都比较容易处理了。</li>
+</ul>
+
+<h4 id="需要考虑的几个关键问题">需要考虑的几个关键问题</h4>
+<ol>
+  <li>同一个玩家的不同操作需要是保序的，比如用户登录后才可以进行入牌桌的动作；</li>
+  <li>同一个牌桌上进行的操作也需要是保序的，比如入桌顺序、出牌顺序等；</li>
+  <li>需要控制协程（goroutine）的数量，避免恶性增长资源耗尽；</li>
+  <li>需要监控牌桌信息，采样牌桌状态从而便于查错；</li>
+  <li>玩家的断线重连，游戏状态的恢复；</li>
+  <li>机器人玩家的开发；</li>
+  <li>其他。</li>
+</ol>
+
+<p>上面的几个问题并未涉及到麻将游戏的具体逻辑（比如算输赢、算番数等），架构做好后可以填充这些逻辑。</p>
+
+<h4 id="历史经验">历史经验</h4>
+<ol>
+  <li>为了避免并发问题，传统的麻将游戏后端，每个房间一个进程；例如菜鸟场、富豪场，每个场都是一个房间，房间里包含许多的牌桌，这些牌桌上的逻辑由一个进程轮转处理。</li>
+  <li>每个房间启动一个进程，并暴露对应的端口供客户端连接。</li>
+  <li>用户进入游戏的的逻辑步骤是这样的：① 用户首先登陆到登陆服务器进行登陆鉴权；② 用户拿着鉴权得到的秘钥连接到大厅服务器，进行转盘、签到、任务、选择房间入桌等操作；③ 用户选择房间后，连接具体的房间服务器（游戏服务器）进行游戏；④ 用户进行完游戏后，与游戏服务器断开，重新与大厅服务器建立连接，回到步骤②。</li>
+</ol>
+
+<h3 id="信息分析与结论">信息分析与结论</h3>
+<p>由于我的技术栈是 Golang，因此选定了 Golang 作为汇闲麻将的后端开发语言，分析问题的时候自然就带入了 Golang 的语言特性。</p>
+
+<ol>
+  <li>受开发资源（时间和人力）的限制，不拆分登录、大厅、游戏等模块，在一个代码库中进行开发，方便把控研发节奏，降低前期的运维难度；</li>
+  <li>同样的道理，游戏服暂不按照房间进行进程上的划分，所有的房间都在一个主进程下面（启用 Golang 的多线程特性），对房间里的牌桌进行动态调整（如果某个房间里的牌桌不够用，而其他房间里闲置的牌桌比较多，就临时“借一个”使用）。</li>
+  <li>每个牌桌挂一个 goroutine 处理牌桌上的信息（牌桌状态轮转、用户出牌吃牌等）；</li>
+  <li>大厅的交互频次较低，只需挂一个 gotoutine 处理所有用户的相关动作；</li>
+  <li>玩家断线重连时，通过替代底层的 session 进行恢复；</li>
+  <li>数据入库时由专门的 goroutine 池负责写入，从而避免对游戏逻辑的阻塞（为此还专门写了开源项目 <a href="https://github.com/chalvern/gochan">gochan</a>）；</li>
+  <li>为方便分析各个组件的状态，统一打印日志，并把日志收集到 ELK 中进行分析（为此专门写了开源项目 <a href="https://github.com/chalvern/sugar">sugar</a>）；</li>
+  <li>其他。</li>
+</ol>
+
+<h3 id="汇闲麻将后端架构里的并发模型">汇闲麻将后端架构里的并发模型</h3>
+
+<p><img src="/assets/pic/huixian-mahjong-server-summary.png" alt="" /></p>
+
+<p>在架构设计初期，我曾经尝试通过 <strong>锁</strong> 的方式维持玩家、桌子等的信息一致性，后来编写代码的时候发现逻辑非常的啰嗦，很多操作都需要考虑到加锁与解锁，当业务逻辑稍微变得复杂后难以维护，还很容易出现死锁的情况。那几天正好看到一位同事在玩《异星工厂》，受里面的传送带的启发，构思出了最初的“游戏后端线程架构图”原型，如上图所示。</p>
+
+<p>“不要通过共享内存来通信，要通过通信来共享内存”，这句话是 Go 社区中非常经典的一句话。上面的架构图的设计一脉相承了“通过通信维护对象状态”的思路。每个协程（goroutine）搭配一个传送带（buffer-channel），此协程只处理自己传送带上的逻辑（闭包）。<strong>上图中每个圆圈都是一个协程，圆圈的周围则是配套的传送带，外界（其他协程）可以把逻辑封装放置在传送带上，然后被当前协程顺序进行处理。</strong></p>
+
+<p>具体的：① 每个用户与游戏服的长连接上面挂两个协程（goroutine），其中读协程（read）负责读取客户端传送过来的数据，写协程（write）负责写服务端返回的数据给客户端。② 读协程对用户数据进行拆包后，把请求打包成为任务放置到主协程（main）的传送带上（信道），主协程依次处理自己传送带上的任务，进行简单的逻辑处理后分发给相应的牌桌（table）（把逻辑打包成为任务放置到牌桌的传送带）；③ 各个牌桌的协程依次处理自己传送带上的任务，并把响应的发送任务给写协程（write）；④ 写协程负责统一把数据返回给用户；⑤ 对于不同房间（room）中桌子的分配、借还等，由一个总的房间协程统筹进行管理。</p>
+
+<p>有了上面的并发模型图，模块的划分就变得有依据也更合理，差不多花了两个月的时间，汇闲麻将就部署到预发布环境进行测试了。最后因为政策限制没有能正式发布，还是非常可惜的。。。</p>
+
+<h2 id="小结">小结</h2>
+<p>“不要通过共享内存来通信，要通过通信来共享内存”；在设计并开发完汇闲麻将的后端业务逻辑后，感觉对这句话的理解更透彻了。当然，这里并不是强调锁没有使用价值，其实在一些场合下使用锁会更合理，就像《<a href="/2019/05/12/golang-concurrency-03-map.html">浅谈 Golang 中数据的并发同步问题（三）</a>》中所描述的那样。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="/2018/12/31/thinking-of-architecture.html">从 Clean-Architecture 谈架构原理及其应用 - 敬维</a></li>
+  <li><a href="https://github.com/chalvern/gochan">GitHub - chalvern/gochan</a> 提供<strong>局部保序</strong>的多并发消息队列，简单讲就是把同一个 UUID 的事件放到同一个消息队列中等待执行，从而保证同一个 UUID 事件的保序。</li>
+  <li><a href="/2019/02/13/linux-process-thread-schedule-2.html">Linux系统调度原理浅析（二） - 敬维</a> 介绍了对进程、线程的认识</li>
+  <li><a href="https://github.com/chalvern/sugar">GitHub - chalvern/sugar: simpler golang logger which package sugared zap</a> Golang项目中更好用的日志打印小工具</li>
+  <li><a href="https://github.com/chalvern/gochan">GitHub - chalvern/gochan: pool of goroutine with buffer channel, for concurrent execution but events of individual object running sequentially</a> 局部保序的轻量级 Golang 消息队列小工具</li>
+  <li><a href="https://github.com/lonng/nano">GitHub - lonng/nano: Lightweight, facility, high performance golang based game server framework</a> 汇闲麻将的后端服务基于 nano 框架进行了开发</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/06/10/golang-logger-sugar.html" class="read-next-link"></a>
+          <section>
+            <span>给 Golang 日志打印加点糖——sugar</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
