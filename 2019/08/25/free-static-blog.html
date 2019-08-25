@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搭建免费的个人博客（一）——简单静态页面型 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="搭建免费的个人博客（一）——简单静态页面型">
+    <meta name="keywords"  content="实用, 经验, 自己">
+    <!-- Open Graph -->
+    <meta property="og:title" content="搭建免费的个人博客（一）——简单静态页面型 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/08/25/free-static-blog.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E8%87%AA%E5%B7%B1" class="post-tag">自己</a>
+          
+        
+      </div>
+      <h1>搭建免费的个人博客（一）——简单静态页面型</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-08-25"><i class="iconfont icon-date"></i>25 Aug 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">如何搭建一个免费的静态页面博客</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#博客的三种表现形式" id="markdown-toc-博客的三种表现形式">博客的三种表现形式</a>    <ul>
+      <li><a href="#一最简单的博客可以只有一个静态页面" id="markdown-toc-一最简单的博客可以只有一个静态页面">一、最简单的博客可以只有一个静态页面</a></li>
+      <li><a href="#二稍复杂的博客是很多静态页面" id="markdown-toc-二稍复杂的博客是很多静态页面">二、稍复杂的博客是很多静态页面</a></li>
+      <li><a href="#三内容可动态渲染的博客系统" id="markdown-toc-三内容可动态渲染的博客系统">三、内容可动态渲染的博客系统</a></li>
+    </ul>
+  </li>
+  <li><a href="#搭建只有一个静态页面的博客" id="markdown-toc-搭建只有一个静态页面的博客">搭建只有一个静态页面的博客</a>    <ul>
+      <li><a href="#1-注册-github-账号" id="markdown-toc-1-注册-github-账号">1. 注册 github 账号</a></li>
+      <li><a href="#2-创建一个新仓库new-repository" id="markdown-toc-2-创建一个新仓库new-repository">2. 创建一个新仓库（new repository）</a></li>
+      <li><a href="#3-创建-indexhtml-文件并黏贴-html-静态内容" id="markdown-toc-3-创建-indexhtml-文件并黏贴-html-静态内容">3. 创建 index.html 文件并黏贴 html 静态内容</a></li>
+      <li><a href="#4-通过-jianzhoubiangithubio-地址访问博客" id="markdown-toc-4-通过-jianzhoubiangithubio-地址访问博客">4. 通过 jianzhoubian.github.io 地址访问博客</a></li>
+      <li><a href="#5-配置私人域名在-github-中设置项目相关项" id="markdown-toc-5-配置私人域名在-github-中设置项目相关项">5. 配置私人域名——在 github 中设置项目相关项</a></li>
+      <li><a href="#6-配置私人域名配置域名解析" id="markdown-toc-6-配置私人域名配置域名解析">6. 配置私人域名——配置域名解析</a></li>
+      <li><a href="#7-通过-tuijianzhoubiancom-地址访问博客" id="markdown-toc-7-通过-tuijianzhoubiancom-地址访问博客">7. 通过 tui.jianzhoubian.com 地址访问博客</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>我很早就想搭建一个自己专属的博客页面，但是一直拖到2018年才真正把《<a href="https://jingwei.link">jingwei.link</a>》搭建起来。之所以拖那么久，现在来看主要还是①对相关的技术理解不到位，复杂化整个流程从而放弃；而②网络上缺少简单易懂的相关教程。</p>
+
+<p>作为一名 IT 从业人员，我个人非常推荐每一位同行（尚未就业的大学生也很有必要）都能够维护一个自己的博客页面，并能够在自己的这个“小天地”里坚持研究自己感兴趣的领域知识；如此，无疑会对个人的发展起到很大的积极作用。（欢迎加qq群 376482175 交流，备注“jingwei.link” 即可）。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p><strong>入门√</strong>——初级——中级——高级，本文适合所有对技术感兴趣的开发者。</p>
+
+<h2 id="博客的三种表现形式">博客的三种表现形式</h2>
+<h3 id="一最简单的博客可以只有一个静态页面">一、最简单的博客可以只有一个静态页面</h3>
+<p>是的，简单的博客可以只有一个静态页面，我们的个人博客也可以从一个静态页面开始进而逐渐变得丰富多彩。</p>
+
+<p>我们完全可以①手动写一个 <code class="highlighter-rouge">HTML</code> <strong>静态页面</strong>，然后②把这个页面托管到公共平台（比如 github）或者私有服务器（比如在阿里云、腾讯云等购买私有的云服务器），③用户只需通过 http(s) 协议拿到这个<strong>静态页面</strong>并在浏览器中正常展示，此时我们的博客就算搭建完成了。</p>
+
+<p>如果我们的目标仅仅是搭建这么一个最简单的博客，问题就变成了：<strong>如何通过固定的网址（比如 https://chalvern.github.io）获取一个 HTML 静态页面</strong>。这个问题很简单，看完本文就知道怎么做了。</p>
+
+<h3 id="二稍复杂的博客是很多静态页面">二、稍复杂的博客是很多静态页面</h3>
+<p>如果是记录自己的技术总结的博客，可能一个页面无法承载自己的所有总结，此时就会写很多很多的静态页面。</p>
+
+<p>此时，一般的做法是用一个 HTML 页面以列表的形式<strong>超链接</strong>所有的内容页面，比如打开 <a href="https://jingwei.link">https://jingwei.link</a> 是一个首页，通过这个首页可以超链接到具体的内容页面去。</p>
+
+<p>对比第一种最简单的博客，如果我们的目标是搭建一个稍复杂的博客，问题就变成了：<strong>① 如何有效地组织所有的内容页面，从而方便读者超链接到对应的静态页面；②如何通过固定的网址获取得到这些静态页面（和第一种遇到的问题相似）</strong>。</p>
+
+<p>业界比较有名的 <a href="https://jekyllrb.com">Jekyll</a>、<a href="https://www.gohugo.org">Hugo</a>、<a href="https://hexo.io/zh-cn/">Hexo</a>等博客框架(分别对应 Ruby、Golang、Nodejs 技术栈)都能很好地解决第①个问题，大家完全可以按照喜好选择自己使用哪个框架（未来我可能会介绍一下 JekyII 和 Hugo）。</p>
+
+<h3 id="三内容可动态渲染的博客系统">三、内容可动态渲染的博客系统</h3>
+<p>静态页面的博客发布后，除非我们再一次发布新的静态页面，否则博客的内容是不会变化的。</p>
+
+<p>进一步，可以做一个能够动态渲染页面的博客系统，把内容保存在数据库中，当用户访问博客时内容①从数据库中加载，然后②被框架渲染成页面进而展示出来。通过修改数据库中的内容，可以动态改变博客的内容从而避免了发版。不过，<strong>因为数据库和渲染引擎的存在，这种动态渲染的博客系统的部署成本和运维成本都很高</strong>。</p>
+
+<p>这类博客所涉及到的技术问题比较多，需要更多的专业知识，除非知道自己在做什么，否则不推荐大家采取这种方式。另外，未来我可能会开源一套基于 Golang 语言的类似系统，敬请期待吧:)</p>
+
+<h2 id="搭建只有一个静态页面的博客">搭建只有一个静态页面的博客</h2>
+<p>本小节侧重解决这个问题：<strong>如何通过固定的网址（比如 <a href="https://jianzhoubian.github.io">https://jianzhoubian.github.io</a> 和 <a href="https://tui.jianzhoubian.com">https://tui.jianzhoubian.com</a>）获取一个 HTML 静态页面</strong>。本博文使用的是 <a href="https://github.io">github.io</a> 的服务，即把我们写好的静态页面托管到 github.io 供用户访问。</p>
+
+<h3 id="1-注册-github-账号">1. 注册 github 账号</h3>
+<p>为了使用 github.io 的服务，首先免费注册一个 <a href="https://github.com">GitHub</a> 账号（如果已经有账号，跳过本步骤即可）。</p>
+
+<p>需要事先准备一个邮箱在注册账号时使用。邮箱认证完成以后，github 的账号就可以使用了。</p>
+
+<h3 id="2-创建一个新仓库new-repository">2. 创建一个新仓库（new repository）</h3>
+<p>登录第一步注册的 github 账号，然后通过 <a href="https://github.com/new">new repository</a> 创建一个新的仓库。</p>
+
+<p><img src="/assets/pic/free-static-blog-1.png" alt="" /></p>
+
+<p>如上图所示，这一步需要注意的是，仓库名称必须是 <code class="highlighter-rouge">“Owner 名”.github.io</code> 这样的组合，图示中 Owner 名为 <strong>jianzhoubian</strong>（荐周边），因此仓库名称为 <strong>jianzhoubian.github.io</strong>。</p>
+
+<p>点击创建仓库（Create repository）后，目标仓库就建成了。</p>
+
+<h3 id="3-创建-indexhtml-文件并黏贴-html-静态内容">3. 创建 index.html 文件并黏贴 html 静态内容</h3>
+
+<p><img src="/assets/pic/free-static-blog-2.png" alt="" /></p>
+
+<p>如上图所示，创建一个 <code class="highlighter-rouge">index.html</code> 文件 并贴入写好的 html 内容，然后提交保存即可。之所以取名 <code class="highlighter-rouge">index.html</code>，是因为 WWW 服务器默认会把名称为 <code class="highlighter-rouge">index.html</code> 作为首页地址返回给用户。</p>
+
+<h3 id="4-通过-jianzhoubiangithubio-地址访问博客">4. 通过 jianzhoubian.github.io 地址访问博客</h3>
+<p>做完第 3 步，就可以通过仓库地址名（<a href="https://jianzhoubian.github.io">jianzhoubian.github.io</a>）访问博客内容了。</p>
+
+<p>如果大家细心可以发现域名中包含了 <strong>github.io</strong> 后缀， 其实我们完全可以在对应仓库的设置（Setting）中配置自己的私人域名（私人域名需要自己购买，费用在几元到几十元不等，<a href="https://wanwang.aliyun.com">阿里云</a>、<a href="https://dnspod.cloud.tencent.com/">腾讯云</a>等知名云服务提供商目前都可以买域名）。</p>
+
+<p>接下来尝试把 jianzhoubian.github.io 配置到 tui.jianzhoubian.com（下面的内容默认大家有自己的域名，购买域名比较简单，只要记住价格——几元到几十元，多于这个价格可能买了其他的服务）。</p>
+
+<h3 id="5-配置私人域名在-github-中设置项目相关项">5. 配置私人域名——在 github 中设置项目相关项</h3>
+
+<p><img src="/assets/pic/free-static-blog-3.png" alt="" /></p>
+
+<p>如上图所示，首先 <strong>1）</strong>点击 Settings 进入项目的设置页面（图示以 jianzhoubian.github.io 为例），接着 <strong>2）</strong>找到 <strong>GitHub Pages -&gt; Custom domain</strong> 的位置，然后 <strong>3）</strong>填写自己的私人域名地址即可（我买了 jianzhoubian.com 这个域名，图示填入了 <strong>tui.jianzhoubian.com</strong>，之所以用 <strong>tui</strong> 这个前缀，取“<strong>推</strong>荐周边”的意思）。</p>
+
+<p>说明：配置了自己的域名后，默认是 http 协议访问，其实我们可以配置 https 协议（更安全和专业）。大家注意上图 <strong>Enforce HTTPS</strong> 的内容，这个 <strong>Enforce HTTPS</strong> 的按钮就是<strong>强制 https</strong> 访问的意思。刚刚配置私有域名后，因为 github 在帮忙申请证书<strong>Enforce HTTPS</strong> 可能不能勾选，一般等一段时间（几分钟到几个小时不等）就可以了，大家可以不要慌。</p>
+
+<h3 id="6-配置私人域名配置域名解析">6. 配置私人域名——配置域名解析</h3>
+<p>配置域名解析需要在购买域名的云平台进行操作。如果域名是在<a href="https://wanwang.aliyun.com">阿里云</a>买的就在阿里云操作，如果域名是在<a href="https://dnspod.cloud.tencent.com/">腾讯云</a>买的就在腾讯云操作，以此类推。</p>
+
+<p><img src="/assets/pic/free-static-blog-4.png" alt="" /></p>
+
+<p>如上图所示，我们只需要配置一个 CNAME 类型的解析，其中 <strong>主机记录</strong>值是我们上一步在 github 中配置的 <strong>tui.jianzhoubian.com</strong>（二者必须一致），<strong>记录值</strong>则是我们的项目名称<strong>jianzhoubian.github.io</strong>。填好后点击确认，等待几分钟就可以通过 <strong>tui.jianzhoubian.com</strong> 访问我们的博客了。</p>
+
+<h3 id="7-通过-tuijianzhoubiancom-地址访问博客">7. 通过 tui.jianzhoubian.com 地址访问博客</h3>
+<p>做完第 6 步，就可以通过仓库地址名（<a href="https://tui.jianzhoubian.com">tui.jianzhoubian.com</a>）访问博客内容了。</p>
+
+<h2 id="小结">小结</h2>
+<p>在浏览器中访问的博客页面，归根结底属于 html 页面。换句话讲，只要大家精通 html 的生成方法，然后按照上面的步骤把相应的 html 文件托管到 Github 上就可以拥有自己的博客了。html 的生成方法有很多，比如：</p>
+
+<ol>
+  <li>手动编码 html 文件；</li>
+  <li>利用 JekyII、Hugo 等博客框架把 markdown 文件转换成 html 文件（<strong>推荐此种方式</strong>）；</li>
+  <li>利用 vuejs、reactjs 等专业的前端框架渲染 html 文件；</li>
+  <li>其他。</li>
+</ol>
+
+<p>本文简单介绍了搭建<strong>简单静态页面型</strong>的方法，通过把静态页面托管到 github 以域名 <a href="https://jianzhoubian.github.io">jianzhoubian.github.io</a> 的方式供所有人浏览；为了增加博客的独特性，本文还介绍了配置私有域名 <a href="https://tui.jianzhoubian.com">tui.jianzhoubian.com</a> 的方法。希望能够帮大家顺利搭建自己的博客。</p>
+
+<p>如果大家对文章内容有任何疑问，欢迎邮件联系我，或者加qq群 376482175 进行交流 :)</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="/2018/06/08/how-to-build-a-blog-web.html">如果你想搭建一个很随意的博客 - 敬维</a> 之前笼统地写的搭建博客的几个点</li>
+  <li><a href="/2018/09/01/internet-a-request-route.html">《白话互联网技术》之一个请求的链路 - 敬维</a> 介绍了互联网请求的链路</li>
+  <li><a href="/2018/08/01/git-foundation-of-foundation.html">git使用基础 - 敬维</a> 介绍了 git 的几个基础使用命令</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/07/30/huixian-mahjong-server-summary.html" class="read-next-link"></a>
+          <section>
+            <span>麻将游戏后端架构里的多并发模型</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="/assets/pic/huixian-mahjong-server-summary.png" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

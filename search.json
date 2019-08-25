@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "搭建免费的个人博客（一）——简单静态页面型",
+      "tags"     : "实用 经验 自己",
+      "url"      : "/2019/08/25/free-static-blog.html"
+    } ,
+  
+    {
       "title"    : "麻将游戏后端架构里的多并发模型",
       "tags"     : "基础 实用 golang",
       "url"      : "/2019/07/30/huixian-mahjong-server-summary.html"
