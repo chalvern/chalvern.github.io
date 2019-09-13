@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【图示】控制 Goroutine 的并发数量的方式 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="【图示】控制 Goroutine 的并发数量的方式">
+    <meta name="keywords"  content="golang, 实用, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="【图示】控制 Goroutine 的并发数量的方式 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/09/13/conotrol-goroutines-count.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>【图示】控制 Goroutine 的并发数量的方式</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-09-13"><i class="iconfont icon-date"></i>13 Sep 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">总结控制 Goroutine 并发数量的基本理念</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#控制-goroutine-的数量" id="markdown-toc-控制-goroutine-的数量">控制 Goroutine 的数量</a>    <ul>
+      <li><a href="#先看-goroutine-数量不受控制的代码例一" id="markdown-toc-先看-goroutine-数量不受控制的代码例一">先看 Goroutine 数量不受控制的代码（例一）</a></li>
+      <li><a href="#goroutine-数量不受控制的图示" id="markdown-toc-goroutine-数量不受控制的图示">Goroutine 数量不受控制的图示</a></li>
+      <li><a href="#goroutine-数量受到限制的图示" id="markdown-toc-goroutine-数量受到限制的图示">Goroutine 数量受到限制的图示</a></li>
+      <li><a href="#控制-goroutine-数量的代码例二" id="markdown-toc-控制-goroutine-数量的代码例二">控制 Goroutine 数量的代码（例二）</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>在 Go 语言中创建协程（Goroutine）的成本非常低，因此稍不注意就可能创建出大量的协程，一方面会造成资源的浪费，另一方面不容易控制这些协程的状态。</p>
+
+<p>不过，“能力越大，越需要克制”。网络上已经存在一些讲控制 Goroutine 数目的文章，本文通过图示的方式再简单总结一下其基本理念，以便于记忆。</p>
+
+<h2 id="控制-goroutine-的数量">控制 Goroutine 的数量</h2>
+<h3 id="先看-goroutine-数量不受控制的代码例一">先看 Goroutine 数量不受控制的代码（例一）</h3>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"runtime"</span><span class="x">
+	</span><span class="s">"sync"</span><span class="x">
+	</span><span class="s">"time"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">jobsCount</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">10</span><span class="x">
+	</span><span class="n">group</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">sync</span><span class="o">.</span><span class="n">WaitGroup</span><span class="p">{}</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">jobsCount</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">group</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
+		</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">(</span><span class="n">i</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"hello %d!</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">)</span><span class="x">
+			</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span><span class="x"> </span><span class="c">// 刻意睡 1 秒钟，模拟耗时</span><span class="x">
+			</span><span class="n">group</span><span class="o">.</span><span class="n">Done</span><span class="p">()</span><span class="x">
+		</span><span class="p">}(</span><span class="n">i</span><span class="p">)</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"index: %d,goroutine Num: %d </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">,</span><span class="x"> </span><span class="n">runtime</span><span class="o">.</span><span class="n">NumGoroutine</span><span class="p">())</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">group</span><span class="o">.</span><span class="n">Wait</span><span class="p">()</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"done!"</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>上面的代码假设有 <code class="highlighter-rouge">jobsCount</code> 个任务，通过 <code class="highlighter-rouge">for-range</code> 给每个任务创建了一个 Goroutine。为了让主协程等待所有的子协程执行完毕后再退出，使用 <code class="highlighter-rouge">sync.WaitGroup</code> 监控所有协程的状态，从而保证主协程结束时所有的子协程已经退出。为了说明问题，上面的代码还输出了 <code class="highlighter-rouge">runtime.NumGoroutine()</code> 的值用以表征协程的数量。</p>
+
+<p>运行上面的代码，可以得到类似下面的输出。从下面的输出中我们可以得到两点信息：① 协程的执行顺序是随机的（比如 <code class="highlighter-rouge">hello 3</code> 在 <code class="highlighter-rouge">hello 4</code> 后面出现）；② 协程的数量递增，最后竟达到了 11 个之多。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hello 0!
+index: 0,goroutine Num: 2 
+index: 1,goroutine Num: 3 
+hello 1!
+index: 2,goroutine Num: 4 
+hello 2!
+index: 3,goroutine Num: 5 
+index: 4,goroutine Num: 6 
+index: 5,goroutine Num: 7 
+index: 6,goroutine Num: 8 
+hello 4!
+hello 5!
+hello 3!
+hello 7!
+index: 7,goroutine Num: 9 
+index: 8,goroutine Num: 10 
+index: 9,goroutine Num: 11 
+hello 8!
+hello 9!
+hello 6!
+<span class="k">done</span><span class="o">!</span>
+</code></pre></div></div>
+
+<h3 id="goroutine-数量不受控制的图示">Goroutine 数量不受控制的图示</h3>
+
+<p>我们应该怎么理解<strong>例一</strong>的代码呢？</p>
+
+<p>假如 CPU 只有<strong>两个</strong> 核，下图展示了为每个 job 创建一个 goroutine 的情况（换句话说，goroutine 的数量是不受控制的）。此种情况虽然生成了很多的 goroutine，但是<strong>每个 CPU 核上同一时间只能执行一个 goroutine</strong>；当 job 很多且生成了相应数目的 goroutine 后，会出现很多等待执行的 goroutine，从而造成资源上的浪费。</p>
+
+<p><img src="/assets/pic/figure-goroutine-controll-1.png" alt="" /></p>
+
+<h3 id="goroutine-数量受到限制的图示">Goroutine 数量受到限制的图示</h3>
+
+<p>给每个 job 生成一个 goroutine 的方式显得粗暴了很多，那么可以通过什么样的方式控制 goroutine 的数目呢？其实“<strong>例一</strong>”小节的代码通过一个 <code class="highlighter-rouge">for-range</code> 循环完成了两件事情：①为每个 job 创建 goroutine；②把任务相关的标识传给相应的 goroutine 执行。为了控制 goroutine 的数目，完全可以把上面的两个过程拆分开：a）先通过一个 <code class="highlighter-rouge">for-range</code> 循环创建指定数目的 goroutine，b）然后通过 <code class="highlighter-rouge">channel</code>/<code class="highlighter-rouge">buffered channel</code> 给每个 goroutine 传递任务相关的信息（这里的<code class="highlighter-rouge">channel</code>是否缓冲无所谓，主要用到的是 <code class="highlighter-rouge">channel</code> 的线程安全特性）。如下图所示。</p>
+
+<p><img src="/assets/pic/figure-goroutine-controll-2.png" alt="" /></p>
+
+<h3 id="控制-goroutine-数量的代码例二">控制 Goroutine 数量的代码（例二）</h3>
+<p>代码实现上也很简单：一个 <code class="highlighter-rouge">for-range</code> 创建指定数目的 goroutine，另一个 <code class="highlighter-rouge">for-range</code> 把 job 依次推送到 <code class="highlighter-rouge">channel</code> 供 goroutine 消费。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"fmt"</span><span class="x">
+	</span><span class="s">"runtime"</span><span class="x">
+	</span><span class="s">"sync"</span><span class="x">
+	</span><span class="s">"time"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">jobsCount</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">10</span><span class="x">
+	</span><span class="n">group</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">sync</span><span class="o">.</span><span class="n">WaitGroup</span><span class="p">{}</span><span class="x">
+	</span><span class="k">var</span><span class="x"> </span><span class="n">jobsChan</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">chan</span><span class="x"> </span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="m">3</span><span class="p">)</span><span class="x">
+	</span><span class="c">// a) 生成指定数目的 goroutine，每个 goroutine 消费 jobsChan 中的数据</span><span class="x">
+	</span><span class="n">poolCount</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">3</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">poolCount</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+			</span><span class="k">for</span><span class="x"> </span><span class="n">j</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">jobsChan</span><span class="x"> </span><span class="p">{</span><span class="x">
+				</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"hello %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">j</span><span class="p">)</span><span class="x">
+				</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span><span class="x">
+				</span><span class="n">group</span><span class="o">.</span><span class="n">Done</span><span class="p">()</span><span class="x">
+			</span><span class="p">}</span><span class="x">
+		</span><span class="p">}()</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="c">// b) 把 job 依次推送到 jobsChan 供 goroutine 消费</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">jobsCount</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">jobsChan</span><span class="x"> </span><span class="o">&lt;-</span><span class="x"> </span><span class="n">i</span><span class="x">
+		</span><span class="n">group</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"index: %d,goroutine Num: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">,</span><span class="x"> </span><span class="n">runtime</span><span class="o">.</span><span class="n">NumGoroutine</span><span class="p">())</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">group</span><span class="o">.</span><span class="n">Wait</span><span class="p">()</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"done!"</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>运行上面的代码可以得到下面类似的输出（<strong>可以看到 goroutine 的数量控制在了 4 个</strong>）。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>index: 0,goroutine Num: 4
+index: 1,goroutine Num: 4
+hello 1
+index: 2,goroutine Num: 4
+index: 3,goroutine Num: 4
+index: 4,goroutine Num: 4
+hello 2
+index: 5,goroutine Num: 4
+hello 0
+hello 3
+hello 4
+hello 5
+index: 6,goroutine Num: 4
+index: 7,goroutine Num: 4
+index: 8,goroutine Num: 4
+hello 6
+hello 7
+index: 9,goroutine Num: 4
+hello 8
+hello 9
+<span class="k">done</span><span class="o">!</span>
+</code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+<p>本文通过图示的方式总结了控制 goroutine 数目的一种简单方式，简单来讲就是：①通过一个 <code class="highlighter-rouge">for-range</code> 创建指定数目的 goroutine，② 通过另一个 <code class="highlighter-rouge">for-range</code> 把 job 依次推送到 <code class="highlighter-rouge">channel</code> 供第一步生成的 goroutine 消费。</p>
+
+<p>为了说明问题，代码示例中输出了 <code class="highlighter-rouge">runtime.NumGoroutine()</code>（即 gouroutine 的数目）的变化，便于大家更直观地观察效果。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://book.eddycjy.com/golang/talk/control-goroutine.html">1.6 来，控制一下 goroutine 的并发数量 · 跟煎鱼学 Go</a></li>
+  <li><a href="https://jingwei.link/2019/05/26/golang-routine-scheduler.html">Golang 并发问题（五）goroutine 的调度及抢占 - 敬维</a> 之前总结的一篇 goroutine 调度与抢占的文章</li>
+  <li><a href="https://github.com/chalvern/gochan">GitHub - chalvern/gochan: pool of goroutine with buffer channel, for concurrent execution but events of individual object running sequentially</a> 基于同样的原理实现的一个小工具，不过每个 goroutine 监听自己的 channel，并通过一个分发器（dispatcher）把任务分发到特定的 channel 中（因为考虑到有些任务前后可能是有关联的）。</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/08/25/free-static-blog.html" class="read-next-link"></a>
+          <section>
+            <span>搭建免费的个人博客（一）——简单静态页面型</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

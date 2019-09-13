@@ -5,9 +5,187 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 27 Aug 2019 09:33:50 +0800</pubDate>
-    <lastBuildDate>Tue, 27 Aug 2019 09:33:50 +0800</lastBuildDate>
+    <pubDate>Fri, 13 Sep 2019 22:13:45 +0800</pubDate>
+    <lastBuildDate>Fri, 13 Sep 2019 22:13:45 +0800</lastBuildDate>
     <generator>Jekyll v3.8.3</generator>
+    
+      <item>
+        <title>【图示】控制 Goroutine 的并发数量的方式</title>
+        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#控制-goroutine-的数量&quot; id=&quot;markdown-toc-控制-goroutine-的数量&quot;&gt;控制 Goroutine 的数量&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#先看-goroutine-数量不受控制的代码例一&quot; id=&quot;markdown-toc-先看-goroutine-数量不受控制的代码例一&quot;&gt;先看 Goroutine 数量不受控制的代码（例一）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#goroutine-数量不受控制的图示&quot; id=&quot;markdown-toc-goroutine-数量不受控制的图示&quot;&gt;Goroutine 数量不受控制的图示&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#goroutine-数量受到限制的图示&quot; id=&quot;markdown-toc-goroutine-数量受到限制的图示&quot;&gt;Goroutine 数量受到限制的图示&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#控制-goroutine-数量的代码例二&quot; id=&quot;markdown-toc-控制-goroutine-数量的代码例二&quot;&gt;控制 Goroutine 数量的代码（例二）&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
+&lt;p&gt;在 Go 语言中创建协程（Goroutine）的成本非常低，因此稍不注意就可能创建出大量的协程，一方面会造成资源的浪费，另一方面不容易控制这些协程的状态。&lt;/p&gt;
+
+&lt;p&gt;不过，“能力越大，越需要克制”。网络上已经存在一些讲控制 Goroutine 数目的文章，本文通过图示的方式再简单总结一下其基本理念，以便于记忆。&lt;/p&gt;
+
+&lt;h2 id=&quot;控制-goroutine-的数量&quot;&gt;控制 Goroutine 的数量&lt;/h2&gt;
+&lt;h3 id=&quot;先看-goroutine-数量不受控制的代码例一&quot;&gt;先看 Goroutine 数量不受控制的代码（例一）&lt;/h3&gt;
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fmt&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;runtime&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;sync&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;time&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jobsCount&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WaitGroup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jobsCount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+		&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello %d!&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Second&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// 刻意睡 1 秒钟，模拟耗时&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Done&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+		&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;index: %d,goroutine Num: %d &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;runtime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NumGoroutine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Wait&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;done!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的代码假设有 &lt;code class=&quot;highlighter-rouge&quot;&gt;jobsCount&lt;/code&gt; 个任务，通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;for-range&lt;/code&gt; 给每个任务创建了一个 Goroutine。为了让主协程等待所有的子协程执行完毕后再退出，使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.WaitGroup&lt;/code&gt; 监控所有协程的状态，从而保证主协程结束时所有的子协程已经退出。为了说明问题，上面的代码还输出了 &lt;code class=&quot;highlighter-rouge&quot;&gt;runtime.NumGoroutine()&lt;/code&gt; 的值用以表征协程的数量。&lt;/p&gt;
+
+&lt;p&gt;运行上面的代码，可以得到类似下面的输出。从下面的输出中我们可以得到两点信息：① 协程的执行顺序是随机的（比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello 3&lt;/code&gt; 在 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello 4&lt;/code&gt; 后面出现）；② 协程的数量递增，最后竟达到了 11 个之多。&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hello 0!
+index: 0,goroutine Num: 2 
+index: 1,goroutine Num: 3 
+hello 1!
+index: 2,goroutine Num: 4 
+hello 2!
+index: 3,goroutine Num: 5 
+index: 4,goroutine Num: 6 
+index: 5,goroutine Num: 7 
+index: 6,goroutine Num: 8 
+hello 4!
+hello 5!
+hello 3!
+hello 7!
+index: 7,goroutine Num: 9 
+index: 8,goroutine Num: 10 
+index: 9,goroutine Num: 11 
+hello 8!
+hello 9!
+hello 6!
+&lt;span class=&quot;k&quot;&gt;done&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;goroutine-数量不受控制的图示&quot;&gt;Goroutine 数量不受控制的图示&lt;/h3&gt;
+
+&lt;p&gt;我们应该怎么理解&lt;strong&gt;例一&lt;/strong&gt;的代码呢？&lt;/p&gt;
+
+&lt;p&gt;假如 CPU 只有&lt;strong&gt;两个&lt;/strong&gt; 核，下图展示了为每个 job 创建一个 goroutine 的情况（换句话说，goroutine 的数量是不受控制的）。此种情况虽然生成了很多的 goroutine，但是&lt;strong&gt;每个 CPU 核上同一时间只能执行一个 goroutine&lt;/strong&gt;；当 job 很多且生成了相应数目的 goroutine 后，会出现很多等待执行的 goroutine，从而造成资源上的浪费。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/pic/figure-goroutine-controll-1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;goroutine-数量受到限制的图示&quot;&gt;Goroutine 数量受到限制的图示&lt;/h3&gt;
+
+&lt;p&gt;给每个 job 生成一个 goroutine 的方式显得粗暴了很多，那么可以通过什么样的方式控制 goroutine 的数目呢？其实“&lt;strong&gt;例一&lt;/strong&gt;”小节的代码通过一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;for-range&lt;/code&gt; 循环完成了两件事情：①为每个 job 创建 goroutine；②把任务相关的标识传给相应的 goroutine 执行。为了控制 goroutine 的数目，完全可以把上面的两个过程拆分开：a）先通过一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;for-range&lt;/code&gt; 循环创建指定数目的 goroutine，b）然后通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;channel&lt;/code&gt;/&lt;code class=&quot;highlighter-rouge&quot;&gt;buffered channel&lt;/code&gt; 给每个 goroutine 传递任务相关的信息（这里的&lt;code class=&quot;highlighter-rouge&quot;&gt;channel&lt;/code&gt;是否缓冲无所谓，主要用到的是 &lt;code class=&quot;highlighter-rouge&quot;&gt;channel&lt;/code&gt; 的线程安全特性）。如下图所示。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/pic/figure-goroutine-controll-2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;控制-goroutine-数量的代码例二&quot;&gt;控制 Goroutine 数量的代码（例二）&lt;/h3&gt;
+&lt;p&gt;代码实现上也很简单：一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;for-range&lt;/code&gt; 创建指定数目的 goroutine，另一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;for-range&lt;/code&gt; 把 job 依次推送到 &lt;code class=&quot;highlighter-rouge&quot;&gt;channel&lt;/code&gt; 供 goroutine 消费。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fmt&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;runtime&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;sync&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;time&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jobsCount&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WaitGroup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jobsChan&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// a) 生成指定数目的 goroutine，每个 goroutine 消费 jobsChan 中的数据&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;poolCount&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;poolCount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+		&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+			&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jobsChan&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+				&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+				&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Second&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+				&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Done&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+			&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+		&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// b) 把 job 依次推送到 jobsChan 供 goroutine 消费&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jobsCount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jobsChan&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;index: %d,goroutine Num: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;runtime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NumGoroutine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Wait&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;done!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;运行上面的代码可以得到下面类似的输出（&lt;strong&gt;可以看到 goroutine 的数量控制在了 4 个&lt;/strong&gt;）。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;index: 0,goroutine Num: 4
+index: 1,goroutine Num: 4
+hello 1
+index: 2,goroutine Num: 4
+index: 3,goroutine Num: 4
+index: 4,goroutine Num: 4
+hello 2
+index: 5,goroutine Num: 4
+hello 0
+hello 3
+hello 4
+hello 5
+index: 6,goroutine Num: 4
+index: 7,goroutine Num: 4
+index: 8,goroutine Num: 4
+hello 6
+hello 7
+index: 9,goroutine Num: 4
+hello 8
+hello 9
+&lt;span class=&quot;k&quot;&gt;done&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
+&lt;p&gt;本文通过图示的方式总结了控制 goroutine 数目的一种简单方式，简单来讲就是：①通过一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;for-range&lt;/code&gt; 创建指定数目的 goroutine，② 通过另一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;for-range&lt;/code&gt; 把 job 依次推送到 &lt;code class=&quot;highlighter-rouge&quot;&gt;channel&lt;/code&gt; 供第一步生成的 goroutine 消费。&lt;/p&gt;
+
+&lt;p&gt;为了说明问题，代码示例中输出了 &lt;code class=&quot;highlighter-rouge&quot;&gt;runtime.NumGoroutine()&lt;/code&gt;（即 gouroutine 的数目）的变化，便于大家更直观地观察效果。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://book.eddycjy.com/golang/talk/control-goroutine.html&quot;&gt;1.6 来，控制一下 goroutine 的并发数量 · 跟煎鱼学 Go&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://jingwei.link/2019/05/26/golang-routine-scheduler.html&quot;&gt;Golang 并发问题（五）goroutine 的调度及抢占 - 敬维&lt;/a&gt; 之前总结的一篇 goroutine 调度与抢占的文章&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/gochan&quot;&gt;GitHub - chalvern/gochan: pool of goroutine with buffer channel, for concurrent execution but events of individual object running sequentially&lt;/a&gt; 基于同样的原理实现的一个小工具，不过每个 goroutine 监听自己的 channel，并通过一个分发器（dispatcher）把任务分发到特定的 channel 中（因为考虑到有些任务前后可能是有关联的）。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Fri, 13 Sep 2019 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2019/09/13/conotrol-goroutines-count.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2019/09/13/conotrol-goroutines-count.html</guid>
+        
+        <category>golang</category>
+        
+        <category>实用</category>
+        
+        <category>基础</category>
+        
+        
+        <category>golang</category>
+        
+      </item>
     
       <item>
         <title>搭建免费的个人博客（一）——简单静态页面型</title>
@@ -1051,9 +1229,9 @@ go tool objdump &lt;span class=&quot;nt&quot;&gt;-S&lt;/span&gt; testl &lt;span 
 
 &lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://jingwei.link/2018/12/30/linux-process-thread-schedule.html&quot;&gt;Linux系统调度原理浅析 - 敬维&lt;/a&gt;  简单介绍了 进程、线程、多线程模型、时间片以及调度等概念&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://jingwei.link/2019/02/13/linux-process-thread-schedule-2.html&quot;&gt;Linux系统调度原理浅析（二） - 敬维&lt;/a&gt; 简单介绍了 进程、线程、调度以及Goroutine的调度&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://jingwei.link/2019/05/11/golang-concurrency-02.html&quot;&gt;浅谈 Golang 中数据的并发同步问题（二） - 敬维&lt;/a&gt; 介绍了原子性&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/2018/12/30/linux-process-thread-schedule.html&quot;&gt;Linux系统调度原理浅析 - 敬维&lt;/a&gt;  简单介绍了 进程、线程、多线程模型、时间片以及调度等概念&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/2019/02/13/linux-process-thread-schedule-2.html&quot;&gt;Linux系统调度原理浅析（二） - 敬维&lt;/a&gt; 简单介绍了 进程、线程、调度以及Goroutine的调度&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/2019/05/11/golang-concurrency-02.html&quot;&gt;浅谈 Golang 中数据的并发同步问题（二） - 敬维&lt;/a&gt; 介绍了原子性&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://studygolang.com/articles/5025&quot;&gt;golang多核设置&lt;/a&gt; 介绍了 golang 的多核配置方法（&lt;code class=&quot;highlighter-rouge&quot;&gt;runtime.GOMAXPROCS(1)&lt;/code&gt;）及示例&lt;/li&gt;
 &lt;/ul&gt;
 </description>
@@ -1343,153 +1521,6 @@ go run &lt;span class=&quot;nt&quot;&gt;-race&lt;/span&gt; main.go
         <pubDate>Sat, 11 May 2019 00:00:00 +0800</pubDate>
         <link>https://jingwei.link/2019/05/11/golang-concurrency-02.html</link>
         <guid isPermaLink="true">https://jingwei.link/2019/05/11/golang-concurrency-02.html</guid>
-        
-        <category>golang</category>
-        
-        <category>实用</category>
-        
-        <category>基础</category>
-        
-        
-        <category>golang</category>
-        
-      </item>
-    
-      <item>
-        <title>浅谈 Golang 中数据的并发同步问题（一）</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#从一个例子看线程安全与数据竞争问题&quot; id=&quot;markdown-toc-从一个例子看线程安全与数据竞争问题&quot;&gt;从一个例子看线程安全与数据竞争问题&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#一个非常原始的数据竞争问题&quot; id=&quot;markdown-toc-一个非常原始的数据竞争问题&quot;&gt;一个非常原始的数据竞争问题&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#通过加锁的方式优化有数据竞争的代码&quot; id=&quot;markdown-toc-通过加锁的方式优化有数据竞争的代码&quot;&gt;通过加锁的方式优化有数据竞争的代码&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#示例代码的进一步阐释&quot; id=&quot;markdown-toc-示例代码的进一步阐释&quot;&gt;示例代码的进一步阐释&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
-&lt;p&gt;过去 Web 开发的工作比较少涉及到并发的问题，每个用户请求在独立的线程里面进行，偶尔涉及到异步任务但是线程间数据同步模型非常简单，因此并未深入探究过并发这一块。最近在写游戏相关的服务端代码时发现数据的并发同步场景非常多，因此花了一点时间来探索。&lt;/p&gt;
-
-&lt;p&gt;本文通过一个例子来简单引出 Golang 中的数据并发同步问题，并通过简单加锁的方式来避免数据竞争问题。&lt;/p&gt;
-
-&lt;h2 id=&quot;从一个例子看线程安全与数据竞争问题&quot;&gt;从一个例子看线程安全与数据竞争问题&lt;/h2&gt;
-
-&lt;h3 id=&quot;一个非常原始的数据竞争问题&quot;&gt;一个非常原始的数据竞争问题&lt;/h3&gt;
-
-&lt;p&gt;下面的代码模拟了为一个用户（&lt;code class=&quot;highlighter-rouge&quot;&gt;Person&lt;/code&gt;）发放金币（&lt;code class=&quot;highlighter-rouge&quot;&gt;Money&lt;/code&gt;）的代码，其中金币发放与读取分别再不同的线程里完成（读取在主线程，发放在一个子线程）。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// cat main.go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fmt&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Money: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;运行上面的代码：&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 只是运行上面的代码&lt;/span&gt;
-go run main.go
-&lt;span class=&quot;c&quot;&gt;# Money: 100&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# 添加 -race 后检测竞争状态，可以看到 race 的提醒&lt;/span&gt;
-go run &lt;span class=&quot;nt&quot;&gt;-race&lt;/span&gt; main.go
-&lt;span class=&quot;c&quot;&gt;# Money: 100&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# ==================&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# WARNING: DATA RACE&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# Write at 0x00c00001c0a0 by goroutine 6:&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# ....&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# Previous read at 0x00c00001c0a0 by main goroutine&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# ....&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;通过运行代码并查看输出可以确认：① 代码可以正常运行（并没有因为多个线程读写同一个变量而崩溃），② 由于数据没有同步最后输出的数据  &lt;code class=&quot;highlighter-rouge&quot;&gt;Money: 100&lt;/code&gt; 与预期的数据&lt;code class=&quot;highlighter-rouge&quot;&gt;1100&lt;/code&gt;存在误差，③  通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;go run -race main.go&lt;/code&gt; 添加 &lt;code class=&quot;highlighter-rouge&quot;&gt;-race&lt;/code&gt; 标识可以发现 &lt;strong&gt;数据竞争&lt;/strong&gt; 问题。&lt;/p&gt;
-
-&lt;h3 id=&quot;通过加锁的方式优化有数据竞争的代码&quot;&gt;通过加锁的方式优化有数据竞争的代码&lt;/h3&gt;
-
-&lt;p&gt;下面的代码里给 &lt;code class=&quot;highlighter-rouge&quot;&gt;Person&lt;/code&gt; 添加了一个读写锁 &lt;code class=&quot;highlighter-rouge&quot;&gt;mutext sync.RWMutex&lt;/code&gt;，并通过添加两个方法 &lt;code class=&quot;highlighter-rouge&quot;&gt;GetMoney&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;AddMoney&lt;/code&gt; 来达到读取和修改 &lt;code class=&quot;highlighter-rouge&quot;&gt;Money&lt;/code&gt; 的数值的目的。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fmt&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;sync&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mutext&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RWMutex&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// GetMoney 获取用户金钱&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GetMoney&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mutext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RLock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mutext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RUnlock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// AddMoney 设置用户金钱&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddMoney&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;diff&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mutext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mutext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Unlock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;diff&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddMoney&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Money: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GetMoney&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;运行上面的代码：&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 添加 -race 后检测竞争状态，此时已经看不到 race 的告警&lt;/span&gt;
-go run &lt;span class=&quot;nt&quot;&gt;-race&lt;/span&gt; main.go
-&lt;span class=&quot;c&quot;&gt;# Money: 100&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;通过运行代码并查看输出可以确认：① 代码可以正常运行（并没有因为多个线程读写同一个变量而崩溃），② 由于数据没有同步最后输出的数据  &lt;code class=&quot;highlighter-rouge&quot;&gt;Money: 100&lt;/code&gt; 与预期的数据&lt;code class=&quot;highlighter-rouge&quot;&gt;1100&lt;/code&gt;存在误差 ③  已经没有了 &lt;strong&gt;数据竞争&lt;/strong&gt; 问题。&lt;/p&gt;
-
-&lt;h3 id=&quot;示例代码的进一步阐释&quot;&gt;示例代码的进一步阐释&lt;/h3&gt;
-
-&lt;p&gt;上面的代码逻辑，&lt;strong&gt;加锁前&lt;/strong&gt; 与 &lt;strong&gt;加锁后&lt;/strong&gt;最大的区别是：加锁前 &lt;strong&gt;存在数据竞争问题&lt;/strong&gt;，加锁后&lt;strong&gt;不存在数据竞争问题&lt;/strong&gt;。而无论是否加锁，代码均可以正常运行，且最终同步的数据与预期的数据均存在偏差。&lt;/p&gt;
-
-&lt;p&gt;之所以强调代码可以正常运行，是因为代码一定概率是会崩溃的，只是一般类型（&lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; 类型除外）不那么容易出现崩溃的情况（任何类型变量的使用都可能会出现这个问题，详见《 &lt;a href=&quot;http://yanyiwu.com/work/2015/02/07/golang-concurrency-safety.html&quot;&gt;谈谈go语言编程的并发安全&lt;/a&gt;》 和 《 &lt;a href=&quot;https://software.intel.com/en-us/blogs/2013/01/06/benign-data-races-what-could-possibly-go-wrong&quot;&gt;benign-data-races-what-could-possibly-go-wrong&lt;/a&gt; 》的讨论）。&lt;/p&gt;
-
-&lt;p&gt;由于运行时序的存在，读取得到的数据与预期的数据存在偏差可以这样解释：虽然期望里给用户加了 1000 金钱，但是如果读取是在 &lt;strong&gt;加 1000 金钱&lt;/strong&gt; 之前发生的，也确实是感知不到 &lt;strong&gt;加 1000 金钱&lt;/strong&gt; 这个事件的。&lt;/p&gt;
-
-&lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
-&lt;p&gt;本文简单介绍了 Golang 中数据的并发同步问题，并通过加锁的方式避免了 &lt;strong&gt;数据竞争&lt;/strong&gt; 问题。加锁在各个语言中都是一种常见的方式，理解起来是比较容易的，因此本文并没有对加锁机制进行进一步的阐述。&lt;/p&gt;
-
-&lt;p&gt;不过，数据的并发同步是一个涉及很广泛的问题，接下来需要继续总结。&lt;/p&gt;
-
-&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;http://yanyiwu.com/work/2015/02/07/golang-concurrency-safety.html&quot;&gt;谈谈go语言编程的并发安全&lt;/a&gt; 比较透彻地介绍了 Golang 中并发安全的问题（加锁场景）&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://software.intel.com/en-us/blogs/2013/01/06/benign-data-races-what-could-possibly-go-wrong&quot;&gt;benign-data-races-what-could-possibly-go-wrong&lt;/a&gt;  Intel 工程师讲数据竞争问题&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://golang.google.cn/pkg/sync/&quot;&gt;sync - The Go Programming Language&lt;/a&gt; Golang 官方提供的 sync 包的文档&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://golang.google.cn/ref/mem#tmp_1&quot;&gt;The Go Memory Model - The Go Programming Language&lt;/a&gt; Golang 中内存模型的建议（Advice）&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Sat, 11 May 2019 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2019/05/11/golang-concurrency-01.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2019/05/11/golang-concurrency-01.html</guid>
         
         <category>golang</category>
         
