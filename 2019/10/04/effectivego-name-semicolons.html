@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《原汁原味go语言学习》(3) effective go 命名、分号 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="《原汁原味go语言学习》(3) effective go 命名、分号">
+    <meta name="keywords"  content="golang, 基础, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="《原汁原味go语言学习》(3) effective go 命名、分号 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/10/04/effectivego-name-semicolons.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>《原汁原味go语言学习》(3) effective go 命名、分号</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-10-04"><i class="iconfont icon-date"></i>04 Oct 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">Go 语言官方文档 effective go 的命名、分号部分</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#资料" id="markdown-toc-资料">资料</a></li>
+  <li><a href="#名称" id="markdown-toc-名称">名称</a>    <ul>
+      <li><a href="#包名" id="markdown-toc-包名">包名</a></li>
+      <li><a href="#获取器getters" id="markdown-toc-获取器getters">获取器(Getters)</a></li>
+      <li><a href="#接口名" id="markdown-toc-接口名">接口名</a></li>
+      <li><a href="#混合驼峰式命名" id="markdown-toc-混合驼峰式命名">混合驼峰式命名</a></li>
+    </ul>
+  </li>
+  <li><a href="#分号" id="markdown-toc-分号">分号</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h1 id="资料">资料</h1>
+
+<p><a href="https://golang.google.cn/doc/effective_go.html">effective go</a>
+<a href="https://www.bilibili.com/video/av70193421/">本文的 bilibili 视频地址</a></p>
+
+<h1 id="名称">名称</h1>
+
+<p>和其他编程语言类似，命名在 Go 语言中也很讲究。Go 中的命名甚至属于语法的一部分：名称的首字母是否大写决定这个名称在包外的可见性。因此很有必要花一些时间来了解 Go 程序中的命名规范。</p>
+
+<h2 id="包名">包名</h2>
+
+<p>当包被导入（import）后，包名会成为包的访问器。比如，在 <code class="highlighter-rouge">import "bytes"</code> 后，导入此包的文件就可以使用 <code class="highlighter-rouge">bytes.Buffer</code> 来访问 <code class="highlighter-rouge">bytes</code> 包内的 <code class="highlighter-rouge">Buffer</code> 结构体了。如果使用某包的所有源代码都通过包名调用这个包的内容，这就意味着这个包的包名名称应该足够好：短、简洁且释义。按照惯例，包名应该是小写字符、且应该是一个独立的单词；包名里不应该包含下划线，也不应该是驼峰样式的名称。如果你定义了一个包，包名应该尽可能地简单，因为每个使用这个包的人都需要一个字符一个字符地把包名敲出来（字符太多敲起来麻烦）；我们不需要担心我们的包名和已经存在的包名称上会冲突；对于导入某个包的源码来说，包名指定了默认的访问器名称，不过没有必要在所有导入这个包的源码中都使用这个默认的名称。</p>
+
+<p>很少的情况下，同一个源文件中导入的两个包可能有相同的包名，这时候给冲突的包定义一个新的本地访问器名称就可以了。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
+	</span><span class="s">"github.com/chalvern/sugar"</span><span class="x">
+	</span><span class="n">log</span><span class="x"> </span><span class="s">"github.com/chalvern/sugar"</span><span class="x">
+</span><span class="p">)</span><span class="x">
+
+</span><span class="c">// 同样都是 "github.com/chalvern/sugar"，但是可以设置不同的别名</span><span class="x">
+</span><span class="c">// 如果不设置别名，默认是 `sugar`</span><span class="x">
+</span><span class="n">sugar</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"hello sugar"</span><span class="p">)</span><span class="x">
+</span><span class="n">log</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"hello log"</span><span class="p">)</span><span class="x">
+</span></code></pre></div></div>
+
+<p>导入包的时候使用的是包的全路径（比如 <code class="highlighter-rouge">"github.com/chalvern/sugar"</code>），它唯一决定了使用的是哪个包，因此即使出现了另一个名为 <code class="highlighter-rouge">sugar</code> 的包，使用上也不会出现混淆。</p>
+
+<p>另一个约定是，包名一般设置为它的源文件所在的目录名，比如目录 <code class="highlighter-rouge">src/encoding/base64</code> 定义的包引入时的路径是 <code class="highlighter-rouge">"encoding/base64"</code>，我们应该把包名定义为<code class="highlighter-rouge">base64</code>，不应该写成 encoding_base64，也不应该写成 encodingBase64。</p>
+
+<p>一个包被导入后一般通过它的包名来访问其内容，因此在包中导出的名字可以借助包名来避免含糊不清（不要在源文件中使用 <code class="highlighter-rouge">import . package/name</code> 的方式导入包，否则包里的名称很容易与源文件夹中的名称混淆）。比如，在 <code class="highlighter-rouge">bufio</code> 包里带缓存的读类型应该是 Reader 而不是 BufReader, 因为当开发者看到 <code class="highlighter-rouge">bufio.Reader</code> 的时候就已经知道这是个带缓存的 Reader 了，这种方式的定义不仅简洁而且不失准确性。进一步讲，因为被导入的实体经常与他们的包名一起取用，因此 <code class="highlighter-rouge">bufio.Reader</code> 和 <code class="highlighter-rouge">io.Reader</code> 虽然都是 <code class="highlighter-rouge">Reader</code> 但是二者是不会冲突的。同样的道理，对于包 <a href="https://golang.google.cn/pkg/container/ring/">ring</a>，包里包含唯一导出的 <code class="highlighter-rouge">Ring</code> 结构体，创建 <code class="highlighter-rouge">Ring</code> 的新对象的函数按一般的思维可以被命名为 <code class="highlighter-rouge">NewRing()</code>，但是因为 <code class="highlighter-rouge">Ring</code> 是包里唯一导出的类型，并且因为包名叫 <code class="highlighter-rouge">ring</code>，因此这个创建新对象的方法可以命名为 <code class="highlighter-rouge">New()</code>，这样使用这个包的调用方就可以通过 <code class="highlighter-rouge">ring.New()</code> 来创建 <code class="highlighter-rouge">Ring</code> 的对象了（是不是感觉很简单）。总之，根据包的这些使用规范来选择一个好名称吧。</p>
+
+<p>另一个短小精悍的例子是 <code class="highlighter-rouge">once.Do</code>，<code class="highlighter-rouge">once.Do(setup)</code> 读起来自然且流畅，如果把名字改成 <code class="highlighter-rouge">once.DoOrWaitUntilDone(setup)</code> 好像并没有必要。长名称并不会让事物更具有可读性。相对于长的命名方式，注释文档往往具有有更高的价值。</p>
+
+<h2 id="获取器getters">获取器(Getters)</h2>
+
+<p>Go 并没有对获取器（getter）和设置器（setter）提供自动的支持；不过我们可以自己提供获取器和设置器，而且一般也推荐这么做；但是对 Go 语言来说把 Get 放进获取器的名字里显得既不明智也没太大必要。比如一个结构体有一个名为 <code class="highlighter-rouge">owner</code> 的字段（小写，意味着非导出，在包外不能直接访问这个变量），它的获取器的名字应该叫 <code class="highlighter-rouge">Owner()</code>（大写字母，可导出），而不是 <code class="highlighter-rouge">GetOwner()</code>。在 Go 语言中大写字母名称可以导出，这种机制使方法名与字段名可以不冲突，不需要添加 <code class="highlighter-rouge">Get</code> 就可以满足我们的需求了。假如设置器函数是必须的，设置器函数可以取名为 <code class="highlighter-rouge">SetOwner()</code>，这个时候就要加上 <code class="highlighter-rouge">Set</code> 这个单词了（这里或许有点过头了。。）。如此，下面的代码读起来都很流畅：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">owner</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">obj</span><span class="o">.</span><span class="n">Owner</span><span class="p">()</span><span class="x">
+</span><span class="k">if</span><span class="x"> </span><span class="n">owner</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="n">user</span><span class="x"> </span><span class="p">{</span><span class="x">
+    </span><span class="n">obj</span><span class="o">.</span><span class="n">SetOwner</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h2 id="接口名">接口名</h2>
+
+<p>通常情况下，只有一个方法的接口的名称是方法名加 “er” 后缀，或者类似构造而成的代理名词，比如：Reader, Writer, Formatter, CloseNotifier 等。这种命名方式有许多被开发者熟知的接口以及方法。</p>
+
+<p>以 Read, Write, Close, Flush, String 等命名方法都有规范的签名（声明）和含义；为了避免混淆，你自己的方法除非有相同的签名和含义，否则不要以这些名字命名。而假如自定义的类型存在一个方法和某个已存的类型的方法功能相似，这个时候取相同的名字就可以了。比如假如你定义了一个字符串转换的方法，直接命名为 <code class="highlighter-rouge">String</code> 而不要命名为 <code class="highlighter-rouge">ToString</code>。</p>
+
+<h2 id="混合驼峰式命名">混合驼峰式命名</h2>
+
+<p>最后，Go 惯例中使用混合驼峰 MixedCaps 或 mixedCaps 来组织多个单词组合的名称，不推荐使用下划线的方式。</p>
+
+<h1 id="分号">分号</h1>
+
+<p>像 C 语言那样，Go 语言使用分号来结束语句；但是和 C 不同的是，这些分号并不在源码中出现。实际上，词法分析器通过一种简单的规则自动插入分号，从而允许在源码中不写分号。</p>
+
+<p>分号插入的规则是：如果 ① 行尾符号的最后一个符号是一个标识符（包括 int 和 float64 等）、② 数字或字符串常量之类的基本字面、或者是 ③  <code class="highlighter-rouge">break continue fallthrough return ++ -- ) }</code> 其中任意一个标记，词法分析器就会在这些标记后面插入一个分号。可以简单总结为：“如果一个标识符的下一个字符是行尾符，且这个标识符可以终止一条语句，就插入一个分号”。</p>
+
+<p>紧接在右大括号前面的分号可以省略，因此表达式 <code class="highlighter-rouge">go func() { for { dst &lt;- &lt;-src } }()</code> 不会插入任何的分号。Go 程序中只有一种显式使用分号的情况就是 <code class="highlighter-rouge">for</code> 循环语句，通过分号来分割<strong>初始化语句</strong>、<strong>条件语句</strong>和<strong>迭代变量修改语句</strong>。当然，如果你想在一行里写多条语句，应该显式地使用分号来分割这些语句。</p>
+
+<p>上面讲到的分号插入规则存在一个局限性：你不可以把控制结构语句（<code class="highlighter-rouge">if</code>, <code class="highlighter-rouge">for</code>, <code class="highlighter-rouge">switch</code>, 或者 <code class="highlighter-rouge">select</code>）的左大括号放在新的一行，而是应该放在同一行中。如果你把 <code class="highlighter-rouge">if</code>, <code class="highlighter-rouge">for</code>, <code class="highlighter-rouge">switch</code>, 或者 <code class="highlighter-rouge">select</code> 紧跟着的大括号放在新的一行，根据分号的插入规则，左大括号前面会被插入一个分号，这肯定不是我们想要的效果。可以看下面的例子及其反例：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">f</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+    </span><span class="n">g</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>不应该写成下面的样子：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">f</span><span class="p">()</span><span class="x">  </span><span class="c">// wrong!</span><span class="x">
+</span><span class="p">{</span><span class="x">           </span><span class="c">// wrong!</span><span class="x">
+    </span><span class="n">g</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h1 id="参考">参考</h1>
+
+<ul>
+  <li><a href="https://github.com/chalvern/books/tree/master/golang/official_go_learning">原汁原味 Go 语言学习(教案)</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/10/04/effectivego-intro-format-commentary.html" class="read-next-link"></a>
+          <section>
+            <span>【原汁原味 Go 语言学习】(2) effective go 简介、格式化与注释部分</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
