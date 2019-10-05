@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>effective go 简介、格式化与注释部分 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="effective go 简介、格式化与注释部分">
+    <meta name="keywords"  content="golang, 基础, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="effective go 简介、格式化与注释部分 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/10/04/effectivego-intro-format-commentary.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>effective go 简介、格式化与注释部分</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-10-04"><i class="iconfont icon-date"></i>04 Oct 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">Go 语言官方文档 effective go 的简介、格式化和注释部分的内容</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#简介" id="markdown-toc-简介">简介</a>    <ul>
+      <li><a href="#示例代码" id="markdown-toc-示例代码">示例代码</a></li>
+    </ul>
+  </li>
+  <li><a href="#格式化" id="markdown-toc-格式化">格式化</a></li>
+  <li><a href="#注释" id="markdown-toc-注释">注释</a>    <ul>
+      <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p><a href="https://golang.google.cn/doc/effective_go.html">effective go</a></p>
+
+<h1 id="简介">简介</h1>
+<p>Go 是一个新的编程语言。虽然它从既有的编程语言中借鉴了很多理念，但是它也有很多与众不同的特性，这使得 Go 和其他的编程语言区别开来。如果一个 Java（C++） 写的应用应用直接按照 Java（C++） 的代码逻辑转译成 Go 语言的应用程序，最后很可能得不到一个满意的效果——毕竟 Java 应用程序是用 Java 写的，里面包含了太多Java的东西，而 Java 跟 Go 比 少了很多特性，因此直接转译肯定是不合适的。换个角度来思考，从 Go 的视角分析问题并据此设计软件，最后也会得到一个独特的架构方案，此时如果把这个 Go 应用程序转译成 Java 语言等其他语言的应用程序肯定也不容易。换句话说，为了写好 Go 语言的程序，学习它的语言特性和语言规范是很重要的。而除了必须要遵循或参考的语言特性和语言规范，了解 Go 语言编程的一些人为的约定也很重要，比如命名、格式、程序构建等相关的内容，这样你写出来的程序就更容易被其他开发者理解，从而便于多人协作进行开发。</p>
+
+<p>本文档给出了一些 Go 语言的编码技巧。遵从这些技巧可以编写出清晰、规范的 Go 语言程序。这篇文档是“<a href="https://golang.google.cn/ref/spec">语言特性</a>”、“<a href="https://tour.golang.org/">Go学习(需要科学上网)</a>”和“<a href="https://golang.google.cn/doc/code.html">如何写 Go 程序</a>”的补充内容，因此在看本文前先看看这些文档再学习本文档会更好。</p>
+
+<h2 id="示例代码">示例代码</h2>
+<p>Go 源码包不仅仅是 Go 的核心功能库，里面同时提供了语言特性的各种实际用法。除此之外，许多的 package 包都涵盖了可直接运行的例子，这些例子大都不包含其他的依赖库，因此可以直接在 golang.google.cn 这个网页上运行，比如 <a href="https://golang.google.cn/pkg/strings/#example_Map">这个</a> 例子。如果你在实际开发过程中遇到一个语言特性相关或者库的应用设计甚至实现相关的问题，都可以到核心代码库搜寻一下，应该会有所收获的。</p>
+
+<p><a href="https://golang.google.cn/pkg/">Go 源码包</a> 列表。</p>
+
+<h1 id="格式化">格式化</h1>
+
+<p>代码的格式一般不影响代码的正常运行，但是因为影响到人的阅读体验，所以不同的代码风格往往导致一些争议。当然可以让任何开发者从一个风格迁移到另一个代码风格，并据此进行编码，但是最好不让开发者有这种选择的机会，试想当每个人都使用同一种编码风格进行开发时，格式化问题就不会占用大家那么多时间去适应各种风格了，相对也就节省了时间。当然理想很丰满，问题是如何在短期内快速且自然地实现这个理想。</p>
+
+<p>在 Go 语言中，我们可以让机器帮我们处理大部分的格式问题。程序 gofmt （也可以通过 go fmt 子命令进行调用，它会在包级别上做格式化处理，不能指定文件进行格式化，即 <code class="highlighter-rouge">usage: go fmt [-n] [-x] [packages]</code>，不过在 go1.13 版本是可以制定某个特定的文件的，不知道是不是哪里理解错了）读取一个 Go 代码，然后按照标准风格对代码进行缩进、垂直对齐等修改从而产生规范化的代码；这个修改的过程只限于代码，不包括注释，注释一般我们写的什么样子就是什么样子，据说也会在必要时适当重新格式化注释（如果大家遇到类似的情况欢迎分享）。如果你的代码中存在格式上的布局问题，执行 gofmt 就好了；如果使用 gofmt 的效果和预期的不一样，重新调整一下你的代码再运行一次就可以了，如果实在得不到自己想要的结果，也可以考虑给 gofmt 提交一个修改意见，总之不要在格式问题上花太多时间就对了。</p>
+
+<p>我们可以以结构体为例，在声明结构体的时候，对于结构体里面的字段，我们没有必要手动对齐字段名、字段类型、注释等，gofmt 可以帮我们自动实现这种对齐。比如对于有下面的声明：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span><span class="x"> </span><span class="n">T</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+    </span><span class="n">name</span><span class="x"> </span><span class="kt">string</span><span class="x"> </span><span class="c">// name of the object</span><span class="x">
+    </span><span class="n">value</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="c">// its value</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>gofmt 会对齐每一行的内容，结果如下：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span><span class="x"> </span><span class="n">T</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+    </span><span class="n">name</span><span class="x">    </span><span class="kt">string</span><span class="x"> </span><span class="c">// name of the object</span><span class="x">
+    </span><span class="n">value</span><span class="x">   </span><span class="kt">int</span><span class="x">    </span><span class="c">// its value</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>值得关注的是，标准库中所有的 Go 源码都被 gofmt 格式化过，因此推荐大家去看看标准库中的源码，从而体会一下这种简洁的统一的美。</p>
+
+<p>对于 Go 语言的格式，除了上面提到的 gofmt 的妙用，其实还是有几个非常简单的细节需要大家知道：</p>
+
+<ul>
+  <li>
+    <p>缩进</p>
+
+    <p>在 Go 语言中，缩进默认使用制表符（Tab）来缩进，这也是 gofmt 的默认做法；除非必要，否则不建议使用空格进行缩进。</p>
+  </li>
+  <li>
+    <p>每行代码的长度</p>
+
+    <p>Go 语言中每行的代码长度是没有限制的，因此不用担心长度溢出的问题；当然如果一行代码太长了，可以考虑手动换行，建议在新行前面添加一些 Tab 符来示意它和上一行是有关系的，便于阅读。</p>
+  </li>
+  <li>
+    <p>括号</p>
+
+    <p>与 C 和 Java 相比较， Go 语言只需要少量的括号就能实现很多功能：在控制结构 if、for、switch 的声明中不需要把语句括起来就能正常运行。同时，操作符预定义的优先级也很简短明了，比如 <code class="highlighter-rouge">x&lt;&lt;8 + y&lt;&lt;16</code> 其中空格的存在就已经暗示了计算的优先级（空格经由 <code class="highlighter-rouge">gofmt</code> 格式化时会自动添加，开发者不需要特别关注这里的空格）。</p>
+
+    <p>比如下面的 <code class="highlighter-rouge">for</code> 循环的代码:</p>
+  </li>
+</ul>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+
+</span><span class="k">import</span><span class="x"> </span><span class="s">"fmt"</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="m">5</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<h1 id="注释">注释</h1>
+
+<p>Go 语言提供了 C 语言风格里的 <code class="highlighter-rouge">/* */</code> <strong>块注释</strong>和 C++ 语言风格里的 <code class="highlighter-rouge">//</code> <strong>行注释</strong>。这两种注释风格中，行注释是主要的注释方式，块注释的风格更多地用在包注释的场合，但是块注释还有一个用处，就是在行内表达式间使用，比如 <code class="highlighter-rouge">fmt.Println(1&lt;&lt;8 /* 这里刻意注释一段话，打印 260 */ + 1&lt;&lt;2)</code>；当然，当临时删除大块的代码的时候用块注释的方式也很方便。</p>
+
+<p><code class="highlighter-rouge">godoc</code> 是一个程序，同时也是一个 Web 服务器，它能从 Go 源码文件中提取各个 package 包里的文档。在包级别作用域的声明语句前直接出现的注释语句（注释和代码之间不能有空格行）会和声明语句一起被抽取出来作为相应条目的文档文本。因此源码中注释的具体内容及其排版风格直接决定了 godoc 生成的文档的质量。</p>
+
+<p>【注】：可通过 <code class="highlighter-rouge">go get -v golang.org/x/tools/cmd/godoc</code> 安装 godoc 命令。</p>
+
+<p>每个包都应该在包声明前包含一个块注释用来介绍包的功能——即包注释。如果一个包存在很多个文件，只需在任何一个文件中包含包注释就可以了。包注释应该介绍包的功能并提供整个包相关的信息。因为包注释会出现在 godoc 最前面的页面上，因此应该设置紧随其后的详细文档。下面给出了 <code class="highlighter-rouge">regexp</code> 这个包的注释示例，其首先介绍了 <code class="highlighter-rouge">regexp</code> 包的主要功能，然后马上给出了其正则表达式的语法。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">/*
+Package regexp implements a simple library for regular expressions.
+
+The syntax of the regular expressions accepted is:
+
+    regexp:
+        concatenation { '|' concatenation }
+    concatenation:
+        { closure }
+    closure:
+        term [ '*' | '+' | '?' ]
+    term:
+        '^'
+        '$'
+        '.'
+        character
+        '[' [ '^' ] character-ranges ']'
+        '(' regexp ')'
+*/</span><span class="x">
+</span><span class="k">package</span><span class="x"> </span><span class="n">regexp</span><span class="x">
+
+</span></code></pre></div></div>
+
+<p>如果一个包的功能非常简单，包注释也可以简化成为行注释，比如下面 <code class="highlighter-rouge">path</code> 包的注释：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Package path implements utility routines for</span><span class="x">
+</span><span class="c">// manipulating slash-separated filename paths.</span><span class="x">
+</span></code></pre></div></div>
+
+<p>Go 语言的注释里不需要附加格式符号，比如不需要 <code class="highlighter-rouge">**something**</code> 这种加粗强调的语法。由于自动生成的文档甚至没有固定宽度的字体，因此也不要试图通过空格来对齐某些内容；和前面讲的 gofmt 一样，godoc 会自动处理这些情况。在 Go 语言中，注释是未经特别解析的纯文本，HTML 和其他的注解，比如 <code class="highlighter-rouge">_this_</code> 会把每个字符重新打印出来 <code class="highlighter-rouge">_this_</code>，因此不应该使用这些特殊的样式。godoc 会用固定宽度的字体表示缩进，因此可以非常完美地展示注释中的代码片段；在核心代码库中，包 <code class="highlighter-rouge">fmt</code> 的<a href="https://github.com/golang/go/blob/release-branch.go1.13/src/fmt/doc.go">包注释</a>就很好地利用了这个特性。</p>
+
+<p>godoc 会根据上下文来决策要不要重新格式化注释，因此请确认你的注释看上去已经很不错了，比如使用正确的拼写、合适的标点符号、简洁的句子结构，折叠过长的句子，等等。</p>
+
+<p>包中任何一个在顶层声明（在包作用域的声明）之前的注释均被认为是相应声明的注释文档，会被 godoc 自动抽取展示出来。程序中每一个导出的名字（首字母大写的名称，包括常量、变量、函数、方法等）都应该有一个注释文档，从而方便其他库引用这个名字时知道这个名字的具体含义。</p>
+
+<p>注释文档最好是一个完整的句子，这可以增加展示方式的灵活度。同时，注释文档的第一句最好是对应名称的一句话总结。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Compile parses a regular expression and returns, if successful,</span><span class="x">
+</span><span class="c">// a Regexp that can be used to match against text.</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="n">Compile</span><span class="p">(</span><span class="n">str</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="o">*</span><span class="n">Regexp</span><span class="p">,</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+</span></code></pre></div></div>
+
+<p>如果每个注释文档的第一个单词都是它的描述对象，开发者就可以使用 <code class="highlighter-rouge">go</code> 命令行工具的子命令 <code class="highlighter-rouge">doc</code> 生成文档然后使用 <code class="highlighter-rouge">grep</code> 查验想要寻找的内容。比如你想不起来名称 <code class="highlighter-rouge">Compile</code> 了，但是想找正则表达式的<strong>解析</strong>函数，此时你可以运行下面的命令找到相应的内容：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>go doc <span class="nt">-all</span> regexp | <span class="nb">grep</span> <span class="nt">-i</span> parse
+</code></pre></div></div>
+
+<p>如果所有的包注释文档都是 ”this function …” 开始的，grep 过滤帮你找不到相应的名称。但正因为 regexp 包里每个名称的注释的第一个单词都是对应的名称，因此使用 grep 过滤的时候很容易就能看到这个名称，从而让你找到你想要的单词。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>go doc <span class="nt">-all</span> regexp | <span class="nb">grep</span> <span class="nt">-i</span> parse
+    Compile parses a regular expression and returns, <span class="k">if </span>successful, a Regexp
+    MustCompile is like Compile but panics <span class="k">if </span>the expression cannot be parsed.
+    parsed. It simplifies safe initialization of global variables holding
+<span class="err">$</span>
+</code></pre></div></div>
+
+<p>Go 的声明语法允许对一组变量进行声明，然后可以用单个注释文档介绍这一组常量或者变量。当然，这种注释内容往往比较笼统。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Error codes returned by failures to parse an expression.（表达式解析失败的错误码）</span><span class="x">
+</span><span class="k">var</span><span class="x"> </span><span class="p">(</span><span class="x">
+    </span><span class="n">ErrInternal</span><span class="x">      </span><span class="o">=</span><span class="x"> </span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"regexp: internal error"</span><span class="p">)</span><span class="x">
+    </span><span class="n">ErrUnmatchedLpar</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"regexp: unmatched '('"</span><span class="p">)</span><span class="x">
+    </span><span class="n">ErrUnmatchedRpar</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"regexp: unmatched ')'"</span><span class="p">)</span><span class="x">
+    </span><span class="o">...</span><span class="x">
+</span><span class="p">)</span><span class="x">
+</span></code></pre></div></div>
+
+<p><strong>组</strong>也可用来暗示某几个名词之间的某种关联关系，比如下面的代码声明了一个 mutex 以及由它保护的一组变量。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span><span class="x"> </span><span class="p">(</span><span class="x">
+    </span><span class="n">countLock</span><span class="x">   </span><span class="n">sync</span><span class="o">.</span><span class="n">Mutex</span><span class="x">
+    </span><span class="n">inputCount</span><span class="x">  </span><span class="kt">uint32</span><span class="x">
+    </span><span class="n">outputCount</span><span class="x"> </span><span class="kt">uint32</span><span class="x">
+    </span><span class="n">errorCount</span><span class="x">  </span><span class="kt">uint32</span><span class="x">
+</span><span class="p">)</span><span class="x">
+</span></code></pre></div></div>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+  <li><a href="https://github.com/chalvern/books/tree/master/golang/official_go_learning">原汁原味 Go 语言学习(教案)</a></li>
+  <li><a href="https://www.bilibili.com/video/av70108449">本文的 bilibili 视频地址</a> 欢迎转发分享😆</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/09/13/conotrol-goroutines-count.html" class="read-next-link"></a>
+          <section>
+            <span>【图示】控制 Goroutine 的并发数量的方式</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

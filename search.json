@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "effective go 简介、格式化与注释部分",
+      "tags"     : "golang 基础 实用",
+      "url"      : "/2019/10/04/effectivego-intro-format-commentary.html"
+    } ,
+  
+    {
       "title"    : "【图示】控制 Goroutine 的并发数量的方式",
       "tags"     : "golang 实用 基础",
       "url"      : "/2019/09/13/conotrol-goroutines-count.html"

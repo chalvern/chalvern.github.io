@@ -5,9 +5,201 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 13 Sep 2019 22:13:45 +0800</pubDate>
-    <lastBuildDate>Fri, 13 Sep 2019 22:13:45 +0800</lastBuildDate>
+    <pubDate>Sat, 05 Oct 2019 12:52:43 +0800</pubDate>
+    <lastBuildDate>Sat, 05 Oct 2019 12:52:43 +0800</lastBuildDate>
     <generator>Jekyll v3.8.3</generator>
+    
+      <item>
+        <title>effective go 简介、格式化与注释部分</title>
+        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#简介&quot; id=&quot;markdown-toc-简介&quot;&gt;简介&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#示例代码&quot; id=&quot;markdown-toc-示例代码&quot;&gt;示例代码&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#格式化&quot; id=&quot;markdown-toc-格式化&quot;&gt;格式化&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#注释&quot; id=&quot;markdown-toc-注释&quot;&gt;注释&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://golang.google.cn/doc/effective_go.html&quot;&gt;effective go&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;简介&quot;&gt;简介&lt;/h1&gt;
+&lt;p&gt;Go 是一个新的编程语言。虽然它从既有的编程语言中借鉴了很多理念，但是它也有很多与众不同的特性，这使得 Go 和其他的编程语言区别开来。如果一个 Java（C++） 写的应用应用直接按照 Java（C++） 的代码逻辑转译成 Go 语言的应用程序，最后很可能得不到一个满意的效果——毕竟 Java 应用程序是用 Java 写的，里面包含了太多Java的东西，而 Java 跟 Go 比 少了很多特性，因此直接转译肯定是不合适的。换个角度来思考，从 Go 的视角分析问题并据此设计软件，最后也会得到一个独特的架构方案，此时如果把这个 Go 应用程序转译成 Java 语言等其他语言的应用程序肯定也不容易。换句话说，为了写好 Go 语言的程序，学习它的语言特性和语言规范是很重要的。而除了必须要遵循或参考的语言特性和语言规范，了解 Go 语言编程的一些人为的约定也很重要，比如命名、格式、程序构建等相关的内容，这样你写出来的程序就更容易被其他开发者理解，从而便于多人协作进行开发。&lt;/p&gt;
+
+&lt;p&gt;本文档给出了一些 Go 语言的编码技巧。遵从这些技巧可以编写出清晰、规范的 Go 语言程序。这篇文档是“&lt;a href=&quot;https://golang.google.cn/ref/spec&quot;&gt;语言特性&lt;/a&gt;”、“&lt;a href=&quot;https://tour.golang.org/&quot;&gt;Go学习(需要科学上网)&lt;/a&gt;”和“&lt;a href=&quot;https://golang.google.cn/doc/code.html&quot;&gt;如何写 Go 程序&lt;/a&gt;”的补充内容，因此在看本文前先看看这些文档再学习本文档会更好。&lt;/p&gt;
+
+&lt;h2 id=&quot;示例代码&quot;&gt;示例代码&lt;/h2&gt;
+&lt;p&gt;Go 源码包不仅仅是 Go 的核心功能库，里面同时提供了语言特性的各种实际用法。除此之外，许多的 package 包都涵盖了可直接运行的例子，这些例子大都不包含其他的依赖库，因此可以直接在 golang.google.cn 这个网页上运行，比如 &lt;a href=&quot;https://golang.google.cn/pkg/strings/#example_Map&quot;&gt;这个&lt;/a&gt; 例子。如果你在实际开发过程中遇到一个语言特性相关或者库的应用设计甚至实现相关的问题，都可以到核心代码库搜寻一下，应该会有所收获的。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://golang.google.cn/pkg/&quot;&gt;Go 源码包&lt;/a&gt; 列表。&lt;/p&gt;
+
+&lt;h1 id=&quot;格式化&quot;&gt;格式化&lt;/h1&gt;
+
+&lt;p&gt;代码的格式一般不影响代码的正常运行，但是因为影响到人的阅读体验，所以不同的代码风格往往导致一些争议。当然可以让任何开发者从一个风格迁移到另一个代码风格，并据此进行编码，但是最好不让开发者有这种选择的机会，试想当每个人都使用同一种编码风格进行开发时，格式化问题就不会占用大家那么多时间去适应各种风格了，相对也就节省了时间。当然理想很丰满，问题是如何在短期内快速且自然地实现这个理想。&lt;/p&gt;
+
+&lt;p&gt;在 Go 语言中，我们可以让机器帮我们处理大部分的格式问题。程序 gofmt （也可以通过 go fmt 子命令进行调用，它会在包级别上做格式化处理，不能指定文件进行格式化，即 &lt;code class=&quot;highlighter-rouge&quot;&gt;usage: go fmt [-n] [-x] [packages]&lt;/code&gt;，不过在 go1.13 版本是可以制定某个特定的文件的，不知道是不是哪里理解错了）读取一个 Go 代码，然后按照标准风格对代码进行缩进、垂直对齐等修改从而产生规范化的代码；这个修改的过程只限于代码，不包括注释，注释一般我们写的什么样子就是什么样子，据说也会在必要时适当重新格式化注释（如果大家遇到类似的情况欢迎分享）。如果你的代码中存在格式上的布局问题，执行 gofmt 就好了；如果使用 gofmt 的效果和预期的不一样，重新调整一下你的代码再运行一次就可以了，如果实在得不到自己想要的结果，也可以考虑给 gofmt 提交一个修改意见，总之不要在格式问题上花太多时间就对了。&lt;/p&gt;
+
+&lt;p&gt;我们可以以结构体为例，在声明结构体的时候，对于结构体里面的字段，我们没有必要手动对齐字段名、字段类型、注释等，gofmt 可以帮我们自动实现这种对齐。比如对于有下面的声明：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// name of the object&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// its value&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;gofmt 会对齐每一行的内容，结果如下：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// name of the object&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;   &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// its value&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;值得关注的是，标准库中所有的 Go 源码都被 gofmt 格式化过，因此推荐大家去看看标准库中的源码，从而体会一下这种简洁的统一的美。&lt;/p&gt;
+
+&lt;p&gt;对于 Go 语言的格式，除了上面提到的 gofmt 的妙用，其实还是有几个非常简单的细节需要大家知道：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;缩进&lt;/p&gt;
+
+    &lt;p&gt;在 Go 语言中，缩进默认使用制表符（Tab）来缩进，这也是 gofmt 的默认做法；除非必要，否则不建议使用空格进行缩进。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;每行代码的长度&lt;/p&gt;
+
+    &lt;p&gt;Go 语言中每行的代码长度是没有限制的，因此不用担心长度溢出的问题；当然如果一行代码太长了，可以考虑手动换行，建议在新行前面添加一些 Tab 符来示意它和上一行是有关系的，便于阅读。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;括号&lt;/p&gt;
+
+    &lt;p&gt;与 C 和 Java 相比较， Go 语言只需要少量的括号就能实现很多功能：在控制结构 if、for、switch 的声明中不需要把语句括起来就能正常运行。同时，操作符预定义的优先级也很简短明了，比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;x&amp;lt;&amp;lt;8 + y&amp;lt;&amp;lt;16&lt;/code&gt; 其中空格的存在就已经暗示了计算的优先级（空格经由 &lt;code class=&quot;highlighter-rouge&quot;&gt;gofmt&lt;/code&gt; 格式化时会自动添加，开发者不需要特别关注这里的空格）。&lt;/p&gt;
+
+    &lt;p&gt;比如下面的 &lt;code class=&quot;highlighter-rouge&quot;&gt;for&lt;/code&gt; 循环的代码:&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fmt&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;注释&quot;&gt;注释&lt;/h1&gt;
+
+&lt;p&gt;Go 语言提供了 C 语言风格里的 &lt;code class=&quot;highlighter-rouge&quot;&gt;/* */&lt;/code&gt; &lt;strong&gt;块注释&lt;/strong&gt;和 C++ 语言风格里的 &lt;code class=&quot;highlighter-rouge&quot;&gt;//&lt;/code&gt; &lt;strong&gt;行注释&lt;/strong&gt;。这两种注释风格中，行注释是主要的注释方式，块注释的风格更多地用在包注释的场合，但是块注释还有一个用处，就是在行内表达式间使用，比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;fmt.Println(1&amp;lt;&amp;lt;8 /* 这里刻意注释一段话，打印 260 */ + 1&amp;lt;&amp;lt;2)&lt;/code&gt;；当然，当临时删除大块的代码的时候用块注释的方式也很方便。&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;godoc&lt;/code&gt; 是一个程序，同时也是一个 Web 服务器，它能从 Go 源码文件中提取各个 package 包里的文档。在包级别作用域的声明语句前直接出现的注释语句（注释和代码之间不能有空格行）会和声明语句一起被抽取出来作为相应条目的文档文本。因此源码中注释的具体内容及其排版风格直接决定了 godoc 生成的文档的质量。&lt;/p&gt;
+
+&lt;p&gt;【注】：可通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;go get -v golang.org/x/tools/cmd/godoc&lt;/code&gt; 安装 godoc 命令。&lt;/p&gt;
+
+&lt;p&gt;每个包都应该在包声明前包含一个块注释用来介绍包的功能——即包注释。如果一个包存在很多个文件，只需在任何一个文件中包含包注释就可以了。包注释应该介绍包的功能并提供整个包相关的信息。因为包注释会出现在 godoc 最前面的页面上，因此应该设置紧随其后的详细文档。下面给出了 &lt;code class=&quot;highlighter-rouge&quot;&gt;regexp&lt;/code&gt; 这个包的注释示例，其首先介绍了 &lt;code class=&quot;highlighter-rouge&quot;&gt;regexp&lt;/code&gt; 包的主要功能，然后马上给出了其正则表达式的语法。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;/*
+Package regexp implements a simple library for regular expressions.
+
+The syntax of the regular expressions accepted is:
+
+    regexp:
+        concatenation { '|' concatenation }
+    concatenation:
+        { closure }
+    closure:
+        term [ '*' | '+' | '?' ]
+    term:
+        '^'
+        '$'
+        '.'
+        character
+        '[' [ '^' ] character-ranges ']'
+        '(' regexp ')'
+*/&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regexp&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;如果一个包的功能非常简单，包注释也可以简化成为行注释，比如下面 &lt;code class=&quot;highlighter-rouge&quot;&gt;path&lt;/code&gt; 包的注释：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// Package path implements utility routines for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// manipulating slash-separated filename paths.&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Go 语言的注释里不需要附加格式符号，比如不需要 &lt;code class=&quot;highlighter-rouge&quot;&gt;**something**&lt;/code&gt; 这种加粗强调的语法。由于自动生成的文档甚至没有固定宽度的字体，因此也不要试图通过空格来对齐某些内容；和前面讲的 gofmt 一样，godoc 会自动处理这些情况。在 Go 语言中，注释是未经特别解析的纯文本，HTML 和其他的注解，比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;_this_&lt;/code&gt; 会把每个字符重新打印出来 &lt;code class=&quot;highlighter-rouge&quot;&gt;_this_&lt;/code&gt;，因此不应该使用这些特殊的样式。godoc 会用固定宽度的字体表示缩进，因此可以非常完美地展示注释中的代码片段；在核心代码库中，包 &lt;code class=&quot;highlighter-rouge&quot;&gt;fmt&lt;/code&gt; 的&lt;a href=&quot;https://github.com/golang/go/blob/release-branch.go1.13/src/fmt/doc.go&quot;&gt;包注释&lt;/a&gt;就很好地利用了这个特性。&lt;/p&gt;
+
+&lt;p&gt;godoc 会根据上下文来决策要不要重新格式化注释，因此请确认你的注释看上去已经很不错了，比如使用正确的拼写、合适的标点符号、简洁的句子结构，折叠过长的句子，等等。&lt;/p&gt;
+
+&lt;p&gt;包中任何一个在顶层声明（在包作用域的声明）之前的注释均被认为是相应声明的注释文档，会被 godoc 自动抽取展示出来。程序中每一个导出的名字（首字母大写的名称，包括常量、变量、函数、方法等）都应该有一个注释文档，从而方便其他库引用这个名字时知道这个名字的具体含义。&lt;/p&gt;
+
+&lt;p&gt;注释文档最好是一个完整的句子，这可以增加展示方式的灵活度。同时，注释文档的第一句最好是对应名称的一句话总结。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// Compile parses a regular expression and returns, if successful,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// a Regexp that can be used to match against text.&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Compile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Regexp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;如果每个注释文档的第一个单词都是它的描述对象，开发者就可以使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;go&lt;/code&gt; 命令行工具的子命令 &lt;code class=&quot;highlighter-rouge&quot;&gt;doc&lt;/code&gt; 生成文档然后使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;grep&lt;/code&gt; 查验想要寻找的内容。比如你想不起来名称 &lt;code class=&quot;highlighter-rouge&quot;&gt;Compile&lt;/code&gt; 了，但是想找正则表达式的&lt;strong&gt;解析&lt;/strong&gt;函数，此时你可以运行下面的命令找到相应的内容：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;go doc &lt;span class=&quot;nt&quot;&gt;-all&lt;/span&gt; regexp | &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; parse
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;如果所有的包注释文档都是 ”this function …” 开始的，grep 过滤帮你找不到相应的名称。但正因为 regexp 包里每个名称的注释的第一个单词都是对应的名称，因此使用 grep 过滤的时候很容易就能看到这个名称，从而让你找到你想要的单词。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;go doc &lt;span class=&quot;nt&quot;&gt;-all&lt;/span&gt; regexp | &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; parse
+    Compile parses a regular expression and returns, &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;successful, a Regexp
+    MustCompile is like Compile but panics &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;the expression cannot be parsed.
+    parsed. It simplifies safe initialization of global variables holding
+&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Go 的声明语法允许对一组变量进行声明，然后可以用单个注释文档介绍这一组常量或者变量。当然，这种注释内容往往比较笼统。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// Error codes returned by failures to parse an expression.（表达式解析失败的错误码）&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ErrInternal&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;      &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;New&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;regexp: internal error&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ErrUnmatchedLpar&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;New&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;regexp: unmatched '('&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ErrUnmatchedRpar&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;New&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;regexp: unmatched ')'&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;组&lt;/strong&gt;也可用来暗示某几个名词之间的某种关联关系，比如下面的代码声明了一个 mutex 以及由它保护的一组变量。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;countLock&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;   &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Mutex&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inputCount&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;uint32&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;outputCount&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;uint32&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errorCount&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;uint32&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/books/tree/master/golang/official_go_learning&quot;&gt;原汁原味 Go 语言学习(教案)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.bilibili.com/video/av70108449&quot;&gt;本文的 bilibili 视频地址&lt;/a&gt; 欢迎转发分享😆&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Fri, 04 Oct 2019 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2019/10/04/effectivego-intro-format-commentary.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2019/10/04/effectivego-intro-format-commentary.html</guid>
+        
+        <category>golang</category>
+        
+        <category>基础</category>
+        
+        <category>实用</category>
+        
+        
+        <category>golang</category>
+        
+      </item>
     
       <item>
         <title>【图示】控制 Goroutine 的并发数量的方式</title>
@@ -1390,137 +1582,6 @@ go tool objdump &lt;span class=&quot;nt&quot;&gt;-S&lt;/span&gt; testl &lt;span 
         <pubDate>Sun, 12 May 2019 00:00:00 +0800</pubDate>
         <link>https://jingwei.link/2019/05/12/golang-concurrency-03-map.html</link>
         <guid isPermaLink="true">https://jingwei.link/2019/05/12/golang-concurrency-03-map.html</guid>
-        
-        <category>golang</category>
-        
-        <category>实用</category>
-        
-        <category>基础</category>
-        
-        
-        <category>golang</category>
-        
-      </item>
-    
-      <item>
-        <title>浅谈 Golang 中数据的并发同步问题（二）</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#原子性及-go-中-atomic-包的使用&quot; id=&quot;markdown-toc-原子性及-go-中-atomic-包的使用&quot;&gt;原子性及 Go 中 atomic 包的使用&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#再提非常原始的数据竞争问题&quot; id=&quot;markdown-toc-再提非常原始的数据竞争问题&quot;&gt;再提非常原始的数据竞争问题&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#原子性概念及其实现原理&quot; id=&quot;markdown-toc-原子性概念及其实现原理&quot;&gt;原子性概念及其实现原理&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#使用-atomic-包来避免数据竞争&quot; id=&quot;markdown-toc-使用-atomic-包来避免数据竞争&quot;&gt;使用 atomic 包来避免数据竞争&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
-&lt;p&gt;过去 Web 开发的工作比较少涉及到并发的问题，每个用户请求在独立的线程里面进行，偶尔涉及到异步任务但是线程间数据同步模型非常简单，因此并未深入探究过并发这一块。最近在写游戏相关的服务端代码时发现数据的并发同步场景非常多，因此花了一点时间来探索。这是一个系列文章，本文为第二篇。&lt;/p&gt;
-
-&lt;p&gt;本文通过一个例子来引出 Golang 中的数据并发同步问题，并通过使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;atomic&lt;/code&gt; 包的方式来避免数据竞争问题。&lt;/p&gt;
-
-&lt;h2 id=&quot;原子性及-go-中-atomic-包的使用&quot;&gt;原子性及 Go 中 atomic 包的使用&lt;/h2&gt;
-&lt;h3 id=&quot;再提非常原始的数据竞争问题&quot;&gt;再提非常原始的数据竞争问题&lt;/h3&gt;
-
-&lt;p&gt;下面的代码模拟了为一个用户（&lt;code class=&quot;highlighter-rouge&quot;&gt;Person&lt;/code&gt;）发放金币（&lt;code class=&quot;highlighter-rouge&quot;&gt;Money&lt;/code&gt;）的代码，其中金币发放与读取分别再不同的线程里完成（读取在主线程，发放在一个子线程）。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// cat main.go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fmt&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Money: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;go run&lt;/code&gt; 时使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;-race&lt;/code&gt; 标志运行上面的代码可以发现数据竞争提醒：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 添加 -race 后检测竞争状态，可以看到 race 的提醒&lt;/span&gt;
-go run &lt;span class=&quot;nt&quot;&gt;-race&lt;/span&gt; main.go
-&lt;span class=&quot;c&quot;&gt;# Money: 1100&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# ==================&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# WARNING: DATA RACE&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# Write at 0x00c00001c0a0 by goroutine 6:&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# Previous read at 0x00c00001c0a0 by main goroutine&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;根据《 &lt;a href=&quot;http://yanyiwu.com/work/2015/02/07/golang-concurrency-safety.html&quot;&gt;谈谈go语言编程的并发安全&lt;/a&gt;》 和 《 &lt;a href=&quot;https://software.intel.com/en-us/blogs/2013/01/06/benign-data-races-what-could-possibly-go-wrong&quot;&gt;benign-data-races-what-could-possibly-go-wrong&lt;/a&gt; 》的讨论，上面的代码无法保证 &lt;code class=&quot;highlighter-rouge&quot;&gt;fmt.Printf(&quot;Money: %d\n&quot;, p.Money)&lt;/code&gt; 这一句会输出什么，同时存在严重的问题（高并发下可能出现严重问题导致代码崩溃），因此有必要通过一定的措施避免这种不确定性。&lt;/p&gt;
-
-&lt;h3 id=&quot;原子性概念及其实现原理&quot;&gt;原子性概念及其实现原理&lt;/h3&gt;
-
-&lt;p&gt;原子操作是指不会被线程调度机制打断的操作；原子操作一旦开始，就一直运行到结束，中间不会有任何 context switch（上下文切换，从当前线程切换到另一个线程）。（from 百度百科）&lt;/p&gt;
-
-&lt;p&gt;对于编程语言中变量的修改，可以认为原子操作需满足下面的条件：① 变量的读写过程不可中断（不可以读到一半做其他事情，也不可写到一半做其他事情），② 变量的读写过程不可同时进行（不可以写变量的同时读取变量，防止读取到仅更新了一半的变量值；也不可以写变量的同时另一个线程也在写这个变量，防止其中一个更新无效）。&lt;/p&gt;
-
-&lt;p&gt;根据 Golang 官方 &lt;a href=&quot;https://golang.google.cn/ref/mem&quot;&gt;内存模型&lt;/a&gt; 文档中的描述  &lt;code class=&quot;highlighter-rouge&quot;&gt;Programs that modify data being simultaneously accessed by multiple goroutines must serialize such access.&lt;/code&gt;  以及 &lt;a href=&quot;https://golang.google.cn/pkg/sync/atomic/&quot;&gt;atomic&lt;/a&gt; 包的存在，可以认为 Golang 对同一块内存的并发读写访问&lt;strong&gt;并不是原子性&lt;/strong&gt;的。简而言之，Golang 中对一个变量进行更新时，另一个线程可以并发地读这个变量的值，而读取到的值是内存不确定的（即不一定读到什么东西）。&lt;/p&gt;
-
-&lt;h3 id=&quot;使用-atomic-包来避免数据竞争&quot;&gt;使用 atomic 包来避免数据竞争&lt;/h3&gt;
-
-&lt;p&gt;上篇文章《 &lt;a href=&quot;/2019/05/11/golang-concurrency-01.html&quot;&gt;浅谈 Golang 中数据的并发同步问题（一）&lt;/a&gt; 》采用 &lt;strong&gt;添加读写锁&lt;/strong&gt; 的方式避免了数据竞争。对于 &lt;strong&gt;用户&lt;/strong&gt;-&amp;gt;&lt;strong&gt;金币&lt;/strong&gt; 这种模型（金币是一个数值而非其他的复杂类型），其实也可以采用 &lt;code class=&quot;highlighter-rouge&quot;&gt;atomic&lt;/code&gt; 包来避免数据竞争问题。&lt;/p&gt;
-
-&lt;p&gt;下面的代码引入了 &lt;code class=&quot;highlighter-rouge&quot;&gt;atomic&lt;/code&gt; 的使用，由于其仅支持 &lt;code class=&quot;highlighter-rouge&quot;&gt;int32&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;int64&lt;/code&gt; 这种显式定义字节长度的类型，因此代码中把 &lt;code class=&quot;highlighter-rouge&quot;&gt;Money&lt;/code&gt; 修改为了 &lt;code class=&quot;highlighter-rouge&quot;&gt;int64&lt;/code&gt; 类型。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fmt&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;sync/atomic&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int64&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;atomic&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddInt64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;atomic&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddInt64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Money: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;atomic&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LoadInt64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Money&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;go run -race main.go&lt;/code&gt; 运行上面的代码可以发现数据竞争的提醒消失了：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 添加 -race 后检测竞争状态，可以看到 race 的提醒&lt;/span&gt;
-go run &lt;span class=&quot;nt&quot;&gt;-race&lt;/span&gt; main.go
-&lt;span class=&quot;c&quot;&gt;# Money: 1100&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&quot;https://golang.google.cn/pkg/sync/atomic/&quot;&gt;atomic&lt;/a&gt; 包主要局限在 &lt;strong&gt;数值类型&lt;/strong&gt; 的赋值、修改、读取、交换等操作，不可以处理像 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; 这种高级类型，因此 &lt;code class=&quot;highlighter-rouge&quot;&gt;atomic&lt;/code&gt; 的使用具有比较大的局限性。&lt;/p&gt;
-
-&lt;p&gt;就像文档中描述的： &lt;code class=&quot;highlighter-rouge&quot;&gt;These functions (of atomics) require great care to be used correctly. Except for special, low-level applications, synchronization is better done with channels or the facilities of the sync package. Share memory by communicating; don't communicate by sharing memory.&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;除非知道自己在做什么，否则更推荐使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;channel&lt;/code&gt;（通道） 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync&lt;/code&gt;（锁）的方式处理数据同步问题。&lt;/p&gt;
-
-&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;/2019/05/11/golang-concurrency-01.html&quot;&gt;浅谈 Golang 中数据的并发同步问题（一）&lt;/a&gt; 系列文章的第一篇&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://baike.baidu.com/item/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C&quot;&gt;原子操作_百度百科&lt;/a&gt;  词条，理解什么是原子操作&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/67f4d12c0400&quot;&gt;原子操作的实现原理及CAS分析 - 简书&lt;/a&gt; 词条&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://golang.google.cn/ref/mem&quot;&gt;The Go Memory Model - The Go Programming Language&lt;/a&gt; Golang 官方内存模型的文档&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://golang.google.cn/pkg/sync/atomic/&quot;&gt;atomic - The Go Programming Language&lt;/a&gt; Golang 中 atomic 包官方文档&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Sat, 11 May 2019 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2019/05/11/golang-concurrency-02.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2019/05/11/golang-concurrency-02.html</guid>
         
         <category>golang</category>
         
