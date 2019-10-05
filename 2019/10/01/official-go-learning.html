@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《原汁原味 Go 语言学习》：初衷 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="《原汁原味 Go 语言学习》：初衷">
+    <meta name="keywords"  content="golang, 基础, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="《原汁原味 Go 语言学习》：初衷 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/10/01/official-go-learning.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>《原汁原味 Go 语言学习》：初衷</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-10-01"><i class="iconfont icon-date"></i>01 Oct 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">介绍 《原汁原味 Go 语言学习》系列文章与课程的初衷</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#原汁原味-go-语言学习初衷" id="markdown-toc-原汁原味-go-语言学习初衷">原汁原味 Go 语言学习——初衷</a>    <ul>
+      <li><a href="#系列课程初衷" id="markdown-toc-系列课程初衷">系列课程初衷</a></li>
+    </ul>
+  </li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h1 id="原汁原味-go-语言学习初衷">原汁原味 Go 语言学习——初衷</h1>
+
+<ul>
+  <li>《原汁原味 Go 语言学习》系列课程。</li>
+  <li>在这个系列课程里，我会带着大家一起学习官方文档中提供的 effective-go 、 go内存模型、语言规范、FAQ等内容。</li>
+  <li>我的个人博客 <a href="https://jingwei.link">jingwei.link</a>。</li>
+  <li>因为制作这个视频有很多不确定性，大家可以通过关注我的个人博客 <a href="https://jingwei.link">jingwei.link</a>  和代码库 <a href="https://github.com/chalvern/books">github.com/chalvern/books</a> 来跟进最新的信息，未来有任何的信息我会首先在这两个地方发布。</li>
+</ul>
+
+<h2 id="系列课程初衷">系列课程初衷</h2>
+<ul>
+  <li>学习 Go 语言有没有简单、可靠和高效的学习材料？</li>
+  <li>有没有在上下班或者周末休闲的时候愿意听的那种学习材料？</li>
+  <li>到哔哩哔哩、喜马拉雅搜索了一下，也观赏了一些已存在的课程与教程，感觉他们都讲了很多东西，但是对于我来说总觉得课程内容里附加了太多方法论的东西、太多讲师个人特色的东西；这往往造成几个不好的结果：1）如果课程里的东西是方法论的产物（把学习 C 语言的一套理论拿过来学习 Go 语言），我们学习到的并不是原汁原味的语言特性。2）有的语言特性仅仅是规范中的一个定义，但是加入了讲师的个人特色后可能就变成了一个很神秘的东西，让大家对 Go 语言的学习产生一种可望不可即的错觉。</li>
+  <li>学习分成两类：一类是教科书式的理论上的学习，最好有教材，当然最好也有老师可以带自己学习这门教材；对于 Golang 语言来说，可能是它的官方文档、书籍、或者一些课程。另一类则是相关内容的涉猎，比如对于 Golang 语言来说，可能是它的设计初衷、设计理念、相关的工具使用技巧、一个很有创意的用法、一个优雅的库、应用实践遇到的坑和填坑经验等等；总之，这部分的内容往往可以触发我们对 Golang 的进一步的探索，开阔视野的同时加深对它的理解。</li>
+  <li>我们可以把文档、书、课程、培训等当做第一类材料，这一类材料还是比较容易找的，不过这类材料要么冗长枯燥，要么就是获取成本比较高。论坛与社区讨论（比如 studygolang.com）、开发者会议（goconf）、博客等形成第二类材料（也是经验分享类的材料）。第二类的内容一般是需要靠大家自己留意并积累的，基本上可以和我们常说的经验对应起来。这也是一个一年经验的程序员与三年经验程序员的最大的区别——后者阅览过更多的资料、遇到并处理过更多的问题，因此有更多的经验。</li>
+  <li>第一类材料相对来说是比较容易找到的，比如对于我们 Go 语言学习者来说，Golang 官网（golang.google.cn）中的文档就是很好的学习材料，甚至可以说是第一手的Go语言学习资料。根据我这几年的工作经验，发现那些在技术上有所造诣的人其实都是有能耐心读文档的人，尤其各个书籍的作者更是如此，他们必须要消化文档的内容，然后总结整理出自己的学习感悟，编纂成册以后其实就是我们见到的各种教程的书籍了。不过原汁原味的文档总是冗长枯燥的，而阅览别人消化过的视频、书籍、博客则要轻松、有趣的多，因此：</li>
+  <li>
+    <p>平日的学习过程中，大家总是倾向于看书看视频教程，却往往忽略官方文档中第一手的学习资料。这也可以理解，不过因为它的价值，错过这个资料的学习也是挺可惜的。为了降低第一手资料的难度，在接下来的视频中，我会带着大家过一下官方文档中提供的几篇文档，目前定的有 effective-go 、 go内存模型、FAQ、语言规范等等的一些内容，我希望这个系列的视频能给枯燥的文档内容增加一些生趣，如此，假如它能提起大家主动学习 Go 语言的兴趣，比如在上下班路上或者工作之余看一看或听一听，我觉得这将是非常有意义的。</p>
+  </li>
+  <li>
+    <p>如果你是一个初学者，希望本系列视频能作为你学习 Go 语言的第一类材料；如果你是一个有 Go 开发经验的开发者，希望本系列视频能学到一些之前忽略了的知识点，巩固并加深自己的 Go 语言连接，提升自己的 Go 编程技能。</p>
+  </li>
+  <li>
+    <p>探索一下 Go 官方的网页 <a href="https://golang.google.cn">golang.google.cn</a>， 如果大家能够读懂英文就最好了，可以在这个网页上找到下载、安装、使用的所有知识；如果不想读英文，也有一个 go-zh.org 的网站，基本上是 <a href="https://golang.google.cn">golang.google.cn</a> 的中文翻版，大家也可以探索一下，不过版本比较老，里面的一些内容有的已经失效了。</p>
+  </li>
+  <li>接下来的课程先让我们一起看一下文档 <a href="https://golang.google.cn/doc/effective_go.html">effective- Go</a> 的内容。</li>
+</ul>
+
+<h1 id="参考">参考</h1>
+
+<ul>
+  <li><a href="https://github.com/chalvern/books/tree/master/golang/official_go_learning">原汁原味 Go 语言学习(教案)</a> 在视频拍摄过程中，发现需要准备教案，直接放到这里，欢迎 star</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+      <div class="read-next-item">
+        <a href="/2019/10/04/effectivego-intro-format-commentary.html" class="read-next-link"></a>
+        <section>
+          <span>《原汁原味 Go 语言学习》：effective go 简介、格式化与注释部分</span>
+          <p></p>
+        </section>
+        
+        <div class="filter"></div>
+        <img src="" alt="">
+        
+     </div>
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/09/13/conotrol-goroutines-count.html" class="read-next-link"></a>
+          <section>
+            <span>【图示】控制 Goroutine 的并发数量的方式</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

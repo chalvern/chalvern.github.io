@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>effective go 简介、格式化与注释部分 - 敬维</title>
+    <title>《原汁原味 Go 语言学习》：effective go 简介、格式化与注释部分 - 敬维</title>
     <meta name="author"  content="敬维">
-    <meta name="description" content="effective go 简介、格式化与注释部分">
+    <meta name="description" content="《原汁原味 Go 语言学习》：effective go 简介、格式化与注释部分">
     <meta name="keywords"  content="golang, 基础, 实用">
     <!-- Open Graph -->
-    <meta property="og:title" content="effective go 简介、格式化与注释部分 - 敬维">
+    <meta property="og:title" content="《原汁原味 Go 语言学习》：effective go 简介、格式化与注释部分 - 敬维">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jingwei.link/2019/10/04/effectivego-intro-format-commentary.html">
     <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
@@ -130,7 +130,7 @@ Author: Ray-Eldath
           
         
       </div>
-      <h1>effective go 简介、格式化与注释部分</h1>
+      <h1>《原汁原味 Go 语言学习》：effective go 简介、格式化与注释部分</h1>
       <div class="post-meta">
         <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
         <time class="post-meta-item" datetime="19-10-04"><i class="iconfont icon-date"></i>04 Oct 2019</time>
@@ -149,6 +149,7 @@ Author: Ray-Eldath
 
     <article class="markdown-body">
       <ul id="markdown-toc">
+  <li><a href="#资料" id="markdown-toc-资料">资料</a></li>
   <li><a href="#简介" id="markdown-toc-简介">简介</a>    <ul>
       <li><a href="#示例代码" id="markdown-toc-示例代码">示例代码</a></li>
     </ul>
@@ -158,7 +159,11 @@ Author: Ray-Eldath
   <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
 </ul>
 
-<p><a href="https://golang.google.cn/doc/effective_go.html">effective go 英文原文</a></p>
+<h1 id="资料">资料</h1>
+<ul>
+  <li><a href="https://golang.google.cn/doc/effective_go.html">effective go 英文原文</a></li>
+  <li><a href="https://www.bilibili.com/video/av70108449">本文的 bilibili 视频地址</a> 欢迎转发分享😆</li>
+</ul>
 
 <h1 id="简介">简介</h1>
 <p>Go 是一个新的编程语言。虽然它从既有的编程语言中借鉴了很多理念，但是它也有很多与众不同的特性，这使得 Go 和其他的编程语言区别开来。如果一个 Java（C++） 写的应用应用直接按照 Java（C++） 的代码逻辑转译成 Go 语言的应用程序，最后很可能得不到一个满意的效果——毕竟 Java 应用程序是用 Java 写的，里面包含了太多Java的东西，而 Java 跟 Go 比 少了很多特性，因此直接转译肯定是不合适的。换个角度来思考，从 Go 的视角分析问题并据此设计软件，最后也会得到一个独特的架构方案，此时如果把这个 Go 应用程序转译成 Java 语言等其他语言的应用程序肯定也不容易。换句话说，为了写好 Go 语言的程序，学习它的语言特性和语言规范是很重要的。而除了必须要遵循或参考的语言特性和语言规范，了解 Go 语言编程的一些人为的约定也很重要，比如命名、格式、程序构建等相关的内容，这样你写出来的程序就更容易被其他开发者理解，从而便于多人协作进行开发。</p>
@@ -368,9 +373,9 @@ The syntax of the regular expressions accepted is:
 
       
       <div class="read-next-item">
-        <a href="/2019/09/13/conotrol-goroutines-count.html" class="read-next-link"></a>
+        <a href="/2019/10/01/official-go-learning.html" class="read-next-link"></a>
           <section>
-            <span>【图示】控制 Goroutine 的并发数量的方式</span>
+            <span>《原汁原味 Go 语言学习》：初衷</span>
             <p></p>
           </section>
           

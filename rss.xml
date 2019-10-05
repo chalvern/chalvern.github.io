@@ -5,13 +5,14 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 05 Oct 2019 12:55:37 +0800</pubDate>
-    <lastBuildDate>Sat, 05 Oct 2019 12:55:37 +0800</lastBuildDate>
+    <pubDate>Sat, 05 Oct 2019 13:02:37 +0800</pubDate>
+    <lastBuildDate>Sat, 05 Oct 2019 13:02:37 +0800</lastBuildDate>
     <generator>Jekyll v3.8.3</generator>
     
       <item>
-        <title>effective go 简介、格式化与注释部分</title>
+        <title>《原汁原味 Go 语言学习》：effective go 简介、格式化与注释部分</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#简介&quot; id=&quot;markdown-toc-简介&quot;&gt;简介&lt;/a&gt;    &lt;ul&gt;
       &lt;li&gt;&lt;a href=&quot;#示例代码&quot; id=&quot;markdown-toc-示例代码&quot;&gt;示例代码&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
@@ -21,7 +22,11 @@
   &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://golang.google.cn/doc/effective_go.html&quot;&gt;effective go 英文原文&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;资料&quot;&gt;资料&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://golang.google.cn/doc/effective_go.html&quot;&gt;effective go 英文原文&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.bilibili.com/video/av70108449&quot;&gt;本文的 bilibili 视频地址&lt;/a&gt; 欢迎转发分享😆&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h1 id=&quot;简介&quot;&gt;简介&lt;/h1&gt;
 &lt;p&gt;Go 是一个新的编程语言。虽然它从既有的编程语言中借鉴了很多理念，但是它也有很多与众不同的特性，这使得 Go 和其他的编程语言区别开来。如果一个 Java（C++） 写的应用应用直接按照 Java（C++） 的代码逻辑转译成 Go 语言的应用程序，最后很可能得不到一个满意的效果——毕竟 Java 应用程序是用 Java 写的，里面包含了太多Java的东西，而 Java 跟 Go 比 少了很多特性，因此直接转译肯定是不合适的。换个角度来思考，从 Go 的视角分析问题并据此设计软件，最后也会得到一个独特的架构方案，此时如果把这个 Go 应用程序转译成 Java 语言等其他语言的应用程序肯定也不容易。换句话说，为了写好 Go 语言的程序，学习它的语言特性和语言规范是很重要的。而除了必须要遵循或参考的语言特性和语言规范，了解 Go 语言编程的一些人为的约定也很重要，比如命名、格式、程序构建等相关的内容，这样你写出来的程序就更容易被其他开发者理解，从而便于多人协作进行开发。&lt;/p&gt;
@@ -187,6 +192,66 @@ The syntax of the regular expressions accepted is:
         <pubDate>Fri, 04 Oct 2019 00:00:00 +0800</pubDate>
         <link>https://jingwei.link/2019/10/04/effectivego-intro-format-commentary.html</link>
         <guid isPermaLink="true">https://jingwei.link/2019/10/04/effectivego-intro-format-commentary.html</guid>
+        
+        <category>golang</category>
+        
+        <category>基础</category>
+        
+        <category>实用</category>
+        
+        
+        <category>golang</category>
+        
+      </item>
+    
+      <item>
+        <title>《原汁原味 Go 语言学习》：初衷</title>
+        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#原汁原味-go-语言学习初衷&quot; id=&quot;markdown-toc-原汁原味-go-语言学习初衷&quot;&gt;原汁原味 Go 语言学习——初衷&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#系列课程初衷&quot; id=&quot;markdown-toc-系列课程初衷&quot;&gt;系列课程初衷&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;原汁原味-go-语言学习初衷&quot;&gt;原汁原味 Go 语言学习——初衷&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;《原汁原味 Go 语言学习》系列课程。&lt;/li&gt;
+  &lt;li&gt;在这个系列课程里，我会带着大家一起学习官方文档中提供的 effective-go 、 go内存模型、语言规范、FAQ等内容。&lt;/li&gt;
+  &lt;li&gt;我的个人博客 &lt;a href=&quot;https://jingwei.link&quot;&gt;jingwei.link&lt;/a&gt;。&lt;/li&gt;
+  &lt;li&gt;因为制作这个视频有很多不确定性，大家可以通过关注我的个人博客 &lt;a href=&quot;https://jingwei.link&quot;&gt;jingwei.link&lt;/a&gt;  和代码库 &lt;a href=&quot;https://github.com/chalvern/books&quot;&gt;github.com/chalvern/books&lt;/a&gt; 来跟进最新的信息，未来有任何的信息我会首先在这两个地方发布。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;系列课程初衷&quot;&gt;系列课程初衷&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;学习 Go 语言有没有简单、可靠和高效的学习材料？&lt;/li&gt;
+  &lt;li&gt;有没有在上下班或者周末休闲的时候愿意听的那种学习材料？&lt;/li&gt;
+  &lt;li&gt;到哔哩哔哩、喜马拉雅搜索了一下，也观赏了一些已存在的课程与教程，感觉他们都讲了很多东西，但是对于我来说总觉得课程内容里附加了太多方法论的东西、太多讲师个人特色的东西；这往往造成几个不好的结果：1）如果课程里的东西是方法论的产物（把学习 C 语言的一套理论拿过来学习 Go 语言），我们学习到的并不是原汁原味的语言特性。2）有的语言特性仅仅是规范中的一个定义，但是加入了讲师的个人特色后可能就变成了一个很神秘的东西，让大家对 Go 语言的学习产生一种可望不可即的错觉。&lt;/li&gt;
+  &lt;li&gt;学习分成两类：一类是教科书式的理论上的学习，最好有教材，当然最好也有老师可以带自己学习这门教材；对于 Golang 语言来说，可能是它的官方文档、书籍、或者一些课程。另一类则是相关内容的涉猎，比如对于 Golang 语言来说，可能是它的设计初衷、设计理念、相关的工具使用技巧、一个很有创意的用法、一个优雅的库、应用实践遇到的坑和填坑经验等等；总之，这部分的内容往往可以触发我们对 Golang 的进一步的探索，开阔视野的同时加深对它的理解。&lt;/li&gt;
+  &lt;li&gt;我们可以把文档、书、课程、培训等当做第一类材料，这一类材料还是比较容易找的，不过这类材料要么冗长枯燥，要么就是获取成本比较高。论坛与社区讨论（比如 studygolang.com）、开发者会议（goconf）、博客等形成第二类材料（也是经验分享类的材料）。第二类的内容一般是需要靠大家自己留意并积累的，基本上可以和我们常说的经验对应起来。这也是一个一年经验的程序员与三年经验程序员的最大的区别——后者阅览过更多的资料、遇到并处理过更多的问题，因此有更多的经验。&lt;/li&gt;
+  &lt;li&gt;第一类材料相对来说是比较容易找到的，比如对于我们 Go 语言学习者来说，Golang 官网（golang.google.cn）中的文档就是很好的学习材料，甚至可以说是第一手的Go语言学习资料。根据我这几年的工作经验，发现那些在技术上有所造诣的人其实都是有能耐心读文档的人，尤其各个书籍的作者更是如此，他们必须要消化文档的内容，然后总结整理出自己的学习感悟，编纂成册以后其实就是我们见到的各种教程的书籍了。不过原汁原味的文档总是冗长枯燥的，而阅览别人消化过的视频、书籍、博客则要轻松、有趣的多，因此：&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;平日的学习过程中，大家总是倾向于看书看视频教程，却往往忽略官方文档中第一手的学习资料。这也可以理解，不过因为它的价值，错过这个资料的学习也是挺可惜的。为了降低第一手资料的难度，在接下来的视频中，我会带着大家过一下官方文档中提供的几篇文档，目前定的有 effective-go 、 go内存模型、FAQ、语言规范等等的一些内容，我希望这个系列的视频能给枯燥的文档内容增加一些生趣，如此，假如它能提起大家主动学习 Go 语言的兴趣，比如在上下班路上或者工作之余看一看或听一听，我觉得这将是非常有意义的。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;如果你是一个初学者，希望本系列视频能作为你学习 Go 语言的第一类材料；如果你是一个有 Go 开发经验的开发者，希望本系列视频能学到一些之前忽略了的知识点，巩固并加深自己的 Go 语言连接，提升自己的 Go 编程技能。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;探索一下 Go 官方的网页 &lt;a href=&quot;https://golang.google.cn&quot;&gt;golang.google.cn&lt;/a&gt;， 如果大家能够读懂英文就最好了，可以在这个网页上找到下载、安装、使用的所有知识；如果不想读英文，也有一个 go-zh.org 的网站，基本上是 &lt;a href=&quot;https://golang.google.cn&quot;&gt;golang.google.cn&lt;/a&gt; 的中文翻版，大家也可以探索一下，不过版本比较老，里面的一些内容有的已经失效了。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;接下来的课程先让我们一起看一下文档 &lt;a href=&quot;https://golang.google.cn/doc/effective_go.html&quot;&gt;effective- Go&lt;/a&gt; 的内容。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;参考&quot;&gt;参考&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/books/tree/master/golang/official_go_learning&quot;&gt;原汁原味 Go 语言学习(教案)&lt;/a&gt; 在视频拍摄过程中，发现需要准备教案，直接放到这里，欢迎 star&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Tue, 01 Oct 2019 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2019/10/01/official-go-learning.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2019/10/01/official-go-learning.html</guid>
         
         <category>golang</category>
         
@@ -1428,158 +1493,6 @@ go tool objdump &lt;span class=&quot;nt&quot;&gt;-S&lt;/span&gt; testl &lt;span 
         <pubDate>Wed, 15 May 2019 00:00:00 +0800</pubDate>
         <link>https://jingwei.link/2019/05/15/golang-concurrency-04-single-core.html</link>
         <guid isPermaLink="true">https://jingwei.link/2019/05/15/golang-concurrency-04-single-core.html</guid>
-        
-        <category>golang</category>
-        
-        <category>实用</category>
-        
-        <category>基础</category>
-        
-        
-        <category>golang</category>
-        
-      </item>
-    
-      <item>
-        <title>浅谈 Golang 中数据的并发同步问题（三）</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#golang-中-map-的使用&quot; id=&quot;markdown-toc-golang-中-map-的使用&quot;&gt;Golang 中 map 的使用&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#不允许并发读写的-map&quot; id=&quot;markdown-toc-不允许并发读写的-map&quot;&gt;不允许并发读写的 map&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#安全使用-map显而易见地加锁&quot; id=&quot;markdown-toc-安全使用-map显而易见地加锁&quot;&gt;安全使用 map——显而易见地加锁&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#为什么-map-并发读写时会在运行时异常退出&quot; id=&quot;markdown-toc-为什么-map-并发读写时会在运行时异常退出&quot;&gt;为什么 map 并发读写时会在运行时异常退出&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
-&lt;p&gt;过去 Web 开发的工作比较少涉及到并发的问题，每个用户请求在独立的线程里面进行，偶尔涉及到异步任务但是线程间数据同步模型非常简单，因此并未深入探究过并发这一块。最近在写游戏相关的服务端代码时发现数据的并发同步场景非常多，因此花了一点时间来探索。这是一个系列文章，本文为第三篇。&lt;/p&gt;
-
-&lt;p&gt;本文简单介绍 Golang 中 map 类型的安全使用。&lt;/p&gt;
-
-&lt;h2 id=&quot;golang-中-map-的使用&quot;&gt;Golang 中 map 的使用&lt;/h2&gt;
-&lt;p&gt;在业务逻辑中保存 &lt;code class=&quot;highlighter-rouge&quot;&gt;key-value&lt;/code&gt; 是一个非常普遍的需求，因此 &lt;code class=&quot;highlighter-rouge&quot;&gt;Map&lt;/code&gt; 的使用场景非常多。&lt;/p&gt;
-
-&lt;h3 id=&quot;不允许并发读写的-map&quot;&gt;不允许并发读写的 map&lt;/h3&gt;
-
-&lt;p&gt;在 Golang 源码实现中对 map 的要求比较高（见《 &lt;a href=&quot;https://blog.golang.org/go-maps-in-action&quot;&gt;Go maps in action&lt;/a&gt;》）：&lt;code class=&quot;highlighter-rouge&quot;&gt;Maps are not safe for concurrent use: it's not defined what happens when you read and write to them simultaneously&lt;/code&gt;（当并发使用时 Maps 是不安全的，当并发地读写 map 的时候无法预知会发生啥 ）。&lt;/p&gt;
-
-&lt;p&gt;如果不加保护地在不同的线程中读写 &lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; 类型的数据，代码会直接崩溃并异常退出。比如下面的代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;运行上面的代码可以得到下面类似的结果：&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;go run map/main.go 
-&lt;span class=&quot;c&quot;&gt;# fatal error: concurrent map read and map write&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# ....(省略异常堆栈)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;从输出结果来看，Golang 运行时明确禁止 &lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; 的并发读写，且在检测到这种情况后直接异常退出。这不同于其他数据类型，比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;int&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;string&lt;/code&gt; 等，对比下面的代码（说明：下面的代码存在隐形的并发问题，具体参考《&lt;a href=&quot;/2019/05/11/golang-concurrency-02.html&quot;&gt;浅谈 Golang 中数据的并发同步问题（二）&lt;/a&gt;》）：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// 运行下面的代码并不会异常退出，不同于上面 map 类型的 m 的使用&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;c&quot;&gt;// go run main.go &lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;再次&lt;strong&gt;需要说明&lt;/strong&gt;，虽然上面的代码在不同的线程中访问 &lt;code class=&quot;highlighter-rouge&quot;&gt;int&lt;/code&gt; 类型的数据并未直接异常退出，但是这种不加任何安全措施的并发读写是存在安全风险的，具体参考《&lt;a href=&quot;/2019/05/11/golang-concurrency-02.html&quot;&gt;浅谈 Golang 中数据的并发同步问题（二）&lt;/a&gt;》。&lt;/p&gt;
-
-&lt;h3 id=&quot;安全使用-map显而易见地加锁&quot;&gt;安全使用 map——显而易见地加锁&lt;/h3&gt;
-
-&lt;p&gt;既然 Golang 在运行时不允许对 map 的并发读写，当需要在多个线程中读写 map 时，显而易见的方式是&lt;strong&gt;加锁&lt;/strong&gt;（如《&lt;a href=&quot;/2019/05/11/golang-concurrency-01.html&quot;&gt;浅谈 Golang 中数据的并发同步问题（一）&lt;/a&gt;》所描述的）。&lt;/p&gt;
-
-&lt;p&gt;下面的代码把 &lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; 类型的 &lt;code class=&quot;highlighter-rouge&quot;&gt;m&lt;/code&gt; 封装在一个匿名的 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct&lt;/code&gt; 中，同时整个匿名的 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct&lt;/code&gt; 继承了 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.RWMutex&lt;/code&gt; 结构，因此拥有了 &lt;strong&gt;加读写锁&lt;/strong&gt; 的功能，从而安全地实现了多个线程对 &lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; 的 “并发读写”：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;sync&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;counter&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RWMutex&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;counter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RLock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;counter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;some_key&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;counter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RUnlock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;counter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;counter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;some_key&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-			&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;counter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Unlock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;为什么-map-并发读写时会在运行时异常退出&quot;&gt;为什么 map 并发读写时会在运行时异常退出&lt;/h3&gt;
-
-&lt;p&gt;最后提一下这个问题：&lt;strong&gt;为什么 int、string、slice 等变量在多个线程读写时运行正常，而 map 在多个线程并发读写时会运行时异常退出？&lt;/strong&gt; 其实这个涉及到 &lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; 的具体实现（我知道这是一句废话 +_+）。&lt;/p&gt;
-
-&lt;p&gt;简单来讲，可以从Go 源码中  &lt;a href=&quot;https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/map.go&quot;&gt;map 运行时相关的部分&lt;/a&gt; 窥见一些依据：&lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt; 的增改删查可以分别对应到 &lt;code class=&quot;highlighter-rouge&quot;&gt;func mapassign()&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;func mapaccess1()&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;func mapdelete()&lt;/code&gt;这几个函数，每个函数都有非常长的执行逻辑；如果多个线程并发读写同一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;map&lt;/code&gt;，大概率会出现 ① &lt;code class=&quot;highlighter-rouge&quot;&gt;mapassign&lt;/code&gt; 函数（增加某个 &lt;code class=&quot;highlighter-rouge&quot;&gt;key&lt;/code&gt; 的值）执行到一半的时候 &lt;code class=&quot;highlighter-rouge&quot;&gt;mapaccess1&lt;/code&gt; 读取到一个相应的零值，②  &lt;code class=&quot;highlighter-rouge&quot;&gt;mapaccess1&lt;/code&gt; 函数（读取某个 &lt;code class=&quot;highlighter-rouge&quot;&gt;key&lt;/code&gt; 的值）执行到一半的时候 &lt;code class=&quot;highlighter-rouge&quot;&gt;mapdelete&lt;/code&gt; 已经删除了对应的 &lt;code class=&quot;highlighter-rouge&quot;&gt;key&lt;/code&gt;，等等。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;同时&lt;/strong&gt;考虑到增删数据时底层数据的改变（比如扩容重分配，这一块还没深入研究，可以自行查看源码=。=），因此保持 map 的单纯变得很重要；为避免出现难以 debug 的异常，&lt;strong&gt;运行时环境显式地并发异常退出也就可以理解了。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
-&lt;p&gt;Golang 的运行时会&lt;strong&gt;在 map 的增改删查过程中检测是否有并发读写的情况，当发现并发读写时直接异常退出&lt;/strong&gt;。相对于其他数据类型（比如 int、string、slice 等），map 的并发使用是比较严苛的（安全&amp;amp;性能的折中）；可以认为 map 的这种严苛很大程度上降低了诡异 bug 的产生，增加代码的鲁棒性。&lt;/p&gt;
-
-&lt;p&gt;最后，当提到 map 的并发使用时，很多时候会提到 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.Map&lt;/code&gt; 的使用，不过由于它大量使用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;interface{}&lt;/code&gt; 类型，使用起来并不是那么方便；目前为止，&lt;strong&gt;我更喜欢加读写锁的方式&lt;/strong&gt;来使用 map 而不是使用线程安全的 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.Map&lt;/code&gt; 😆&lt;/p&gt;
-
-&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;/2019/05/11/golang-concurrency-01.html&quot;&gt;浅谈 Golang 中数据的并发同步问题（一）&lt;/a&gt; 介绍通过加锁的方式保证线程安全&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;/2019/05/11/golang-concurrency-02.html&quot;&gt;浅谈 Golang 中数据的并发同步问题（二）&lt;/a&gt; 介绍了 atomic 包的使用及其局限性&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://blog.golang.org/go-maps-in-action&quot;&gt;Go maps in action - The Go Blog&lt;/a&gt; 官方文档中介绍 map 的博客（需要自备梯子）&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/10a998089486&quot;&gt;go语言坑之并发访问map&lt;/a&gt; 浅显易懂地介绍了 map 的坑及并发访问方法&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://coolshell.cn/articles/9606.html&quot;&gt;疫苗：Java HashMap的死循环&lt;/a&gt; 了解 Java 中 HashMap 的实现机制，可以知道 Map 的线程不安全的实现是一个普遍现象&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/map.go&quot;&gt;src/runtime/map.go&lt;/a&gt; Go 源码中 map 相关的部分（运行时）&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://golang.google.cn/pkg/sync/#Map&quot;&gt;sync - The Go Programming Language&lt;/a&gt; Golang 官方 sync 包中包含线程安全的 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.Map&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/1d45e31343d8&quot;&gt;go map的线程安全使用&lt;/a&gt; 介绍了 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.Map&lt;/code&gt; 的使用&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Sun, 12 May 2019 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2019/05/12/golang-concurrency-03-map.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2019/05/12/golang-concurrency-03-map.html</guid>
         
         <category>golang</category>
         
