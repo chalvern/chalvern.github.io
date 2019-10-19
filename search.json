@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "卸载 macOS 中的 MySQL 时遇到的疑问",
+      "tags"     : "实用 最佳实践 DevOps",
+      "url"      : "/2019/10/19/mac-mysql-reinstall.html"
+    } ,
+  
+    {
       "title"    : "《原汁原味 Go 语言学习》(5) effective go 函数部分",
       "tags"     : "golang 基础 实用",
       "url"      : "/2019/10/13/effectivego-function.html"

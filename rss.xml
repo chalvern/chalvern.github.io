@@ -5,9 +5,109 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 14 Oct 2019 08:20:36 +0800</pubDate>
-    <lastBuildDate>Mon, 14 Oct 2019 08:20:36 +0800</lastBuildDate>
+    <pubDate>Sat, 19 Oct 2019 14:17:50 +0800</pubDate>
+    <lastBuildDate>Sat, 19 Oct 2019 14:17:50 +0800</lastBuildDate>
     <generator>Jekyll v3.8.3</generator>
+    
+      <item>
+        <title>卸载 macOS 中的 MySQL 时遇到的疑问</title>
+        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#操作环境&quot; id=&quot;markdown-toc-操作环境&quot;&gt;操作环境&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#细节&quot; id=&quot;markdown-toc-细节&quot;&gt;细节&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#卸载已有的-mysql&quot; id=&quot;markdown-toc-卸载已有的-mysql&quot;&gt;卸载已有的 MySQL&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#涉及到的目录&quot; id=&quot;markdown-toc-涉及到的目录&quot;&gt;涉及到的目录&lt;/a&gt;        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;#usrlocal&quot; id=&quot;markdown-toc-usrlocal&quot;&gt;/usr/local/&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#library-和-library&quot; id=&quot;markdown-toc-library-和-library&quot;&gt;/Library 和 ~/Library&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#librarycache&quot; id=&quot;markdown-toc-librarycache&quot;&gt;~/Library/Cache/&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#brew-安装-mysql&quot; id=&quot;markdown-toc-brew-安装-mysql&quot;&gt;brew 安装 MySQL&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
+&lt;p&gt;之前对 MySQL 的了解，仅局限在一些简单的应用，大部分精力放在应用层——代码逻辑的设计与开发。最近和数据打交道比较多，需要对数据库有更多的了解，因此首先把自己之前傻瓜式安装的 MySQL 卸载掉，然后选择一个更容易操控的方式进行安装。&lt;/p&gt;
+
+&lt;h2 id=&quot;操作环境&quot;&gt;操作环境&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;macOS High Sierra，10.13.6&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;细节&quot;&gt;细节&lt;/h2&gt;
+&lt;h3 id=&quot;卸载已有的-mysql&quot;&gt;卸载已有的 MySQL&lt;/h3&gt;
+&lt;p&gt;我的主要开发环境是 Mac，因此在网络上搜索了卸载 macOS 中的 MySQL 的方法，网络给出的答案倾向于简单粗暴，比如下面的列表：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;brew remove mysql
+brew cleanup
+&lt;span class=&quot;nb&quot;&gt;sudo rm&lt;/span&gt; /usr/local/mysql
+&lt;span class=&quot;nb&quot;&gt;sudo rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-rf&lt;/span&gt; /usr/local/mysql&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-rf&lt;/span&gt; /usr/local/var/mysql
+&lt;span class=&quot;nb&quot;&gt;sudo rm&lt;/span&gt; ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
+&lt;span class=&quot;nb&quot;&gt;sudo rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-rf&lt;/span&gt; /Library/StartupItems/MySQLCOM
+&lt;span class=&quot;nb&quot;&gt;sudo rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-rf&lt;/span&gt; /Library/PreferencePanes/My&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;
+launchctl unload &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
+edit /etc/hostconfig and remove the line &lt;span class=&quot;nv&quot;&gt;MYSQLCOM&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-YES-&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-rf&lt;/span&gt; ~/Library/PreferencePanes/My&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-rf&lt;/span&gt; /Library/Receipts/mysql&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-rf&lt;/span&gt; /Library/Receipts/MySQL&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-rf&lt;/span&gt; /private/var/db/receipts/com.mysql.&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;rm&lt;/span&gt; ~/Library/Cache/Homebrew/mysql&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;看到这一长列的内容，一般人有两个反应：1）真的有这么多东西要删除吗？2）会不会有更多的东西需要清理而没有包含在列表中？&lt;/p&gt;
+
+&lt;p&gt;可以大体把上面给出的路径分成 &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/&lt;/code&gt; 、 &lt;code class=&quot;highlighter-rouge&quot;&gt;/Library/&lt;/code&gt; 、 &lt;code class=&quot;highlighter-rouge&quot;&gt;~/Library/&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;/private/var/db/receipts&lt;/code&gt; 三个目录。&lt;/p&gt;
+
+&lt;h3 id=&quot;涉及到的目录&quot;&gt;涉及到的目录&lt;/h3&gt;
+&lt;h4 id=&quot;usrlocal&quot;&gt;/usr/local/&lt;/h4&gt;
+&lt;p&gt;因为 macOS  是类 Unix 的系统，因此继承了很多 Unix 的特性。其中 &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr&lt;/code&gt; 并不是 user 的缩写，而是 &lt;strong&gt;Unix Software Resource&lt;/strong&gt; 的缩写， 也就是 Unix 操作系统软件资源所放置的目录；所有系统默认的软件都会放置到 &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr&lt;/code&gt; 。用户自行安装的软件，一般统一安装到 &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local&lt;/code&gt;，这样就很容易管理。&lt;/p&gt;
+
+&lt;p&gt;因为 MySQL 是我自己安装的，因此它所有的执行文件、大部分的配置文件等都在 &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/&lt;/code&gt; 中，卸载 MySQL 的时候自然要检查这个目录中相关的文件。&lt;/p&gt;
+
+&lt;h4 id=&quot;library-和-library&quot;&gt;/Library 和 ~/Library&lt;/h4&gt;
+&lt;p&gt;是 macOS 专有的目录，存放系统资源库以及用户资源库相关的文件。&lt;code class=&quot;highlighter-rouge&quot;&gt;/Library/StartupItems&lt;/code&gt; 定义了系统启动过程中运行的程序，&lt;code class=&quot;highlighter-rouge&quot;&gt;/Library/LaunchAgents&lt;/code&gt; 定义了登录启动项，&lt;code class=&quot;highlighter-rouge&quot;&gt;/Library/PreferencePanes&lt;/code&gt; 定义了系统偏好设置面板中的配置项，&lt;code class=&quot;highlighter-rouge&quot;&gt;/Library/Receipts&lt;/code&gt;  存储的是应用的”票据“，类似于权限配置文件，以此类推 &lt;code class=&quot;highlighter-rouge&quot;&gt;/private/var/db/receipts/&lt;/code&gt; 里存放的也是类似的权限配置文件。&lt;/p&gt;
+
+&lt;h4 id=&quot;librarycache&quot;&gt;~/Library/Cache/&lt;/h4&gt;
+&lt;p&gt;值得关注的是 &lt;code class=&quot;highlighter-rouge&quot;&gt;~/Library/Cache/&lt;/code&gt; 这个目录存放的是一些缓存文件，理论上这些文件都是可以删除的。如果电脑运行的时间够久，这个目录里回包含比较多的垃圾文件，如果磁盘空间比较紧张，可以考虑清理这里的文件。（可通过 ` du -h -d 1` 命令查看这个目录占用了多少空间）&lt;/p&gt;
+
+&lt;h3 id=&quot;brew-安装-mysql&quot;&gt;brew 安装 MySQL&lt;/h3&gt;
+&lt;p&gt;在 macOS 中，&lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 应该算是一款非常大众的包管理工具了，而且它安装软件的套路也比较固定。由 &lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 安装的软件会被安装在  &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/Cellar&lt;/code&gt; 目录，然后通过软连接的形式软链到 &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/bin&lt;/code&gt; 目录（有的软件可能不会软链），软件的配置文件一般在目录 &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/etc/&lt;/code&gt;，日志文件一般在目录 &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/var/log/&lt;/code&gt;，数据文件则直接放在目录 &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/var&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;还可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;brew services start/stop&lt;/code&gt;  等命令来启动由 &lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 安装的软件，同时注册开机启动。这一点还是挺方便的。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;搜索可以安装的 mysql 版本。通过运行 &lt;code class=&quot;highlighter-rouge&quot;&gt;brew search mysql&lt;/code&gt; 可以搜索可供安装的 mysql 包。&lt;/li&gt;
+  &lt;li&gt;安装 &lt;code class=&quot;highlighter-rouge&quot;&gt;mysql@5.7&lt;/code&gt;。通过运行 &lt;code class=&quot;highlighter-rouge&quot;&gt;brew install mysql@5.7&lt;/code&gt; 安装版本为 &lt;code class=&quot;highlighter-rouge&quot;&gt;5.7&lt;/code&gt; 的 mysql，如果不指定版本，则会安装最新版本的 mysql。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
+&lt;p&gt;本文简单介绍了 &lt;code class=&quot;highlighter-rouge&quot;&gt;Mac + MySQL&lt;/code&gt; 技术栈中 MySQL 的卸载与安装。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.onthink.com/2018/12/14/mac-launchagents/&quot;&gt;Mac 系统 LaunchAgents&lt;/a&gt; 介绍了 mac 中的 LaunchDaemons 和 LaunchAgents&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/findumars/p/5536547.html&quot;&gt;Mac OSX的开机启动配置&lt;/a&gt; 同样介绍了  LaunchDaemons 和 LaunchAgents，还介绍了 StartItems。&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://docs.brew.sh/&quot;&gt;Documentation — Homebrew Documentation&lt;/a&gt; Mac 系统的一款包管理工具&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sat, 19 Oct 2019 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2019/10/19/mac-mysql-reinstall.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2019/10/19/mac-mysql-reinstall.html</guid>
+        
+        <category>实用</category>
+        
+        <category>最佳实践</category>
+        
+        <category>DevOps</category>
+        
+        
+        <category>实用</category>
+        
+      </item>
     
       <item>
         <title>《原汁原味 Go 语言学习》(5) effective go 函数部分</title>
@@ -1414,140 +1514,6 @@ runtime.main
         <category>golang</category>
         
         <category>实用</category>
-        
-        
-        <category>golang</category>
-        
-      </item>
-    
-      <item>
-        <title>Golang 异步任务执行器——Gochan</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#项目背景&quot; id=&quot;markdown-toc-项目背景&quot;&gt;项目背景&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#设计的思路&quot; id=&quot;markdown-toc-设计的思路&quot;&gt;设计的思路&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#平常的设计&quot; id=&quot;markdown-toc-平常的设计&quot;&gt;平常的设计&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#状态无依赖的并发设计&quot; id=&quot;markdown-toc-状态无依赖的并发设计&quot;&gt;状态无依赖的并发设计&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#状态存在依赖的并发设计-gochan&quot; id=&quot;markdown-toc-状态存在依赖的并发设计-gochan&quot;&gt;状态存在依赖的并发设计 (gochan)&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#使用示例&quot; id=&quot;markdown-toc-使用示例&quot;&gt;使用示例&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
-&lt;p&gt;在最近编码过程中，大量使用了异步任务。在自己需求的基础上抽象出一个异步任务执行器，应该有挺多类似的需求，于是开源出来。项目地址为《&lt;a href=&quot;https://github.com/chalvern/gochan&quot;&gt;GitHub - chalvern/gochan&lt;/a&gt;》，还希望大家能够不吝 &lt;code class=&quot;highlighter-rouge&quot;&gt;star&lt;/code&gt; ✨。&lt;/p&gt;
-
-&lt;h2 id=&quot;项目背景&quot;&gt;项目背景&lt;/h2&gt;
-&lt;p&gt;一般情况下，我们可以通过定义一个带缓冲的 channel 变量接收某种事件，然后通过一个专用的 goroutine 消费执行这个 channel 中的事件。&lt;/p&gt;
-
-&lt;p&gt;但是如果相关事件很多的时候，一个 goroutine 不够用了怎么办呢？或许我们会想到多创建几个专用的 goroutine 来并发地消费执行这个 channel 中的事件；如果 channel 中各个事件之间是独立的，是可行的，但是如果某些事件之间具有某种顺序上的约束，那么就需要对事件进行特定的分类。&lt;/p&gt;
-
-&lt;p&gt;比如，一个订单的支付与货物发货，两个事件是需要保序的；但是不同的订单之间又是可以并发执行；其实就是实现一个微型的按特定主题分类的 pub-sub（发布-订阅）系统。以订单为例，可以根据订单单号，把相同单号的事件推送到同一个队列（channel），一个特定的执行器（goroutine）来消费执行这个队列中的事件，如此平行扩展多个类似的组合，实现并发。&lt;/p&gt;
-
-&lt;h2 id=&quot;设计的思路&quot;&gt;设计的思路&lt;/h2&gt;
-&lt;h3 id=&quot;平常的设计&quot;&gt;平常的设计&lt;/h3&gt;
-
-&lt;p&gt;通过定义一个带缓冲的 channel 变量接收某种事件，然后通过一个专用的 goroutine 消费执行这个 channel 中的事件。&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-event -&amp;gt;
-        |
-event -&amp;gt; buffer-channel -&amp;gt; goroutine
-        |
-event -&amp;gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;状态无依赖的并发设计&quot;&gt;状态无依赖的并发设计&lt;/h3&gt;
-
-&lt;p&gt;事件之间完全没有状态依赖，因此可以简单扩展 goroutine 进行加快事件执行速度。&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-event -&amp;gt;                 -&amp;gt;goroutine
-        |               |
-event -&amp;gt; buffer-channel -&amp;gt; goroutine
-        |               |
-event -&amp;gt;                 -&amp;gt;goroutine
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;状态存在依赖的并发设计-gochan&quot;&gt;状态存在依赖的并发设计 (gochan)&lt;/h3&gt;
-
-&lt;p&gt;引入一层分发器（dispatcher），根据某个特性（比如 uuid）把事件分发到相应的队列（buffer-channel）中。&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-event -&amp;gt;              -&amp;gt; buffer-channel -&amp;gt; goroutine
-        |            |
-event &lt;span class=&quot;nt&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; dispatcher -&amp;gt; buffer-channel -&amp;gt; goroutine
-        |            |
-event -&amp;gt;              -&amp;gt; buffer-channel -&amp;gt; goroutine
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;使用示例&quot;&gt;使用示例&lt;/h2&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;errors&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;math/rand&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;time&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-	&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;github.com/chalvern/gochan&quot;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Manager&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gochanNum&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bufferNum&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dispatcher&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gochan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dispatcher&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Manager&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dispatch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;objID&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gochan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TaskFunc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;objID&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;objID&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rand&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Intn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gochanNum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dispatcher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dispatch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;objID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Manager&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dispatcher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gochanNum&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bufferNum&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;manager&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Manager&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gochanNum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gochanNum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bufferNum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bufferNum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dispatcher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gochan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NewDispatcher&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gochanNum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bufferNum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;objID&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task1&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-		&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;New&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;task 1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;manager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dispatch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;objID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;x&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-	&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Second&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;
-
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/gochan&quot;&gt;GitHub - chalvern/gochan: pool of goroutine with buffer channel, for concurrent execution but events of individual object running sequentially&lt;/a&gt; gochan 代码库&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Sun, 02 Jun 2019 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2019/06/02/gochan-of-chalvern.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2019/06/02/gochan-of-chalvern.html</guid>
-        
-        <category>golang</category>
-        
-        <category>实用</category>
-        
-        <category>基础</category>
         
         
         <category>golang</category>
