@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "《原汁原味 Go 语言学习》(7) effective go 数据部分：map、fmt包、append",
+      "tags"     : "golang 基础 实用",
+      "url"      : "/2019/10/26/effectivego-map-fmt-append.html"
+    } ,
+  
+    {
       "title"    : "《原汁原味 Go 语言学习》(6) effective go 数据部分：new与make、数组与切片",
       "tags"     : "golang 基础 实用",
       "url"      : "/2019/10/20/effectivego-new-make-slice.html"
