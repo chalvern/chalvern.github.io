@@ -171,54 +171,54 @@ Author: Ray-Eldath
 
 <p>然而蹊跷的是，在 Golang 官方教程中，并发部分有一个示例（见<a href="https://tour.golang.org/concurrency/9">这里</a>，需自备梯子）却并没有因为多个协程并发写同一个 <code class="highlighter-rouge">map</code> 变量而异常退出。示例的主要内容是通过一个 <code class="highlighter-rouge">Mutex</code> 锁来限定 <code class="highlighter-rouge">SafeCounter</code> 结构体中的 <code class="highlighter-rouge">v</code> 变量（<code class="highlighter-rouge">map</code>类型）的并发读写，其源码如下：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"sync"</span><span class="x">
-	</span><span class="s">"time"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"sync"</span>
+	<span class="s">"time"</span>
+<span class="p">)</span>
 
-</span><span class="c">// SafeCounter is safe to use concurrently.</span><span class="x">
-</span><span class="k">type</span><span class="x"> </span><span class="n">SafeCounter</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">v</span><span class="x">   </span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="x">
-	</span><span class="n">mux</span><span class="x"> </span><span class="n">sync</span><span class="o">.</span><span class="n">Mutex</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="c">// SafeCounter is safe to use concurrently.</span>
+<span class="k">type</span> <span class="n">SafeCounter</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">v</span>   <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span>
+	<span class="n">mux</span> <span class="n">sync</span><span class="o">.</span><span class="n">Mutex</span>
+<span class="p">}</span>
 
-</span><span class="c">// Inc increments the counter for the given key.</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">c</span><span class="x"> </span><span class="o">*</span><span class="n">SafeCounter</span><span class="p">)</span><span class="x"> </span><span class="n">Inc</span><span class="p">(</span><span class="n">key</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span><span class="x">
-	</span><span class="c">// Lock so only one goroutine at a time can access the map c.v.</span><span class="x">
-	</span><span class="n">c</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">++</span><span class="x">
-	</span><span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="c">// Inc increments the counter for the given key.</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">SafeCounter</span><span class="p">)</span> <span class="n">Inc</span><span class="p">(</span><span class="n">key</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+	<span class="c">// Lock so only one goroutine at a time can access the map c.v.</span>
+	<span class="n">c</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">++</span>
+	<span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span>
+<span class="p">}</span>
 
-</span><span class="c">// Value returns the current value of the counter for the given key.</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">c</span><span class="x"> </span><span class="o">*</span><span class="n">SafeCounter</span><span class="p">)</span><span class="x"> </span><span class="n">Value</span><span class="p">(</span><span class="n">key</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span><span class="x">
-	</span><span class="c">// Lock so only one goroutine at a time can access the map c.v.</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span><span class="x">
-	</span><span class="k">return</span><span class="x"> </span><span class="n">c</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="c">// Value returns the current value of the counter for the given key.</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">SafeCounter</span><span class="p">)</span> <span class="n">Value</span><span class="p">(</span><span class="n">key</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+	<span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+	<span class="c">// Lock so only one goroutine at a time can access the map c.v.</span>
+	<span class="k">defer</span> <span class="n">c</span><span class="o">.</span><span class="n">mux</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span>
+	<span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">c</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">SafeCounter</span><span class="p">{</span><span class="n">v</span><span class="o">:</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)}</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="m">1000</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">go</span><span class="x"> </span><span class="n">c</span><span class="o">.</span><span class="n">Inc</span><span class="p">(</span><span class="s">"somekey"</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">c</span> <span class="o">:=</span> <span class="n">SafeCounter</span><span class="p">{</span><span class="n">v</span><span class="o">:</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)}</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">1000</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">go</span> <span class="n">c</span><span class="o">.</span><span class="n">Inc</span><span class="p">(</span><span class="s">"somekey"</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s">"somekey"</span><span class="p">))</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+	<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s">"somekey"</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>如果去掉 <code class="highlighter-rouge">Inc</code>  函数中 <code class="highlighter-rouge">mux</code> 加锁与解锁的过程（如下面的代码所示），理论上示例代码会报出 <code class="highlighter-rouge">concurrent map writes</code> 错误，但是如果登录<a href="https://tour.golang.org/concurrency/9">官方对应的 tour 页面</a>，修改 <code class="highlighter-rouge">Inc</code> 方法后运行却并未报出 <strong>并发写 map</strong> 的错误（此结论截止到 2019/05/15，已经提了 issue，官方可能会做修复）</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 修改后的 Inc 函数，此处去掉了锁相关的过程</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">c</span><span class="x"> </span><span class="o">*</span><span class="n">SafeCounter</span><span class="p">)</span><span class="x"> </span><span class="n">Inc</span><span class="p">(</span><span class="n">key</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">c</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">++</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 修改后的 Inc 函数，此处去掉了锁相关的过程</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">SafeCounter</span><span class="p">)</span> <span class="n">Inc</span><span class="p">(</span><span class="n">key</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">c</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">++</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h3 id="单个物理核心上的并发">单个物理核心上的“并发”</h3>
 <p>如果 <code class="highlighter-rouge">CPU</code> 只有单个物理核，Golang 运行时（<code class="highlighter-rouge">runtime</code>）如何才能实现逻辑上的 <strong>“并发”</strong> 呢？ 其实我们可以类比操作系统的多进程模型（参考《 <a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析</a> 》和《 <a href="https://jingwei.link/2019/02/13/linux-process-thread-schedule-2.html">Linux系统调度原理浅析（二）</a> 》），引入 时间片 的概念，把一个物理核的使用权按时间片划分并分配给所有的协程（<code class="highlighter-rouge">goroutine</code>），每个协程消耗自己的时间片 <strong>轮流交替</strong> 在同一个物理核上运行，从而实现逻辑上的 “并发”。</p>
@@ -236,34 +236,34 @@ Author: Ray-Eldath
 
 <p>首先， <code class="highlighter-rouge">map</code> 的读写过程都不是原子性的（原子性的概念参考《 <a href="https://jingwei.link/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a> 》中的阐述），这就导致读写过程可能被在任意过程中断，从而引发 <code class="highlighter-rouge">map</code> 的并发读写校验生效导致程序异常退出（<strong>这一条有待进一步确认 goroutine 的调度机制</strong>）。其次，在低成本创建 <code class="highlighter-rouge">goroutine</code> 的编程模型中，单核心的配置可能造成逻辑死锁，比如下面的代码就会僵死：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"runtime"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"runtime"</span>
+<span class="p">)</span>
 
-</span><span class="k">var</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="n">flag</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="no">false</span><span class="x">
-	</span><span class="n">str</span><span class="x">  </span><span class="kt">string</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">var</span> <span class="p">(</span>
+	<span class="n">flag</span> <span class="o">=</span> <span class="no">false</span>
+	<span class="n">str</span>  <span class="kt">string</span>
+<span class="p">)</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">foo</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">flag</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="no">true</span><span class="x">
-	</span><span class="n">str</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="s">"setup complete!"</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">foo</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">flag</span> <span class="o">=</span> <span class="no">true</span>
+	<span class="n">str</span> <span class="o">=</span> <span class="s">"setup complete!"</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">runtime</span><span class="o">.</span><span class="n">GOMAXPROCS</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="n">foo</span><span class="p">()</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">if</span><span class="x"> </span><span class="n">flag</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="k">break</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">str</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">runtime</span><span class="o">.</span><span class="n">GOMAXPROCS</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+	<span class="k">go</span> <span class="n">foo</span><span class="p">()</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="n">flag</span> <span class="p">{</span>
+			<span class="k">break</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h2 id="小结">小结</h2>
 <p>Golang 运行时默认会启用所有的 <code class="highlighter-rouge">CPU</code> 核心，可以通过 <code class="highlighter-rouge">runtime.GOMAXPROCS()</code> 方法配置可用的最大 <code class="highlighter-rouge">CPU</code>核心数量。当只有一个 <code class="highlighter-rouge">CPU</code> 核的时候（比如虚拟机只配置了一个物理核，或者通过  <code class="highlighter-rouge">runtime.GOMAXPROCS(1)</code> 配置只使用一个物理核），会对 <code class="highlighter-rouge">map</code> 类型变量的并发稳定性产生一些影响（不加锁的情况下也不会出现并发读写问题），但是<strong>开发者不应该依赖这个特性来试图增加代码的健壮性</strong>，否则会造成无法预料的结果。</p>

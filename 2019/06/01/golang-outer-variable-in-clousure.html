@@ -184,26 +184,26 @@ Author: Ray-Eldath
 <h3 id="先看一段代码">先看一段代码</h3>
 <p>下面的代码中定义了一个匿名函数并赋值给 <code class="highlighter-rouge">myfunc</code> 变量，同时在代码的后面连续调用了两次 <code class="highlighter-rouge">myfunc</code> 函数。大家可以先考虑一下代码的输出是什么，然后再查看文章后面的内容。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span><span class="x">
-</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
+<span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+<span class="p">)</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">a1</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">1</span><span class="x">
-	</span><span class="n">a2</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">2</span><span class="x">
-	</span><span class="n">myfunc</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">sum</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">a1</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="n">a2</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"a1: %d, a2:%d, sum: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">a1</span><span class="p">,</span><span class="x"> </span><span class="n">a2</span><span class="p">,</span><span class="x"> </span><span class="n">sum</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">myfunc</span><span class="p">()</span><span class="x">
-	</span><span class="n">a1</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="m">11</span><span class="x">
-	</span><span class="n">a2</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="m">22</span><span class="x">
-	</span><span class="n">myfunc</span><span class="p">()</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">a1</span> <span class="o">:=</span> <span class="m">1</span>
+	<span class="n">a2</span> <span class="o">:=</span> <span class="m">2</span>
+	<span class="n">myfunc</span> <span class="o">:=</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">sum</span> <span class="o">:=</span> <span class="n">a1</span> <span class="o">+</span> <span class="n">a2</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"a1: %d, a2:%d, sum: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">sum</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="n">myfunc</span><span class="p">()</span>
+	<span class="n">a1</span> <span class="o">=</span> <span class="m">11</span>
+	<span class="n">a2</span> <span class="o">=</span> <span class="m">22</span>
+	<span class="n">myfunc</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>运行上面的代码，可以看到上面代码的输出为：</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># go run main.go </span>

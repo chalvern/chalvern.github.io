@@ -172,29 +172,29 @@ Author: Ray-Eldath
 <h2 id="先看一段代码">先看一段代码</h2>
 <p>如果大家不看最后的答案，可以分析一下，下面这段代码的输出是什么。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
-</span><span class="k">import</span><span class="x"> </span><span class="s">"fmt"</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+<span class="k">import</span> <span class="s">"fmt"</span>
 
-</span><span class="k">type</span><span class="x"> </span><span class="n">Angle</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">Name</span><span class="x"> </span><span class="kt">string</span><span class="x">
-	</span><span class="n">Age</span><span class="x">  </span><span class="kt">int</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">type</span> <span class="n">Angle</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">Name</span> <span class="kt">string</span>
+	<span class="n">Age</span>  <span class="kt">int</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">m</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="n">Angle</span><span class="p">)</span><span class="x">
-	</span><span class="n">angs</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[]</span><span class="n">Angle</span><span class="p">{</span><span class="x">
-		</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"ka"</span><span class="p">,</span><span class="x"> </span><span class="n">Age</span><span class="o">:</span><span class="x"> </span><span class="m">18</span><span class="p">},</span><span class="x">
-		</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"kan"</span><span class="p">,</span><span class="x"> </span><span class="n">Age</span><span class="o">:</span><span class="x"> </span><span class="m">18</span><span class="p">},</span><span class="x">
-		</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"kang"</span><span class="p">,</span><span class="x"> </span><span class="n">Age</span><span class="o">:</span><span class="x"> </span><span class="m">18</span><span class="p">},</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">_</span><span class="p">,</span><span class="x"> </span><span class="n">ang</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">angs</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">m</span><span class="p">[</span><span class="n">ang</span><span class="o">.</span><span class="n">Name</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="o">&amp;</span><span class="n">ang</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">k</span><span class="p">,</span><span class="x"> </span><span class="n">v</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">m</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"key=&gt;"</span><span class="o">+</span><span class="n">k</span><span class="p">,</span><span class="x"> </span><span class="s">"name=&gt;"</span><span class="o">+</span><span class="n">v</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">m</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="n">Angle</span><span class="p">)</span>
+	<span class="n">angs</span> <span class="o">:=</span> <span class="p">[]</span><span class="n">Angle</span><span class="p">{</span>
+		<span class="p">{</span><span class="n">Name</span><span class="o">:</span> <span class="s">"ka"</span><span class="p">,</span> <span class="n">Age</span><span class="o">:</span> <span class="m">18</span><span class="p">},</span>
+		<span class="p">{</span><span class="n">Name</span><span class="o">:</span> <span class="s">"kan"</span><span class="p">,</span> <span class="n">Age</span><span class="o">:</span> <span class="m">18</span><span class="p">},</span>
+		<span class="p">{</span><span class="n">Name</span><span class="o">:</span> <span class="s">"kang"</span><span class="p">,</span> <span class="n">Age</span><span class="o">:</span> <span class="m">18</span><span class="p">},</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">ang</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">angs</span> <span class="p">{</span>
+		<span class="n">m</span><span class="p">[</span><span class="n">ang</span><span class="o">.</span><span class="n">Name</span><span class="p">]</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">ang</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">m</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"key=&gt;"</span><span class="o">+</span><span class="n">k</span><span class="p">,</span> <span class="s">"name=&gt;"</span><span class="o">+</span><span class="n">v</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h2 id="golang中的副本与指针">Golang中的副本与指针</h2>
 <p>作为一名“优秀“的Ruby程序猿，在写Golang时习惯上难免会带有一些Ruby的影子；尤其当平时的工作包含一部分Ruby代码的编写时，这种编程语言自由切换的酸爽感觉，真简直了。</p>
@@ -223,15 +223,15 @@ Author: Ray-Eldath
 <h3 id="golang中的副本与指针-1">Golang中的副本与指针</h3>
 <p>Golang中相应的decode函数，源码见<a href="https://golang.org/src/encoding/json/stream.go?s=1425:1472#L49">这里</a>，它主要实现的功能是<strong>把JSON编码的值读出来，然后把JSON的转变成Go的值（一般为struct，既结构）</strong>。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Decode reads the next JSON-encoded value from its</span><span class="x">
-</span><span class="c">// input and stores it in the value pointed to by v.</span><span class="x">
-</span><span class="c">//</span><span class="x">
-</span><span class="c">// See the documentation for Unmarshal for details about</span><span class="x">
-</span><span class="c">// the conversion of JSON into a Go value.</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">dec</span><span class="x"> </span><span class="o">*</span><span class="n">Decoder</span><span class="p">)</span><span class="x"> </span><span class="n">Decode</span><span class="p">(</span><span class="n">v</span><span class="x"> </span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="kt">error</span><span class="x"> </span><span class="p">{</span><span class="x">
-  </span><span class="c">//省略很多内容</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Decode reads the next JSON-encoded value from its</span>
+<span class="c">// input and stores it in the value pointed to by v.</span>
+<span class="c">//</span>
+<span class="c">// See the documentation for Unmarshal for details about</span>
+<span class="c">// the conversion of JSON into a Go value.</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">dec</span> <span class="o">*</span><span class="n">Decoder</span><span class="p">)</span> <span class="n">Decode</span><span class="p">(</span><span class="n">v</span> <span class="k">interface</span><span class="p">{})</span> <span class="kt">error</span> <span class="p">{</span>
+  <span class="c">//省略很多内容</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>注意上面的源码可以发现，这里的<code class="highlighter-rouge">dec *Decoder</code>使用了指针的形式；假如函数的声明是<code class="highlighter-rouge">func (dec Decoder) Decode(v interface{}) error</code>会怎么样呢？</p>
 
@@ -250,19 +250,19 @@ Author: Ray-Eldath
 </code></pre></div></div>
 
 <p>如果还是有所疑惑，那么考虑下面的代码片段：</p>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 很容易看出来这里的i是一个被重复利用的值</span><span class="x">
-</span><span class="c">// 即在整个for循环中，只存在一个i变量；</span><span class="x">
-</span><span class="c">// 同样的道理，这里只存在一个ang变量，每次</span><span class="x">
-</span><span class="c">// range时，新的Angle副本会填充整个ang变量</span><span class="x">
-</span><span class="c">// 变成一个新的值。</span><span class="x">
-</span><span class="c">// 把ang的指针赋值给m[ang.Name]，也就意味</span><span class="x">
-</span><span class="c">// 着所有的m中存在的是指向同一块内存的同一个</span><span class="x">
-</span><span class="c">// 指针。</span><span class="x">
-</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="p">,</span><span class="x"> </span><span class="n">ang</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">angs</span><span class="x"> </span><span class="p">{</span><span class="x">
-  </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">)</span><span class="x">
-  </span><span class="n">m</span><span class="p">[</span><span class="n">ang</span><span class="o">.</span><span class="n">Name</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="o">&amp;</span><span class="n">ang</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 很容易看出来这里的i是一个被重复利用的值</span>
+<span class="c">// 即在整个for循环中，只存在一个i变量；</span>
+<span class="c">// 同样的道理，这里只存在一个ang变量，每次</span>
+<span class="c">// range时，新的Angle副本会填充整个ang变量</span>
+<span class="c">// 变成一个新的值。</span>
+<span class="c">// 把ang的指针赋值给m[ang.Name]，也就意味</span>
+<span class="c">// 着所有的m中存在的是指向同一块内存的同一个</span>
+<span class="c">// 指针。</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ang</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">angs</span> <span class="p">{</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">)</span>
+  <span class="n">m</span><span class="p">[</span><span class="n">ang</span><span class="o">.</span><span class="n">Name</span><span class="p">]</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">ang</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h2 id="小结">小结</h2>
 <p>本文简单就一段代码引发的bug进行了简单的分析，从Ruby中一切皆对象，一切赋值为引用（或指针）赋值，到Golang中的副本与指针，阐明了代码中bug存在的本质。</p>

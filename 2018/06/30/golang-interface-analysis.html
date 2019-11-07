@@ -164,33 +164,33 @@ Author: Ray-Eldath
 
 <h3 id="示例代码">示例代码</h3>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+<span class="p">)</span>
 
-</span><span class="k">type</span><span class="x"> </span><span class="n">KK</span><span class="x"> </span><span class="k">interface</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">HappyBirthday</span><span class="p">()</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">type</span> <span class="n">KK</span> <span class="k">interface</span> <span class="p">{</span>
+	<span class="n">HappyBirthday</span><span class="p">()</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="n">my</span><span class="x"> </span><span class="k">interface</span><span class="p">{}</span><span class="x">
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">my</span> <span class="k">interface</span><span class="p">{}</span>
 
-	</span><span class="k">if</span><span class="x"> </span><span class="n">my</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"mikk"</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"not nil"</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
+	<span class="k">if</span> <span class="n">my</span> <span class="o">==</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"mikk"</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"not nil"</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	</span><span class="k">var</span><span class="x"> </span><span class="n">kk</span><span class="x"> </span><span class="n">KK</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="n">kk</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"mikk"</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"not nil"</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+	<span class="k">var</span> <span class="n">kk</span> <span class="n">KK</span>
+	<span class="k">if</span> <span class="n">kk</span> <span class="o">==</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"mikk"</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"not nil"</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h3 id="示例代码运行结果">示例代码运行结果</h3>
 
@@ -206,11 +206,11 @@ mikk
 <h3 id="源码中的nil">源码中的<code class="highlighter-rouge">nil</code></h3>
 <p>在<code class="highlighter-rouge">go/src/builtin/builtin.go</code>的源码中，对nil的定义如下：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// nil is a predeclared identifier representing the zero value for a</span><span class="x">
-</span><span class="c">// pointer, channel, func, interface, map, or slice type.</span><span class="x">
-</span><span class="c">// 零值，特制 指针、信道、函数、接口、map、slice</span><span class="x">
-</span><span class="k">var</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="n">Type</span><span class="x"> </span><span class="c">// Type must be a pointer, channel, func, interface, map, or slice type</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// nil is a predeclared identifier representing the zero value for a</span>
+<span class="c">// pointer, channel, func, interface, map, or slice type.</span>
+<span class="c">// 零值，特制 指针、信道、函数、接口、map、slice</span>
+<span class="k">var</span> <span class="no">nil</span> <span class="n">Type</span> <span class="c">// Type must be a pointer, channel, func, interface, map, or slice type</span>
+</code></pre></div></div>
 
 <p>大体意思是：<code class="highlighter-rouge">nil</code>代表零值；特别地，代表指针、信道、函数、接口(Interface)、map、slice的零值。也就是说，Interface的零值本就是<code class="highlighter-rouge">nil</code>。</p>
 
@@ -220,55 +220,55 @@ mikk
 
 <p>Interface主要其作用的地方是在运行时，因此这里主要介绍<code class="highlighter-rouge">go/src/runtime/runtime2.go</code>中的两个片段。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 带有方法的接口</span><span class="x">
-</span><span class="k">type</span><span class="x"> </span><span class="n">iface</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="c">// 存储_type信息还有结构实现方法的集合</span><span class="x">
-	</span><span class="n">tab</span><span class="x"> </span><span class="o">*</span><span class="n">itab</span><span class="x">
-	</span><span class="c">//指向数据的指针(go语言中特殊的指针类型unsafe.Pointer类似于c语言中的void*)</span><span class="x">
-	</span><span class="n">data</span><span class="x"> </span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 带有方法的接口</span>
+<span class="k">type</span> <span class="n">iface</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="c">// 存储_type信息还有结构实现方法的集合</span>
+	<span class="n">tab</span> <span class="o">*</span><span class="n">itab</span>
+	<span class="c">//指向数据的指针(go语言中特殊的指针类型unsafe.Pointer类似于c语言中的void*)</span>
+	<span class="n">data</span> <span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span>
+<span class="p">}</span>
 
-</span><span class="c">// 空接口</span><span class="x">
-</span><span class="k">type</span><span class="x"> </span><span class="n">eface</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="c">//类型信息</span><span class="x">
-	</span><span class="n">_type</span><span class="x"> </span><span class="o">*</span><span class="n">_type</span><span class="x">
-	</span><span class="c">// 指向数据的指针(go语言中特殊的指针类型unsafe.Pointer类似于c语言中的void*)</span><span class="x">
-	</span><span class="n">data</span><span class="x"> </span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="c">// 空接口</span>
+<span class="k">type</span> <span class="n">eface</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="c">//类型信息</span>
+	<span class="n">_type</span> <span class="o">*</span><span class="n">_type</span>
+	<span class="c">// 指向数据的指针(go语言中特殊的指针类型unsafe.Pointer类似于c语言中的void*)</span>
+	<span class="n">data</span> <span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>从源码可以知道，无论是<code class="highlighter-rouge">iface</code>还是<code class="highlighter-rouge">eface</code>，其底层均存在一个<code class="highlighter-rouge">data</code>字段，也就是说，无论是带方法的接口还是空接口，其的存在必然要依附有意义的数值（零值也是有意义的）才可以。可以简单认为一块内存，里面存放着变量，哪怕这个变量存放的全是零值也无所谓，但是必须要有这么一个内存变量，也就是说，<strong>只有这块内存存在了，Interface的存在才有意义</strong>。</p>
 
 <h2 id="再看一个例子">再看一个例子</h2>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+<span class="p">)</span>
 
-</span><span class="k">type</span><span class="x"> </span><span class="n">Angel</span><span class="x"> </span><span class="k">interface</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">Show</span><span class="p">()</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">type</span> <span class="n">Angel</span> <span class="k">interface</span> <span class="p">{</span>
+	<span class="n">Show</span><span class="p">()</span>
+<span class="p">}</span>
 
-</span><span class="k">type</span><span class="x"> </span><span class="n">Girl</span><span class="x"> </span><span class="k">struct</span><span class="p">{}</span><span class="x">
+<span class="k">type</span> <span class="n">Girl</span> <span class="k">struct</span><span class="p">{}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">girl</span><span class="x"> </span><span class="o">*</span><span class="n">Girl</span><span class="p">)</span><span class="x"> </span><span class="n">Show</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="p">(</span><span class="n">girl</span> <span class="o">*</span><span class="n">Girl</span><span class="p">)</span> <span class="n">Show</span><span class="p">()</span> <span class="p">{</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">miss</span><span class="p">()</span><span class="x"> </span><span class="n">Angel</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="n">g</span><span class="x"> </span><span class="o">*</span><span class="n">Girl</span><span class="x">
-	</span><span class="k">return</span><span class="x"> </span><span class="n">g</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">miss</span><span class="p">()</span> <span class="n">Angel</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">g</span> <span class="o">*</span><span class="n">Girl</span>
+	<span class="k">return</span> <span class="n">g</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">angel</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">miss</span><span class="p">()</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="n">angel</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"nil"</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"not nil"</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">angel</span> <span class="o">:=</span> <span class="n">miss</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">angel</span> <span class="o">==</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"nil"</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"not nil"</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>上面的代码输出 <code class="highlighter-rouge">not nil</code>。</p>
 

@@ -168,31 +168,31 @@ Author: Ray-Eldath
 
 <h2 id="控制-goroutine-的数量">控制 Goroutine 的数量</h2>
 <h3 id="先看-goroutine-数量不受控制的代码例一">先看 Goroutine 数量不受控制的代码（例一）</h3>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"runtime"</span><span class="x">
-	</span><span class="s">"sync"</span><span class="x">
-	</span><span class="s">"time"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"runtime"</span>
+	<span class="s">"sync"</span>
+	<span class="s">"time"</span>
+<span class="p">)</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">jobsCount</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">10</span><span class="x">
-	</span><span class="n">group</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">sync</span><span class="o">.</span><span class="n">WaitGroup</span><span class="p">{}</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">jobsCount</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">group</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
-		</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">(</span><span class="n">i</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"hello %d!</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">)</span><span class="x">
-			</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span><span class="x"> </span><span class="c">// 刻意睡 1 秒钟，模拟耗时</span><span class="x">
-			</span><span class="n">group</span><span class="o">.</span><span class="n">Done</span><span class="p">()</span><span class="x">
-		</span><span class="p">}(</span><span class="n">i</span><span class="p">)</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"index: %d,goroutine Num: %d </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">,</span><span class="x"> </span><span class="n">runtime</span><span class="o">.</span><span class="n">NumGoroutine</span><span class="p">())</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">group</span><span class="o">.</span><span class="n">Wait</span><span class="p">()</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"done!"</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">jobsCount</span> <span class="o">:=</span> <span class="m">10</span>
+	<span class="n">group</span> <span class="o">:=</span> <span class="n">sync</span><span class="o">.</span><span class="n">WaitGroup</span><span class="p">{}</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">jobsCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">group</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+		<span class="k">go</span> <span class="k">func</span><span class="p">(</span><span class="n">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"hello %d!</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+			<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span> <span class="c">// 刻意睡 1 秒钟，模拟耗时</span>
+			<span class="n">group</span><span class="o">.</span><span class="n">Done</span><span class="p">()</span>
+		<span class="p">}(</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"index: %d,goroutine Num: %d </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">runtime</span><span class="o">.</span><span class="n">NumGoroutine</span><span class="p">())</span>
+	<span class="p">}</span>
+	<span class="n">group</span><span class="o">.</span><span class="n">Wait</span><span class="p">()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"done!"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>上面的代码假设有 <code class="highlighter-rouge">jobsCount</code> 个任务，通过 <code class="highlighter-rouge">for-range</code> 给每个任务创建了一个 Goroutine。为了让主协程等待所有的子协程执行完毕后再退出，使用 <code class="highlighter-rouge">sync.WaitGroup</code> 监控所有协程的状态，从而保证主协程结束时所有的子协程已经退出。为了说明问题，上面的代码还输出了 <code class="highlighter-rouge">runtime.NumGoroutine()</code> 的值用以表征协程的数量。</p>
 
@@ -237,40 +237,40 @@ hello 6!
 <h3 id="控制-goroutine-数量的代码例二">控制 Goroutine 数量的代码（例二）</h3>
 <p>代码实现上也很简单：一个 <code class="highlighter-rouge">for-range</code> 创建指定数目的 goroutine，另一个 <code class="highlighter-rouge">for-range</code> 把 job 依次推送到 <code class="highlighter-rouge">channel</code> 供 goroutine 消费。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"runtime"</span><span class="x">
-	</span><span class="s">"sync"</span><span class="x">
-	</span><span class="s">"time"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"runtime"</span>
+	<span class="s">"sync"</span>
+	<span class="s">"time"</span>
+<span class="p">)</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">jobsCount</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">10</span><span class="x">
-	</span><span class="n">group</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">sync</span><span class="o">.</span><span class="n">WaitGroup</span><span class="p">{}</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="n">jobsChan</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">chan</span><span class="x"> </span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="m">3</span><span class="p">)</span><span class="x">
-	</span><span class="c">// a) 生成指定数目的 goroutine，每个 goroutine 消费 jobsChan 中的数据</span><span class="x">
-	</span><span class="n">poolCount</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">3</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">poolCount</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="k">for</span><span class="x"> </span><span class="n">j</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">jobsChan</span><span class="x"> </span><span class="p">{</span><span class="x">
-				</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"hello %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">j</span><span class="p">)</span><span class="x">
-				</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span><span class="x">
-				</span><span class="n">group</span><span class="o">.</span><span class="n">Done</span><span class="p">()</span><span class="x">
-			</span><span class="p">}</span><span class="x">
-		</span><span class="p">}()</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="c">// b) 把 job 依次推送到 jobsChan 供 goroutine 消费</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">jobsCount</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">jobsChan</span><span class="x"> </span><span class="o">&lt;-</span><span class="x"> </span><span class="n">i</span><span class="x">
-		</span><span class="n">group</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"index: %d,goroutine Num: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">,</span><span class="x"> </span><span class="n">runtime</span><span class="o">.</span><span class="n">NumGoroutine</span><span class="p">())</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">group</span><span class="o">.</span><span class="n">Wait</span><span class="p">()</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"done!"</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">jobsCount</span> <span class="o">:=</span> <span class="m">10</span>
+	<span class="n">group</span> <span class="o">:=</span> <span class="n">sync</span><span class="o">.</span><span class="n">WaitGroup</span><span class="p">{}</span>
+	<span class="k">var</span> <span class="n">jobsChan</span> <span class="o">=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
+	<span class="c">// a) 生成指定数目的 goroutine，每个 goroutine 消费 jobsChan 中的数据</span>
+	<span class="n">poolCount</span> <span class="o">:=</span> <span class="m">3</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">poolCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="n">j</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">jobsChan</span> <span class="p">{</span>
+				<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"hello %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+				<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+				<span class="n">group</span><span class="o">.</span><span class="n">Done</span><span class="p">()</span>
+			<span class="p">}</span>
+		<span class="p">}()</span>
+	<span class="p">}</span>
+	<span class="c">// b) 把 job 依次推送到 jobsChan 供 goroutine 消费</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">jobsCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">jobsChan</span> <span class="o">&lt;-</span> <span class="n">i</span>
+		<span class="n">group</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"index: %d,goroutine Num: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">runtime</span><span class="o">.</span><span class="n">NumGoroutine</span><span class="p">())</span>
+	<span class="p">}</span>
+	<span class="n">group</span><span class="o">.</span><span class="n">Wait</span><span class="p">()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"done!"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>运行上面的代码可以得到下面类似的输出（<strong>可以看到 goroutine 的数量控制在了 4 个</strong>）。</p>
 

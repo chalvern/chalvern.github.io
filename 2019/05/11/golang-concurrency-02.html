@@ -170,26 +170,26 @@ Author: Ray-Eldath
 
 <p>下面的代码模拟了为一个用户（<code class="highlighter-rouge">Person</code>）发放金币（<code class="highlighter-rouge">Money</code>）的代码，其中金币发放与读取分别再不同的线程里完成（读取在主线程，发放在一个子线程）。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span><span class="x">
-</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
+<span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+<span class="p">)</span>
 
-</span><span class="k">type</span><span class="x"> </span><span class="n">Person</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">Money</span><span class="x"> </span><span class="kt">int</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">Money</span> <span class="kt">int</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">p</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span><span class="x"> </span><span class="m">100</span><span class="p">}</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="x"> </span><span class="o">+=</span><span class="x"> </span><span class="m">1000</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="x"> </span><span class="o">+=</span><span class="x"> </span><span class="m">1000</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">p</span> <span class="o">:=</span> <span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span> <span class="m">100</span><span class="p">}</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">p</span><span class="o">.</span><span class="n">Money</span> <span class="o">+=</span> <span class="m">1000</span>
+	<span class="p">}()</span>
+	<span class="n">p</span><span class="o">.</span><span class="n">Money</span> <span class="o">+=</span> <span class="m">1000</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p><code class="highlighter-rouge">go run</code> 时使用 <code class="highlighter-rouge">-race</code> 标志运行上面的代码可以发现数据竞争提醒：</p>
 
@@ -218,26 +218,26 @@ go run <span class="nt">-race</span> main.go
 
 <p>下面的代码引入了 <code class="highlighter-rouge">atomic</code> 的使用，由于其仅支持 <code class="highlighter-rouge">int32</code> 和 <code class="highlighter-rouge">int64</code> 这种显式定义字节长度的类型，因此代码中把 <code class="highlighter-rouge">Money</code> 修改为了 <code class="highlighter-rouge">int64</code> 类型。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"sync/atomic"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"sync/atomic"</span>
+<span class="p">)</span>
 
-</span><span class="k">type</span><span class="x"> </span><span class="n">Person</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">Money</span><span class="x"> </span><span class="kt">int64</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">Money</span> <span class="kt">int64</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">p</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span><span class="x"> </span><span class="m">100</span><span class="p">}</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span><span class="x"> </span><span class="m">1000</span><span class="p">)</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span><span class="x"> </span><span class="m">1000</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">atomic</span><span class="o">.</span><span class="n">LoadInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">))</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">p</span> <span class="o">:=</span> <span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span> <span class="m">100</span><span class="p">}</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span> <span class="m">1000</span><span class="p">)</span>
+	<span class="p">}()</span>
+	<span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span> <span class="m">1000</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">atomic</span><span class="o">.</span><span class="n">LoadInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p><code class="highlighter-rouge">go run -race main.go</code> 运行上面的代码可以发现数据竞争的提醒消失了：</p>
 

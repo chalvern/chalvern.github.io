@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《原汁原味 Go 语言学习》(8) effective go 初始化及方法部分 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="《原汁原味 Go 语言学习》(8) effective go 初始化及方法部分">
+    <meta name="keywords"  content="golang, 基础, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="《原汁原味 Go 语言学习》(8) effective go 初始化及方法部分 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/11/02/effectivego-init-and-method.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>《原汁原味 Go 语言学习》(8) effective go 初始化及方法部分</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-11-02"><i class="iconfont icon-date"></i>02 Nov 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">Go 语言官方文档 effective go 中变量常量的初始化及指针与值在方法中的传递</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#资料" id="markdown-toc-资料">资料</a></li>
+  <li><a href="#initialization初始化" id="markdown-toc-initialization初始化">Initialization（初始化）</a>    <ul>
+      <li><a href="#constants常量" id="markdown-toc-constants常量">Constants（常量）</a></li>
+      <li><a href="#variables变量" id="markdown-toc-variables变量">Variables（变量）</a></li>
+      <li><a href="#the-init-functioninit-函数" id="markdown-toc-the-init-functioninit-函数">The init function（init 函数）</a></li>
+    </ul>
+  </li>
+  <li><a href="#methods方法" id="markdown-toc-methods方法">Methods（方法）</a>    <ul>
+      <li><a href="#pointers-vs-values指针与值" id="markdown-toc-pointers-vs-values指针与值">Pointers vs. Values（指针与值）</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="资料">资料</h2>
+<p><a href="https://golang.google.cn/doc/effective_go.html">effective go</a></p>
+
+<p><a href="https://www.bilibili.com/video/av74451767">本文的视频地址</a></p>
+
+<h1 id="initialization初始化">Initialization（初始化）</h1>
+
+<p>表面上看 Go 的初始化方式与 C/C++ 的初始化方法没有太大区别，但事实上 Go 的初始化方式更强大。Go 语言可以在初始化过程中直接创建复合结构类型（比如 结构体、映射、切片等），能够正确处理初始化对象之间的顺序问题（包括不同的包之间对象的初始化顺序）。</p>
+
+<h2 id="constants常量">Constants（常量）</h2>
+
+<p>在 Go 中，常量仅仅指常量。常量（包括包裹在函数内的常量）在编译时就会被创建，它只能是数字、字符（UTF8符文）、字符串或布尔值。由于常量在编译时就要确定下来，因此定义常量的表达式必须是<strong>编译器可以执行</strong>的常量表达式。比如 <code class="highlighter-rouge">1&lt;&lt;3</code> 是一个常量表达式，<code class="highlighter-rouge">math.Sin(math.Pi/4)</code> 不是常量表达式，因为 <code class="highlighter-rouge">math.Sin</code> 只能在运行时调用，不能在编译时调用。</p>
+
+<p>在 Go 中，枚举型常量经常通过使用 <code class="highlighter-rouge">iota</code> 枚举器来创建。鉴于 <code class="highlighter-rouge">iota</code> 可以作为表达式的一部分来使用，同时表达式可以隐式地重复，因此很方便创建复杂枚举值集合。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type ByteSize float64
+
+const (
+    _           = iota // ignore first value by assigning to blank identifier
+    KB ByteSize = 1 &lt;&lt; (10 * iota)
+    MB
+    GB
+    TB
+    PB
+    EB
+    ZB
+    YB
+)
+</code></pre></div></div>
+
+<p>可以给自定义的任何类型添加方法（比如 <code class="highlighter-rouge">String</code> 方法），这种能力使得任意类型的值被打印时都能定义自己的输出格式。最常见的是给结构体添加方法，不过我们也可以给标量类型（比如 浮点类型 <code class="highlighter-rouge">ByteSize</code>）添加方法。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func (b ByteSize) String() string {
+    switch {
+    case b &gt;= YB:
+        return fmt.Sprintf("%.2fYB", b/YB)
+    case b &gt;= ZB:
+        return fmt.Sprintf("%.2fZB", b/ZB)
+    case b &gt;= EB:
+        return fmt.Sprintf("%.2fEB", b/EB)
+    case b &gt;= PB:
+        return fmt.Sprintf("%.2fPB", b/PB)
+    case b &gt;= TB:
+        return fmt.Sprintf("%.2fTB", b/TB)
+    case b &gt;= GB:
+        return fmt.Sprintf("%.2fGB", b/GB)
+    case b &gt;= MB:
+        return fmt.Sprintf("%.2fMB", b/MB)
+    case b &gt;= KB:
+        return fmt.Sprintf("%.2fKB", b/KB)
+    }
+    return fmt.Sprintf("%.2fB", b)
+}
+</code></pre></div></div>
+
+<p>表达式 <code class="highlighter-rouge">YB</code> 会打印 <code class="highlighter-rouge">1.00YB</code>， 而 <code class="highlighter-rouge">ByteSize(1e13)</code> 会打印 <code class="highlighter-rouge">9.09TB</code>。</p>
+
+<p>上面的代码通过使用 <code class="highlighter-rouge">Sprintf</code> 来实现 <code class="highlighter-rouge">ByteSize</code> 的 <code class="highlighter-rouge">String</code> 方法是安全的（不存在上一小节提到的循环调用问题），因为使用了 <code class="highlighter-rouge">%f</code> 格式符，而它不是一个字符串格式化符：<code class="highlighter-rouge">Sprintf</code> 只在需要字符串类型的时候才会调用 <code class="highlighter-rouge">String</code> 方法，<code class="highlighter-rouge">%f</code> 指定的是浮点值，也就自然而然避免了上面代码中 <code class="highlighter-rouge">String</code> 方法调用 <code class="highlighter-rouge">fmt.Sprintf</code> 方法后者再进一步触发 <code class="highlighter-rouge">String</code> 方法的循环调用链。</p>
+
+<h2 id="variables变量">Variables（变量）</h2>
+
+<p>可以像常量那样初始化变量，但是变量的初始化表达式可以是在运行时进行计算的通用表达式。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var (
+    home   = os.Getenv("HOME")
+    user   = os.Getenv("USER")
+    gopath = os.Getenv("GOPATH")
+)
+</code></pre></div></div>
+
+<h2 id="the-init-functioninit-函数">The init function（init 函数）</h2>
+
+<p><strong>每个源文件</strong>都可以定义 <code class="highlighter-rouge">init</code> 函数用来初始化它需要的状态。（事实上每个文件可以有多个 <code class="highlighter-rouge">init</code> 函数，而且这些 <code class="highlighter-rouge">init</code> 函数会按序执行，比如 <a href="https://github.com/chalvern/gosmile/tree/template/db/migration">gosmile</a> 数据库迁移的设计就可以利用这个特性）。<code class="highlighter-rouge">init</code> 会在包中所有的变量声明被执行后再调用，而且只在所有被导入的包初始化以后才会被调用（被导入的包先初始化，然后常量和变量被初始化，接着才是 <code class="highlighter-rouge">init</code> 函数的执行）。</p>
+
+<p><code class="highlighter-rouge">init</code> 函数大都是为了在真实运行开始前校验或者修复程序的状态，除此外不应该用作其他的用途。（根据开发经验，在 <code class="highlighter-rouge">init</code> 中添加过多的逻辑会让测试很难写）</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func init() {
+    if user == "" {
+        log.Fatal("$USER not set")
+    }
+    if home == "" {
+        home = "/home/" + user
+    }
+    if gopath == "" {
+        gopath = home + "/go"
+    }
+    // gopath may be overridden by --gopath flag on command line.
+    flag.StringVar(&amp;gopath, "gopath", gopath, "override default GOPATH")
+}
+</code></pre></div></div>
+
+<h1 id="methods方法">Methods（方法）</h1>
+
+<h2 id="pointers-vs-values指针与值">Pointers vs. Values（指针与值）</h2>
+
+<p>就像看到的 <code class="highlighter-rouge">ByteSize</code> 那样，我们可以给任何有名称的类型（除了指针和接口）定义方法，并不限定必须是结构体类型。</p>
+
+<p>在切片一节的讨论中，我们编写了一个 <code class="highlighter-rouge">Append</code> 函数。其实我们可以把它定义为切片的一个方法。为了达成这个目的，首先我们需要基于切片声明一个新的类型从而方便把函数绑定到这个类型上，然后就可以很自然地在切片的变量上调用这个方法。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">ByteSlice</span> <span class="p">[]</span><span class="kt">byte</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">slice</span> <span class="n">ByteSlice</span><span class="p">)</span> <span class="n">Append</span><span class="p">(</span><span class="n">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">[]</span><span class="kt">byte</span> <span class="p">{</span>
+    <span class="c">// Body exactly the same as the Append function defined above.</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>由于上一小节提到的切片的特点，上面的方法仍然需要返回更新后的切片，否则方法的调用方是感知不到这种更新的。不过我们可以把接受者改为<code class="highlighter-rouge">ByteSlice</code>的<strong>指针</strong>从而改进上面笨拙的写法，从而避免显式地返回切片，如下所示：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">ByteSlice</span><span class="p">)</span> <span class="n">Append</span><span class="p">(</span><span class="n">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">slice</span> <span class="o">:=</span> <span class="o">*</span><span class="n">p</span>
+    <span class="c">// Body as above, without the return.</span>
+    <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">slice</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>实际上我们可以做的更好，比如模仿标准的 <code class="highlighter-rouge">Write</code> 方法继续改进 <code class="highlighter-rouge">Append</code> 函数，如下：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">ByteSlice</span><span class="p">)</span> <span class="n">Write</span><span class="p">(</span><span class="n">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="n">n</span> <span class="kt">int</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">slice</span> <span class="o">:=</span> <span class="o">*</span><span class="n">p</span>
+    <span class="c">// Again as above.</span>
+    <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">slice</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>如此，类型 <code class="highlighter-rouge">*ByteSlice</code> 实现了便利的标准接口 <code class="highlighter-rouge">io.Writer</code>。比如下面的代码：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">var</span> <span class="n">b</span> <span class="n">ByteSlice</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="s">"This hour has %d days</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="m">7</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>上面的代码中我们传递了 <code class="highlighter-rouge">ByteSlice</code> 的地址，因为只有 <code class="highlighter-rouge">*ByteSlice</code> 实现了 <code class="highlighter-rouge">io.Writer</code> 接口。关于<strong>指针接受者和值接受者</strong>的规则是：<strong>值方法可以在指针接受者上面和值接受者上面触发调用，但是指针方法只能被指针接受者触发调用</strong>。</p>
+
+<p>之所以有上面的规则，是因为指针方法可以修改接受者；如果在值接受者上面触发指针方法会导致方法接收一个值的拷贝，任何对该值的修改都会被丢弃，因此 Go 语言层面上不允许这种错误。不过，这里有一个特例。如果值是可取址的，当在一个值上调用指针方法的时候，Go 语言会照顾到这种常见的用法在值上自动添加一个取址运算符。比如上面的例子中，<code class="highlighter-rouge">b</code> 是可取址的，因此我们可以通过 <code class="highlighter-rouge">b.Write</code> 调用它的 <code class="highlighter-rouge">Write</code> 方法，编译器会为我们把它重写为 <code class="highlighter-rouge">(&amp;b).Write</code>。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">type</span> <span class="n">User</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">Name</span> <span class="kt">string</span>
+	<span class="n">Age</span>  <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">u</span> <span class="o">*</span><span class="n">User</span><span class="p">)</span> <span class="n">SetName</span><span class="p">(</span><span class="n">newName</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">u</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="n">newName</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">newUser</span><span class="p">()</span> <span class="n">User</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">User</span><span class="p">{</span><span class="s">"angel"</span><span class="p">,</span> <span class="m">18</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">user</span> <span class="o">:=</span> <span class="n">newUser</span><span class="p">()</span>
+	<span class="n">user</span><span class="o">.</span><span class="n">SetName</span><span class="p">(</span><span class="s">"darling"</span><span class="p">)</span>
+	<span class="c">// 等效于</span>
+	<span class="p">(</span><span class="o">&amp;</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">SetName</span><span class="p">(</span><span class="s">"darling"</span><span class="p">)</span>
+
+	<span class="c">// 下面的代码编译报错</span>
+	<span class="c">// cannot take the address of newUser()go</span>
+	<span class="n">newUser</span><span class="p">()</span><span class="o">.</span><span class="n">SetName</span><span class="p">(</span><span class="s">"darling"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>顺便提一下，<code class="highlighter-rouge">bytes.Buffer</code> 就是通过在字节的切片上定义 <code class="highlighter-rouge">Write</code> 方法来实现的。</p>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/10/26/effectivego-map-fmt-append.html" class="read-next-link"></a>
+          <section>
+            <span>《原汁原味 Go 语言学习》(7) effective go 数据部分：map、fmt包、append</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

@@ -175,141 +175,141 @@ Author: Ray-Eldath
 <h3 id="一段又臭又长的源码">一段又臭又长的源码</h3>
 <p>下面就是我用来试验的源码，基本上遵循了：1）声明某个类型的slice并初始化；2）<code class="highlighter-rouge">println</code>函数打印slice的地址及各个元素的地址。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">myBool</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[]</span><span class="kt">bool</span><span class="p">{</span><span class="no">false</span><span class="p">,</span><span class="x"> </span><span class="no">false</span><span class="p">,</span><span class="x"> </span><span class="no">true</span><span class="p">}</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="s">"----myBool---"</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myBool</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myBool</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myBool</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myBool</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="x">
-	</span><span class="c">// ----myBool---</span><span class="x">
-	</span><span class="c">// 0xc42004b9e8</span><span class="x">
-	</span><span class="c">// 0xc42004b82d</span><span class="x">
-	</span><span class="c">// 0xc42004b82e</span><span class="x">
-	</span><span class="c">// 0xc42004b82f</span><span class="x">
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">myBool</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">bool</span><span class="p">{</span><span class="no">false</span><span class="p">,</span> <span class="no">false</span><span class="p">,</span> <span class="no">true</span><span class="p">}</span>
+	<span class="nb">println</span><span class="p">(</span><span class="s">"----myBool---"</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myBool</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myBool</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myBool</span><span class="p">[</span><span class="m">1</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myBool</span><span class="p">[</span><span class="m">2</span><span class="p">])</span>
+	<span class="c">// ----myBool---</span>
+	<span class="c">// 0xc42004b9e8</span>
+	<span class="c">// 0xc42004b82d</span>
+	<span class="c">// 0xc42004b82e</span>
+	<span class="c">// 0xc42004b82f</span>
 
-	</span><span class="n">myInt</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span><span class="x"> </span><span class="m">2</span><span class="p">,</span><span class="x"> </span><span class="m">3</span><span class="p">}</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="s">"----myInt---"</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myInt</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myInt</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myInt</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myInt</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="x">
-	</span><span class="c">// ----myInt---</span><span class="x">
-	</span><span class="c">// 0xc42004b9a0</span><span class="x">
-	</span><span class="c">// 0xc42004b858</span><span class="x">
-	</span><span class="c">// 0xc42004b860</span><span class="x">
-	</span><span class="c">// 0xc42004b868</span><span class="x">
+	<span class="n">myInt</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">}</span>
+	<span class="nb">println</span><span class="p">(</span><span class="s">"----myInt---"</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myInt</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myInt</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myInt</span><span class="p">[</span><span class="m">1</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myInt</span><span class="p">[</span><span class="m">2</span><span class="p">])</span>
+	<span class="c">// ----myInt---</span>
+	<span class="c">// 0xc42004b9a0</span>
+	<span class="c">// 0xc42004b858</span>
+	<span class="c">// 0xc42004b860</span>
+	<span class="c">// 0xc42004b868</span>
 
-	</span><span class="n">myComplex128</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[]</span><span class="kt">complex128</span><span class="p">{</span><span class="m">1</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="m">1i</span><span class="p">,</span><span class="x"> </span><span class="m">2</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="m">1i</span><span class="p">,</span><span class="x"> </span><span class="m">3</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="m">1i</span><span class="p">}</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="s">"----myComplex128---"</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myComplex128</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myComplex128</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myComplex128</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myComplex128</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="x">
-	</span><span class="c">// ----myComplex128---</span><span class="x">
-	</span><span class="c">// 0xc42004b9b8</span><span class="x">
-	</span><span class="c">// 0xc42004b870</span><span class="x">
-	</span><span class="c">// 0xc42004b880</span><span class="x">
-	</span><span class="c">// 0xc42004b890</span><span class="x">
+	<span class="n">myComplex128</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">complex128</span><span class="p">{</span><span class="m">1</span> <span class="o">+</span> <span class="m">1i</span><span class="p">,</span> <span class="m">2</span> <span class="o">+</span> <span class="m">1i</span><span class="p">,</span> <span class="m">3</span> <span class="o">+</span> <span class="m">1i</span><span class="p">}</span>
+	<span class="nb">println</span><span class="p">(</span><span class="s">"----myComplex128---"</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myComplex128</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myComplex128</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myComplex128</span><span class="p">[</span><span class="m">1</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myComplex128</span><span class="p">[</span><span class="m">2</span><span class="p">])</span>
+	<span class="c">// ----myComplex128---</span>
+	<span class="c">// 0xc42004b9b8</span>
+	<span class="c">// 0xc42004b870</span>
+	<span class="c">// 0xc42004b880</span>
+	<span class="c">// 0xc42004b890</span>
 
-	</span><span class="n">myString</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"123123123"</span><span class="p">,</span><span class="x"> </span><span class="s">"2342"</span><span class="p">,</span><span class="x"> </span><span class="s">"234356"</span><span class="p">}</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="s">"----myString---"</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myString</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myString</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myString</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myString</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="x">
-	</span><span class="c">// ----myString---</span><span class="x">
-	</span><span class="c">// 0xc42004b940</span><span class="x">
-	</span><span class="c">// 0xc42004bb40</span><span class="x">
-	</span><span class="c">// 0xc42004bb50</span><span class="x">
-	</span><span class="c">// 0xc42004bb60</span><span class="x">
+	<span class="n">myString</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"123123123"</span><span class="p">,</span> <span class="s">"2342"</span><span class="p">,</span> <span class="s">"234356"</span><span class="p">}</span>
+	<span class="nb">println</span><span class="p">(</span><span class="s">"----myString---"</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myString</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myString</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myString</span><span class="p">[</span><span class="m">1</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myString</span><span class="p">[</span><span class="m">2</span><span class="p">])</span>
+	<span class="c">// ----myString---</span>
+	<span class="c">// 0xc42004b940</span>
+	<span class="c">// 0xc42004bb40</span>
+	<span class="c">// 0xc42004bb50</span>
+	<span class="c">// 0xc42004bb60</span>
 
-	</span><span class="n">myChannel</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[]</span><span class="k">chan</span><span class="x"> </span><span class="kt">int</span><span class="p">{</span><span class="nb">make</span><span class="p">(</span><span class="k">chan</span><span class="x"> </span><span class="kt">int</span><span class="p">),</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">chan</span><span class="x"> </span><span class="kt">int</span><span class="p">),</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">chan</span><span class="x"> </span><span class="kt">int</span><span class="p">)}</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="s">"----myChannel---"</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myChannel</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myChannel</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myChannel</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myChannel</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="x">
-	</span><span class="c">// ----myChannel---</span><span class="x">
-	</span><span class="c">// 0xc42004b9d0</span><span class="x">
-	</span><span class="c">// 0xc42004ba00</span><span class="x">
-	</span><span class="c">// 0xc42004ba08</span><span class="x">
-	</span><span class="c">// 0xc42004ba10</span><span class="x">
+	<span class="n">myChannel</span> <span class="o">:=</span> <span class="p">[]</span><span class="k">chan</span> <span class="kt">int</span><span class="p">{</span><span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="kt">int</span><span class="p">),</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="kt">int</span><span class="p">),</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="kt">int</span><span class="p">)}</span>
+	<span class="nb">println</span><span class="p">(</span><span class="s">"----myChannel---"</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myChannel</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myChannel</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myChannel</span><span class="p">[</span><span class="m">1</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myChannel</span><span class="p">[</span><span class="m">2</span><span class="p">])</span>
+	<span class="c">// ----myChannel---</span>
+	<span class="c">// 0xc42004b9d0</span>
+	<span class="c">// 0xc42004ba00</span>
+	<span class="c">// 0xc42004ba08</span>
+	<span class="c">// 0xc42004ba10</span>
 
-	</span><span class="k">type</span><span class="x"> </span><span class="n">MyStruct</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">Name</span><span class="x"> </span><span class="kt">string</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="n">myStruct</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="p">[]</span><span class="n">MyStruct</span><span class="p">{</span><span class="n">MyStruct</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"1"</span><span class="p">},</span><span class="x"> </span><span class="n">MyStruct</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"2"</span><span class="p">},</span><span class="x"> </span><span class="n">MyStruct</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"4"</span><span class="p">}}</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="s">"----myStruct---"</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="x">
-	</span><span class="c">// ----myStruct---</span><span class="x">
-	</span><span class="c">// 0xc42004b928</span><span class="x">
-	</span><span class="c">// 0xc42004bb10</span><span class="x">
-	</span><span class="c">// 0xc42004bb20</span><span class="x">
-	</span><span class="c">// 0xc42004bb30</span><span class="x">
+	<span class="k">type</span> <span class="n">MyStruct</span> <span class="k">struct</span> <span class="p">{</span>
+		<span class="n">Name</span> <span class="kt">string</span>
+	<span class="p">}</span>
+	<span class="k">var</span> <span class="n">myStruct</span> <span class="o">=</span> <span class="p">[]</span><span class="n">MyStruct</span><span class="p">{</span><span class="n">MyStruct</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span> <span class="s">"1"</span><span class="p">},</span> <span class="n">MyStruct</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span> <span class="s">"2"</span><span class="p">},</span> <span class="n">MyStruct</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span> <span class="s">"4"</span><span class="p">}}</span>
+	<span class="nb">println</span><span class="p">(</span><span class="s">"----myStruct---"</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct</span><span class="p">[</span><span class="m">1</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct</span><span class="p">[</span><span class="m">2</span><span class="p">])</span>
+	<span class="c">// ----myStruct---</span>
+	<span class="c">// 0xc42004b928</span>
+	<span class="c">// 0xc42004bb10</span>
+	<span class="c">// 0xc42004bb20</span>
+	<span class="c">// 0xc42004bb30</span>
 
-	</span><span class="k">type</span><span class="x"> </span><span class="n">MyStruct2</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">Name</span><span class="x"> </span><span class="kt">string</span><span class="x">
-		</span><span class="n">Age</span><span class="x">  </span><span class="kt">int</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="n">myStruct2</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="p">[]</span><span class="n">MyStruct2</span><span class="p">{</span><span class="n">MyStruct2</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"1"</span><span class="p">},</span><span class="x"> </span><span class="n">MyStruct2</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"2"</span><span class="p">},</span><span class="x"> </span><span class="n">MyStruct2</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span><span class="x"> </span><span class="s">"4"</span><span class="p">}}</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="s">"----myStruct2---"</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct2</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct2</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct2</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct2</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="x">
-	</span><span class="c">// ----myStruct2---</span><span class="x">
-	</span><span class="c">// 0xc42004b910</span><span class="x">
-	</span><span class="c">// 0xc42004bc00</span><span class="x">
-	</span><span class="c">// 0xc42004bc18</span><span class="x">
-	</span><span class="c">// 0xc42004bc30</span><span class="x">
+	<span class="k">type</span> <span class="n">MyStruct2</span> <span class="k">struct</span> <span class="p">{</span>
+		<span class="n">Name</span> <span class="kt">string</span>
+		<span class="n">Age</span>  <span class="kt">int</span>
+	<span class="p">}</span>
+	<span class="k">var</span> <span class="n">myStruct2</span> <span class="o">=</span> <span class="p">[]</span><span class="n">MyStruct2</span><span class="p">{</span><span class="n">MyStruct2</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span> <span class="s">"1"</span><span class="p">},</span> <span class="n">MyStruct2</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span> <span class="s">"2"</span><span class="p">},</span> <span class="n">MyStruct2</span><span class="p">{</span><span class="n">Name</span><span class="o">:</span> <span class="s">"4"</span><span class="p">}}</span>
+	<span class="nb">println</span><span class="p">(</span><span class="s">"----myStruct2---"</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct2</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct2</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct2</span><span class="p">[</span><span class="m">1</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myStruct2</span><span class="p">[</span><span class="m">2</span><span class="p">])</span>
+	<span class="c">// ----myStruct2---</span>
+	<span class="c">// 0xc42004b910</span>
+	<span class="c">// 0xc42004bc00</span>
+	<span class="c">// 0xc42004bc18</span>
+	<span class="c">// 0xc42004bc30</span>
 
-	</span><span class="n">mySlice</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[][]</span><span class="kt">int</span><span class="p">{[]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span><span class="x"> </span><span class="m">2</span><span class="p">,</span><span class="x"> </span><span class="m">3</span><span class="p">},</span><span class="x"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="m">2</span><span class="p">},</span><span class="x"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="m">3</span><span class="p">}}</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="s">"----mySlice---"</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="x">
-	</span><span class="c">// ----mySlice---</span><span class="x">
-	</span><span class="c">// 0xc42004b970</span><span class="x">
-	</span><span class="c">// 0xc42004bbb8</span><span class="x">
-	</span><span class="c">// 0xc42004bbd0</span><span class="x">
-	</span><span class="c">// 0xc42004bbe8</span><span class="x">
+	<span class="n">mySlice</span> <span class="o">:=</span> <span class="p">[][]</span><span class="kt">int</span><span class="p">{[]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">},</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="m">2</span><span class="p">},</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="m">3</span><span class="p">}}</span>
+	<span class="nb">println</span><span class="p">(</span><span class="s">"----mySlice---"</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice</span><span class="p">[</span><span class="m">1</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice</span><span class="p">[</span><span class="m">2</span><span class="p">])</span>
+	<span class="c">// ----mySlice---</span>
+	<span class="c">// 0xc42004b970</span>
+	<span class="c">// 0xc42004bbb8</span>
+	<span class="c">// 0xc42004bbd0</span>
+	<span class="c">// 0xc42004bbe8</span>
 
-	</span><span class="n">mySlice2</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[][]</span><span class="kt">string</span><span class="p">{[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"1"</span><span class="p">,</span><span class="x"> </span><span class="s">"2"</span><span class="p">,</span><span class="x"> </span><span class="s">"3"</span><span class="p">},</span><span class="x"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"3"</span><span class="p">},</span><span class="x"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"1"</span><span class="p">,</span><span class="x"> </span><span class="s">"3"</span><span class="p">}}</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="s">"----mySlice2---"</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice2</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice2</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice2</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice2</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="x">
-	</span><span class="c">// ----mySlice2---</span><span class="x">
-	</span><span class="c">// 0xc42004b958</span><span class="x">
-	</span><span class="c">// 0xc42004bb70</span><span class="x">
-	</span><span class="c">// 0xc42004bb88</span><span class="x">
-	</span><span class="c">// 0xc42004bba0</span><span class="x">
+	<span class="n">mySlice2</span> <span class="o">:=</span> <span class="p">[][]</span><span class="kt">string</span><span class="p">{[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"1"</span><span class="p">,</span> <span class="s">"2"</span><span class="p">,</span> <span class="s">"3"</span><span class="p">},</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"3"</span><span class="p">},</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"1"</span><span class="p">,</span> <span class="s">"3"</span><span class="p">}}</span>
+	<span class="nb">println</span><span class="p">(</span><span class="s">"----mySlice2---"</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice2</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice2</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice2</span><span class="p">[</span><span class="m">1</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mySlice2</span><span class="p">[</span><span class="m">2</span><span class="p">])</span>
+	<span class="c">// ----mySlice2---</span>
+	<span class="c">// 0xc42004b958</span>
+	<span class="c">// 0xc42004bb70</span>
+	<span class="c">// 0xc42004bb88</span>
+	<span class="c">// 0xc42004bba0</span>
 
-	</span><span class="n">myMap</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">[]</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}{</span><span class="x">
-		</span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}),</span><span class="x">
-		</span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}),</span><span class="x">
-		</span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}),</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="s">"----myMap---"</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myMap</span><span class="p">)</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myMap</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myMap</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="x">
-	</span><span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myMap</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="x">
-	</span><span class="c">// ----myMap---</span><span class="x">
-	</span><span class="c">// 0xc42004b988</span><span class="x">
-	</span><span class="c">// 0xc42004ba18</span><span class="x">
-	</span><span class="c">// 0xc42004ba20</span><span class="x">
-	</span><span class="c">// 0xc42004ba28</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+	<span class="n">myMap</span> <span class="o">:=</span> <span class="p">[]</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}{</span>
+		<span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}),</span>
+		<span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}),</span>
+		<span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}),</span>
+	<span class="p">}</span>
+	<span class="nb">println</span><span class="p">(</span><span class="s">"----myMap---"</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myMap</span><span class="p">)</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myMap</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myMap</span><span class="p">[</span><span class="m">1</span><span class="p">])</span>
+	<span class="nb">println</span><span class="p">(</span><span class="o">&amp;</span><span class="n">myMap</span><span class="p">[</span><span class="m">2</span><span class="p">])</span>
+	<span class="c">// ----myMap---</span>
+	<span class="c">// 0xc42004b988</span>
+	<span class="c">// 0xc42004ba18</span>
+	<span class="c">// 0xc42004ba20</span>
+	<span class="c">// 0xc42004ba28</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h3 id="上面的代码表达了什么意思">上面的代码表达了什么意思</h3>
 <p>上面的代码通过把各种数据类型的实例添加到slice中，并打印slice中每个元素的指针地址，可以推断出每个类型的元素在内存中的存储模型。</p>
@@ -318,12 +318,12 @@ Author: Ray-Eldath
 
 <h3 id="string类型">string类型</h3>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// ----myString---</span><span class="x">
-</span><span class="c">// 0xc42004b940</span><span class="x">
-</span><span class="c">// 0xc42004bb40</span><span class="x">
-</span><span class="c">// 0xc42004bb50</span><span class="x">
-</span><span class="c">// 0xc42004bb60</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// ----myString---</span>
+<span class="c">// 0xc42004b940</span>
+<span class="c">// 0xc42004bb40</span>
+<span class="c">// 0xc42004bb50</span>
+<span class="c">// 0xc42004bb60</span>
+</code></pre></div></div>
 
 <p>从上面指针递增的规律可以看出来，每个string元素占用了16个字节的数据。由于声明时每个元素的长度刻意设置了不同的值，因此可以推断出string类型的元素以”引用“（或指针）的形式索引底层的数据。</p>
 
@@ -335,28 +335,28 @@ Author: Ray-Eldath
 <h3 id="特立独行的struct">特立独行的struct</h3>
 <p>从试验结果看，struct类型的元素和string、channel、slice和map不同。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="x">
-	</span><span class="k">type</span><span class="x"> </span><span class="n">MyStruct</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">Name</span><span class="x"> </span><span class="kt">string</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="c">// ----myStruct---</span><span class="x">
-</span><span class="c">// 0xc42004b928</span><span class="x">
-</span><span class="c">// 0xc42004bb10</span><span class="x">
-</span><span class="c">// 0xc42004bb20</span><span class="x">
-</span><span class="c">// 0xc42004bb30</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+	<span class="k">type</span> <span class="n">MyStruct</span> <span class="k">struct</span> <span class="p">{</span>
+		<span class="n">Name</span> <span class="kt">string</span>
+	<span class="p">}</span>
+<span class="c">// ----myStruct---</span>
+<span class="c">// 0xc42004b928</span>
+<span class="c">// 0xc42004bb10</span>
+<span class="c">// 0xc42004bb20</span>
+<span class="c">// 0xc42004bb30</span>
 
-</span><span class="c">////----VS----/////</span><span class="x">
+<span class="c">////----VS----/////</span>
 
-	</span><span class="k">type</span><span class="x"> </span><span class="n">MyStruct2</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">Name</span><span class="x"> </span><span class="kt">string</span><span class="x">
-		</span><span class="n">Age</span><span class="x">  </span><span class="kt">int</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="c">// ----myStruct2---</span><span class="x">
-</span><span class="c">// 0xc42004b910</span><span class="x">
-</span><span class="c">// 0xc42004bc00</span><span class="x">
-</span><span class="c">// 0xc42004bc18</span><span class="x">
-</span><span class="c">// 0xc42004bc30</span><span class="x">
-</span></code></pre></div></div>
+	<span class="k">type</span> <span class="n">MyStruct2</span> <span class="k">struct</span> <span class="p">{</span>
+		<span class="n">Name</span> <span class="kt">string</span>
+		<span class="n">Age</span>  <span class="kt">int</span>
+	<span class="p">}</span>
+<span class="c">// ----myStruct2---</span>
+<span class="c">// 0xc42004b910</span>
+<span class="c">// 0xc42004bc00</span>
+<span class="c">// 0xc42004bc18</span>
+<span class="c">// 0xc42004bc30</span>
+</code></pre></div></div>
 
 <p>因为MyStruct与MyStruct2的结构不同，他们的元素所占用的内存大小也表现出不同，标明struct类型的元素直接保存在当前地址。当struct的字段很多时，每次传递struct的元素成本就很大了（需要重新申请内存并初始化各变量）。</p>
 

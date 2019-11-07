@@ -176,16 +176,16 @@ Author: Ray-Eldath
 
 <p>很少的情况下，同一个源文件中导入的两个包可能有相同的包名，这时候给冲突的包定义一个新的本地访问器名称就可以了。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"github.com/chalvern/sugar"</span><span class="x">
-	</span><span class="n">log</span><span class="x"> </span><span class="s">"github.com/chalvern/sugar"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+	<span class="s">"github.com/chalvern/sugar"</span>
+	<span class="n">log</span> <span class="s">"github.com/chalvern/sugar"</span>
+<span class="p">)</span>
 
-</span><span class="c">// 同样都是 "github.com/chalvern/sugar"，但是可以设置不同的别名</span><span class="x">
-</span><span class="c">// 如果不设置别名，默认是 `sugar`</span><span class="x">
-</span><span class="n">sugar</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"hello sugar"</span><span class="p">)</span><span class="x">
-</span><span class="n">log</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"hello log"</span><span class="p">)</span><span class="x">
-</span></code></pre></div></div>
+<span class="c">// 同样都是 "github.com/chalvern/sugar"，但是可以设置不同的别名</span>
+<span class="c">// 如果不设置别名，默认是 `sugar`</span>
+<span class="n">sugar</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"hello sugar"</span><span class="p">)</span>
+<span class="n">log</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"hello log"</span><span class="p">)</span>
+</code></pre></div></div>
 
 <p>导入包的时候使用的是包的全路径（比如 <code class="highlighter-rouge">"github.com/chalvern/sugar"</code>），它唯一决定了使用的是哪个包，因此即使出现了另一个名为 <code class="highlighter-rouge">sugar</code> 的包，使用上也不会出现混淆。</p>
 
@@ -199,11 +199,11 @@ Author: Ray-Eldath
 
 <p>Go 并没有对获取器（getter）和设置器（setter）提供自动的支持；不过我们可以自己提供获取器和设置器，而且一般也推荐这么做；但是对 Go 语言来说把 Get 放进获取器的名字里显得既不明智也没太大必要。比如一个结构体有一个名为 <code class="highlighter-rouge">owner</code> 的字段（小写，意味着非导出，在包外不能直接访问这个变量），它的获取器的名字应该叫 <code class="highlighter-rouge">Owner()</code>（大写字母，可导出），而不是 <code class="highlighter-rouge">GetOwner()</code>。在 Go 语言中大写字母名称可以导出，这种机制使方法名与字段名可以不冲突，不需要添加 <code class="highlighter-rouge">Get</code> 就可以满足我们的需求了。假如设置器函数是必须的，设置器函数可以取名为 <code class="highlighter-rouge">SetOwner()</code>，这个时候就要加上 <code class="highlighter-rouge">Set</code> 这个单词了（这里或许有点过头了。。）。如此，下面的代码读起来都很流畅：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">owner</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">obj</span><span class="o">.</span><span class="n">Owner</span><span class="p">()</span><span class="x">
-</span><span class="k">if</span><span class="x"> </span><span class="n">owner</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="n">user</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="n">obj</span><span class="o">.</span><span class="n">SetOwner</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">owner</span> <span class="o">:=</span> <span class="n">obj</span><span class="o">.</span><span class="n">Owner</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">owner</span> <span class="o">!=</span> <span class="n">user</span> <span class="p">{</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">SetOwner</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h2 id="接口名">接口名</h2>
 
@@ -225,18 +225,18 @@ Author: Ray-Eldath
 
 <p>上面讲到的分号插入规则存在一个局限性：你不可以把控制结构语句（<code class="highlighter-rouge">if</code>, <code class="highlighter-rouge">for</code>, <code class="highlighter-rouge">switch</code>, 或者 <code class="highlighter-rouge">select</code>）的左大括号放在新的一行，而是应该放在同一行中。如果你把 <code class="highlighter-rouge">if</code>, <code class="highlighter-rouge">for</code>, <code class="highlighter-rouge">switch</code>, 或者 <code class="highlighter-rouge">select</code> 紧跟着的大括号放在新的一行，根据分号的插入规则，左大括号前面会被插入一个分号，这肯定不是我们想要的效果。可以看下面的例子及其反例：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">f</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="n">g</span><span class="p">()</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">g</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>不应该写成下面的样子：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">f</span><span class="p">()</span><span class="x">  </span><span class="c">// wrong!</span><span class="x">
-</span><span class="p">{</span><span class="x">           </span><span class="c">// wrong!</span><span class="x">
-    </span><span class="n">g</span><span class="p">()</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">f</span><span class="p">()</span>  <span class="c">// wrong!</span>
+<span class="p">{</span>           <span class="c">// wrong!</span>
+    <span class="n">g</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h1 id="参考">参考</h1>
 

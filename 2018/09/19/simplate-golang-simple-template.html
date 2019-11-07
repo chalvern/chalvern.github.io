@@ -228,30 +228,30 @@ Author: Ray-Eldath
 </code></pre></div></div>
 
 <h4 id="2-初始化simplate并渲染模板">2) 初始化simplate并渲染模板</h4>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span><span class="x"> </span><span class="s">"github.com/chalvern/simplate"</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="s">"github.com/chalvern/simplate"</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">InitIsmplate</span><span class="p">(){</span><span class="x">
-  </span><span class="n">simplate</span><span class="o">.</span><span class="n">ViewsPath</span><span class="x">  </span><span class="o">=</span><span class="x"> </span><span class="s">"your-templates-dir"</span><span class="x"> </span><span class="c">// default is "views"</span><span class="x">
-  </span><span class="n">simplate</span><span class="o">.</span><span class="n">LayoutFile</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="s">"your-layout-file"</span><span class="x"> </span><span class="c">// default is "layout/default.html"</span><span class="x">
+<span class="k">func</span> <span class="n">InitIsmplate</span><span class="p">(){</span>
+  <span class="n">simplate</span><span class="o">.</span><span class="n">ViewsPath</span>  <span class="o">=</span> <span class="s">"your-templates-dir"</span> <span class="c">// default is "views"</span>
+  <span class="n">simplate</span><span class="o">.</span><span class="n">LayoutFile</span> <span class="o">=</span> <span class="s">"your-layout-file"</span> <span class="c">// default is "layout/default.html"</span>
 
-  </span><span class="c">// initial</span><span class="x">
-  </span><span class="n">simplate</span><span class="o">.</span><span class="n">InitTemplate</span><span class="p">()</span><span class="x">
-</span><span class="p">}</span><span class="x">
+  <span class="c">// initial</span>
+  <span class="n">simplate</span><span class="o">.</span><span class="n">InitTemplate</span><span class="p">()</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">YourCode</span><span class="p">()</span><span class="x"> </span><span class="kt">error</span><span class="x"> </span><span class="p">{</span><span class="x">
-  </span><span class="n">data</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-  </span><span class="c">// data["Jingwei"] = "https://jingwei.link"</span><span class="x">
-  </span><span class="c">// 这里把渲染的内容输出到标准输出</span><span class="x">
-  </span><span class="k">return</span><span class="x"> </span><span class="n">simplate</span><span class="o">.</span><span class="n">ExecuteTemplate</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stdout</span><span class="p">,</span><span class="s">"home/body.html"</span><span class="p">,</span><span class="x"> </span><span class="n">data</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">YourCode</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+  <span class="n">data</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+  <span class="c">// data["Jingwei"] = "https://jingwei.link"</span>
+  <span class="c">// 这里把渲染的内容输出到标准输出</span>
+  <span class="k">return</span> <span class="n">simplate</span><span class="o">.</span><span class="n">ExecuteTemplate</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stdout</span><span class="p">,</span><span class="s">"home/body.html"</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">YourCodeTwo</span><span class="p">()</span><span class="x"> </span><span class="kt">error</span><span class="x"> </span><span class="p">{</span><span class="x">
-  </span><span class="n">data</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-  </span><span class="c">// data["site"] = "https://WhereSmile.com"</span><span class="x">
-  </span><span class="c">// 当有多个布局时，指定特定的布局，把渲染的内容输出到标准输出</span><span class="x">
-  </span><span class="k">return</span><span class="x"> </span><span class="n">simplate</span><span class="o">.</span><span class="n">ExecuteViewPathTemplateWithLayout</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stdout</span><span class="p">,</span><span class="x"> </span><span class="s">"layout/default.html"</span><span class="p">,</span><span class="x"> </span><span class="s">"home/body.html"</span><span class="p">,</span><span class="x"> </span><span class="n">data</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">YourCodeTwo</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+  <span class="n">data</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+  <span class="c">// data["site"] = "https://WhereSmile.com"</span>
+  <span class="c">// 当有多个布局时，指定特定的布局，把渲染的内容输出到标准输出</span>
+  <span class="k">return</span> <span class="n">simplate</span><span class="o">.</span><span class="n">ExecuteViewPathTemplateWithLayout</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stdout</span><span class="p">,</span> <span class="s">"layout/default.html"</span><span class="p">,</span> <span class="s">"home/body.html"</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h4 id="3更进一步的理解">3）更进一步的理解</h4>
 

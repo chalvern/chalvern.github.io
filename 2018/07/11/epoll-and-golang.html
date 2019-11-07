@@ -219,34 +219,34 @@ head-&gt;connection1-&gt;connection10
 <h2 id="golang中的epoll">golang中的epoll</h2>
 <p>参见<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">golang源码</a>的<code class="highlighter-rouge">src/runtime/proc.go</code>文件，其在main函数启动时，既开始在系统栈开始运行<code class="highlighter-rouge">sysmon</code>函数。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-</span><span class="c">//...</span><span class="x">
-	</span><span class="n">systemstack</span><span class="p">(</span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">newm</span><span class="p">(</span><span class="n">sysmon</span><span class="p">,</span><span class="x"> </span><span class="no">nil</span><span class="p">)</span><span class="x">
-	</span><span class="p">})</span><span class="x">
-</span><span class="c">//...</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="c">//...</span>
+	<span class="n">systemstack</span><span class="p">(</span><span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">newm</span><span class="p">(</span><span class="n">sysmon</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+	<span class="p">})</span>
+<span class="c">//...</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h3 id="golang源码中的sysmon函数">golang源码中的sysmon函数</h3>
 <p>通过查看sysmon函数可以知道，这个函数主要的是一个无穷的<code class="highlighter-rouge">for</code>循环，负责调整时序、GC（垃圾回收）以及epoll检查等。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// sysmon</span><span class="x">
-</span><span class="c">// Go runtime启动时创建的，负责监控所有goroutine的状态判断是否需要GC，</span><span class="x">
-</span><span class="c">// 进行netpoll等操作。sysmon函数中会调用retake函数进行抢占式调度</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">sysmon</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-</span><span class="c">//...</span><span class="x">
-  </span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">if</span><span class="x"> </span><span class="n">netpollinited</span><span class="p">()</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="n">lastpoll</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="m">0</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="n">lastpoll</span><span class="o">+</span><span class="m">10</span><span class="o">*</span><span class="m">1000</span><span class="o">*</span><span class="m">1000</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">now</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="c">//更新最后一次查询G时间，为了下一次做判断</span><span class="x">
-			</span><span class="n">atomic</span><span class="o">.</span><span class="n">Cas64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sched</span><span class="o">.</span><span class="n">lastpoll</span><span class="p">,</span><span class="x"> </span><span class="kt">uint64</span><span class="p">(</span><span class="n">lastpoll</span><span class="p">),</span><span class="x"> </span><span class="kt">uint64</span><span class="p">(</span><span class="n">now</span><span class="p">))</span><span class="x">
-			</span><span class="c">// 从网络I/O查找已经就绪的G，不阻塞</span><span class="x">
-			</span><span class="n">gp</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">netpoll</span><span class="p">(</span><span class="no">false</span><span class="p">)</span><span class="x"> </span><span class="c">// non-blocking - returns list of goroutines</span><span class="x">
-			</span><span class="c">//...</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-  </span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// sysmon</span>
+<span class="c">// Go runtime启动时创建的，负责监控所有goroutine的状态判断是否需要GC，</span>
+<span class="c">// 进行netpoll等操作。sysmon函数中会调用retake函数进行抢占式调度</span>
+<span class="k">func</span> <span class="n">sysmon</span><span class="p">()</span> <span class="p">{</span>
+<span class="c">//...</span>
+  <span class="k">for</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="n">netpollinited</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="n">lastpoll</span> <span class="o">!=</span> <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="n">lastpoll</span><span class="o">+</span><span class="m">10</span><span class="o">*</span><span class="m">1000</span><span class="o">*</span><span class="m">1000</span> <span class="o">&lt;</span> <span class="n">now</span> <span class="p">{</span>
+			<span class="c">//更新最后一次查询G时间，为了下一次做判断</span>
+			<span class="n">atomic</span><span class="o">.</span><span class="n">Cas64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sched</span><span class="o">.</span><span class="n">lastpoll</span><span class="p">,</span> <span class="kt">uint64</span><span class="p">(</span><span class="n">lastpoll</span><span class="p">),</span> <span class="kt">uint64</span><span class="p">(</span><span class="n">now</span><span class="p">))</span>
+			<span class="c">// 从网络I/O查找已经就绪的G，不阻塞</span>
+			<span class="n">gp</span> <span class="o">:=</span> <span class="n">netpoll</span><span class="p">(</span><span class="no">false</span><span class="p">)</span> <span class="c">// non-blocking - returns list of goroutines</span>
+			<span class="c">//...</span>
+		<span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>进一步查看<code class="highlighter-rouge">netpoll</code>函数，能发现主要有下面几个函数:</p>
 

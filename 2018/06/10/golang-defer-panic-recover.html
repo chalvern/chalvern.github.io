@@ -166,23 +166,23 @@ Author: Ray-Eldath
 <h2 id="defer">Defer</h2>
 <p><strong>Defer</strong>语法会把跟在其后的函数调用保存到一个列表，主函数返回（return）后这个列表中保存的函数再依次调用。<strong>Defer</strong>最常用来做清理释放资源。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">CopyFile</span><span class="p">(</span><span class="n">dstName</span><span class="p">,</span><span class="x"> </span><span class="n">srcName</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="n">written</span><span class="x"> </span><span class="kt">int64</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">src</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">srcName</span><span class="p">)</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">return</span><span class="x">
-	</span><span class="p">}</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">CopyFile</span><span class="p">(</span><span class="n">dstName</span><span class="p">,</span> <span class="n">srcName</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="n">written</span> <span class="kt">int64</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">src</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">srcName</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
 
-	</span><span class="n">dst</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">dstName</span><span class="p">)</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">return</span><span class="x">
-	</span><span class="p">}</span><span class="x">
+	<span class="n">dst</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">dstName</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
 
-	</span><span class="n">written</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">io</span><span class="o">.</span><span class="n">Copy</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span><span class="x"> </span><span class="n">src</span><span class="p">)</span><span class="x">
-	</span><span class="n">dst</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span><span class="x">
-	</span><span class="n">src</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span><span class="x">
-	</span><span class="k">return</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+	<span class="n">written</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">Copy</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+	<span class="n">dst</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="n">src</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>首先看一下上面用来复制文件的代码，主要分四个步骤：1）打开源文件，2）创建一个目标文件；3）把源文件的内容复制到目标文件；4）释放源文件和目标文件的资源。</p>
 
@@ -190,24 +190,24 @@ Author: Ray-Eldath
 
 <p>如果有了defer，上面的问题就能很容易地解决了，比如下面的代码。通过使用<strong>Defer</strong>语句，能很优雅地把打开和释放资源的语句放在一起写，开发者不需再为释放资源而花费太多精力。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">CopyFile</span><span class="p">(</span><span class="n">dstName</span><span class="p">,</span><span class="x"> </span><span class="n">srcName</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="n">written</span><span class="x"> </span><span class="kt">int64</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">src</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">srcName</span><span class="p">)</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">return</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="c">// 打开一个文件立马就可以调用defer来关闭文件</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">src</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">CopyFile</span><span class="p">(</span><span class="n">dstName</span><span class="p">,</span> <span class="n">srcName</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="n">written</span> <span class="kt">int64</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">src</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">srcName</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="c">// 打开一个文件立马就可以调用defer来关闭文件</span>
+	<span class="k">defer</span> <span class="n">src</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
 
-	</span><span class="n">dst</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">dstName</span><span class="p">)</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">return</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="c">// 打开一个文件立马就可以调用defer来关闭文件</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">dst</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span><span class="x">
+	<span class="n">dst</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">dstName</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="c">// 打开一个文件立马就可以调用defer来关闭文件</span>
+	<span class="k">defer</span> <span class="n">dst</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
 
-	</span><span class="k">return</span><span class="x"> </span><span class="n">io</span><span class="o">.</span><span class="n">Copy</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span><span class="x"> </span><span class="n">src</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+	<span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">Copy</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h2 id="使用defer的几条规则">使用Defer的几条规则</h2>
 <p><strong>Defer</strong>使用起来很方便，不过有几条规则还是要注意：</p>
@@ -217,13 +217,13 @@ Author: Ray-Eldath
 
 <p>比如下面的代码，函数返回后会输出“0”：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">a</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="x">
-	</span><span class="n">i</span><span class="o">++</span><span class="x">
-	</span><span class="k">return</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">a</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">i</span> <span class="o">:=</span> <span class="m">0</span>
+	<span class="k">defer</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+	<span class="n">i</span><span class="o">++</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <ol>
   <li><strong>在一个函数里可以多次调用defer语句，被defer的函数以后进先出的方式运行</strong></li>
@@ -231,12 +231,12 @@ Author: Ray-Eldath
 
 <p>比如下面的函数会输出“3210”：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">b</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="m">4</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">defer</span><span class="x"> </span><span class="n">fmt</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">b</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">defer</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <ol>
   <li><strong>在defer语法中调用的函数可以读取、赋值主函数被命名的返回值</strong></li>
@@ -244,11 +244,11 @@ Author: Ray-Eldath
 
 <p>如下面的函数，函数c会返回2:</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">c</span><span class="p">()</span><span class="x"> </span><span class="p">(</span><span class="n">i</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="k">defer</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">}()</span><span class="x">
-    </span><span class="k">return</span><span class="x"> </span><span class="m">1</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">c</span><span class="p">()</span> <span class="p">(</span><span class="n">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">defer</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span> <span class="n">i</span><span class="o">++</span> <span class="p">}()</span>
+    <span class="k">return</span> <span class="m">1</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>通过查看golang的源码（比如encoding/json），defer的这个特性主要从来修改函数返回值中的error类型值。</p>
 
@@ -259,36 +259,36 @@ Author: Ray-Eldath
 
 <p>下面的例子描述了panic和defer的例子：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="s">"fmt"</span><span class="x">
+<span class="k">import</span> <span class="s">"fmt"</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">f</span><span class="p">()</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Returned normally from f."</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">f</span><span class="p">()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Returned normally from f."</span><span class="p">)</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">f</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">if</span><span class="x"> </span><span class="n">r</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">recover</span><span class="p">();</span><span class="x"> </span><span class="n">r</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Recovered in f"</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="p">)</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Calling g."</span><span class="p">)</span><span class="x">
-	</span><span class="n">g</span><span class="p">(</span><span class="m">0</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Returned normally from g."</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">defer</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="n">r</span> <span class="o">:=</span> <span class="nb">recover</span><span class="p">();</span> <span class="n">r</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+			<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Recovered in f"</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Calling g."</span><span class="p">)</span>
+	<span class="n">g</span><span class="p">(</span><span class="m">0</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Returned normally from g."</span><span class="p">)</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">g</span><span class="p">(</span><span class="n">i</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&gt;</span><span class="x"> </span><span class="m">3</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Panicking!"</span><span class="p">)</span><span class="x">
-		</span><span class="nb">panic</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%v"</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">))</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Defer in g"</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Printing in g"</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">)</span><span class="x">
-	</span><span class="n">g</span><span class="p">(</span><span class="n">i</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="m">1</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">g</span><span class="p">(</span><span class="n">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="m">3</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Panicking!"</span><span class="p">)</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%v"</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+	<span class="p">}</span>
+	<span class="k">defer</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Defer in g"</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Printing in g"</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+	<span class="n">g</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="m">1</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>输出为：</p>
 

@@ -183,19 +183,19 @@ Author: Ray-Eldath
 
 <p>我们可以以结构体为例，在声明结构体的时候，对于结构体里面的字段，我们没有必要手动对齐字段名、字段类型、注释等，gofmt 可以帮我们自动实现这种对齐。比如对于有下面的声明：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span><span class="x"> </span><span class="n">T</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="n">name</span><span class="x"> </span><span class="kt">string</span><span class="x"> </span><span class="c">// name of the object</span><span class="x">
-    </span><span class="n">value</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="c">// its value</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">T</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">name</span> <span class="kt">string</span> <span class="c">// name of the object</span>
+    <span class="n">value</span> <span class="kt">int</span> <span class="c">// its value</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>gofmt 会对齐每一行的内容，结果如下：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span><span class="x"> </span><span class="n">T</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="n">name</span><span class="x">    </span><span class="kt">string</span><span class="x"> </span><span class="c">// name of the object</span><span class="x">
-    </span><span class="n">value</span><span class="x">   </span><span class="kt">int</span><span class="x">    </span><span class="c">// its value</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">T</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">name</span>    <span class="kt">string</span> <span class="c">// name of the object</span>
+    <span class="n">value</span>   <span class="kt">int</span>    <span class="c">// its value</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>值得关注的是，标准库中所有的 Go 源码都被 gofmt 格式化过，因此推荐大家去看看标准库中的源码，从而体会一下这种简洁的统一的美。</p>
 
@@ -221,16 +221,16 @@ Author: Ray-Eldath
   </li>
 </ul>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="s">"fmt"</span><span class="x">
+<span class="k">import</span> <span class="s">"fmt"</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="m">5</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h1 id="注释">注释</h1>
 
@@ -260,16 +260,16 @@ The syntax of the regular expressions accepted is:
         character
         '[' [ '^' ] character-ranges ']'
         '(' regexp ')'
-*/</span><span class="x">
-</span><span class="k">package</span><span class="x"> </span><span class="n">regexp</span><span class="x">
+*/</span>
+<span class="k">package</span> <span class="n">regexp</span>
 
-</span></code></pre></div></div>
+</code></pre></div></div>
 
 <p>如果一个包的功能非常简单，包注释也可以简化成为行注释，比如下面 <code class="highlighter-rouge">path</code> 包的注释：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Package path implements utility routines for</span><span class="x">
-</span><span class="c">// manipulating slash-separated filename paths.</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Package path implements utility routines for</span>
+<span class="c">// manipulating slash-separated filename paths.</span>
+</code></pre></div></div>
 
 <p>Go 语言的注释里不需要附加格式符号，比如不需要 <code class="highlighter-rouge">**something**</code> 这种加粗强调的语法。由于自动生成的文档甚至没有固定宽度的字体，因此也不要试图通过空格来对齐某些内容；和前面讲的 gofmt 一样，godoc 会自动处理这些情况。在 Go 语言中，注释是未经特别解析的纯文本，HTML 和其他的注解，比如 <code class="highlighter-rouge">_this_</code> 会把每个字符重新打印出来 <code class="highlighter-rouge">_this_</code>，因此不应该使用这些特殊的样式。godoc 会用固定宽度的字体表示缩进，因此可以非常完美地展示注释中的代码片段；在核心代码库中，包 <code class="highlighter-rouge">fmt</code> 的<a href="https://github.com/golang/go/blob/release-branch.go1.13/src/fmt/doc.go">包注释</a>就很好地利用了这个特性。</p>
 
@@ -279,10 +279,10 @@ The syntax of the regular expressions accepted is:
 
 <p>注释文档最好是一个完整的句子，这可以增加展示方式的灵活度。同时，注释文档的第一句最好是对应名称的一句话总结。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Compile parses a regular expression and returns, if successful,</span><span class="x">
-</span><span class="c">// a Regexp that can be used to match against text.</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">Compile</span><span class="p">(</span><span class="n">str</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="o">*</span><span class="n">Regexp</span><span class="p">,</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Compile parses a regular expression and returns, if successful,</span>
+<span class="c">// a Regexp that can be used to match against text.</span>
+<span class="k">func</span> <span class="n">Compile</span><span class="p">(</span><span class="n">str</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">Regexp</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</code></pre></div></div>
 
 <p>如果每个注释文档的第一个单词都是它的描述对象，开发者就可以使用 <code class="highlighter-rouge">go</code> 命令行工具的子命令 <code class="highlighter-rouge">doc</code> 生成文档然后使用 <code class="highlighter-rouge">grep</code> 查验想要寻找的内容。比如你想不起来名称 <code class="highlighter-rouge">Compile</code> 了，但是想找正则表达式的<strong>解析</strong>函数，此时你可以运行下面的命令找到相应的内容：</p>
 
@@ -300,24 +300,24 @@ The syntax of the regular expressions accepted is:
 
 <p>Go 的声明语法允许对一组变量进行声明，然后可以用单个注释文档介绍这一组常量或者变量。当然，这种注释内容往往比较笼统。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Error codes returned by failures to parse an expression.（表达式解析失败的错误码）</span><span class="x">
-</span><span class="k">var</span><span class="x"> </span><span class="p">(</span><span class="x">
-    </span><span class="n">ErrInternal</span><span class="x">      </span><span class="o">=</span><span class="x"> </span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"regexp: internal error"</span><span class="p">)</span><span class="x">
-    </span><span class="n">ErrUnmatchedLpar</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"regexp: unmatched '('"</span><span class="p">)</span><span class="x">
-    </span><span class="n">ErrUnmatchedRpar</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"regexp: unmatched ')'"</span><span class="p">)</span><span class="x">
-    </span><span class="o">...</span><span class="x">
-</span><span class="p">)</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Error codes returned by failures to parse an expression.（表达式解析失败的错误码）</span>
+<span class="k">var</span> <span class="p">(</span>
+    <span class="n">ErrInternal</span>      <span class="o">=</span> <span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"regexp: internal error"</span><span class="p">)</span>
+    <span class="n">ErrUnmatchedLpar</span> <span class="o">=</span> <span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"regexp: unmatched '('"</span><span class="p">)</span>
+    <span class="n">ErrUnmatchedRpar</span> <span class="o">=</span> <span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"regexp: unmatched ')'"</span><span class="p">)</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</code></pre></div></div>
 
 <p><strong>组</strong>也可用来暗示某几个名词之间的某种关联关系，比如下面的代码声明了一个 mutex 以及由它保护的一组变量。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span><span class="x"> </span><span class="p">(</span><span class="x">
-    </span><span class="n">countLock</span><span class="x">   </span><span class="n">sync</span><span class="o">.</span><span class="n">Mutex</span><span class="x">
-    </span><span class="n">inputCount</span><span class="x">  </span><span class="kt">uint32</span><span class="x">
-    </span><span class="n">outputCount</span><span class="x"> </span><span class="kt">uint32</span><span class="x">
-    </span><span class="n">errorCount</span><span class="x">  </span><span class="kt">uint32</span><span class="x">
-</span><span class="p">)</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="p">(</span>
+    <span class="n">countLock</span>   <span class="n">sync</span><span class="o">.</span><span class="n">Mutex</span>
+    <span class="n">inputCount</span>  <span class="kt">uint32</span>
+    <span class="n">outputCount</span> <span class="kt">uint32</span>
+    <span class="n">errorCount</span>  <span class="kt">uint32</span>
+<span class="p">)</span>
+</code></pre></div></div>
 
 <h1 id="参考">参考</h1>
 

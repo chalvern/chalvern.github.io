@@ -173,24 +173,24 @@ Author: Ray-Eldath
 <h2 id="跑一跑-benchmark-的数据">跑一跑 Benchmark 的数据</h2>
 <h3 id="先看一个-json-字符串">先看一个 JSON 字符串</h3>
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// string-of-json JSON 字符串</span>
-<span class="p">{</span><span class="s2">"employees"</span><span class="p">:{</span><span class="s2">"first"</span><span class="p">:{</span><span class="s2">"firstName"</span><span class="p">:</span><span class="s2">"Bill"</span><span class="p">,</span><span class="s2">"lastName"</span><span class="p">:</span><span class="s2">"Gates"</span><span class="p">},</span><span class="s2">"second"</span><span class="p">:{</span><span class="s2">"firstName"</span><span class="p">:</span><span class="s2">"George"</span><span class="p">,</span><span class="s2">"lastName"</span><span class="p">:</span><span class="s2">"Bush"</span><span class="p">},</span><span class="s2">"third"</span><span class="p">:{</span><span class="s2">"firstName"</span><span class="p">:</span><span class="s2">"Thomas"</span><span class="p">,</span><span class="s2">"lastName"</span><span class="p">:</span><span class="s2">"Carter"</span><span class="p">}}}</span>
+<span class="p">{</span><span class="dl">"</span><span class="s2">employees</span><span class="dl">"</span><span class="p">:{</span><span class="dl">"</span><span class="s2">first</span><span class="dl">"</span><span class="p">:{</span><span class="dl">"</span><span class="s2">firstName</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">Bill</span><span class="dl">"</span><span class="p">,</span><span class="dl">"</span><span class="s2">lastName</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">Gates</span><span class="dl">"</span><span class="p">},</span><span class="dl">"</span><span class="s2">second</span><span class="dl">"</span><span class="p">:{</span><span class="dl">"</span><span class="s2">firstName</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">George</span><span class="dl">"</span><span class="p">,</span><span class="dl">"</span><span class="s2">lastName</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">Bush</span><span class="dl">"</span><span class="p">},</span><span class="dl">"</span><span class="s2">third</span><span class="dl">"</span><span class="p">:{</span><span class="dl">"</span><span class="s2">firstName</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">Thomas</span><span class="dl">"</span><span class="p">,</span><span class="dl">"</span><span class="s2">lastName</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">Carter</span><span class="dl">"</span><span class="p">}}}</span>
 
 <span class="c1">// echo ```string-of-json``` | python -m json.tool</span>
 <span class="c1">// 可以得到下面 Pretty 后的 JSON 格式</span>
 <span class="c1">// Pretty 样式给人看起来比较舒服</span>
 <span class="p">{</span>
-    <span class="s2">"employees"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">"first"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Bill"</span><span class="p">,</span>
-            <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Gates"</span>
+    <span class="dl">"</span><span class="s2">employees</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">first</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">firstName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Bill</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">lastName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Gates</span><span class="dl">"</span>
         <span class="p">},</span>
-        <span class="s2">"second"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"George"</span><span class="p">,</span>
-            <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Bush"</span>
+        <span class="dl">"</span><span class="s2">second</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">firstName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">George</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">lastName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Bush</span><span class="dl">"</span>
         <span class="p">},</span>
-        <span class="s2">"third"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Thomas"</span><span class="p">,</span>
-            <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Carter"</span>
+        <span class="dl">"</span><span class="s2">third</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">firstName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Thomas</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">lastName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Carter</span><span class="dl">"</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -201,33 +201,33 @@ Author: Ray-Eldath
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// ① 把大于第一层的所有内容转换为字符串</span>
 <span class="p">{</span>
-    <span class="s2">"employees"</span><span class="p">:</span> <span class="s2">"{</span><span class="se">\"</span><span class="s2">first</span><span class="se">\"</span><span class="s2">:{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Bill</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Gates</span><span class="se">\"</span><span class="s2">},</span><span class="se">\"</span><span class="s2">second</span><span class="se">\"</span><span class="s2">:{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">George</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Bush</span><span class="se">\"</span><span class="s2">},</span><span class="se">\"</span><span class="s2">third</span><span class="se">\"</span><span class="s2">:{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Thomas</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Carter</span><span class="se">\"</span><span class="s2">}}"</span>
+    <span class="dl">"</span><span class="s2">employees</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">{</span><span class="se">\"</span><span class="s2">first</span><span class="se">\"</span><span class="s2">:{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Bill</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Gates</span><span class="se">\"</span><span class="s2">},</span><span class="se">\"</span><span class="s2">second</span><span class="se">\"</span><span class="s2">:{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">George</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Bush</span><span class="se">\"</span><span class="s2">},</span><span class="se">\"</span><span class="s2">third</span><span class="se">\"</span><span class="s2">:{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Thomas</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Carter</span><span class="se">\"</span><span class="s2">}}</span><span class="dl">"</span>
 <span class="p">}</span>
 
 <span class="c1">// ② 把大于第二层的所有内容转换为字符串</span>
 <span class="p">{</span>
-    <span class="s2">"employees"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">"first"</span><span class="p">:</span> <span class="s2">"{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Bill</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Gates</span><span class="se">\"</span><span class="s2">}"</span><span class="p">,</span>
-        <span class="s2">"second"</span><span class="p">:</span> <span class="s2">"{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">George</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Bush</span><span class="se">\"</span><span class="s2">}"</span><span class="p">,</span>
-        <span class="s2">"third"</span><span class="p">:</span> <span class="s2">"{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Thomas</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Carter</span><span class="se">\"</span><span class="s2">}"</span>
+    <span class="dl">"</span><span class="s2">employees</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">first</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Bill</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Gates</span><span class="se">\"</span><span class="s2">}</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">second</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">George</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Bush</span><span class="se">\"</span><span class="s2">}</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">third</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">{</span><span class="se">\"</span><span class="s2">firstName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Thomas</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">lastName</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Carter</span><span class="se">\"</span><span class="s2">}</span><span class="dl">"</span>
     <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="c1">// ③ 把大于第三层的所有内容转换为字符串</span>
 <span class="c1">// 从效果来看，最后一层存在字符串转义，不太期望如此，可是也还好把🙃</span>
 <span class="p">{</span>
-    <span class="s2">"employees"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">"first"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"</span><span class="se">\"</span><span class="s2">Bill</span><span class="se">\"</span><span class="s2">"</span><span class="p">,</span>
-            <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"</span><span class="se">\"</span><span class="s2">Gates</span><span class="se">\"</span><span class="s2">"</span>
+    <span class="dl">"</span><span class="s2">employees</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">first</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">firstName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="se">\"</span><span class="s2">Bill</span><span class="se">\"</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">lastName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="se">\"</span><span class="s2">Gates</span><span class="se">\"</span><span class="dl">"</span>
         <span class="p">},</span>
-        <span class="s2">"second"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"</span><span class="se">\"</span><span class="s2">George</span><span class="se">\"</span><span class="s2">"</span><span class="p">,</span>
-            <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"</span><span class="se">\"</span><span class="s2">Bush</span><span class="se">\"</span><span class="s2">"</span>
+        <span class="dl">"</span><span class="s2">second</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">firstName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="se">\"</span><span class="s2">George</span><span class="se">\"</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">lastName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="se">\"</span><span class="s2">Bush</span><span class="se">\"</span><span class="dl">"</span>
         <span class="p">},</span>
-        <span class="s2">"third"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"</span><span class="se">\"</span><span class="s2">Thomas</span><span class="se">\"</span><span class="s2">"</span><span class="p">,</span>
-            <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"</span><span class="se">\"</span><span class="s2">Carter</span><span class="se">\"</span><span class="s2">"</span>
+        <span class="dl">"</span><span class="s2">third</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">firstName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="se">\"</span><span class="s2">Thomas</span><span class="se">\"</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">lastName</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="se">\"</span><span class="s2">Carter</span><span class="se">\"</span><span class="dl">"</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -235,159 +235,159 @@ Author: Ray-Eldath
 
 <h3 id="用代码跑跑数据">用代码跑跑数据</h3>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">hello</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">hello</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"encoding/json"</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"testing"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"encoding/json"</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"testing"</span>
+<span class="p">)</span>
 
-</span><span class="k">var</span><span class="x"> </span><span class="n">data</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="s">`{"employees":{"first":{"firstName":"Bill","lastName":"Gates"},"second":{"firstName":"George","lastName":"Bush"},"third":{"firstName":"Thomas","lastName":"Carter"}}}`</span><span class="x">
+<span class="k">var</span> <span class="n">data</span> <span class="o">=</span> <span class="s">`{"employees":{"first":{"firstName":"Bill","lastName":"Gates"},"second":{"firstName":"George","lastName":"Bush"},"third":{"firstName":"Thomas","lastName":"Carter"}}}`</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Parser</span><span class="p">(</span><span class="n">data</span><span class="x"> </span><span class="p">[]</span><span class="kt">byte</span><span class="p">)</span><span class="x"> </span><span class="k">interface</span><span class="p">{}</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="k">interface</span><span class="p">{}</span><span class="x">
-	</span><span class="n">json</span><span class="o">.</span><span class="n">Unmarshal</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="x"> </span><span class="o">&amp;</span><span class="n">i</span><span class="p">)</span><span class="x">
-	</span><span class="k">return</span><span class="x"> </span><span class="n">i</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">Parser</span><span class="p">(</span><span class="n">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="k">interface</span><span class="p">{}</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">i</span> <span class="k">interface</span><span class="p">{}</span>
+	<span class="n">json</span><span class="o">.</span><span class="n">Unmarshal</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">i</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">i</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Test_Unmarshal</span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">da</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">da</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -v -timeout 30s . -run ^Test_Unmarshal$</span><span class="x">
-</span><span class="c">// map[employees:map[first:map[firstName:Bill lastName:Gates] second:map[firstName:George lastName:Bush] third:map[firstName:Thomas lastName:Carter]]]</span><span class="x">
+<span class="k">func</span> <span class="n">Test_Unmarshal</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">da</span> <span class="o">:=</span> <span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c">// go test -v -timeout 30s . -run ^Test_Unmarshal$</span>
+<span class="c">// map[employees:map[first:map[firstName:Bill lastName:Gates] second:map[firstName:George lastName:Bush] third:map[firstName:Thomas lastName:Carter]]]</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Benchmark_Unmarshal</span><span class="p">(</span><span class="n">b</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -benchmem -run=^$ . -bench ^Benchmark_Unmarshal$</span><span class="x">
-</span><span class="c">// Benchmark_Unmarshal-4   300000   4652 ns/op   2320 B/op   38 allocs/op</span><span class="x">
+<span class="k">func</span> <span class="n">Benchmark_Unmarshal</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="c">// go test -benchmem -run=^$ . -bench ^Benchmark_Unmarshal$</span>
+<span class="c">// Benchmark_Unmarshal-4   300000   4652 ns/op   2320 B/op   38 allocs/op</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Test_Marshal</span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">da</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
-	</span><span class="n">d</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">da</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">))</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -v -timeout 30s . -run ^Test_Marshal$</span><span class="x">
-</span><span class="c">// {"employees":{"first":{"firstName":"Bill","lastName":"Gates"},"second":{"firstName":"George","lastName":"Bush"},"third":{"firstName":"Thomas","lastName":"Carter"}}}</span><span class="x">
+<span class="k">func</span> <span class="n">Test_Marshal</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">da</span> <span class="o">:=</span> <span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+	<span class="n">d</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="c">// go test -v -timeout 30s . -run ^Test_Marshal$</span>
+<span class="c">// {"employees":{"first":{"firstName":"Bill","lastName":"Gates"},"second":{"firstName":"George","lastName":"Bush"},"third":{"firstName":"Thomas","lastName":"Carter"}}}</span>
 
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Benchmark_Marshal</span><span class="p">(</span><span class="n">b</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">da</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x"> </span><span class="c">//use b.N for looping</span><span class="x">
-		</span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">da</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -benchmem -run=^$ . -bench ^Benchmark_Marshal$</span><span class="x">
-</span><span class="c">// Benchmark_Marshal-4   200000   6455 ns/op   2192 B/op   49 allocs/op</span><span class="x">
+<span class="k">func</span> <span class="n">Benchmark_Marshal</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">da</span> <span class="o">:=</span> <span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span> <span class="c">//use b.N for looping</span>
+		<span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="c">// go test -benchmem -run=^$ . -bench ^Benchmark_Marshal$</span>
+<span class="c">// Benchmark_Marshal-4   200000   6455 ns/op   2192 B/op   49 allocs/op</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Test_MarshalLevel1</span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">da</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
-	</span><span class="n">daJSON</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">k</span><span class="p">,</span><span class="x"> </span><span class="n">v</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">daJSON</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">d</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="x">
-		</span><span class="n">daJSON</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">s</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Test_MarshalLevel1 %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="kt">string</span><span class="p">(</span><span class="n">s</span><span class="p">))</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -v -timeout 30s . -run ^Test_MarshalLevel1$</span><span class="x">
-</span><span class="c">// Test_MarshalLevel1 {"employees":"{\"first\":{\"firstName\":\"Bill\",\"lastName\":\"Gates\"},\"second\":{\"firstName\":\"George\",\"lastName\":\"Bush\"},\"third\":{\"firstName\":\"Thomas\",\"lastName\":\"Carter\"}}"}</span><span class="x">
+<span class="k">func</span> <span class="n">Test_MarshalLevel1</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">da</span> <span class="o">:=</span> <span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+	<span class="n">daJSON</span> <span class="o">:=</span> <span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+	<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">daJSON</span> <span class="p">{</span>
+		<span class="n">d</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+		<span class="n">daJSON</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="n">s</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Test_MarshalLevel1 %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="kt">string</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="c">// go test -v -timeout 30s . -run ^Test_MarshalLevel1$</span>
+<span class="c">// Test_MarshalLevel1 {"employees":"{\"first\":{\"firstName\":\"Bill\",\"lastName\":\"Gates\"},\"second\":{\"firstName\":\"George\",\"lastName\":\"Bush\"},\"third\":{\"firstName\":\"Thomas\",\"lastName\":\"Carter\"}}"}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Benchmark_MarshalLevel1</span><span class="p">(</span><span class="n">b</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x"> </span><span class="c">//use b.N for looping</span><span class="x">
-		</span><span class="n">da</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
-		</span><span class="n">daJSON</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="n">k</span><span class="p">,</span><span class="x"> </span><span class="n">v</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">daJSON</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">d</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="x">
-			</span><span class="n">daJSON</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-		</span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -benchmem -run=^$ . -bench ^Benchmark_MarshalLevel1$</span><span class="x">
-</span><span class="c">// Benchmark_MarshalLevel1-4   100000   12399 ns/op   4880 B/op   90 allocs/op</span><span class="x">
+<span class="k">func</span> <span class="n">Benchmark_MarshalLevel1</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span> <span class="c">//use b.N for looping</span>
+		<span class="n">da</span> <span class="o">:=</span> <span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+		<span class="n">daJSON</span> <span class="o">:=</span> <span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">daJSON</span> <span class="p">{</span>
+			<span class="n">d</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+			<span class="n">daJSON</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="c">// go test -benchmem -run=^$ . -bench ^Benchmark_MarshalLevel1$</span>
+<span class="c">// Benchmark_MarshalLevel1-4   100000   12399 ns/op   4880 B/op   90 allocs/op</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Test_MarshalLevel2</span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">da</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
-	</span><span class="n">daJSON</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">k1</span><span class="p">,</span><span class="x"> </span><span class="n">v1</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">daJSON</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">v1Map</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">v1</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="n">k2</span><span class="p">,</span><span class="x"> </span><span class="n">v2</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">v1Map</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">d</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span><span class="x">
-			</span><span class="n">v1Map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-		</span><span class="n">daJSON</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">v1Map</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">s</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Test_MarshalLevel2 %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="kt">string</span><span class="p">(</span><span class="n">s</span><span class="p">))</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -v -timeout 30s . -run ^Test_MarshalLevel2$</span><span class="x">
-</span><span class="c">// Test_MarshalLevel2 {"employees":{"first":"{\"firstName\":\"Bill\",\"lastName\":\"Gates\"}","second":"{\"firstName\":\"George\",\"lastName\":\"Bush\"}","third":"{\"firstName\":\"Thomas\",\"lastName\":\"Carter\"}"}}</span><span class="x">
+<span class="k">func</span> <span class="n">Test_MarshalLevel2</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">da</span> <span class="o">:=</span> <span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+	<span class="n">daJSON</span> <span class="o">:=</span> <span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+	<span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">v1</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">daJSON</span> <span class="p">{</span>
+		<span class="n">v1Map</span> <span class="o">:=</span> <span class="n">v1</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+		<span class="k">for</span> <span class="n">k2</span><span class="p">,</span> <span class="n">v2</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">v1Map</span> <span class="p">{</span>
+			<span class="n">d</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span>
+			<span class="n">v1Map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span> <span class="o">=</span> <span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="n">daJSON</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v1Map</span>
+	<span class="p">}</span>
+	<span class="n">s</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Test_MarshalLevel2 %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="kt">string</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="c">// go test -v -timeout 30s . -run ^Test_MarshalLevel2$</span>
+<span class="c">// Test_MarshalLevel2 {"employees":{"first":"{\"firstName\":\"Bill\",\"lastName\":\"Gates\"}","second":"{\"firstName\":\"George\",\"lastName\":\"Bush\"}","third":"{\"firstName\":\"Thomas\",\"lastName\":\"Carter\"}"}}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Benchmark_MarshalLevel2</span><span class="p">(</span><span class="n">b</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x"> </span><span class="c">//use b.N for looping</span><span class="x">
-		</span><span class="n">da</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
-		</span><span class="n">daJSON</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="n">_</span><span class="p">,</span><span class="x"> </span><span class="n">v1</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">daJSON</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">v1Map</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">v1</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-			</span><span class="k">for</span><span class="x"> </span><span class="n">k2</span><span class="p">,</span><span class="x"> </span><span class="n">v2</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">v1Map</span><span class="x"> </span><span class="p">{</span><span class="x">
-				</span><span class="n">d2</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span><span class="x">
-				</span><span class="n">v1Map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="kt">string</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span><span class="x">
-			</span><span class="p">}</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-		</span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -benchmem -run=^$ . -bench ^Benchmark_MarshalLevel2$</span><span class="x">
-</span><span class="c">// Benchmark_MarshalLevel2-4   100000   13297 ns/op   4881 B/op   96 allocs/op</span><span class="x">
+<span class="k">func</span> <span class="n">Benchmark_MarshalLevel2</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span> <span class="c">//use b.N for looping</span>
+		<span class="n">da</span> <span class="o">:=</span> <span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+		<span class="n">daJSON</span> <span class="o">:=</span> <span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+		<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v1</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">daJSON</span> <span class="p">{</span>
+			<span class="n">v1Map</span> <span class="o">:=</span> <span class="n">v1</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+			<span class="k">for</span> <span class="n">k2</span><span class="p">,</span> <span class="n">v2</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">v1Map</span> <span class="p">{</span>
+				<span class="n">d2</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span>
+				<span class="n">v1Map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span> <span class="o">=</span> <span class="kt">string</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="c">// go test -benchmem -run=^$ . -bench ^Benchmark_MarshalLevel2$</span>
+<span class="c">// Benchmark_MarshalLevel2-4   100000   13297 ns/op   4881 B/op   96 allocs/op</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Test_MarshalLevel3</span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">da</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
-	</span><span class="n">daJSON</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">k1</span><span class="p">,</span><span class="x"> </span><span class="n">v1</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">daJSON</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">v1Map</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">v1</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="n">k2</span><span class="p">,</span><span class="x"> </span><span class="n">v2</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">v1Map</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">v2Map</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">v2</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-			</span><span class="k">for</span><span class="x"> </span><span class="n">k3</span><span class="p">,</span><span class="x"> </span><span class="n">v3</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">v2Map</span><span class="x"> </span><span class="p">{</span><span class="x">
-				</span><span class="n">d</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v3</span><span class="p">)</span><span class="x">
-				</span><span class="n">v2Map</span><span class="p">[</span><span class="n">k3</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="x">
-			</span><span class="p">}</span><span class="x">
-			</span><span class="n">v1Map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">v2Map</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-		</span><span class="n">daJSON</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">v1Map</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">s</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Test_MarshalLevel2 %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="kt">string</span><span class="p">(</span><span class="n">s</span><span class="p">))</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -v -timeout 30s . -run ^Test_MarshalLevel3$</span><span class="x">
-</span><span class="c">// Test_MarshalLevel2 {"employees":{"first":{"firstName":"\"Bill\"","lastName":"\"Gates\""},"second":{"firstName":"\"George\"","lastName":"\"Bush\""},"third":{"firstName":"\"Thomas\"","lastName":"\"Carter\""}}}</span><span class="x">
+<span class="k">func</span> <span class="n">Test_MarshalLevel3</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">da</span> <span class="o">:=</span> <span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+	<span class="n">daJSON</span> <span class="o">:=</span> <span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+	<span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">v1</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">daJSON</span> <span class="p">{</span>
+		<span class="n">v1Map</span> <span class="o">:=</span> <span class="n">v1</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+		<span class="k">for</span> <span class="n">k2</span><span class="p">,</span> <span class="n">v2</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">v1Map</span> <span class="p">{</span>
+			<span class="n">v2Map</span> <span class="o">:=</span> <span class="n">v2</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+			<span class="k">for</span> <span class="n">k3</span><span class="p">,</span> <span class="n">v3</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">v2Map</span> <span class="p">{</span>
+				<span class="n">d</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v3</span><span class="p">)</span>
+				<span class="n">v2Map</span><span class="p">[</span><span class="n">k3</span><span class="p">]</span> <span class="o">=</span> <span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="n">v1Map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span> <span class="o">=</span> <span class="n">v2Map</span>
+		<span class="p">}</span>
+		<span class="n">daJSON</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v1Map</span>
+	<span class="p">}</span>
+	<span class="n">s</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Test_MarshalLevel2 %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="kt">string</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="c">// go test -v -timeout 30s . -run ^Test_MarshalLevel3$</span>
+<span class="c">// Test_MarshalLevel2 {"employees":{"first":{"firstName":"\"Bill\"","lastName":"\"Gates\""},"second":{"firstName":"\"George\"","lastName":"\"Bush\""},"third":{"firstName":"\"Thomas\"","lastName":"\"Carter\""}}}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">Benchmark_MarshalLevel3</span><span class="p">(</span><span class="n">b</span><span class="x"> </span><span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x"> </span><span class="c">//use b.N for looping</span><span class="x">
-		</span><span class="n">da</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="x">
-		</span><span class="n">daJSON</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="n">k1</span><span class="p">,</span><span class="x"> </span><span class="n">v1</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">daJSON</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">v1Map</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">v1</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-			</span><span class="k">for</span><span class="x"> </span><span class="n">k2</span><span class="p">,</span><span class="x"> </span><span class="n">v2</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">v1Map</span><span class="x"> </span><span class="p">{</span><span class="x">
-				</span><span class="n">v2Map</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">v2</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-				</span><span class="k">for</span><span class="x"> </span><span class="n">k3</span><span class="p">,</span><span class="x"> </span><span class="n">v3</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">v2Map</span><span class="x"> </span><span class="p">{</span><span class="x">
-					</span><span class="n">d</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v3</span><span class="p">)</span><span class="x">
-					</span><span class="n">v2Map</span><span class="p">[</span><span class="n">k3</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="x">
-				</span><span class="p">}</span><span class="x">
-				</span><span class="n">v1Map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">v2Map</span><span class="x">
-			</span><span class="p">}</span><span class="x">
-			</span><span class="n">daJSON</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">v1Map</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-		</span><span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="c">// go test -benchmem -run=^$ . -bench ^Benchmark_MarshalLevel3$</span><span class="x">
-</span><span class="c">// Benchmark_MarshalLevel3-4   100000   14319 ns/op   4720 B/op   105 allocs/op</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">Benchmark_MarshalLevel3</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span> <span class="c">//use b.N for looping</span>
+		<span class="n">da</span> <span class="o">:=</span> <span class="n">Parser</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+		<span class="n">daJSON</span> <span class="o">:=</span> <span class="n">da</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+		<span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">v1</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">daJSON</span> <span class="p">{</span>
+			<span class="n">v1Map</span> <span class="o">:=</span> <span class="n">v1</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+			<span class="k">for</span> <span class="n">k2</span><span class="p">,</span> <span class="n">v2</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">v1Map</span> <span class="p">{</span>
+				<span class="n">v2Map</span> <span class="o">:=</span> <span class="n">v2</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+				<span class="k">for</span> <span class="n">k3</span><span class="p">,</span> <span class="n">v3</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">v2Map</span> <span class="p">{</span>
+					<span class="n">d</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">v3</span><span class="p">)</span>
+					<span class="n">v2Map</span><span class="p">[</span><span class="n">k3</span><span class="p">]</span> <span class="o">=</span> <span class="kt">string</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+				<span class="p">}</span>
+				<span class="n">v1Map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span> <span class="o">=</span> <span class="n">v2Map</span>
+			<span class="p">}</span>
+			<span class="n">daJSON</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v1Map</span>
+		<span class="p">}</span>
+		<span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">daJSON</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="c">// go test -benchmem -run=^$ . -bench ^Benchmark_MarshalLevel3$</span>
+<span class="c">// Benchmark_MarshalLevel3-4   100000   14319 ns/op   4720 B/op   105 allocs/op</span>
+</code></pre></div></div>
 
 <h3 id="分析一下数据">分析一下数据</h3>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 整合上面的 benchmark 的数据</span>

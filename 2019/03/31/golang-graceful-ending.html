@@ -186,57 +186,57 @@ Author: Ray-Eldath
 
 <p>下面的代码定义了两个定时任务：<code class="highlighter-rouge">mySecondJobs</code> 每秒钟会触发一次，每次持续约 1 秒钟；<code class="highlighter-rouge">myMinuteJobs</code> 每分钟会触发一次，每次持续约 2 秒钟。具体地可以阅读下面的代码（可以直接复制下面的代码到自己的环境中运行）：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"os"</span><span class="x">
-	</span><span class="s">"os/signal"</span><span class="x">
-	</span><span class="s">"syscall"</span><span class="x">
-	</span><span class="s">"time"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"os"</span>
+	<span class="s">"os/signal"</span>
+	<span class="s">"syscall"</span>
+	<span class="s">"time"</span>
+<span class="p">)</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">c</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">chan</span><span class="x"> </span><span class="n">os</span><span class="o">.</span><span class="n">Signal</span><span class="p">)</span><span class="x">
-	</span><span class="c">// Go 不允许监听 SIGKILL/SIGSTOP 信号</span><span class="x">
-	</span><span class="c">// 参考 https://github.com/golang/go/issues/9463</span><span class="x">
-	</span><span class="n">signal</span><span class="o">.</span><span class="n">Notify</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="x"> </span><span class="n">syscall</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span><span class="x"> </span><span class="n">syscall</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">)</span><span class="x">
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="n">os</span><span class="o">.</span><span class="n">Signal</span><span class="p">)</span>
+	<span class="c">// Go 不允许监听 SIGKILL/SIGSTOP 信号</span>
+	<span class="c">// 参考 https://github.com/golang/go/issues/9463</span>
+	<span class="n">signal</span><span class="o">.</span><span class="n">Notify</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">syscall</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">syscall</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">)</span>
 
-	</span><span class="n">second</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">NewTicker</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span><span class="x">
-	</span><span class="n">minute</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">NewTicker</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Minute</span><span class="p">)</span><span class="x">
+	<span class="n">second</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">NewTicker</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+	<span class="n">minute</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">NewTicker</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Minute</span><span class="p">)</span>
 
-</span><span class="n">A</span><span class="o">:</span><span class="x"> </span><span class="c">// 由于 for-select 嵌套使用，设置跳出 for 循环的标记</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">select</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">case</span><span class="x"> </span><span class="n">s</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="o">&lt;-</span><span class="n">c</span><span class="o">:</span><span class="x">
-			</span><span class="c">// 收到 SIGTERM/SIGINT 信号，跳出 for 循环结束进程</span><span class="x">
-			</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"get signal %s, graceful ending...</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">s</span><span class="p">)</span><span class="x">
-			</span><span class="k">break</span><span class="x"> </span><span class="n">A</span><span class="x">
-		</span><span class="k">case</span><span class="x"> </span><span class="o">&lt;-</span><span class="n">second</span><span class="o">.</span><span class="n">C</span><span class="o">:</span><span class="x">
-			</span><span class="k">go</span><span class="x"> </span><span class="n">mySecondJobs</span><span class="p">()</span><span class="x">
-		</span><span class="k">case</span><span class="x"> </span><span class="o">&lt;-</span><span class="n">minute</span><span class="o">.</span><span class="n">C</span><span class="o">:</span><span class="x">
-			</span><span class="k">go</span><span class="x"> </span><span class="n">myMinuteJobs</span><span class="p">()</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"graceful ending"</span><span class="p">)</span><span class="x">
-	</span><span class="c">// 做一些操作让异步任务正常结束，这里偷懒地采取简单等待的方式 😆</span><span class="x">
-	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="x"> </span><span class="o">*</span><span class="x"> </span><span class="m">10</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"graceful ended."</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="n">A</span><span class="o">:</span> <span class="c">// 由于 for-select 嵌套使用，设置跳出 for 循环的标记</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="k">select</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="n">s</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="n">c</span><span class="o">:</span>
+			<span class="c">// 收到 SIGTERM/SIGINT 信号，跳出 for 循环结束进程</span>
+			<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"get signal %s, graceful ending...</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+			<span class="k">break</span> <span class="n">A</span>
+		<span class="k">case</span> <span class="o">&lt;-</span><span class="n">second</span><span class="o">.</span><span class="n">C</span><span class="o">:</span>
+			<span class="k">go</span> <span class="n">mySecondJobs</span><span class="p">()</span>
+		<span class="k">case</span> <span class="o">&lt;-</span><span class="n">minute</span><span class="o">.</span><span class="n">C</span><span class="o">:</span>
+			<span class="k">go</span> <span class="n">myMinuteJobs</span><span class="p">()</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"graceful ending"</span><span class="p">)</span>
+	<span class="c">// 做一些操作让异步任务正常结束，这里偷懒地采取简单等待的方式 😆</span>
+	<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span> <span class="o">*</span> <span class="m">10</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"graceful ended."</span><span class="p">)</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">mySecondJobs</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">tS</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">String</span><span class="p">()</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"starting second job: %s </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">tS</span><span class="p">)</span><span class="x">
-	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="x"> </span><span class="o">*</span><span class="x"> </span><span class="m">1</span><span class="p">)</span><span class="x"> </span><span class="c">// 假设每个任务消耗 1 秒时间</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"second job %s are done. </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">tS</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">myMinuteJobs</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">tS</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">String</span><span class="p">()</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"starting minute job: %s </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">tS</span><span class="p">)</span><span class="x">
-	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="x"> </span><span class="o">*</span><span class="x"> </span><span class="m">2</span><span class="p">)</span><span class="x"> </span><span class="c">// 假设每个任务消耗 2 秒时间</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"minute job %s are done. </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">tS</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">mySecondJobs</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">tS</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">String</span><span class="p">()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"starting second job: %s </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">tS</span><span class="p">)</span>
+	<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span> <span class="o">*</span> <span class="m">1</span><span class="p">)</span> <span class="c">// 假设每个任务消耗 1 秒时间</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"second job %s are done. </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">tS</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">func</span> <span class="n">myMinuteJobs</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">tS</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">String</span><span class="p">()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"starting minute job: %s </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">tS</span><span class="p">)</span>
+	<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span> <span class="o">*</span> <span class="m">2</span><span class="p">)</span> <span class="c">// 假设每个任务消耗 2 秒时间</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"minute job %s are done. </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">tS</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h3 id="源码解读-优雅中止的处理思路">源码解读-优雅中止的处理思路</h3>
 <ol>

@@ -170,23 +170,23 @@ Author: Ray-Eldath
 
 <h2 id="maingo及其汇编码">main.go及其汇编码</h2>
 <h3 id="一个main函数">一个main函数</h3>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"time"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"time"</span>
+<span class="p">)</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">mikk</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"kk"</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span><span class="x">
-	</span><span class="c">// go mikk()</span><span class="x">
-	</span><span class="n">mikk</span><span class="p">()</span><span class="x">
-	</span><span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="m">1000</span><span class="x"> </span><span class="o">*</span><span class="x"> </span><span class="m">1000</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">mikk</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"kk"</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span>
+	<span class="c">// go mikk()</span>
+	<span class="n">mikk</span><span class="p">()</span>
+	<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="m">1000</span> <span class="o">*</span> <span class="m">1000</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>上面的代码是一个比较简单的<code class="highlighter-rouge">main</code>函数，不赘述。关键的地方，在于<code class="highlighter-rouge">go mikk()</code>和<code class="highlighter-rouge">mikk()</code>这两行，如果代码使用<code class="highlighter-rouge">mikk()</code>而注释<code class="highlighter-rouge">go mikk()</code>（正如当前代码所示），那么就只有一个goroutine；反之，则通过<code class="highlighter-rouge">go</code>关键字把<code class="highlighter-rouge">mikk()</code>放到了另一个goroutine运行。</p>
 
@@ -225,35 +225,35 @@ Author: Ray-Eldath
 <h2 id="runtimenewproc">runtime.newproc</h2>
 <p>通过查看<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">go/proc.go</a>源码中的<code class="highlighter-rouge">newproc</code>主要调用了<code class="highlighter-rouge">newproc1</code>函数。这里会把调用方（caller）所在的goroutine和pc作为参数传给<code class="highlighter-rouge">newproc1 </code>。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">newproc</span><span class="p">(</span><span class="n">siz</span><span class="x"> </span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="n">fn</span><span class="x"> </span><span class="o">*</span><span class="n">funcval</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">argp</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">add</span><span class="p">(</span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fn</span><span class="p">),</span><span class="x"> </span><span class="n">sys</span><span class="o">.</span><span class="n">PtrSize</span><span class="p">)</span><span class="x">
-	</span><span class="n">gp</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">getg</span><span class="p">()</span><span class="x">
-	</span><span class="n">pc</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">getcallerpc</span><span class="p">()</span><span class="x">
-	</span><span class="n">systemstack</span><span class="p">(</span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">newproc1</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="x"> </span><span class="p">(</span><span class="o">*</span><span class="kt">uint8</span><span class="p">)(</span><span class="n">argp</span><span class="p">),</span><span class="x"> </span><span class="n">siz</span><span class="p">,</span><span class="x"> </span><span class="n">gp</span><span class="p">,</span><span class="x"> </span><span class="n">pc</span><span class="p">)</span><span class="x">
-	</span><span class="p">})</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">newproc</span><span class="p">(</span><span class="n">siz</span> <span class="kt">int32</span><span class="p">,</span> <span class="n">fn</span> <span class="o">*</span><span class="n">funcval</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">argp</span> <span class="o">:=</span> <span class="n">add</span><span class="p">(</span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fn</span><span class="p">),</span> <span class="n">sys</span><span class="o">.</span><span class="n">PtrSize</span><span class="p">)</span>
+	<span class="n">gp</span> <span class="o">:=</span> <span class="n">getg</span><span class="p">()</span>
+	<span class="n">pc</span> <span class="o">:=</span> <span class="n">getcallerpc</span><span class="p">()</span>
+	<span class="n">systemstack</span><span class="p">(</span><span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">newproc1</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="kt">uint8</span><span class="p">)(</span><span class="n">argp</span><span class="p">),</span> <span class="n">siz</span><span class="p">,</span> <span class="n">gp</span><span class="p">,</span> <span class="n">pc</span><span class="p">)</span>
+	<span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>创建goroutine的工作大部分在<code class="highlighter-rouge">newproc1</code>中完成。它会首先从freeG列表中尝试获取一个free的goroutine（重复利用资源，可以减少malloc的次数，降低时间消耗），只有获取不到的时候才会重新在堆栈中搞一块新的内存并初始化gouroutine。</p>
 
 <p>把goroutine的栈初始化，并把各项属性设置适当的值以后，就可以把这个goroutine加入到当前P的G队列了。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 创建一个新的goroutine运行fn，参数开始于argp，共有narg个字节</span><span class="x">
-</span><span class="c">// 最后把创建的g放到g队列等待运行</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">newproc1</span><span class="p">(</span><span class="n">fn</span><span class="x"> </span><span class="o">*</span><span class="n">funcval</span><span class="p">,</span><span class="x"> </span><span class="n">argp</span><span class="x"> </span><span class="o">*</span><span class="kt">uint8</span><span class="p">,</span><span class="x"> </span><span class="n">narg</span><span class="x"> </span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="n">callergp</span><span class="x"> </span><span class="o">*</span><span class="n">g</span><span class="p">,</span><span class="x"> </span><span class="n">callerpc</span><span class="x"> </span><span class="kt">uintptr</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="c">// 获得当前的G</span><span class="x">
-	</span><span class="n">_g_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">getg</span><span class="p">()</span><span class="x">
-</span><span class="o">...</span><span class="x">
-	</span><span class="c">// 从P的freeG队列中拿一个G</span><span class="x">
-	</span><span class="n">_p_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">_g_</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">ptr</span><span class="p">()</span><span class="x">
-	</span><span class="n">newg</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">gfget</span><span class="p">(</span><span class="n">_p_</span><span class="p">)</span><span class="x">
-</span><span class="o">...</span><span class="x">
-	</span><span class="c">// 将G加入P的runnable G队列</span><span class="x">
-	</span><span class="n">runqput</span><span class="p">(</span><span class="n">_p_</span><span class="p">,</span><span class="x"> </span><span class="n">newg</span><span class="p">,</span><span class="x"> </span><span class="no">true</span><span class="p">)</span><span class="x">
-</span><span class="o">...</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 创建一个新的goroutine运行fn，参数开始于argp，共有narg个字节</span>
+<span class="c">// 最后把创建的g放到g队列等待运行</span>
+<span class="k">func</span> <span class="n">newproc1</span><span class="p">(</span><span class="n">fn</span> <span class="o">*</span><span class="n">funcval</span><span class="p">,</span> <span class="n">argp</span> <span class="o">*</span><span class="kt">uint8</span><span class="p">,</span> <span class="n">narg</span> <span class="kt">int32</span><span class="p">,</span> <span class="n">callergp</span> <span class="o">*</span><span class="n">g</span><span class="p">,</span> <span class="n">callerpc</span> <span class="kt">uintptr</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c">// 获得当前的G</span>
+	<span class="n">_g_</span> <span class="o">:=</span> <span class="n">getg</span><span class="p">()</span>
+<span class="o">...</span>
+	<span class="c">// 从P的freeG队列中拿一个G</span>
+	<span class="n">_p_</span> <span class="o">:=</span> <span class="n">_g_</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">ptr</span><span class="p">()</span>
+	<span class="n">newg</span> <span class="o">:=</span> <span class="n">gfget</span><span class="p">(</span><span class="n">_p_</span><span class="p">)</span>
+<span class="o">...</span>
+	<span class="c">// 将G加入P的runnable G队列</span>
+	<span class="n">runqput</span><span class="p">(</span><span class="n">_p_</span><span class="p">,</span> <span class="n">newg</span><span class="p">,</span> <span class="no">true</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h2 id="小结">小结</h2>
 <p>本文从汇编代码入手，发现了<code class="highlighter-rouge">runtime.newproc</code>这一条线索，通过查看相应的源码，简单介绍了goroutine的初始化过程。</p>

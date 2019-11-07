@@ -174,23 +174,23 @@ Author: Ray-Eldath
 
 <p>如果不加保护地在不同的线程中读写 <code class="highlighter-rouge">map</code> 类型的数据，代码会直接崩溃并异常退出。比如下面的代码：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">m</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">_</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">m</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">m</span><span class="p">[</span><span class="m">2</span><span class="p">]</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="m">1</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="k">select</span><span class="x"> </span><span class="p">{}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">m</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="n">_</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="m">1</span><span class="p">]</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="n">m</span><span class="p">[</span><span class="m">2</span><span class="p">]</span> <span class="o">=</span> <span class="m">1</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">select</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>运行上面的代码可以得到下面类似的结果：</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go run map/main.go 
@@ -200,25 +200,25 @@ Author: Ray-Eldath
 
 <p>从输出结果来看，Golang 运行时明确禁止 <code class="highlighter-rouge">map</code> 的并发读写，且在检测到这种情况后直接异常退出。这不同于其他数据类型，比如 <code class="highlighter-rouge">int</code>、<code class="highlighter-rouge">string</code> 等，对比下面的代码（说明：下面的代码存在隐形的并发问题，具体参考《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》）：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 运行下面的代码并不会异常退出，不同于上面 map 类型的 m 的使用</span><span class="x">
-</span><span class="c">// go run main.go </span><span class="x">
-</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 运行下面的代码并不会异常退出，不同于上面 map 类型的 m 的使用</span>
+<span class="c">// go run main.go </span>
+<span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="n">m</span><span class="x"> </span><span class="kt">int</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">_</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">m</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">m</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="m">1</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="k">select</span><span class="x"> </span><span class="p">{}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">m</span> <span class="kt">int</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="n">_</span> <span class="o">=</span> <span class="n">m</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="n">m</span> <span class="o">=</span> <span class="m">1</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">select</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>再次<strong>需要说明</strong>，虽然上面的代码在不同的线程中访问 <code class="highlighter-rouge">int</code> 类型的数据并未直接异常退出，但是这种不加任何安全措施的并发读写是存在安全风险的，具体参考《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》。</p>
 
@@ -228,35 +228,35 @@ Author: Ray-Eldath
 
 <p>下面的代码把 <code class="highlighter-rouge">map</code> 类型的 <code class="highlighter-rouge">m</code> 封装在一个匿名的 <code class="highlighter-rouge">struct</code> 中，同时整个匿名的 <code class="highlighter-rouge">struct</code> 继承了 <code class="highlighter-rouge">sync.RWMutex</code> 结构，因此拥有了 <strong>加读写锁</strong> 的功能，从而安全地实现了多个线程对 <code class="highlighter-rouge">map</code> 的 “并发读写”：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"sync"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"sync"</span>
+<span class="p">)</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="n">counter</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">sync</span><span class="o">.</span><span class="n">RWMutex</span><span class="x">
-		</span><span class="n">m</span><span class="x"> </span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="x">
-	</span><span class="p">}{</span><span class="n">m</span><span class="o">:</span><span class="x"> </span><span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)}</span><span class="x">
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">counter</span> <span class="o">=</span> <span class="k">struct</span> <span class="p">{</span>
+		<span class="n">sync</span><span class="o">.</span><span class="n">RWMutex</span>
+		<span class="n">m</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span>
+	<span class="p">}{</span><span class="n">m</span><span class="o">:</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)}</span>
 
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">counter</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span><span class="x">
-			</span><span class="n">_</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">counter</span><span class="o">.</span><span class="n">m</span><span class="p">[</span><span class="s">"some_key"</span><span class="p">]</span><span class="x">
-			</span><span class="n">counter</span><span class="o">.</span><span class="n">RUnlock</span><span class="p">()</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">counter</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span><span class="x">
-			</span><span class="n">counter</span><span class="o">.</span><span class="n">m</span><span class="p">[</span><span class="s">"some_key"</span><span class="p">]</span><span class="o">++</span><span class="x">
-			</span><span class="n">counter</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="k">select</span><span class="x"> </span><span class="p">{}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="n">counter</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
+			<span class="n">_</span> <span class="o">=</span> <span class="n">counter</span><span class="o">.</span><span class="n">m</span><span class="p">[</span><span class="s">"some_key"</span><span class="p">]</span>
+			<span class="n">counter</span><span class="o">.</span><span class="n">RUnlock</span><span class="p">()</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="n">counter</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+			<span class="n">counter</span><span class="o">.</span><span class="n">m</span><span class="p">[</span><span class="s">"some_key"</span><span class="p">]</span><span class="o">++</span>
+			<span class="n">counter</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">select</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h3 id="为什么-map-并发读写时会在运行时异常退出">为什么 map 并发读写时会在运行时异常退出</h3>
 

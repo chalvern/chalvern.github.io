@@ -173,24 +173,24 @@ Author: Ray-Eldath
 
 <p>同样的，多返回值的特性还可以避免传入一个指针类型的参数来承接返回值。下面给出了一个简单明了的函数，其功能是在一个字节数组的某个位置开始获取一个数字，然后返回这个数字以及下一个位置。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">nextInt</span><span class="p">(</span><span class="n">b</span><span class="x"> </span><span class="p">[]</span><span class="kt">byte</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="k">for</span><span class="x"> </span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="o">!</span><span class="n">isDigit</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="p">}</span><span class="x">
-    </span><span class="n">x</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="x">
-    </span><span class="k">for</span><span class="x"> </span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="n">isDigit</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-        </span><span class="n">x</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">x</span><span class="o">*</span><span class="m">10</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="kt">int</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="x"> </span><span class="o">-</span><span class="x"> </span><span class="sc">'0'</span><span class="x">
-    </span><span class="p">}</span><span class="x">
-    </span><span class="k">return</span><span class="x"> </span><span class="n">x</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">nextInt</span><span class="p">(</span><span class="n">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="n">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">isDigit</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+    <span class="p">}</span>
+    <span class="n">x</span> <span class="o">:=</span> <span class="m">0</span>
+    <span class="k">for</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">isDigit</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="m">10</span> <span class="o">+</span> <span class="kt">int</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">-</span> <span class="sc">'0'</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">i</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>可以用上面的函数来扫描切片 b 中的数字：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">);</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="n">x</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">nextInt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">)</span><span class="x">
-    </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">);</span> <span class="p">{</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">nextInt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>如果函数只能返回一个值，那么 <code class="highlighter-rouge">nextInt</code> 将只能返回<strong>目标数字</strong>，但是没有办法返回找到的这个目标数字的位置，为了获取这个位置，就必须给 <code class="highlighter-rouge">nextInt</code> 函数传入一个指针类型的参数，然后在 <code class="highlighter-rouge">nextInt</code> 函数里面修改这个值，从而让它的调用方获取这个值。</p>
 
@@ -200,100 +200,100 @@ Author: Ray-Eldath
 
 <p>函数返回值的命名不是必要的，但是他们可以让代码更简洁明了——他们属于文档的一部分。比如我们把 nextInt 的返回值分别命名为 <code class="highlighter-rouge">value</code> 和 <code class="highlighter-rouge">nextPos</code>，就能很清楚地表明返回的是<strong>值</strong>和<strong>位置</strong>，比如下面的定义：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">nextInt</span><span class="p">(</span><span class="n">b</span><span class="x"> </span><span class="p">[]</span><span class="kt">byte</span><span class="p">,</span><span class="x"> </span><span class="n">pos</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="x"> </span><span class="n">nextPos</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">nextInt</span><span class="p">(</span><span class="n">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="n">pos</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">nextPos</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+</code></pre></div></div>
 
 <p>因为命名的返回值在函数原型之初就已经被初始化好了，因此可以直接 return ，这种应用方式能让代码变得更简洁。下面给出了 io.ReadFull 的一个版本，很好地应用了这个特性：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">ReadFull</span><span class="p">(</span><span class="n">r</span><span class="x"> </span><span class="n">Reader</span><span class="p">,</span><span class="x"> </span><span class="n">buf</span><span class="x"> </span><span class="p">[]</span><span class="kt">byte</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="n">n</span><span class="x"> </span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="k">for</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;</span><span class="x"> </span><span class="m">0</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-        </span><span class="k">var</span><span class="x"> </span><span class="n">nr</span><span class="x"> </span><span class="kt">int</span><span class="x">
-        </span><span class="n">nr</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">r</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span><span class="x">
-        </span><span class="n">n</span><span class="x"> </span><span class="o">+=</span><span class="x"> </span><span class="n">nr</span><span class="x">
-        </span><span class="n">buf</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">buf</span><span class="p">[</span><span class="n">nr</span><span class="o">:</span><span class="p">]</span><span class="x">
-    </span><span class="p">}</span><span class="x">
-    </span><span class="k">return</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">ReadFull</span><span class="p">(</span><span class="n">r</span> <span class="n">Reader</span><span class="p">,</span> <span class="n">buf</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="n">n</span> <span class="kt">int</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="o">&gt;</span> <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="n">err</span> <span class="o">==</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">var</span> <span class="n">nr</span> <span class="kt">int</span>
+        <span class="n">nr</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">+=</span> <span class="n">nr</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="n">nr</span><span class="o">:</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h2 id="defer-推迟函数">defer 推迟函数</h2>
 
 <p>Go 语言的 defer 语句可以指定某个函数（被 deferred 的函数）在当前函数返回给调用者之前再运行。defer 的这种用法有点不寻常，但是非常有用：当代码中引用了某个资源（某个 Mutex 锁、打开了某个文件），不管程序执行到哪里都必须释放这个资源，这种情况使用 defer 就很方便处理。defer 典型的应用就是<strong>解锁互斥锁</strong>和<strong>关闭文件句柄</strong>。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Contents returns the file's contents as a string.</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">Contents</span><span class="p">(</span><span class="n">filename</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="kt">string</span><span class="p">,</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="n">f</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="x">
-    </span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-        </span><span class="k">return</span><span class="x"> </span><span class="s">""</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x">
-    </span><span class="p">}</span><span class="x">
-    </span><span class="k">defer</span><span class="x"> </span><span class="n">f</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span><span class="x">  </span><span class="c">// f.Close will run when we're finished.</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Contents returns the file's contents as a string.</span>
+<span class="k">func</span> <span class="n">Contents</span><span class="p">(</span><span class="n">filename</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">""</span><span class="p">,</span> <span class="n">err</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="n">f</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>  <span class="c">// f.Close will run when we're finished.</span>
 
-    </span><span class="k">var</span><span class="x"> </span><span class="n">result</span><span class="x"> </span><span class="p">[]</span><span class="kt">byte</span><span class="x">
-    </span><span class="n">buf</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span><span class="x"> </span><span class="m">100</span><span class="p">)</span><span class="x">
-    </span><span class="k">for</span><span class="x"> </span><span class="p">{</span><span class="x">
-        </span><span class="n">n</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">f</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buf</span><span class="p">[</span><span class="m">0</span><span class="o">:</span><span class="p">])</span><span class="x">
-        </span><span class="n">result</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="nb">append</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="x"> </span><span class="n">buf</span><span class="p">[</span><span class="m">0</span><span class="o">:</span><span class="n">n</span><span class="p">]</span><span class="o">...</span><span class="p">)</span><span class="x"> </span><span class="c">// append is discussed later.</span><span class="x">
-        </span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-            </span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="n">io</span><span class="o">.</span><span class="n">EOF</span><span class="x"> </span><span class="p">{</span><span class="x">
-                </span><span class="k">break</span><span class="x">
-            </span><span class="p">}</span><span class="x">
-            </span><span class="k">return</span><span class="x"> </span><span class="s">""</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x">  </span><span class="c">// f will be closed if we return here.</span><span class="x">
-        </span><span class="p">}</span><span class="x">
-    </span><span class="p">}</span><span class="x">
-    </span><span class="k">return</span><span class="x"> </span><span class="kt">string</span><span class="p">(</span><span class="n">result</span><span class="p">),</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="c">// f will be closed if we return here.</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+    <span class="k">var</span> <span class="n">result</span> <span class="p">[]</span><span class="kt">byte</span>
+    <span class="n">buf</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">{</span>
+        <span class="n">n</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">f</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buf</span><span class="p">[</span><span class="m">0</span><span class="o">:</span><span class="p">])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">buf</span><span class="p">[</span><span class="m">0</span><span class="o">:</span><span class="n">n</span><span class="p">]</span><span class="o">...</span><span class="p">)</span> <span class="c">// append is discussed later.</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">==</span> <span class="n">io</span><span class="o">.</span><span class="n">EOF</span> <span class="p">{</span>
+                <span class="k">break</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="s">""</span><span class="p">,</span> <span class="n">err</span>  <span class="c">// f will be closed if we return here.</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kt">string</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="no">nil</span> <span class="c">// f will be closed if we return here.</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>通过 defer 的方式推迟执行类似上例中 <code class="highlighter-rouge">f.Close()</code> 函数的用法有两个好处。第一，它能保证调用必然会被执行，防止以后修改函数逻辑（比如加了另一个 return 的分支）忘记关闭文件句柄。第二，这种用法意味着打开文件与关闭文件的代码可以放在一起写，比起分开写的方式（打开文件句柄的代码在函数开始的地方，关闭的代码在函数末尾）更直观也更容易理解。</p>
 
 <p>当 defer 语句执行的时候，传递给 defer 的函数（也可能是一个方法）的参数表达式马上就会运算，不会推迟到与被 defer 的函数一起执行。比如 <code class="highlighter-rouge">defer fmt.Printf("%d ", i+i)</code>，在这条语句执行的时候，<code class="highlighter-rouge">i+i</code> 立马会被执行得到一个值，而<code class="highlighter-rouge">fmt.Printf</code> 会被推迟到最后再执行。上面的特性意味着我们需要避免函数执行过程中被 defer 的参数值被修改，同时意味着我们可以通过一条推迟语句推迟多个函数执行体。下面是一个简单的示例（仅仅是示例，实际开发中不会这么写）：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="m">5</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="k">defer</span><span class="x"> </span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%d "</span><span class="p">,</span><span class="x"> </span><span class="n">i</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+    <span class="k">defer</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%d "</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>被延迟的函数会按照后进先出（LIFO）的顺序依次执行，因此上面的代码在函数返回后会打印出 <code class="highlighter-rouge">4 3 2 1 0</code>。</p>
 
 <p>defer 的应用的另一个具有象征意义的例子是跟踪整个程序中函数的执行顺序。我们可以简单的写一段跟踪代码如下：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">trace</span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x">   </span><span class="p">{</span><span class="x"> </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"entering:"</span><span class="p">,</span><span class="x"> </span><span class="n">s</span><span class="p">)</span><span class="x"> </span><span class="p">}</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">untrace</span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x"> </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"leaving:"</span><span class="p">,</span><span class="x"> </span><span class="n">s</span><span class="p">)</span><span class="x"> </span><span class="p">}</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">trace</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">)</span>   <span class="p">{</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"entering:"</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">func</span> <span class="n">untrace</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"leaving:"</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="p">}</span>
 
-</span><span class="c">// Use them like this:</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">a</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="n">trace</span><span class="p">(</span><span class="s">"a"</span><span class="p">)</span><span class="x">
-    </span><span class="k">defer</span><span class="x"> </span><span class="n">untrace</span><span class="p">(</span><span class="s">"a"</span><span class="p">)</span><span class="x">
-    </span><span class="c">// do something....</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="c">// Use them like this:</span>
+<span class="k">func</span> <span class="n">a</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">trace</span><span class="p">(</span><span class="s">"a"</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="n">untrace</span><span class="p">(</span><span class="s">"a"</span><span class="p">)</span>
+    <span class="c">// do something....</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>上面我们提到过，当 <code class="highlighter-rouge">defer</code> 表达式开始执行时，被 defer 的函数的参数表达式马上就会被执行，利用这个特性我们可以写出更优雅的代码。上面的 <code class="highlighter-rouge">trace</code> 函数可以作为 <code class="highlighter-rouge">untrace</code> 函数的参数使用，修改后的代码如下：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">trace</span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="kt">string</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"entering:"</span><span class="p">,</span><span class="x"> </span><span class="n">s</span><span class="p">)</span><span class="x">
-    </span><span class="k">return</span><span class="x"> </span><span class="n">s</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">trace</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"entering:"</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">un</span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"leaving:"</span><span class="p">,</span><span class="x"> </span><span class="n">s</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">un</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"leaving:"</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">a</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="k">defer</span><span class="x"> </span><span class="n">un</span><span class="p">(</span><span class="n">trace</span><span class="p">(</span><span class="s">"a"</span><span class="p">))</span><span class="x">
-    </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"in a"</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">a</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">defer</span> <span class="n">un</span><span class="p">(</span><span class="n">trace</span><span class="p">(</span><span class="s">"a"</span><span class="p">))</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"in a"</span><span class="p">)</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">b</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="k">defer</span><span class="x"> </span><span class="n">un</span><span class="p">(</span><span class="n">trace</span><span class="p">(</span><span class="s">"b"</span><span class="p">))</span><span class="x">
-    </span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"in b"</span><span class="p">)</span><span class="x">
-    </span><span class="n">a</span><span class="p">()</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">b</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">defer</span> <span class="n">un</span><span class="p">(</span><span class="n">trace</span><span class="p">(</span><span class="s">"b"</span><span class="p">))</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"in b"</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">()</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-    </span><span class="n">b</span><span class="p">()</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">b</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
 <p>运行上面的代码输出的结果如下：</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 entering: b

@@ -171,25 +171,25 @@ Author: Ray-Eldath
 
 <p>下面的代码模拟了为一个用户（<code class="highlighter-rouge">Person</code>）发放金币（<code class="highlighter-rouge">Money</code>）的代码，其中金币发放与读取分别再不同的线程里完成（读取在主线程，发放在一个子线程）。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span><span class="x">
-</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
+<span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+<span class="p">)</span>
 
-</span><span class="k">type</span><span class="x"> </span><span class="n">Person</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">Money</span><span class="x"> </span><span class="kt">int</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">Money</span> <span class="kt">int</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">p</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span><span class="x"> </span><span class="m">100</span><span class="p">}</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="x"> </span><span class="o">+=</span><span class="x"> </span><span class="m">1000</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">p</span> <span class="o">:=</span> <span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span> <span class="m">100</span><span class="p">}</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">p</span><span class="o">.</span><span class="n">Money</span> <span class="o">+=</span> <span class="m">1000</span>
+	<span class="p">}()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>运行上面的代码：</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 只是运行上面的代码</span>
@@ -213,41 +213,41 @@ go run <span class="nt">-race</span> main.go
 
 <p>下面的代码里给 <code class="highlighter-rouge">Person</code> 添加了一个读写锁 <code class="highlighter-rouge">mutext sync.RWMutex</code>，并通过添加两个方法 <code class="highlighter-rouge">GetMoney</code> 和 <code class="highlighter-rouge">AddMoney</code> 来达到读取和修改 <code class="highlighter-rouge">Money</code> 的数值的目的。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"sync"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"sync"</span>
+<span class="p">)</span>
 
-</span><span class="k">type</span><span class="x"> </span><span class="n">Person</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">Money</span><span class="x">  </span><span class="kt">int</span><span class="x">
-	</span><span class="n">mutext</span><span class="x"> </span><span class="n">sync</span><span class="o">.</span><span class="n">RWMutex</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">Money</span>  <span class="kt">int</span>
+	<span class="n">mutext</span> <span class="n">sync</span><span class="o">.</span><span class="n">RWMutex</span>
+<span class="p">}</span>
 
-</span><span class="c">// GetMoney 获取用户金钱</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">p</span><span class="x"> </span><span class="o">*</span><span class="n">Person</span><span class="p">)</span><span class="x"> </span><span class="n">GetMoney</span><span class="p">()</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">RUnlock</span><span class="p">()</span><span class="x">
-	</span><span class="n">money</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="x">
-	</span><span class="k">return</span><span class="x"> </span><span class="n">money</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="c">// GetMoney 获取用户金钱</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">Person</span><span class="p">)</span> <span class="n">GetMoney</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+	<span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
+	<span class="k">defer</span> <span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">RUnlock</span><span class="p">()</span>
+	<span class="n">money</span> <span class="o">:=</span> <span class="n">p</span><span class="o">.</span><span class="n">Money</span>
+	<span class="k">return</span> <span class="n">money</span>
+<span class="p">}</span>
 
-</span><span class="c">// AddMoney 设置用户金钱</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">p</span><span class="x"> </span><span class="o">*</span><span class="n">Person</span><span class="p">)</span><span class="x"> </span><span class="n">AddMoney</span><span class="p">(</span><span class="n">diff</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span><span class="x">
-	</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="x"> </span><span class="o">+=</span><span class="x"> </span><span class="n">diff</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="c">// AddMoney 设置用户金钱</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">Person</span><span class="p">)</span> <span class="n">AddMoney</span><span class="p">(</span><span class="n">diff</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+	<span class="k">defer</span> <span class="n">p</span><span class="o">.</span><span class="n">mutext</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span>
+	<span class="n">p</span><span class="o">.</span><span class="n">Money</span> <span class="o">+=</span> <span class="n">diff</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">p</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span><span class="x"> </span><span class="m">100</span><span class="p">}</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">p</span><span class="o">.</span><span class="n">AddMoney</span><span class="p">(</span><span class="m">1000</span><span class="p">)</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">p</span><span class="o">.</span><span class="n">GetMoney</span><span class="p">())</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">p</span> <span class="o">:=</span> <span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span> <span class="m">100</span><span class="p">}</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">p</span><span class="o">.</span><span class="n">AddMoney</span><span class="p">(</span><span class="m">1000</span><span class="p">)</span>
+	<span class="p">}()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">GetMoney</span><span class="p">())</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>运行上面的代码：</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 添加 -race 后检测竞争状态，此时已经看不到 race 的告警</span>

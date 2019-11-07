@@ -176,61 +176,61 @@ Author: Ray-Eldath
 
 <p>下面的代码中包含两条 <code class="highlighter-rouge">atomic.AddInt64</code> 语句，分别在两个协程中运行。如果在 <code class="highlighter-rouge">fmt.Printf</code> 语句执行时子协程已经执行，输出结果是 <code class="highlighter-rouge">Money: 2100</code>；当然，上面的代码极大概率会输出 <code class="highlighter-rouge">Money: 1100</code> ，即在 <code class="highlighter-rouge">fmt.Printf</code> 语句执行时子协程尚未执行。<strong>那么， Golang 调度器何时才会调度并运行子协程呢？</strong></p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span><span class="x">
-</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
+<span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"runtime"</span><span class="x">
-	</span><span class="s">"sync/atomic"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"runtime"</span>
+	<span class="s">"sync/atomic"</span>
+<span class="p">)</span>
 
-</span><span class="k">type</span><span class="x"> </span><span class="n">Person</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">Money</span><span class="x"> </span><span class="kt">int64</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">Money</span> <span class="kt">int64</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">runtime</span><span class="o">.</span><span class="n">GOMAXPROCS</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
-	</span><span class="n">p</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span><span class="x"> </span><span class="m">100</span><span class="p">}</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span><span class="x"> </span><span class="m">1000</span><span class="p">)</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span><span class="x"> </span><span class="m">1000</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">atomic</span><span class="o">.</span><span class="n">LoadInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">))</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">runtime</span><span class="o">.</span><span class="n">GOMAXPROCS</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+	<span class="n">p</span> <span class="o">:=</span> <span class="n">Person</span><span class="p">{</span><span class="n">Money</span><span class="o">:</span> <span class="m">100</span><span class="p">}</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span> <span class="m">1000</span><span class="p">)</span>
+	<span class="p">}()</span>
+	<span class="n">atomic</span><span class="o">.</span><span class="n">AddInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">,</span> <span class="m">1000</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Money: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">atomic</span><span class="o">.</span><span class="n">LoadInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">.</span><span class="n">Money</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h3 id="第二段代码">第二段代码</h3>
 <p>我们可以构造一段与上一小节结构类似的代码，如下面的代码所示。通过 <code class="highlighter-rouge">go run main.go</code> 运行下面的代码可以看到输出结果中的 <code class="highlighter-rouge">panic: hello goroutine</code> ，却找不到<code class="highlighter-rouge">sum: xxxxxx</code>（如果看到的结果不一致，可以考虑增加 <code class="highlighter-rouge">for</code> 循环的终止判定条件）。<strong>也就是说，下面的代码的子协程在代码退出前被成功调度。</strong></p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span><span class="x">
-</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
+<span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"runtime"</span><span class="x">
-	</span><span class="s">"time"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"runtime"</span>
+	<span class="s">"time"</span>
+<span class="p">)</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">printTime</span><span class="p">(</span><span class="n">n</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">now</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Index: %d, Second: %d, NanoSecond: %d </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">n</span><span class="p">,</span><span class="x"> </span><span class="n">now</span><span class="o">.</span><span class="n">Second</span><span class="p">(),</span><span class="x"> </span><span class="n">now</span><span class="o">.</span><span class="n">Nanosecond</span><span class="p">())</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">func</span> <span class="n">printTime</span><span class="p">(</span><span class="n">n</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">now</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Index: %d, Second: %d, NanoSecond: %d </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">Second</span><span class="p">(),</span> <span class="n">now</span><span class="o">.</span><span class="n">Nanosecond</span><span class="p">())</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">runtime</span><span class="o">.</span><span class="n">GOMAXPROCS</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
-	</span><span class="k">go</span><span class="x"> </span><span class="k">func</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">printTime</span><span class="p">(</span><span class="m">2</span><span class="p">)</span><span class="x">
-		</span><span class="nb">panic</span><span class="p">(</span><span class="s">"hello goroutine"</span><span class="p">)</span><span class="x">
-	</span><span class="p">}()</span><span class="x">
-	</span><span class="n">printTime</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
-	</span><span class="n">sum</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="m">0</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="x"> </span><span class="o">&lt;</span><span class="x"> </span><span class="m">666666666</span><span class="p">;</span><span class="x"> </span><span class="n">i</span><span class="o">++</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">sum</span><span class="x"> </span><span class="o">+=</span><span class="x"> </span><span class="n">i</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"sum: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">sum</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">runtime</span><span class="o">.</span><span class="n">GOMAXPROCS</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+	<span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">printTime</span><span class="p">(</span><span class="m">2</span><span class="p">)</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="s">"hello goroutine"</span><span class="p">)</span>
+	<span class="p">}()</span>
+	<span class="n">printTime</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+	<span class="n">sum</span> <span class="o">:=</span> <span class="m">0</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">666666666</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">sum</span> <span class="o">+=</span> <span class="n">i</span>
+	<span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"sum: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">sum</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h2 id="协程-goroutine-的抢占">协程 goroutine 的抢占</h2>
 <p>在 Golang 中可以非常方便地创建协程（goroutine），在可用核心一定的条件下，协程该如何有效地利用 CPU 资源呢？在《<a href="/2019/02/13/linux-process-thread-schedule-2.html">Linux系统调度原理浅析（二）</a>》中简单描述过 Linux 内核的调度机制以及 goroutine 的调度机制：其中 Linux 内核通过时间片的方式给不同的系统线程分配 CPU 资源，Golang 则引入了 G/P/M 模型来实现调度，那么 Golang 的运行时（runtime）如何实现对 goroutine 的调度从而合理分配 CPU 资源呢？</p>

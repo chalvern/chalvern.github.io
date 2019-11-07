@@ -177,68 +177,68 @@ Author: Ray-Eldath
 <h2 id="gorm何时抛出errrecordnotfound错误">GORM何时抛出ErrRecordNotFound错误</h2>
 <h3 id="首先看一段示例代码">首先看一段示例代码</h3>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
 
-	</span><span class="s">"github.com/jinzhu/gorm"</span><span class="x">
-	</span><span class="n">_</span><span class="x"> </span><span class="s">"github.com/jinzhu/gorm/dialects/sqlite"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+	<span class="s">"github.com/jinzhu/gorm"</span>
+	<span class="n">_</span> <span class="s">"github.com/jinzhu/gorm/dialects/sqlite"</span>
+<span class="p">)</span>
 
-</span><span class="k">type</span><span class="x"> </span><span class="n">Topic</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">gorm</span><span class="o">.</span><span class="n">Model</span><span class="x">
-	</span><span class="n">Title</span><span class="x">   </span><span class="kt">string</span><span class="x">
-	</span><span class="n">Content</span><span class="x"> </span><span class="kt">string</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="k">type</span> <span class="n">Topic</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">gorm</span><span class="o">.</span><span class="n">Model</span>
+	<span class="n">Title</span>   <span class="kt">string</span>
+	<span class="n">Content</span> <span class="kt">string</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">db</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">gorm</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"sqlite3"</span><span class="p">,</span><span class="x"> </span><span class="s">"test.db"</span><span class="p">)</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="nb">panic</span><span class="p">(</span><span class="s">"连接数据库失败"</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="c">// db.LogMode(true)</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span><span class="x">
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">gorm</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"sqlite3"</span><span class="p">,</span> <span class="s">"test.db"</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="s">"连接数据库失败"</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="c">// db.LogMode(true)</span>
+	<span class="k">defer</span> <span class="n">db</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
 
-	</span><span class="c">// 自动迁移模式，会自动在数据库中生成topics表</span><span class="x">
-	</span><span class="c">// 以及对应的列(id, title, content，created_at,</span><span class="x">
-	</span><span class="c">// updated_at, deleted_at）</span><span class="x">
-	</span><span class="n">db</span><span class="o">.</span><span class="n">AutoMigrate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span><span class="x">
+	<span class="c">// 自动迁移模式，会自动在数据库中生成topics表</span>
+	<span class="c">// 以及对应的列(id, title, content，created_at,</span>
+	<span class="c">// updated_at, deleted_at）</span>
+	<span class="n">db</span><span class="o">.</span><span class="n">AutoMigrate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span>
 
-	</span><span class="c">// 创建一条记录</span><span class="x">
-	</span><span class="n">db</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{</span><span class="n">Title</span><span class="o">:</span><span class="x"> </span><span class="s">"welcome"</span><span class="p">,</span><span class="x"> </span><span class="n">Content</span><span class="o">:</span><span class="x"> </span><span class="s">"jingwei.link"</span><span class="p">})</span><span class="x">
+	<span class="c">// 创建一条记录</span>
+	<span class="n">db</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{</span><span class="n">Title</span><span class="o">:</span> <span class="s">"welcome"</span><span class="p">,</span> <span class="n">Content</span><span class="o">:</span> <span class="s">"jingwei.link"</span><span class="p">})</span>
 
-	</span><span class="c">// 查找一个topic</span><span class="x">
-	</span><span class="c">// 这里的err值不为空，会报出“record not found”的错误</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="n">topic</span><span class="x"> </span><span class="n">Topic</span><span class="x">
-	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topic的id:"</span><span class="p">,</span><span class="x"> </span><span class="n">topic</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span><span class="x">
-	</span><span class="c">// First</span><span class="x">
-	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">First</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topic的id:"</span><span class="p">,</span><span class="x"> </span><span class="n">topic</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span><span class="x">
-	</span><span class="c">// Last</span><span class="x">
-	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Last</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topic的id:"</span><span class="p">,</span><span class="x"> </span><span class="n">topic</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span><span class="x">
+	<span class="c">// 查找一个topic</span>
+	<span class="c">// 这里的err值不为空，会报出“record not found”的错误</span>
+	<span class="k">var</span> <span class="n">topic</span> <span class="n">Topic</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topic的id:"</span><span class="p">,</span> <span class="n">topic</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+	<span class="c">// First</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">First</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topic的id:"</span><span class="p">,</span> <span class="n">topic</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+	<span class="c">// Last</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Last</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topic的id:"</span><span class="p">,</span> <span class="n">topic</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
 
-	</span><span class="c">// 查找topic列表</span><span class="x">
-	</span><span class="c">// 这里的err值为nil</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="n">topics</span><span class="x"> </span><span class="p">[]</span><span class="n">Topic</span><span class="x">
-	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topics的长度"</span><span class="p">,</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">))</span><span class="x">
-	</span><span class="c">// First</span><span class="x">
-	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">First</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topics的长度"</span><span class="p">,</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">))</span><span class="x">
-	</span><span class="c">// Last</span><span class="x">
-	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Last</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topics的长度"</span><span class="p">,</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">))</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+	<span class="c">// 查找topic列表</span>
+	<span class="c">// 这里的err值为nil</span>
+	<span class="k">var</span> <span class="n">topics</span> <span class="p">[]</span><span class="n">Topic</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topics的长度"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">))</span>
+	<span class="c">// First</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">First</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topics的长度"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">))</span>
+	<span class="c">// Last</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"id=?"</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span><span class="o">.</span><span class="n">Last</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"error："</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"topics的长度"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>上面的示例代码，按照步骤依次：1）初始化数据库连接，这里连接到本地的<strong>sqlite</strong>数据库）。2）数据库自动表结构创建，<code class="highlighter-rouge">AutoMigrate</code>方法可以根据传入的参数反射出对象的结构，从而根据规则映射出数据库中应该创建的表结构；比如传入<code class="highlighter-rouge">&amp;Topic{}</code>会自动在数据库中生成<code class="highlighter-rouge">topics</code>表，包含<code class="highlighter-rouge">id, title, content，created_at, updated_at, deleted_at</code>等数据列。3）创建一条<code class="highlighter-rouge">Topic</code>记录。4）查找一条<code class="highlighter-rouge">id</code>为<code class="highlighter-rouge">0</code>的Topic记录。5）查找<code class="highlighter-rouge">id</code>为<code class="highlighter-rouge">0</code>的Topic列表。</p>
 
@@ -277,66 +277,66 @@ topics的长度 0
 <h4 id="gorm中的findfirstlast方法">GORM中的Find、First、Last方法</h4>
 <p>通过源码可以看出来，在GORM中，First与Last相比Find多了Limit限制和默认排序顺序，三个方法没有本质的区别。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Find find records that match given conditions</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="p">)</span><span class="x"> </span><span class="n">Find</span><span class="p">(</span><span class="n">out</span><span class="x"> </span><span class="k">interface</span><span class="p">{},</span><span class="x"> </span><span class="n">where</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">return</span><span class="x"> </span><span class="n">s</span><span class="o">.</span><span class="n">NewScope</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="o">.</span><span class="n">inlineCondition</span><span class="p">(</span><span class="n">where</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">callCallbacks</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">queries</span><span class="p">)</span><span class="o">.</span><span class="n">db</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Find find records that match given conditions</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">DB</span><span class="p">)</span> <span class="n">Find</span><span class="p">(</span><span class="n">out</span> <span class="k">interface</span><span class="p">{},</span> <span class="n">where</span> <span class="o">...</span><span class="k">interface</span><span class="p">{})</span> <span class="o">*</span><span class="n">DB</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">NewScope</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="o">.</span><span class="n">inlineCondition</span><span class="p">(</span><span class="n">where</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">callCallbacks</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">queries</span><span class="p">)</span><span class="o">.</span><span class="n">db</span>
+<span class="p">}</span>
 
-</span><span class="c">// First find first record that match given conditions, order by primary key</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="p">)</span><span class="x"> </span><span class="n">First</span><span class="p">(</span><span class="n">out</span><span class="x"> </span><span class="k">interface</span><span class="p">{},</span><span class="x"> </span><span class="n">where</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">newScope</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">s</span><span class="o">.</span><span class="n">NewScope</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="x">
-	</span><span class="n">newScope</span><span class="o">.</span><span class="n">Search</span><span class="o">.</span><span class="n">Limit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
-	</span><span class="k">return</span><span class="x"> </span><span class="n">newScope</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s">"gorm:order_by_primary_key"</span><span class="p">,</span><span class="x"> </span><span class="s">"ASC"</span><span class="p">)</span><span class="o">.</span><span class="x">
-</span><span class="n">inlineCondition</span><span class="p">(</span><span class="n">where</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">callCallbacks</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">queries</span><span class="p">)</span><span class="o">.</span><span class="n">db</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="c">// First find first record that match given conditions, order by primary key</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">DB</span><span class="p">)</span> <span class="n">First</span><span class="p">(</span><span class="n">out</span> <span class="k">interface</span><span class="p">{},</span> <span class="n">where</span> <span class="o">...</span><span class="k">interface</span><span class="p">{})</span> <span class="o">*</span><span class="n">DB</span> <span class="p">{</span>
+	<span class="n">newScope</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">NewScope</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+	<span class="n">newScope</span><span class="o">.</span><span class="n">Search</span><span class="o">.</span><span class="n">Limit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">newScope</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s">"gorm:order_by_primary_key"</span><span class="p">,</span> <span class="s">"ASC"</span><span class="p">)</span><span class="o">.</span>
+<span class="n">inlineCondition</span><span class="p">(</span><span class="n">where</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">callCallbacks</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">queries</span><span class="p">)</span><span class="o">.</span><span class="n">db</span>
+<span class="p">}</span>
 
-</span><span class="c">// Last find last record that match given conditions, order by primary key</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="p">)</span><span class="x"> </span><span class="n">Last</span><span class="p">(</span><span class="n">out</span><span class="x"> </span><span class="k">interface</span><span class="p">{},</span><span class="x"> </span><span class="n">where</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="o">*</span><span class="n">DB</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">newScope</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">s</span><span class="o">.</span><span class="n">NewScope</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="x">
-	</span><span class="n">newScope</span><span class="o">.</span><span class="n">Search</span><span class="o">.</span><span class="n">Limit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="x">
-	</span><span class="k">return</span><span class="x"> </span><span class="n">newScope</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s">"gorm:order_by_primary_key"</span><span class="p">,</span><span class="x"> </span><span class="s">"DESC"</span><span class="p">)</span><span class="o">.</span><span class="x">
-</span><span class="n">inlineCondition</span><span class="p">(</span><span class="n">where</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">callCallbacks</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">queries</span><span class="p">)</span><span class="o">.</span><span class="n">db</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="c">// Last find last record that match given conditions, order by primary key</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">DB</span><span class="p">)</span> <span class="n">Last</span><span class="p">(</span><span class="n">out</span> <span class="k">interface</span><span class="p">{},</span> <span class="n">where</span> <span class="o">...</span><span class="k">interface</span><span class="p">{})</span> <span class="o">*</span><span class="n">DB</span> <span class="p">{</span>
+	<span class="n">newScope</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">NewScope</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+	<span class="n">newScope</span><span class="o">.</span><span class="n">Search</span><span class="o">.</span><span class="n">Limit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">newScope</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s">"gorm:order_by_primary_key"</span><span class="p">,</span> <span class="s">"DESC"</span><span class="p">)</span><span class="o">.</span>
+<span class="n">inlineCondition</span><span class="p">(</span><span class="n">where</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">callCallbacks</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">queries</span><span class="p">)</span><span class="o">.</span><span class="n">db</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h4 id="gorm中的querycallback方法">GORM中的queryCallback方法</h4>
 
 <p>通过源码可以知道，在对检索出来的数据进行解析并赋值时，如果检索到0行，且传入接收检索结果的不是一个Slice类型的变量（这时候肯定是一个Struct类型的变量），会抛出 ErrRecordNotFound 错误。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// queryCallback used to query data from database</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">queryCallback</span><span class="p">(</span><span class="n">scope</span><span class="x"> </span><span class="o">*</span><span class="n">Scope</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="c">// ...</span><span class="x">
-	</span><span class="k">var</span><span class="x"> </span><span class="p">(</span><span class="x">
-		</span><span class="n">isSlice</span><span class="p">,</span><span class="x"> </span><span class="n">isPtr</span><span class="x"> </span><span class="kt">bool</span><span class="x">
-		</span><span class="n">resultType</span><span class="x">     </span><span class="n">reflect</span><span class="o">.</span><span class="n">Type</span><span class="x">
-		</span><span class="n">results</span><span class="x">        </span><span class="o">=</span><span class="x"> </span><span class="n">scope</span><span class="o">.</span><span class="n">IndirectValue</span><span class="p">()</span><span class="x">
-	</span><span class="p">)</span><span class="x">
-	</span><span class="c">// ...</span><span class="x">
-	</span><span class="c">// 传入接收检索结果的变量要么是Slice，要么是Struct</span><span class="x">
-	</span><span class="c">// 其他类型的变量都会报错</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="n">kind</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">results</span><span class="o">.</span><span class="n">Kind</span><span class="p">();</span><span class="x"> </span><span class="n">kind</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="n">reflect</span><span class="o">.</span><span class="n">Slice</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">isSlice</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="no">true</span><span class="x">
-		</span><span class="n">resultType</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">results</span><span class="o">.</span><span class="n">Type</span><span class="p">()</span><span class="o">.</span><span class="n">Elem</span><span class="p">()</span><span class="x">
-		</span><span class="n">results</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="n">reflect</span><span class="o">.</span><span class="n">MakeSlice</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">Type</span><span class="p">(),</span><span class="x"> </span><span class="m">0</span><span class="p">,</span><span class="x"> </span><span class="m">0</span><span class="p">))</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// queryCallback used to query data from database</span>
+<span class="k">func</span> <span class="n">queryCallback</span><span class="p">(</span><span class="n">scope</span> <span class="o">*</span><span class="n">Scope</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c">// ...</span>
+	<span class="k">var</span> <span class="p">(</span>
+		<span class="n">isSlice</span><span class="p">,</span> <span class="n">isPtr</span> <span class="kt">bool</span>
+		<span class="n">resultType</span>     <span class="n">reflect</span><span class="o">.</span><span class="n">Type</span>
+		<span class="n">results</span>        <span class="o">=</span> <span class="n">scope</span><span class="o">.</span><span class="n">IndirectValue</span><span class="p">()</span>
+	<span class="p">)</span>
+	<span class="c">// ...</span>
+	<span class="c">// 传入接收检索结果的变量要么是Slice，要么是Struct</span>
+	<span class="c">// 其他类型的变量都会报错</span>
+	<span class="k">if</span> <span class="n">kind</span> <span class="o">:=</span> <span class="n">results</span><span class="o">.</span><span class="n">Kind</span><span class="p">();</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">reflect</span><span class="o">.</span><span class="n">Slice</span> <span class="p">{</span>
+		<span class="n">isSlice</span> <span class="o">=</span> <span class="no">true</span>
+		<span class="n">resultType</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">Type</span><span class="p">()</span><span class="o">.</span><span class="n">Elem</span><span class="p">()</span>
+		<span class="n">results</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="n">reflect</span><span class="o">.</span><span class="n">MakeSlice</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">Type</span><span class="p">(),</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>
 
-		</span><span class="k">if</span><span class="x"> </span><span class="n">resultType</span><span class="o">.</span><span class="n">Kind</span><span class="p">()</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="n">reflect</span><span class="o">.</span><span class="n">Ptr</span><span class="x"> </span><span class="p">{</span><span class="x">
-			</span><span class="n">isPtr</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="no">true</span><span class="x">
-			</span><span class="n">resultType</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">resultType</span><span class="o">.</span><span class="n">Elem</span><span class="p">()</span><span class="x">
-		</span><span class="p">}</span><span class="x">
-	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="k">if</span><span class="x"> </span><span class="n">kind</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="n">reflect</span><span class="o">.</span><span class="n">Struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">scope</span><span class="o">.</span><span class="n">Err</span><span class="p">(</span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"unsupported destination, should be slice or struct"</span><span class="p">))</span><span class="x">
-		</span><span class="k">return</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="c">// ...</span><span class="x">
-	</span><span class="c">// 在进行赋值时，如果检索到0行，且传入接收检索结果的不是一个Slice类型</span><span class="x">
-	</span><span class="c">// 就会抛出 ErrRecordNotFound 错误</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">rows</span><span class="o">.</span><span class="n">Err</span><span class="p">();</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">scope</span><span class="o">.</span><span class="n">Err</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="k">if</span><span class="x"> </span><span class="n">scope</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">RowsAffected</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="m">0</span><span class="x"> </span><span class="o">&amp;&amp;</span><span class="x"> </span><span class="o">!</span><span class="n">isSlice</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">scope</span><span class="o">.</span><span class="n">Err</span><span class="p">(</span><span class="n">ErrRecordNotFound</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+		<span class="k">if</span> <span class="n">resultType</span><span class="o">.</span><span class="n">Kind</span><span class="p">()</span> <span class="o">==</span> <span class="n">reflect</span><span class="o">.</span><span class="n">Ptr</span> <span class="p">{</span>
+			<span class="n">isPtr</span> <span class="o">=</span> <span class="no">true</span>
+			<span class="n">resultType</span> <span class="o">=</span> <span class="n">resultType</span><span class="o">.</span><span class="n">Elem</span><span class="p">()</span>
+		<span class="p">}</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">!=</span> <span class="n">reflect</span><span class="o">.</span><span class="n">Struct</span> <span class="p">{</span>
+		<span class="n">scope</span><span class="o">.</span><span class="n">Err</span><span class="p">(</span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"unsupported destination, should be slice or struct"</span><span class="p">))</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="c">// ...</span>
+	<span class="c">// 在进行赋值时，如果检索到0行，且传入接收检索结果的不是一个Slice类型</span>
+	<span class="c">// 就会抛出 ErrRecordNotFound 错误</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">rows</span><span class="o">.</span><span class="n">Err</span><span class="p">();</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">scope</span><span class="o">.</span><span class="n">Err</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">scope</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">RowsAffected</span> <span class="o">==</span> <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">isSlice</span> <span class="p">{</span>
+		<span class="n">scope</span><span class="o">.</span><span class="n">Err</span><span class="p">(</span><span class="n">ErrRecordNotFound</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h2 id="小结">小结</h2>
 <p>本文通过一个示例来说明<code class="highlighter-rouge">record not found</code>的错误，并通过分析源码的方式详细阐明了GORM抛出<code class="highlighter-rouge">ErrRecordNotFound</code>的具体场景。具体地，1）传入接收检索结果的变量只能为Struct类型或Slice类型；2）当传入变量为Struc类型时，如果检索出来的数据为0条，会抛出<code class="highlighter-rouge">ErrRecordNotFound</code>错误；3）当传入变量为Slice类型时，任何条件下均不会抛出<code class="highlighter-rouge">ErrRecordNotFound</code>错误。</p>

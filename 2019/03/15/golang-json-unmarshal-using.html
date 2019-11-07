@@ -181,28 +181,28 @@ Author: Ray-Eldath
 <h3 id="先看一个-json-字符串">先看一个 JSON 字符串</h3>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// text-content-of-json JSON 字符串，一般的日志中会是这种格式</span>
-<span class="p">{</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"chalvern.github.io"</span><span class="p">,</span><span class="s2">"full_name"</span><span class="p">:</span><span class="s2">"chalvern/chalvern.github.io"</span><span class="p">,</span><span class="s2">"private"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="s2">"owner"</span><span class="p">:{</span><span class="s2">"login"</span><span class="p">:</span><span class="s2">"chalvern"</span><span class="p">,</span><span class="s2">"html_url"</span><span class="p">:</span><span class="s2">"https://github.com/chalvern"</span><span class="p">},</span><span class="s2">"html_url"</span><span class="p">:</span><span class="s2">"https://github.com/chalvern/chalvern.github.io"</span><span class="p">,</span><span class="s2">"description"</span><span class="p">:</span><span class="s2">"jingwei.link blog"</span><span class="p">}</span>
+<span class="p">{</span><span class="dl">"</span><span class="s2">name</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">chalvern.github.io</span><span class="dl">"</span><span class="p">,</span><span class="dl">"</span><span class="s2">full_name</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">chalvern/chalvern.github.io</span><span class="dl">"</span><span class="p">,</span><span class="dl">"</span><span class="s2">private</span><span class="dl">"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="dl">"</span><span class="s2">owner</span><span class="dl">"</span><span class="p">:{</span><span class="dl">"</span><span class="s2">login</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">chalvern</span><span class="dl">"</span><span class="p">,</span><span class="dl">"</span><span class="s2">html_url</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">https://github.com/chalvern</span><span class="dl">"</span><span class="p">},</span><span class="dl">"</span><span class="s2">html_url</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">https://github.com/chalvern/chalvern.github.io</span><span class="dl">"</span><span class="p">,</span><span class="dl">"</span><span class="s2">description</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">jingwei.link blog</span><span class="dl">"</span><span class="p">}</span>
 
 <span class="c1">// string-content 另一种 JSON 字符串，</span>
 <span class="c1">// 大家可以思考一下与上面内容的区别（怀疑很多人分不清楚）</span>
 <span class="c1">// 其实 text-content-of-json 与 string-content 是</span>
 <span class="c1">// 代表同样 JSON 内容的不同表现形式（后者有转义符而已）</span>
 <span class="c1">// 他们反序列化后会得到同样的结果（下一篇文章会再次提到此知识点）</span>
-<span class="s2">"{</span><span class="se">\"</span><span class="s2">name</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">chalvern.github.io</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">full_name</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">chalvern/chalvern.github.io</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">private</span><span class="se">\"</span><span class="s2">:false,</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">:{</span><span class="se">\"</span><span class="s2">login</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">chalvern</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">html_url</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">https://github.com/chalvern</span><span class="se">\"</span><span class="s2">},</span><span class="se">\"</span><span class="s2">html_url</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">https://github.com/chalvern/chalvern.github.io</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">description</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">jingwei.link blog</span><span class="se">\"</span><span class="s2">}"</span>
+<span class="dl">"</span><span class="s2">{</span><span class="se">\"</span><span class="s2">name</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">chalvern.github.io</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">full_name</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">chalvern/chalvern.github.io</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">private</span><span class="se">\"</span><span class="s2">:false,</span><span class="se">\"</span><span class="s2">owner</span><span class="se">\"</span><span class="s2">:{</span><span class="se">\"</span><span class="s2">login</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">chalvern</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">html_url</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">https://github.com/chalvern</span><span class="se">\"</span><span class="s2">},</span><span class="se">\"</span><span class="s2">html_url</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">https://github.com/chalvern/chalvern.github.io</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">description</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">jingwei.link blog</span><span class="se">\"</span><span class="s2">}</span><span class="dl">"</span>
 
 <span class="c1">// echo ```text-content-of-json``` | python -m json.tool</span>
 <span class="c1">// 可以得到下面 Pretty 后的 JSON 格式</span>
 <span class="c1">// Pretty 样式给人看起来比较舒服</span>
 <span class="p">{</span>
-  <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"chalvern.github.io"</span><span class="p">,</span>
-  <span class="s2">"full_name"</span><span class="p">:</span> <span class="s2">"chalvern/chalvern.github.io"</span><span class="p">,</span>
-  <span class="s2">"private"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-  <span class="s2">"owner"</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">"login"</span><span class="p">:</span> <span class="s2">"chalvern"</span><span class="p">,</span>
-    <span class="s2">"html_url"</span><span class="p">:</span> <span class="s2">"https://github.com/chalvern"</span>
+  <span class="dl">"</span><span class="s2">name</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">chalvern.github.io</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">full_name</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">chalvern/chalvern.github.io</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">private</span><span class="dl">"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">owner</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">login</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">chalvern</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">html_url</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://github.com/chalvern</span><span class="dl">"</span>
   <span class="p">},</span>
-  <span class="s2">"html_url"</span><span class="p">:</span> <span class="s2">"https://github.com/chalvern/chalvern.github.io"</span><span class="p">,</span>
-  <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"jingwei.link blog"</span>
+  <span class="dl">"</span><span class="s2">html_url</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://github.com/chalvern/chalvern.github.io</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">description</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">jingwei.link blog</span><span class="dl">"</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
@@ -212,41 +212,41 @@ Author: Ray-Eldath
 
 <p>不废话，直接上代码：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat $GOPATH/src/jingwei.link/stuct/main.go</span><span class="x">
-</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat $GOPATH/src/jingwei.link/stuct/main.go</span>
+<span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"encoding/json"</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"encoding/json"</span>
+	<span class="s">"fmt"</span>
+<span class="p">)</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">a</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="s">`{"name":"chalvern.github.io","full_name":"chalvern/chalvern.github.io","private":false,"owner":{"login":"chalvern","html_url":"https://github.com/chalvern"},"html_url":"https://github.com/chalvern/chalvern.github.io","description":"jingwei.link blog"}`</span><span class="x">
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">a</span> <span class="o">:=</span> <span class="s">`{"name":"chalvern.github.io","full_name":"chalvern/chalvern.github.io","private":false,"owner":{"login":"chalvern","html_url":"https://github.com/chalvern"},"html_url":"https://github.com/chalvern/chalvern.github.io","description":"jingwei.link blog"}`</span>
 
-	</span><span class="c">// OwnerS 会被嵌套在 JingweiS 中</span><span class="x">
-	</span><span class="c">// 在每个字段后的 `json:xxx` 即 tag，与 json 中的 key 对应</span><span class="x">
-	</span><span class="k">type</span><span class="x"> </span><span class="n">OwnerS</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">Login</span><span class="x">   </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"login"`</span><span class="x">
-		</span><span class="n">HTMLURL</span><span class="x"> </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"html_url"`</span><span class="x">
-	</span><span class="p">}</span><span class="x">
+	<span class="c">// OwnerS 会被嵌套在 JingweiS 中</span>
+	<span class="c">// 在每个字段后的 `json:xxx` 即 tag，与 json 中的 key 对应</span>
+	<span class="k">type</span> <span class="n">OwnerS</span> <span class="k">struct</span> <span class="p">{</span>
+		<span class="n">Login</span>   <span class="kt">string</span> <span class="s">`json:"login"`</span>
+		<span class="n">HTMLURL</span> <span class="kt">string</span> <span class="s">`json:"html_url"`</span>
+	<span class="p">}</span>
 
-	</span><span class="c">//  JingweiS 中嵌套了 OwnerS 用来对应 a 变量 json 字符串中的嵌套的 json 内容</span><span class="x">
-	</span><span class="k">type</span><span class="x"> </span><span class="n">JingweiS</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">Name</span><span class="x">        </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"name"`</span><span class="x">
-		</span><span class="n">FullName</span><span class="x">    </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"full_name"`</span><span class="x">
-		</span><span class="n">Private</span><span class="x">     </span><span class="kt">bool</span><span class="x">   </span><span class="s">`json:"private"`</span><span class="x">
-		</span><span class="n">Owner</span><span class="x">       </span><span class="n">OwnerS</span><span class="x"> </span><span class="s">`json:"owner"`</span><span class="x">
-		</span><span class="n">HTMLURL</span><span class="x">     </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"html_url"`</span><span class="x">
-		</span><span class="n">Description</span><span class="x"> </span><span class="kt">string</span><span class="x"> </span><span class="s">`json:"description"`</span><span class="x">
-	</span><span class="p">}</span><span class="x">
+	<span class="c">//  JingweiS 中嵌套了 OwnerS 用来对应 a 变量 json 字符串中的嵌套的 json 内容</span>
+	<span class="k">type</span> <span class="n">JingweiS</span> <span class="k">struct</span> <span class="p">{</span>
+		<span class="n">Name</span>        <span class="kt">string</span> <span class="s">`json:"name"`</span>
+		<span class="n">FullName</span>    <span class="kt">string</span> <span class="s">`json:"full_name"`</span>
+		<span class="n">Private</span>     <span class="kt">bool</span>   <span class="s">`json:"private"`</span>
+		<span class="n">Owner</span>       <span class="n">OwnerS</span> <span class="s">`json:"owner"`</span>
+		<span class="n">HTMLURL</span>     <span class="kt">string</span> <span class="s">`json:"html_url"`</span>
+		<span class="n">Description</span> <span class="kt">string</span> <span class="s">`json:"description"`</span>
+	<span class="p">}</span>
 
-	</span><span class="k">var</span><span class="x"> </span><span class="n">jingwei</span><span class="x"> </span><span class="n">JingweiS</span><span class="x">
-	</span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Unmarshal</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">a</span><span class="p">),</span><span class="x"> </span><span class="o">&amp;</span><span class="n">jingwei</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v </span><span class="se">\n</span><span class="s"> %#v </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">,</span><span class="x"> </span><span class="n">jingwei</span><span class="p">)</span><span class="x">
-  </span><span class="c">// 接下来可以通过 “.” 运算符获取期望的值了</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">jingwei</span><span class="o">.</span><span class="n">Owner</span><span class="o">.</span><span class="n">Login</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+	<span class="k">var</span> <span class="n">jingwei</span> <span class="n">JingweiS</span>
+	<span class="n">err</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Unmarshal</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">jingwei</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v </span><span class="se">\n</span><span class="s"> %#v </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">jingwei</span><span class="p">)</span>
+  <span class="c">// 接下来可以通过 “.” 运算符获取期望的值了</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">jingwei</span><span class="o">.</span><span class="n">Owner</span><span class="o">.</span><span class="n">Login</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>把上面的代码复制到一个文本中，然后运行代码可以得到下面的输出：</p>
 
@@ -260,36 +260,36 @@ Author: Ray-Eldath
 <h3 id="第二种用法interface与断言的组合">第二种用法：interface{}与断言的组合</h3>
 
 <p>不废话，还是直接上代码：</p>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat $GOPATH/src/jingwei.link/interface/main.go</span><span class="x">
-</span><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat $GOPATH/src/jingwei.link/interface/main.go</span>
+<span class="k">package</span> <span class="n">main</span>
 
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"encoding/json"</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"encoding/json"</span>
+	<span class="s">"fmt"</span>
+<span class="p">)</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">a</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="s">`{"name":"chalvern.github.io","full_name":"chalvern/chalvern.github.io","private":false,"owner":{"login":"chalvern","html_url":"https://github.com/chalvern"},"html_url":"https://github.com/chalvern/chalvern.github.io","description":"jingwei.link blog"}`</span><span class="x">
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">a</span> <span class="o">:=</span> <span class="s">`{"name":"chalvern.github.io","full_name":"chalvern/chalvern.github.io","private":false,"owner":{"login":"chalvern","html_url":"https://github.com/chalvern"},"html_url":"https://github.com/chalvern/chalvern.github.io","description":"jingwei.link blog"}`</span>
 
-	</span><span class="k">var</span><span class="x"> </span><span class="n">jingweiI</span><span class="x"> </span><span class="k">interface</span><span class="p">{}</span><span class="x">
-	</span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">json</span><span class="o">.</span><span class="n">Unmarshal</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">a</span><span class="p">),</span><span class="x"> </span><span class="o">&amp;</span><span class="n">jingweiI</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v </span><span class="se">\n</span><span class="s"> %#v </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="p">,</span><span class="x"> </span><span class="n">jingweiI</span><span class="p">)</span><span class="x">
-	</span><span class="c">// 获取某个 key 的值</span><span class="x">
-	</span><span class="n">jingweiM</span><span class="p">,</span><span class="x"> </span><span class="n">ok</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">jingweiI</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="o">!</span><span class="n">ok</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"DO SOMETHING!"</span><span class="p">)</span><span class="x">
-		</span><span class="k">return</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">jingweiM</span><span class="p">[</span><span class="s">"name"</span><span class="p">])</span><span class="x">
-	</span><span class="c">//  获取嵌套的内容</span><span class="x">
-	</span><span class="n">owner</span><span class="p">,</span><span class="x"> </span><span class="n">ok</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">jingweiM</span><span class="p">[</span><span class="s">"owner"</span><span class="p">]</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="o">!</span><span class="n">ok</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"DO SOMETHING!"</span><span class="p">)</span><span class="x">
-		</span><span class="k">return</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="x"> </span><span class="n">owner</span><span class="p">[</span><span class="s">"login"</span><span class="p">])</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+	<span class="k">var</span> <span class="n">jingweiI</span> <span class="k">interface</span><span class="p">{}</span>
+	<span class="n">err</span> <span class="o">:=</span> <span class="n">json</span><span class="o">.</span><span class="n">Unmarshal</span><span class="p">([]</span><span class="kt">byte</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">jingweiI</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v </span><span class="se">\n</span><span class="s"> %#v </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">jingweiI</span><span class="p">)</span>
+	<span class="c">// 获取某个 key 的值</span>
+	<span class="n">jingweiM</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">jingweiI</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+	<span class="k">if</span> <span class="o">!</span><span class="n">ok</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"DO SOMETHING!"</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">jingweiM</span><span class="p">[</span><span class="s">"name"</span><span class="p">])</span>
+	<span class="c">//  获取嵌套的内容</span>
+	<span class="n">owner</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">jingweiM</span><span class="p">[</span><span class="s">"owner"</span><span class="p">]</span><span class="o">.</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+	<span class="k">if</span> <span class="o">!</span><span class="n">ok</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"DO SOMETHING!"</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%#v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">owner</span><span class="p">[</span><span class="s">"login"</span><span class="p">])</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>把上面的代码复制到一个文本中，然后运行代码可以得到下面的输出：</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cd $GOPATH/src/jingwei.link/interface/ &amp;&amp; go run main.go</span>

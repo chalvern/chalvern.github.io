@@ -181,50 +181,50 @@ Author: Ray-Eldath
 <h3 id="再看grom中不定参数的最佳实践">再看GROM中不定参数的最佳实践</h3>
 <p>承接上一篇博客，看下面的代码：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Topic 话题</span><span class="x">
-</span><span class="k">type</span><span class="x"> </span><span class="n">Topic</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">gorm</span><span class="o">.</span><span class="n">Model</span><span class="x">
-	</span><span class="n">Title</span><span class="x">         </span><span class="kt">string</span><span class="x">    </span><span class="s">`gorm:"index"`</span><span class="x">
-	</span><span class="n">Content</span><span class="x">       </span><span class="kt">string</span><span class="x">    </span><span class="s">`gorm:"type:text"`</span><span class="x">
-	</span><span class="n">ViewCount</span><span class="x">     </span><span class="kt">int</span><span class="x">       </span><span class="s">`json:"view_count"`</span><span class="x">
-	</span><span class="n">ReplyCount</span><span class="x">    </span><span class="kt">int</span><span class="x">       </span><span class="s">`json:"reply_count"`</span><span class="x">
-	</span><span class="n">UserID</span><span class="x">        </span><span class="kt">int</span><span class="x">       </span><span class="s">`gorm:"index" json:"user_id"`</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Topic 话题</span>
+<span class="k">type</span> <span class="n">Topic</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">gorm</span><span class="o">.</span><span class="n">Model</span>
+	<span class="n">Title</span>         <span class="kt">string</span>    <span class="s">`gorm:"index"`</span>
+	<span class="n">Content</span>       <span class="kt">string</span>    <span class="s">`gorm:"type:text"`</span>
+	<span class="n">ViewCount</span>     <span class="kt">int</span>       <span class="s">`json:"view_count"`</span>
+	<span class="n">ReplyCount</span>    <span class="kt">int</span>       <span class="s">`json:"reply_count"`</span>
+	<span class="n">UserID</span>        <span class="kt">int</span>       <span class="s">`gorm:"index" json:"user_id"`</span>
+<span class="p">}</span>
 
-</span><span class="c">// QueryByUserID 根据UserID获取话题</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">Topic</span><span class="p">)</span><span class="x"> </span><span class="n">QueryByUserID</span><span class="p">(</span><span class="n">userID</span><span class="x"> </span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="n">args</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="p">(</span><span class="n">topics</span><span class="x"> </span><span class="p">[]</span><span class="n">Topic</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">db</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">config</span><span class="o">.</span><span class="n">DB</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"user_id = ?"</span><span class="p">,</span><span class="x"> </span><span class="n">userID</span><span class="p">)</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">2</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">],</span><span class="x"> </span><span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">1</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
-	</span><span class="k">return</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="c">// QueryByUserID 根据UserID获取话题</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">Topic</span><span class="p">)</span> <span class="n">QueryByUserID</span><span class="p">(</span><span class="n">userID</span> <span class="kt">int</span><span class="p">,</span> <span class="n">args</span> <span class="o">...</span><span class="k">interface</span><span class="p">{})</span> <span class="p">(</span><span class="n">topics</span> <span class="p">[]</span><span class="n">Topic</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">db</span> <span class="o">:=</span> <span class="n">config</span><span class="o">.</span><span class="n">DB</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"user_id = ?"</span><span class="p">,</span> <span class="n">userID</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="m">2</span> <span class="p">{</span>
+		<span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="m">1</span> <span class="p">{</span>
+		<span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="p">}</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>为了根据用户ID（UserID）获取到相应的话题（Topic），我们定义了一个<code class="highlighter-rouge">QueryByUserID </code>的方法，为了表意刻意传入了一个参数，同时在<code class="highlighter-rouge">QueryByUserID</code>的最后强行添加了一个<code class="highlighter-rouge">args</code>不定参数，从而接受调用时传入的附加的参数，在函数体内根据<code class="highlighter-rouge">args</code>的长度对它进行不同方式的应用，达到了优雅扩展<code class="highlighter-rouge">QueryByUserID</code>的功能。</p>
 
 <p>在添加了不定参数的情况下，调用<code class="highlighter-rouge">QueryByUserID</code>时如果想要进一步精细地搜索话题，比如想要获取<code class="highlighter-rouge">UserID为1</code>且最近一周发布的话题，可以这么写了：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">topics</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span><span class="o">.</span><span class="n">QueryByUserID</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="x"> </span><span class="s">"created_at &gt; ?"</span><span class="p">,</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="o">-</span><span class="m">7</span><span class="o">*</span><span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span><span class="x">
-</span><span class="c">// ... 其他对topics 与 err 的处理</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">topics</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span><span class="o">.</span><span class="n">QueryByUserID</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="s">"created_at &gt; ?"</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="o">-</span><span class="m">7</span><span class="o">*</span><span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span>
+<span class="c">// ... 其他对topics 与 err 的处理</span>
+</code></pre></div></div>
 
 <p>总之，非常灵活！</p>
 
 <h3 id="所述最佳实践中不定参数的约定">所述最佳实践中不定参数的约定</h3>
 <p>在<code class="highlighter-rouge">QueryByUserID </code>中根据传入的不定参数的数量，采用不同的传入方式，其实这里<strong>遵循了GORM中Where条件语句的作用方式</strong>。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// ...</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">2</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">],</span><span class="x"> </span><span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">1</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="c">// ...</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// ...</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="m">2</span> <span class="p">{</span>
+		<span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="m">1</span> <span class="p">{</span>
+		<span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="p">}</span>
+<span class="c">// ...</span>
+</code></pre></div></div>
 
 <p><strong>首先我们先把这里的约定给出来</strong>：</p>
 
@@ -238,49 +238,49 @@ Author: Ray-Eldath
 
 <h4 id="where函数">Where函数</h4>
 <p>当在GORM中调用<code class="highlighter-rouge">Where</code>方法时，通过查看源码可以知道，这个函数最底层也会使用一个不定参数，将传入到<code class="highlighter-rouge">Where</code>第一个后面的参数看成一个数组进行处理。具体地，第一个参数保存在<code class="highlighter-rouge">map[string]interface{}</code>类型的<code class="highlighter-rouge">query</code>字段，其他参数保存在<code class="highlighter-rouge">args</code>字段。</p>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="o">*</span><span class="n">search</span><span class="p">)</span><span class="x"> </span><span class="n">Where</span><span class="p">(</span><span class="n">query</span><span class="x"> </span><span class="k">interface</span><span class="p">{},</span><span class="x"> </span><span class="n">values</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="o">*</span><span class="n">search</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">s</span><span class="o">.</span><span class="n">whereConditions</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="nb">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">whereConditions</span><span class="p">,</span><span class="x"> </span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}{</span><span class="s">"query"</span><span class="o">:</span><span class="x"> </span><span class="n">query</span><span class="p">,</span><span class="x"> </span><span class="s">"args"</span><span class="o">:</span><span class="x"> </span><span class="n">values</span><span class="p">})</span><span class="x">
-	</span><span class="k">return</span><span class="x"> </span><span class="n">s</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">search</span><span class="p">)</span> <span class="n">Where</span><span class="p">(</span><span class="n">query</span> <span class="k">interface</span><span class="p">{},</span> <span class="n">values</span> <span class="o">...</span><span class="k">interface</span><span class="p">{})</span> <span class="o">*</span><span class="n">search</span> <span class="p">{</span>
+	<span class="n">s</span><span class="o">.</span><span class="n">whereConditions</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">whereConditions</span><span class="p">,</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}{</span><span class="s">"query"</span><span class="o">:</span> <span class="n">query</span><span class="p">,</span> <span class="s">"args"</span><span class="o">:</span> <span class="n">values</span><span class="p">})</span>
+	<span class="k">return</span> <span class="n">s</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h4 id="buildcondition-函数">buildCondition 函数</h4>
 <p>通过分析源码，可以找到GORM中的<code class="highlighter-rouge">Where</code>、<code class="highlighter-rouge">Or</code>、<code class="highlighter-rouge">Not</code>定义的搜索语句最终都通过 <a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/scope.go#L528">buildCondition函数</a> 渲染成为<strong>SQL</strong>语句。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">scope</span><span class="x"> </span><span class="o">*</span><span class="n">Scope</span><span class="p">)</span><span class="x"> </span><span class="n">buildCondition</span><span class="p">(</span><span class="n">clause</span><span class="x"> </span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{},</span><span class="x"> </span><span class="n">include</span><span class="x"> </span><span class="kt">bool</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="n">str</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-</span><span class="c">//...</span><span class="x">
-	</span><span class="c">// 这里会把传入Where的第一个参数拿出来，进行类型断言</span><span class="x">
-	</span><span class="k">switch</span><span class="x"> </span><span class="n">value</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">clause</span><span class="p">[</span><span class="s">"query"</span><span class="p">]</span><span class="o">.</span><span class="p">(</span><span class="k">type</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">case</span><span class="x"> </span><span class="n">sql</span><span class="o">.</span><span class="n">NullInt64</span><span class="o">:</span><span class="x">
-	</span><span class="c">// 如果传入Where的第一个参数是SQL中的空类型，执行逻辑...</span><span class="x">
-	</span><span class="k">case</span><span class="x"> </span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="kt">int8</span><span class="p">,</span><span class="x"> </span><span class="kt">int16</span><span class="p">,</span><span class="x"> </span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="kt">int64</span><span class="p">,</span><span class="x"> </span><span class="kt">uint</span><span class="p">,</span><span class="x"> </span><span class="kt">uint8</span><span class="p">,</span><span class="x"> </span><span class="kt">uint16</span><span class="p">,</span><span class="x"> </span><span class="kt">uint32</span><span class="p">,</span><span class="x"> </span><span class="kt">uint64</span><span class="o">:</span><span class="x">
-	</span><span class="c">//如果传入Where的第一个参数是一个数字，执行逻辑...</span><span class="x">
-	</span><span class="k">case</span><span class="x"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">int8</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">int16</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">int32</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">int64</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">uint</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">uint8</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">uint16</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">uint32</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">uint64</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">,</span><span class="x"> </span><span class="p">[]</span><span class="k">interface</span><span class="p">{}</span><span class="o">:</span><span class="x">
-	</span><span class="c">//如果传入Where的第一个参数是一个数字类型的数组，执行逻辑...</span><span class="x">
-	</span><span class="k">case</span><span class="x"> </span><span class="kt">string</span><span class="o">:</span><span class="x">
-	</span><span class="c">//如果传入Where的第一个参数是一个字符串，结合后面的</span><span class="x">
-	</span><span class="c">// for _, arg := range args {...} 会把参数塞进</span><span class="x">
-	</span><span class="c">// 占位符...</span><span class="x">
-	</span><span class="k">case</span><span class="x"> </span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}</span><span class="o">:</span><span class="x">
-	</span><span class="c">// 恩，map[string]interface{} 类型的值比较特殊</span><span class="x">
-	</span><span class="c">// 也就是说，如果在Where中只传入一个值，且这个值是</span><span class="x">
-	</span><span class="c">// 个map，则必须要是 map[string]interface{}类型</span><span class="x">
-	</span><span class="c">// 的值，不能是 map[string]string 或其他类型的值</span><span class="x">
-	</span><span class="c">// 否则就匹配到 interface{} 去了...</span><span class="x">
-	</span><span class="k">case</span><span class="x"> </span><span class="k">interface</span><span class="p">{}</span><span class="o">:</span><span class="x">
-	</span><span class="c">// 最后，如果以上类型都不是，则执行到了这里...</span><span class="x">
-	</span><span class="k">default</span><span class="o">:</span><span class="x">
-	</span><span class="c">// 如果都没有匹配，报错...</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="c">// ...</span><span class="x">
-	</span><span class="n">args</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">clause</span><span class="p">[</span><span class="s">"args"</span><span class="p">]</span><span class="o">.</span><span class="p">([]</span><span class="k">interface</span><span class="p">{})</span><span class="x">
-	</span><span class="k">for</span><span class="x"> </span><span class="n">_</span><span class="p">,</span><span class="x"> </span><span class="n">arg</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="k">range</span><span class="x"> </span><span class="n">args</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="c">// 这里会遍历传入Where的第一个参数后面的值</span><span class="x">
-	</span><span class="c">// 来替换掉占位符...</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="c">// ...</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">scope</span> <span class="o">*</span><span class="n">Scope</span><span class="p">)</span> <span class="n">buildCondition</span><span class="p">(</span><span class="n">clause</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{},</span> <span class="n">include</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">(</span><span class="n">str</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+<span class="c">//...</span>
+	<span class="c">// 这里会把传入Where的第一个参数拿出来，进行类型断言</span>
+	<span class="k">switch</span> <span class="n">value</span> <span class="o">:=</span> <span class="n">clause</span><span class="p">[</span><span class="s">"query"</span><span class="p">]</span><span class="o">.</span><span class="p">(</span><span class="k">type</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="n">sql</span><span class="o">.</span><span class="n">NullInt64</span><span class="o">:</span>
+	<span class="c">// 如果传入Where的第一个参数是SQL中的空类型，执行逻辑...</span>
+	<span class="k">case</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int8</span><span class="p">,</span> <span class="kt">int16</span><span class="p">,</span> <span class="kt">int32</span><span class="p">,</span> <span class="kt">int64</span><span class="p">,</span> <span class="kt">uint</span><span class="p">,</span> <span class="kt">uint8</span><span class="p">,</span> <span class="kt">uint16</span><span class="p">,</span> <span class="kt">uint32</span><span class="p">,</span> <span class="kt">uint64</span><span class="o">:</span>
+	<span class="c">//如果传入Where的第一个参数是一个数字，执行逻辑...</span>
+	<span class="k">case</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="p">[]</span><span class="kt">int8</span><span class="p">,</span> <span class="p">[]</span><span class="kt">int16</span><span class="p">,</span> <span class="p">[]</span><span class="kt">int32</span><span class="p">,</span> <span class="p">[]</span><span class="kt">int64</span><span class="p">,</span> <span class="p">[]</span><span class="kt">uint</span><span class="p">,</span> <span class="p">[]</span><span class="kt">uint8</span><span class="p">,</span> <span class="p">[]</span><span class="kt">uint16</span><span class="p">,</span> <span class="p">[]</span><span class="kt">uint32</span><span class="p">,</span> <span class="p">[]</span><span class="kt">uint64</span><span class="p">,</span> <span class="p">[]</span><span class="kt">string</span><span class="p">,</span> <span class="p">[]</span><span class="k">interface</span><span class="p">{}</span><span class="o">:</span>
+	<span class="c">//如果传入Where的第一个参数是一个数字类型的数组，执行逻辑...</span>
+	<span class="k">case</span> <span class="kt">string</span><span class="o">:</span>
+	<span class="c">//如果传入Where的第一个参数是一个字符串，结合后面的</span>
+	<span class="c">// for _, arg := range args {...} 会把参数塞进</span>
+	<span class="c">// 占位符...</span>
+	<span class="k">case</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}</span><span class="o">:</span>
+	<span class="c">// 恩，map[string]interface{} 类型的值比较特殊</span>
+	<span class="c">// 也就是说，如果在Where中只传入一个值，且这个值是</span>
+	<span class="c">// 个map，则必须要是 map[string]interface{}类型</span>
+	<span class="c">// 的值，不能是 map[string]string 或其他类型的值</span>
+	<span class="c">// 否则就匹配到 interface{} 去了...</span>
+	<span class="k">case</span> <span class="k">interface</span><span class="p">{}</span><span class="o">:</span>
+	<span class="c">// 最后，如果以上类型都不是，则执行到了这里...</span>
+	<span class="k">default</span><span class="o">:</span>
+	<span class="c">// 如果都没有匹配，报错...</span>
+	<span class="p">}</span>
+	<span class="c">// ...</span>
+	<span class="n">args</span> <span class="o">:=</span> <span class="n">clause</span><span class="p">[</span><span class="s">"args"</span><span class="p">]</span><span class="o">.</span><span class="p">([]</span><span class="k">interface</span><span class="p">{})</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">arg</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">args</span> <span class="p">{</span>
+	<span class="c">// 这里会遍历传入Where的第一个参数后面的值</span>
+	<span class="c">// 来替换掉占位符...</span>
+	<span class="p">}</span>
+<span class="c">// ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h3 id="其他问题">其他问题</h3>
 <p>通过上面的分析可以知道，在Where中传入的不定参数具有一定的约束，第二

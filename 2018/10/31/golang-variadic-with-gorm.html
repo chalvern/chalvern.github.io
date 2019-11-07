@@ -177,13 +177,13 @@ Author: Ray-Eldath
 
 <p>如果有下面的Greeting函数：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">Greeting</span><span class="p">(</span><span class="n">prefix</span><span class="x"> </span><span class="kt">string</span><span class="p">,</span><span class="x"> </span><span class="n">who</span><span class="x"> </span><span class="o">...</span><span class="kt">string</span><span class="p">){</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">who</span><span class="p">),</span><span class="x"> </span><span class="n">who</span><span class="p">)</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">who</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;</span><span class="x"> </span><span class="m">0</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">Greeting</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span><span class="x"> </span><span class="n">who</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">Greeting</span><span class="p">(</span><span class="n">prefix</span> <span class="kt">string</span><span class="p">,</span> <span class="n">who</span> <span class="o">...</span><span class="kt">string</span><span class="p">){</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">who</span><span class="p">),</span> <span class="n">who</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">who</span><span class="p">)</span> <span class="o">&gt;</span> <span class="m">0</span> <span class="p">{</span>
+		<span class="n">Greeting</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">who</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>那么可以通过<code class="highlighter-rouge">Greeting("nobody")</code>和<code class="highlighter-rouge">Greeting("hello:", "KiKi", "Joe", "Anna")</code>来调用<code class="highlighter-rouge">Greeting</code>方法。对于前者用法来说，<code class="highlighter-rouge">who</code>的值为<code class="highlighter-rouge">nil</code>； 对于后者用法来说，<code class="highlighter-rouge">who</code>的值为<code class="highlighter-rouge">[]string{"KiKi", "Joe", "Anna"}</code>。</p>
 
@@ -201,22 +201,22 @@ Author: Ray-Eldath
 
 <p>先看一段代码：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Topic 话题</span><span class="x">
-</span><span class="k">type</span><span class="x"> </span><span class="n">Topic</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">gorm</span><span class="o">.</span><span class="n">Model</span><span class="x">
-	</span><span class="n">Title</span><span class="x">         </span><span class="kt">string</span><span class="x">    </span><span class="s">`gorm:"index"`</span><span class="x">
-	</span><span class="n">Content</span><span class="x">       </span><span class="kt">string</span><span class="x">    </span><span class="s">`gorm:"type:text"`</span><span class="x">
-	</span><span class="n">ViewCount</span><span class="x">     </span><span class="kt">int</span><span class="x">       </span><span class="s">`json:"view_count"`</span><span class="x">
-	</span><span class="n">ReplyCount</span><span class="x">    </span><span class="kt">int</span><span class="x">       </span><span class="s">`json:"reply_count"`</span><span class="x">
-	</span><span class="n">UserID</span><span class="x">        </span><span class="kt">int</span><span class="x">       </span><span class="s">`gorm:"index" json:"user_id"`</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Topic 话题</span>
+<span class="k">type</span> <span class="n">Topic</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">gorm</span><span class="o">.</span><span class="n">Model</span>
+	<span class="n">Title</span>         <span class="kt">string</span>    <span class="s">`gorm:"index"`</span>
+	<span class="n">Content</span>       <span class="kt">string</span>    <span class="s">`gorm:"type:text"`</span>
+	<span class="n">ViewCount</span>     <span class="kt">int</span>       <span class="s">`json:"view_count"`</span>
+	<span class="n">ReplyCount</span>    <span class="kt">int</span>       <span class="s">`json:"reply_count"`</span>
+	<span class="n">UserID</span>        <span class="kt">int</span>       <span class="s">`gorm:"index" json:"user_id"`</span>
+<span class="p">}</span>
 
-</span><span class="c">// QueryByUserID 根据UserID获取话题</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">Topic</span><span class="p">)</span><span class="x"> </span><span class="n">QueryByUserID</span><span class="p">(</span><span class="n">userID</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">(</span><span class="n">topics</span><span class="x"> </span><span class="p">[]</span><span class="n">Topic</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">db</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">config</span><span class="o">.</span><span class="n">DB</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"user_id = ?"</span><span class="p">,</span><span class="x"> </span><span class="n">userID</span><span class="p">)</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
-	</span><span class="k">return</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<span class="c">// QueryByUserID 根据UserID获取话题</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">Topic</span><span class="p">)</span> <span class="n">QueryByUserID</span><span class="p">(</span><span class="n">userID</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="n">topics</span> <span class="p">[]</span><span class="n">Topic</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">db</span> <span class="o">:=</span> <span class="n">config</span><span class="o">.</span><span class="n">DB</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"user_id = ?"</span><span class="p">,</span> <span class="n">userID</span><span class="p">)</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>为了根据用户ID（UserID）获取到相应的话题（Topic），我们定义了一个<code class="highlighter-rouge">QueryByUserID </code>的方法，为了表意这里刻意传入了一个参数；好像这个函数已经能帮我们解决model层与controller的分离。但是如果真正使用时会发现，其实这个函数有很大的局限性：它只能获取某个UserID的所有的话题，却无法实现对这个UserID下话题的进一步筛选（比如获取最近七天发布的话题）。</p>
 
@@ -224,26 +224,26 @@ Author: Ray-Eldath
 
 <p>试想，我们把<code class="highlighter-rouge">QueryByUserID</code>函数以如下的方式定义：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// QueryByUserID 根据UserID获取话题</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">t</span><span class="x"> </span><span class="o">*</span><span class="n">Topic</span><span class="p">)</span><span class="x"> </span><span class="n">QueryByUserID</span><span class="p">(</span><span class="n">userID</span><span class="x"> </span><span class="kt">int</span><span class="p">,</span><span class="x"> </span><span class="n">args</span><span class="x"> </span><span class="o">...</span><span class="k">interface</span><span class="p">{})</span><span class="x"> </span><span class="p">(</span><span class="n">topics</span><span class="x"> </span><span class="p">[]</span><span class="n">Topic</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">db</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">config</span><span class="o">.</span><span class="n">DB</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"user_id = ?"</span><span class="p">,</span><span class="x"> </span><span class="n">userID</span><span class="p">)</span><span class="x">
-	</span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">2</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">],</span><span class="x"> </span><span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span><span class="x">
-	</span><span class="p">}</span><span class="x"> </span><span class="k">else</span><span class="x"> </span><span class="k">if</span><span class="x"> </span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="x"> </span><span class="o">&gt;=</span><span class="x"> </span><span class="m">1</span><span class="x"> </span><span class="p">{</span><span class="x">
-		</span><span class="n">db</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">])</span><span class="x">
-	</span><span class="p">}</span><span class="x">
-	</span><span class="n">err</span><span class="x"> </span><span class="o">=</span><span class="x"> </span><span class="n">db</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="x">
-	</span><span class="k">return</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// QueryByUserID 根据UserID获取话题</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">Topic</span><span class="p">)</span> <span class="n">QueryByUserID</span><span class="p">(</span><span class="n">userID</span> <span class="kt">int</span><span class="p">,</span> <span class="n">args</span> <span class="o">...</span><span class="k">interface</span><span class="p">{})</span> <span class="p">(</span><span class="n">topics</span> <span class="p">[]</span><span class="n">Topic</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">db</span> <span class="o">:=</span> <span class="n">config</span><span class="o">.</span><span class="n">DB</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="s">"user_id = ?"</span><span class="p">,</span> <span class="n">userID</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="m">2</span> <span class="p">{</span>
+		<span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span><span class="o">...</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="m">1</span> <span class="p">{</span>
+		<span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Where</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="p">}</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="n">topics</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>我们这里在<code class="highlighter-rouge">QueryByUserID</code>的最后强行添加了一个<code class="highlighter-rouge">args</code>不定参数，从而接受调用时传入的附加的参数。同时在函数体内，我们根据<code class="highlighter-rouge">args</code>的长度对它进行不同方式的应用，这就非常优雅地扩展了<code class="highlighter-rouge">QueryByUserID</code>的功能。根据GORM的特性，大量使用了Go的反射特性，查看源码后知道这种用法完全可行。</p>
 
 <p>在添加了不定参数的情况下，再调用<code class="highlighter-rouge">QueryByUserID</code>的时候，想要进一步精细地搜索话题，就方便多了。比如，想要获取<code class="highlighter-rouge">UserID为1</code>且最近一周发布的话题，可以这么写了：</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">topics</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span><span class="o">.</span><span class="n">QueryByUserID</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="x"> </span><span class="s">"created_at &gt; ?"</span><span class="p">,</span><span class="x"> </span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="o">-</span><span class="m">7</span><span class="o">*</span><span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span><span class="x">
-</span><span class="c">// ... 其他对topics 与 err 的处理</span><span class="x">
-</span></code></pre></div></div>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">topics</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span><span class="o">.</span><span class="n">QueryByUserID</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="s">"created_at &gt; ?"</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="o">-</span><span class="m">7</span><span class="o">*</span><span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span>
+<span class="c">// ... 其他对topics 与 err 的处理</span>
+</code></pre></div></div>
 
 <p>非常灵活，好喜欢！</p>
 

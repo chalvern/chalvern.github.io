@@ -161,57 +161,57 @@ Author: Ray-Eldath
 <h2 id="一个完整可运行的例子">一个完整可运行的例子</h2>
 <p>具体的Cgo使用，可以参考<a href="https://jiajunhuang.com/articles/2018_06_15-cgo.md.html">这一篇博客</a>。但是下面依然给出一个可运行的示例，供参考。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span><span class="x"> </span><span class="n">main</span><span class="x">
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
-</span><span class="c">// 下面的 import "C" 以及其前面的两个 #include 必须这么写</span><span class="x">
-</span><span class="c">// go编译器会根据 import "C" 前面的注释引入两个C的header</span><span class="x">
-</span><span class="c">//</span><span class="x">
-</span><span class="c">// 不能这么做：</span><span class="x">
-</span><span class="c">//  1. 不能把 import "C" 和下面的import合并，否则go编译器不认</span><span class="x">
-</span><span class="c">//  2. 不能在 import "C" 与前面的注释插入空行，否则go编译器也不认</span><span class="x">
+<span class="c">// 下面的 import "C" 以及其前面的两个 #include 必须这么写</span>
+<span class="c">// go编译器会根据 import "C" 前面的注释引入两个C的header</span>
+<span class="c">//</span>
+<span class="c">// 不能这么做：</span>
+<span class="c">//  1. 不能把 import "C" 和下面的import合并，否则go编译器不认</span>
+<span class="c">//  2. 不能在 import "C" 与前面的注释插入空行，否则go编译器也不认</span>
 
-</span><span class="c">/*
+<span class="c">/*
 #include &lt;stdlib.h&gt;
 #include &lt;stdio.h&gt;
-*/</span><span class="x">
-</span><span class="k">import</span><span class="x"> </span><span class="s">"C"</span><span class="x">
-</span><span class="k">import</span><span class="x"> </span><span class="p">(</span><span class="x">
-	</span><span class="s">"fmt"</span><span class="x">
-	</span><span class="s">"unsafe"</span><span class="x">
-</span><span class="p">)</span><span class="x">
+*/</span>
+<span class="k">import</span> <span class="s">"C"</span>
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"unsafe"</span>
+<span class="p">)</span>
 
-</span><span class="c">// Random 调用了C库中的 random 函数</span><span class="x">
-</span><span class="c">// 由于C库中的 random 函数返回的是C语言的long类型，</span><span class="x">
-</span><span class="c">// 因此需要通过 int(C.random) 进行一次声明的转换，把</span><span class="x">
-</span><span class="c">// C语言的long类型转换为Go的int类型</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">Random</span><span class="p">()</span><span class="x"> </span><span class="kt">int</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="k">return</span><span class="x"> </span><span class="kt">int</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">random</span><span class="p">())</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="c">// Random 调用了C库中的 random 函数</span>
+<span class="c">// 由于C库中的 random 函数返回的是C语言的long类型，</span>
+<span class="c">// 因此需要通过 int(C.random) 进行一次声明的转换，把</span>
+<span class="c">// C语言的long类型转换为Go的int类型</span>
+<span class="k">func</span> <span class="n">Random</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="kt">int</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
+<span class="p">}</span>
 
-</span><span class="c">// Seed 指定C库random函数的seed值</span><span class="x">
-</span><span class="c">// C.uint(i)把传入golang的int转换声明为C语言的uint类型</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">Seed</span><span class="p">(</span><span class="n">i</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">C</span><span class="o">.</span><span class="n">srandom</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="kt">uint</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="c">// Seed 指定C库random函数的seed值</span>
+<span class="c">// C.uint(i)把传入golang的int转换声明为C语言的uint类型</span>
+<span class="k">func</span> <span class="n">Seed</span><span class="p">(</span><span class="n">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">C</span><span class="o">.</span><span class="n">srandom</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="kt">uint</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="p">}</span>
 
-</span><span class="c">// Print 字符串示意函数</span><span class="x">
-</span><span class="c">// 这里我们首先通过 C.CString(s) 把传入的字符串转变类型为</span><span class="x">
-</span><span class="c">// C字符串（根据各方内容推测，应该包括两步：①malloc声明一块</span><span class="x">
-</span><span class="c">// 内存；②把Go里的字符串内容拷贝到内存；③返回字符串首地址。）</span><span class="x">
-</span><span class="c">// 因为Go的GC无法管理C语言里的内存，因此这里需要显式free掉。</span><span class="x">
-</span><span class="k">func</span><span class="x"> </span><span class="n">Print</span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">cs</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">C</span><span class="o">.</span><span class="n">CString</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="x">
-	</span><span class="k">defer</span><span class="x"> </span><span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">(</span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="n">cs</span><span class="p">))</span><span class="x">
-	</span><span class="n">C</span><span class="o">.</span><span class="n">fputs</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span><span class="x"> </span><span class="p">(</span><span class="o">*</span><span class="n">C</span><span class="o">.</span><span class="n">FILE</span><span class="p">)(</span><span class="n">C</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span><span class="x">
-</span><span class="p">}</span><span class="x">
+<span class="c">// Print 字符串示意函数</span>
+<span class="c">// 这里我们首先通过 C.CString(s) 把传入的字符串转变类型为</span>
+<span class="c">// C字符串（根据各方内容推测，应该包括两步：①malloc声明一块</span>
+<span class="c">// 内存；②把Go里的字符串内容拷贝到内存；③返回字符串首地址。）</span>
+<span class="c">// 因为Go的GC无法管理C语言里的内存，因此这里需要显式free掉。</span>
+<span class="k">func</span> <span class="n">Print</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">cs</span> <span class="o">:=</span> <span class="n">C</span><span class="o">.</span><span class="n">CString</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+	<span class="k">defer</span> <span class="n">C</span><span class="o">.</span><span class="n">free</span><span class="p">(</span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="n">cs</span><span class="p">))</span>
+	<span class="n">C</span><span class="o">.</span><span class="n">fputs</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">C</span><span class="o">.</span><span class="n">FILE</span><span class="p">)(</span><span class="n">C</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
+<span class="p">}</span>
 
-</span><span class="k">func</span><span class="x"> </span><span class="n">main</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
-	</span><span class="n">Seed</span><span class="p">(</span><span class="m">620</span><span class="p">)</span><span class="x">
-	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">Random</span><span class="p">())</span><span class="x">
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">Seed</span><span class="p">(</span><span class="m">620</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">Random</span><span class="p">())</span>
 
-	</span><span class="n">Print</span><span class="p">(</span><span class="s">"mikk</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span><span class="x">
-</span><span class="p">}</span><span class="x">
-</span></code></pre></div></div>
+	<span class="n">Print</span><span class="p">(</span><span class="s">"mikk</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>如果运行，可以观察到输出：</p>
 
