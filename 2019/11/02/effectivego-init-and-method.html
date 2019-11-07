@@ -177,44 +177,44 @@ Author: Ray-Eldath
 
 <p>在 Go 中，枚举型常量经常通过使用 <code class="highlighter-rouge">iota</code> 枚举器来创建。鉴于 <code class="highlighter-rouge">iota</code> 可以作为表达式的一部分来使用，同时表达式可以隐式地重复，因此很方便创建复杂枚举值集合。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type ByteSize float64
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">ByteSize</span> <span class="kt">float64</span>
 
-const (
-    _           = iota // ignore first value by assigning to blank identifier
-    KB ByteSize = 1 &lt;&lt; (10 * iota)
-    MB
-    GB
-    TB
-    PB
-    EB
-    ZB
-    YB
-)
+<span class="k">const</span> <span class="p">(</span>
+    <span class="n">_</span>           <span class="o">=</span> <span class="no">iota</span> <span class="c">// ignore first value by assigning to blank identifier</span>
+    <span class="n">KB</span> <span class="n">ByteSize</span> <span class="o">=</span> <span class="m">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="m">10</span> <span class="o">*</span> <span class="no">iota</span><span class="p">)</span>
+    <span class="n">MB</span>
+    <span class="n">GB</span>
+    <span class="n">TB</span>
+    <span class="n">PB</span>
+    <span class="n">EB</span>
+    <span class="n">ZB</span>
+    <span class="n">YB</span>
+<span class="p">)</span>
 </code></pre></div></div>
 
 <p>可以给自定义的任何类型添加方法（比如 <code class="highlighter-rouge">String</code> 方法），这种能力使得任意类型的值被打印时都能定义自己的输出格式。最常见的是给结构体添加方法，不过我们也可以给标量类型（比如 浮点类型 <code class="highlighter-rouge">ByteSize</code>）添加方法。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func (b ByteSize) String() string {
-    switch {
-    case b &gt;= YB:
-        return fmt.Sprintf("%.2fYB", b/YB)
-    case b &gt;= ZB:
-        return fmt.Sprintf("%.2fZB", b/ZB)
-    case b &gt;= EB:
-        return fmt.Sprintf("%.2fEB", b/EB)
-    case b &gt;= PB:
-        return fmt.Sprintf("%.2fPB", b/PB)
-    case b &gt;= TB:
-        return fmt.Sprintf("%.2fTB", b/TB)
-    case b &gt;= GB:
-        return fmt.Sprintf("%.2fGB", b/GB)
-    case b &gt;= MB:
-        return fmt.Sprintf("%.2fMB", b/MB)
-    case b &gt;= KB:
-        return fmt.Sprintf("%.2fKB", b/KB)
-    }
-    return fmt.Sprintf("%.2fB", b)
-}
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">b</span> <span class="n">ByteSize</span><span class="p">)</span> <span class="n">String</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">b</span> <span class="o">&gt;=</span> <span class="n">YB</span><span class="o">:</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%.2fYB"</span><span class="p">,</span> <span class="n">b</span><span class="o">/</span><span class="n">YB</span><span class="p">)</span>
+    <span class="k">case</span> <span class="n">b</span> <span class="o">&gt;=</span> <span class="n">ZB</span><span class="o">:</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%.2fZB"</span><span class="p">,</span> <span class="n">b</span><span class="o">/</span><span class="n">ZB</span><span class="p">)</span>
+    <span class="k">case</span> <span class="n">b</span> <span class="o">&gt;=</span> <span class="n">EB</span><span class="o">:</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%.2fEB"</span><span class="p">,</span> <span class="n">b</span><span class="o">/</span><span class="n">EB</span><span class="p">)</span>
+    <span class="k">case</span> <span class="n">b</span> <span class="o">&gt;=</span> <span class="n">PB</span><span class="o">:</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%.2fPB"</span><span class="p">,</span> <span class="n">b</span><span class="o">/</span><span class="n">PB</span><span class="p">)</span>
+    <span class="k">case</span> <span class="n">b</span> <span class="o">&gt;=</span> <span class="n">TB</span><span class="o">:</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%.2fTB"</span><span class="p">,</span> <span class="n">b</span><span class="o">/</span><span class="n">TB</span><span class="p">)</span>
+    <span class="k">case</span> <span class="n">b</span> <span class="o">&gt;=</span> <span class="n">GB</span><span class="o">:</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%.2fGB"</span><span class="p">,</span> <span class="n">b</span><span class="o">/</span><span class="n">GB</span><span class="p">)</span>
+    <span class="k">case</span> <span class="n">b</span> <span class="o">&gt;=</span> <span class="n">MB</span><span class="o">:</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%.2fMB"</span><span class="p">,</span> <span class="n">b</span><span class="o">/</span><span class="n">MB</span><span class="p">)</span>
+    <span class="k">case</span> <span class="n">b</span> <span class="o">&gt;=</span> <span class="n">KB</span><span class="o">:</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%.2fKB"</span><span class="p">,</span> <span class="n">b</span><span class="o">/</span><span class="n">KB</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%.2fB"</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
 <p>表达式 <code class="highlighter-rouge">YB</code> 会打印 <code class="highlighter-rouge">1.00YB</code>， 而 <code class="highlighter-rouge">ByteSize(1e13)</code> 会打印 <code class="highlighter-rouge">9.09TB</code>。</p>
@@ -225,11 +225,11 @@ const (
 
 <p>可以像常量那样初始化变量，但是变量的初始化表达式可以是在运行时进行计算的通用表达式。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var (
-    home   = os.Getenv("HOME")
-    user   = os.Getenv("USER")
-    gopath = os.Getenv("GOPATH")
-)
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="p">(</span>
+    <span class="n">home</span>   <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">Getenv</span><span class="p">(</span><span class="s">"HOME"</span><span class="p">)</span>
+    <span class="n">user</span>   <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">Getenv</span><span class="p">(</span><span class="s">"USER"</span><span class="p">)</span>
+    <span class="n">gopath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">Getenv</span><span class="p">(</span><span class="s">"GOPATH"</span><span class="p">)</span>
+<span class="p">)</span>
 </code></pre></div></div>
 
 <h2 id="the-init-functioninit-函数">The init function（init 函数）</h2>
@@ -238,19 +238,19 @@ const (
 
 <p><code class="highlighter-rouge">init</code> 函数大都是为了在真实运行开始前校验或者修复程序的状态，除此外不应该用作其他的用途。（根据开发经验，在 <code class="highlighter-rouge">init</code> 中添加过多的逻辑会让测试很难写）</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func init() {
-    if user == "" {
-        log.Fatal("$USER not set")
-    }
-    if home == "" {
-        home = "/home/" + user
-    }
-    if gopath == "" {
-        gopath = home + "/go"
-    }
-    // gopath may be overridden by --gopath flag on command line.
-    flag.StringVar(&amp;gopath, "gopath", gopath, "override default GOPATH")
-}
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">init</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="o">==</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="s">"$USER not set"</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">home</span> <span class="o">==</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="n">home</span> <span class="o">=</span> <span class="s">"/home/"</span> <span class="o">+</span> <span class="n">user</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">gopath</span> <span class="o">==</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="n">gopath</span> <span class="o">=</span> <span class="n">home</span> <span class="o">+</span> <span class="s">"/go"</span>
+    <span class="p">}</span>
+    <span class="c">// gopath may be overridden by --gopath flag on command line.</span>
+    <span class="n">flag</span><span class="o">.</span><span class="n">StringVar</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gopath</span><span class="p">,</span> <span class="s">"gopath"</span><span class="p">,</span> <span class="n">gopath</span><span class="p">,</span> <span class="s">"override default GOPATH"</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
 <h1 id="methods方法">Methods（方法）</h1>
