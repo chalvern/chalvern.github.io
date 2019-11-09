@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "《原汁原味 Go 语言学习》(9) effective go 接口及泛型",
+      "tags"     : "golang 基础 实用",
+      "url"      : "/2019/11/09/effectivego-interface.html"
+    } ,
+  
+    {
       "title"    : "《原汁原味 Go 语言学习》(8) effective go 初始化及方法部分",
       "tags"     : "golang 基础 实用",
       "url"      : "/2019/11/02/effectivego-init-and-method.html"
