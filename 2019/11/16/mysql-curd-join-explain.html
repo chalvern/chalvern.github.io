@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySQL 数据库的基本使用示例 - 敬维</title>
+    <meta name="author"  content="敬维">
+    <meta name="description" content="MySQL 数据库的基本使用示例">
+    <meta name="keywords"  content="数据库, 经验, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="MySQL 数据库的基本使用示例 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2019/11/16/mysql-curd-join-explain.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E6%95%B0%E6%8D%AE%E5%BA%93" class="post-tag">数据库</a>
+          
+            <a href="https://jingwei.link/tags#%E7%BB%8F%E9%AA%8C" class="post-tag">经验</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>MySQL 数据库的基本使用示例</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
+        <time class="post-meta-item" datetime="19-11-16"><i class="iconfont icon-date"></i>16 Nov 2019</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">就数据库的使用给出  CURD、JOIN 和 EXPLAIN 的示例</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#适用人群" id="markdown-toc-适用人群">适用人群</a></li>
+  <li><a href="#数据库的基本使用" id="markdown-toc-数据库的基本使用">数据库的基本使用</a>    <ul>
+      <li><a href="#数据库的安装与启动" id="markdown-toc-数据库的安装与启动">数据库的安装与启动</a></li>
+      <li><a href="#连接数据库服务" id="markdown-toc-连接数据库服务">连接数据库服务</a></li>
+      <li><a href="#创建数据库" id="markdown-toc-创建数据库">创建数据库</a></li>
+      <li><a href="#创建数据表" id="markdown-toc-创建数据表">创建数据表</a>        <ul>
+          <li><a href="#创建-users-表" id="markdown-toc-创建-users-表">创建 users 表</a></li>
+          <li><a href="#创建-blogs-表" id="markdown-toc-创建-blogs-表">创建 blogs 表</a></li>
+          <li><a href="#创建-comments-表" id="markdown-toc-创建-comments-表">创建 comments 表</a></li>
+          <li><a href="#创建一些假数据便于后面检索使用" id="markdown-toc-创建一些假数据便于后面检索使用">创建一些假数据便于后面检索使用</a></li>
+        </ul>
+      </li>
+      <li><a href="#join-的使用" id="markdown-toc-join-的使用">JOIN 的使用</a></li>
+      <li><a href="#explain-的使用" id="markdown-toc-explain-的使用">EXPLAIN 的使用</a>        <ul>
+          <li><a href="#在-usersusername-字段上添加索引" id="markdown-toc-在-usersusername-字段上添加索引">在 users.username 字段上添加索引</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>对一般的开发者来说，MySQL 安装成功以后，剩下的就是基本的使用了，如果是运维开发，可能还会涉及到数据库的运维。本文暂且不考虑运维上的操作，仅就数据库的使用给出一些示例，主要包括 <code class="highlighter-rouge">CURD</code>、<code class="highlighter-rouge">JOIN</code> 和 <code class="highlighter-rouge">EXPLAIN</code>。</p>
+
+<h2 id="适用人群">适用人群</h2>
+<p>入门——初级——<strong>中级√</strong>——高级；本文适应中级及以上。</p>
+
+<h2 id="数据库的基本使用">数据库的基本使用</h2>
+<h3 id="数据库的安装与启动">数据库的安装与启动</h3>
+<p>目前常见的操作系统有三类：Linux、Windows、Mac。不同平台安装软件的方式各异，安装过程中可能遇到的问题也各不相同，大家可以根据自己所使用的平台进行探索。因为本人使用的是 Mac，因此只给出 Mac 操作系统上 MySQL 的安装与启动。</p>
+
+<p>简单总结下来就是下面几个命令</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 安装 homebrew， 参考 https://brew.sh/</span>
+/usr/bin/ruby <span class="nt">-e</span> <span class="s2">"</span><span class="si">$(</span>curl <span class="nt">-fsSL</span> https://raw.githubusercontent.com/Homebrew/install/master/install<span class="si">)</span><span class="s2">"</span>
+
+<span class="c"># 查找可以安装的 mysql 方案</span>
+brew search mysql
+
+<span class="c"># 安装 5.7 版本的  mysql</span>
+brew <span class="nb">install </span>mysql@5.7
+
+<span class="c"># 查看 mysql@5.7 的安装信息、启动信息等</span>
+brew info mysql@5.7
+
+<span class="c"># 开机启动 mysql@5.7</span>
+brew services start mysql@5.7
+</code></pre></div></div>
+
+<h3 id="连接数据库服务">连接数据库服务</h3>
+<p>启动 MySQL 后，我们可以通过 <code class="highlighter-rouge">ps -ef |grep mysql</code> 来查看与 MySQL 相关的进程，可以发现 后台会运行一个 <code class="highlighter-rouge">mysqld</code> 的进程，也就是说我们通常所说的 “连接数据库” 其实指的是连接 <code class="highlighter-rouge">mysqld</code> 提供的数据库服务。</p>
+
+<p>一般本地（自己的电脑上面）安装完 MySQL 后，会默认安装 <code class="highlighter-rouge">mysql</code> 这个命令，可以用它来连接 <code class="highlighter-rouge">mysqld</code> 提供的服务（因为真正提供数据库服务的是 mysqld，或许 MySQL 应该叫 MySQLD 比较好？ 😆）。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 连接本地 localhost 端口为 3306 的数据库 hello</span>
+<span class="c"># 使用 root 用户，且要求输入密码</span>
+mysql <span class="nt">-h</span> localhost <span class="nt">-P</span> 3306 <span class="nt">-D</span> hello <span class="nt">-u</span> root <span class="nt">-p</span>
+
+<span class="c"># 我们可以忽略 -h 和 -P 来简化上面的语句</span>
+<span class="c"># 下面的语句表示： 以 root 用户连接本地 3306 端口上的数据库 hello</span>
+mysql <span class="nt">-D</span> hello <span class="nt">-u</span> root <span class="nt">-p</span>
+
+<span class="c"># 如果不需要指定连接哪个数据库，还可以省略 -D 及其参数</span>
+mysql <span class="nt">-u</span> root <span class="nt">-p</span>
+
+<span class="c"># 如果需要指定字符集为 utf8mb4，需要添加（如果要存储 emoji 就必须要指定这个字符集）</span>
+mysql <span class="nt">-u</span> root <span class="nt">-p</span> <span class="nt">--default-character-set</span><span class="o">=</span>utf8mb4
+</code></pre></div></div>
+
+<h3 id="创建数据库">创建数据库</h3>
+<p>连接到数据库以后，我们可以通过下面的语句创建一个数据库。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- SQL 的注释使用的是 双横线 “--”</span>
+<span class="c1">-- 如果 hello 数据库已经存在，就显式地先删除这个数据库</span>
+<span class="c1">-- 然后创建一个名为 hello 的数据库，并指定其默认的字符集为 utf8mb4</span>
+<span class="c1">-- 大家可以自行搜索 MySQL utf8mb4 相关的内容</span>
+<span class="k">DROP</span> <span class="k">DATABASE</span> <span class="n">IF</span> <span class="k">EXISTS</span> <span class="n">hello</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="nv">`hello`</span> <span class="k">DEFAULT</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="o">=</span> <span class="nv">`utf8mb4`</span><span class="p">;</span>
+
+<span class="c1">-- 有了数据库以后就可以使用这个数据库了，然后才可以在数据库中创建表</span>
+<span class="n">USE</span> <span class="n">hello</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="创建数据表">创建数据表</h3>
+
+<p>接下来我们模仿一个博客系统创建几个数据表，分别包括用户表 users、博客表 blogs 和评论表 comments。</p>
+
+<p>在创建表的时候我们有几个默认项，数据库引擎使用 <code class="highlighter-rouge">InnoDB</code>（小白用户只需要记住 InnoDB 可以满足绝大部分场景），字符集使用 <code class="highlighter-rouge">utf8mb4</code>。由于 <code class="highlighter-rouge">InnodB</code> 的 “聚簇索引” 和“二级索引包含引用行的主键列”的特性，默认情况下我们会创建一个类型为 <code class="highlighter-rouge">int</code> 的主键  <code class="highlighter-rouge">id</code>。</p>
+<h4 id="创建-users-表">创建 users 表</h4>
+
+<p>下面的语句创建了用户 users 表。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 为了试验环境的干净整洁，首先检查是否已经存在 users 表</span>
+<span class="c1">-- 如果已经存在 users 表就先删除掉，接着创建 users 表</span>
+<span class="c1">-- 用户表中包含的字段及其含义可以查看 COMMENT 中备注的内容</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">if</span> <span class="k">EXISTS</span> <span class="n">users</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`users`</span> <span class="p">(</span>
+  <span class="nv">`id`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span> <span class="k">COMMENT</span> <span class="s1">'主键，用户 id'</span><span class="p">,</span>
+  <span class="nv">`created_at`</span> <span class="nb">datetime</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">COMMENT</span> <span class="s1">'创建时间'</span><span class="p">,</span>
+  <span class="nv">`updated_at`</span> <span class="nb">datetime</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">COMMENT</span> <span class="s1">'更新时间'</span><span class="p">,</span>
+  <span class="nv">`username`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'用户名'</span><span class="p">,</span>
+  <span class="nv">`birthday`</span> <span class="nb">datetime</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'生日日期'</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">),</span>
+  <span class="k">KEY</span> <span class="nv">`idx_user_created_at`</span> <span class="p">(</span><span class="nv">`created_at`</span><span class="p">)</span> <span class="k">USING</span> <span class="n">BTREE</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">0</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="创建-blogs-表">创建 blogs 表</h4>
+
+<p>下面的语句创建了博客 blogs 表。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 为了试验环境的干净整洁，首先检查是否已经存在 blogs 表</span>
+<span class="c1">-- 如果已经存在 blogs 表就先删除掉，接着创建 blogs 表</span>
+<span class="c1">-- 用户表中包含的字段及其含义可以查看 COMMENT 中备注的内容</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">if</span> <span class="k">EXISTS</span> <span class="n">blogs</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`blogs`</span> <span class="p">(</span>
+  <span class="nv">`id`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span> <span class="k">COMMENT</span> <span class="s1">'主键，博客 id'</span><span class="p">,</span>
+  <span class="nv">`created_at`</span> <span class="nb">datetime</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">COMMENT</span> <span class="s1">'创建时间'</span><span class="p">,</span>
+  <span class="nv">`updated_at`</span> <span class="nb">datetime</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">COMMENT</span> <span class="s1">'更新时间'</span><span class="p">,</span>
+  <span class="nv">`user_id`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'用户id'</span><span class="p">,</span>
+  <span class="nv">`title`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'博客标题，最多 50 个字符'</span><span class="p">,</span>
+  <span class="nv">`content`</span> <span class="nb">text</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'博客内容'</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">),</span>
+  <span class="k">KEY</span> <span class="nv">`idx_blogs_created_at`</span> <span class="p">(</span><span class="nv">`created_at`</span><span class="p">)</span> <span class="k">USING</span> <span class="n">BTREE</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="nv">`idx_blogs_user_id`</span> <span class="p">(</span><span class="nv">`user_id`</span><span class="p">)</span> <span class="k">USING</span> <span class="n">BTREE</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">0</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="创建-comments-表">创建 comments 表</h4>
+
+<p>下面的语句创建了评论 comments 表。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 为了试验环境的干净整洁，首先检查是否已经存在 comments 表</span>
+<span class="c1">-- 如果已经存在 comments 表就先删除掉，接着创建 comments 表</span>
+<span class="c1">-- 用户表中包含的字段及其含义可以查看 COMMENT 中备注的内容</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">if</span> <span class="k">EXISTS</span> <span class="n">comments</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`comments`</span> <span class="p">(</span>
+  <span class="nv">`id`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span> <span class="k">COMMENT</span> <span class="s1">'主键，评论 id'</span><span class="p">,</span>
+  <span class="nv">`created_at`</span> <span class="nb">datetime</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">COMMENT</span> <span class="s1">'创建时间'</span><span class="p">,</span>
+  <span class="nv">`updated_at`</span> <span class="nb">datetime</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">COMMENT</span> <span class="s1">'更新时间'</span><span class="p">,</span>
+  <span class="nv">`user_id`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'用户 id'</span><span class="p">,</span>
+  <span class="nv">`blog_id`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'博客 id'</span><span class="p">,</span>
+  <span class="nv">`content`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'评论内容，限制最多 2048 个字符'</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">),</span>
+  <span class="k">KEY</span> <span class="nv">`idx_blogs_created_at`</span> <span class="p">(</span><span class="nv">`created_at`</span><span class="p">)</span> <span class="k">USING</span> <span class="n">BTREE</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="nv">`idx_blogs_user_id`</span> <span class="p">(</span><span class="nv">`user_id`</span><span class="p">)</span> <span class="k">USING</span> <span class="n">BTREE</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="nv">`idx_blogs_blog_id`</span> <span class="p">(</span><span class="nv">`blog_id`</span><span class="p">)</span> <span class="k">USING</span> <span class="n">BTREE</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">0</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="创建一些假数据便于后面检索使用">创建一些假数据便于后面检索使用</h4>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 首先下面手动给每个表插入了一条记录</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`users`</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">,</span> <span class="nv">`username`</span><span class="p">,</span> <span class="nv">`birthday`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="k">NULL</span><span class="p">,</span> <span class="s1">'ws_by_hand_1'</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`blogs`</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">,</span> <span class="nv">`user_id`</span><span class="p">,</span> <span class="nv">`title`</span><span class="p">,</span> <span class="nv">`content`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="k">NULL</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'海燕'</span><span class="p">,</span> <span class="s1">'高尔基的作品。'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`blogs`</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">,</span> <span class="nv">`user_id`</span><span class="p">,</span> <span class="nv">`title`</span><span class="p">,</span> <span class="nv">`content`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="k">NULL</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'我的大学'</span><span class="p">,</span> <span class="s1">'高尔基的另一部作品。'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`comments`</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">,</span> <span class="nv">`user_id`</span><span class="p">,</span> <span class="nv">`blog_id`</span><span class="p">,</span> <span class="nv">`content`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="k">NULL</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'我也喜欢高尔基的作品😆'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`comments`</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">,</span> <span class="nv">`user_id`</span><span class="p">,</span> <span class="nv">`blog_id`</span><span class="p">,</span> <span class="nv">`content`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="k">NULL</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'这一部我也很喜欢😆'</span><span class="p">);</span>
+
+<span class="c1">-- 为了说明问题，下面定义了一个创建多个虚拟用户的过程</span>
+<span class="k">DELIMITER</span> <span class="p">;;</span>
+<span class="k">DROP</span> <span class="k">PROCEDURE</span> <span class="n">if</span> <span class="k">EXISTS</span> <span class="n">mock_users</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> <span class="n">mock_users</span><span class="p">()</span>
+<span class="k">BEGIN</span>
+  <span class="k">DECLARE</span> <span class="n">i</span> <span class="nb">INT</span><span class="p">;</span>
+  <span class="k">SET</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="n">WHILE</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1000</span> <span class="k">DO</span>
+    <span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`users`</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">,</span> <span class="nv">`username`</span><span class="p">,</span> <span class="nv">`birthday`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="k">NULL</span><span class="p">,</span> <span class="n">CONCAT</span><span class="p">(</span><span class="nv">"ws_auto_"</span><span class="p">,</span><span class="n">i</span><span class="p">),</span> <span class="k">NULL</span><span class="p">);</span>
+    <span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`blogs`</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">,</span> <span class="nv">`user_id`</span><span class="p">,</span> <span class="nv">`title`</span><span class="p">,</span> <span class="nv">`content`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="k">NULL</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s1">'背影'</span><span class="p">,</span> <span class="s1">'朱自清的作品。'</span><span class="p">);</span>
+    <span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`comments`</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">,</span> <span class="nv">`user_id`</span><span class="p">,</span> <span class="nv">`blog_id`</span><span class="p">,</span> <span class="nv">`content`</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="k">NULL</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s1">'我也喜欢😆'</span><span class="p">);</span>
+   <span class="k">SET</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">END</span> <span class="n">WHILE</span><span class="p">;</span>
+<span class="k">END</span> <span class="p">;;</span>
+<span class="k">DELIMITER</span> <span class="p">;</span>
+
+<span class="c1">-- 调用 mock_users 生成多个用户账户，以及对应的 blogs 和 comments</span>
+<span class="k">CALL</span> <span class="n">mock_users</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h3 id="join-的使用">JOIN 的使用</h3>
+<p>我们可以通过 JOIN 的方式来获取某个用户发表的博客的所有内容，以及其博客所获得的评论内容。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">u</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">user_id</span><span class="p">,</span>
+       <span class="n">u</span><span class="p">.</span><span class="n">username</span><span class="p">,</span>
+       <span class="n">b</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">blog_id</span><span class="p">,</span>
+       <span class="n">b</span><span class="p">.</span><span class="n">title</span> <span class="k">as</span> <span class="n">blog_title</span><span class="p">,</span>
+       <span class="n">b</span><span class="p">.</span><span class="n">content</span> <span class="k">as</span> <span class="n">blog_content</span><span class="p">,</span>
+       <span class="k">c</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">comment_id</span><span class="p">,</span>
+       <span class="k">c</span><span class="p">.</span><span class="n">user_id</span> <span class="k">as</span> <span class="n">comment_user_id</span><span class="p">,</span>
+       <span class="k">c</span><span class="p">.</span><span class="n">content</span> <span class="k">as</span> <span class="n">comment_content</span><span class="p">,</span>
+       <span class="n">cu</span><span class="p">.</span><span class="n">username</span> <span class="k">as</span> <span class="n">comment_username</span>
+<span class="k">FROM</span> <span class="n">users</span> <span class="k">as</span> <span class="n">u</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">blogs</span> <span class="k">as</span> <span class="n">b</span> <span class="k">ON</span> <span class="n">b</span><span class="p">.</span><span class="n">user_id</span><span class="o">=</span><span class="n">u</span><span class="p">.</span><span class="n">id</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">comments</span> <span class="k">as</span> <span class="k">c</span> <span class="k">ON</span> <span class="k">c</span><span class="p">.</span><span class="n">blog_id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">id</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">users</span> <span class="k">as</span> <span class="n">cu</span> <span class="k">ON</span> <span class="n">cu</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="k">c</span><span class="p">.</span><span class="n">user_id</span>
+<span class="k">WHERE</span> <span class="n">u</span><span class="p">.</span><span class="n">username</span><span class="o">=</span><span class="s1">'ws_by_hand_1'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>获取到的结果如下图所示（可以通过指定字段来选择性的检出对应的字段的内容）：</p>
+
+<p><img src="/assets/pic/mysql-curd-join-explain-01.png" alt="" /></p>
+
+<h3 id="explain-的使用">EXPLAIN 的使用</h3>
+<p>因为我们的表的内容比较少，因此运行上面 <code class="highlighter-rouge">JOIN</code> 的内容不会有慢的感觉，但是我们依然可以使用 <code class="highlighter-rouge">EXPLAIN</code> 进行一番探索。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">EXPLAIN</span>
+<span class="k">SELECT</span> <span class="n">u</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">user_id</span><span class="p">,</span>
+       <span class="n">u</span><span class="p">.</span><span class="n">username</span><span class="p">,</span>
+       <span class="n">b</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">blog_id</span><span class="p">,</span>
+       <span class="n">b</span><span class="p">.</span><span class="n">title</span> <span class="k">as</span> <span class="n">blog_title</span><span class="p">,</span>
+       <span class="n">b</span><span class="p">.</span><span class="n">content</span> <span class="k">as</span> <span class="n">blog_content</span><span class="p">,</span>
+       <span class="k">c</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">comment_id</span><span class="p">,</span>
+       <span class="k">c</span><span class="p">.</span><span class="n">user_id</span> <span class="k">as</span> <span class="n">comment_user_id</span><span class="p">,</span>
+       <span class="k">c</span><span class="p">.</span><span class="n">content</span> <span class="k">as</span> <span class="n">comment_content</span><span class="p">,</span>
+       <span class="n">cu</span><span class="p">.</span><span class="n">username</span> <span class="k">as</span> <span class="n">comment_username</span>
+<span class="k">FROM</span> <span class="n">users</span> <span class="k">as</span> <span class="n">u</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">blogs</span> <span class="k">as</span> <span class="n">b</span> <span class="k">ON</span> <span class="n">b</span><span class="p">.</span><span class="n">user_id</span><span class="o">=</span><span class="n">u</span><span class="p">.</span><span class="n">id</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">comments</span> <span class="k">as</span> <span class="k">c</span> <span class="k">ON</span> <span class="k">c</span><span class="p">.</span><span class="n">blog_id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">id</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">users</span> <span class="k">as</span> <span class="n">cu</span> <span class="k">ON</span> <span class="n">cu</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="k">c</span><span class="p">.</span><span class="n">user_id</span>
+<span class="k">WHERE</span> <span class="n">u</span><span class="p">.</span><span class="n">username</span><span class="o">=</span><span class="s1">'ws_by_hand_1'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>上面的 <code class="highlighter-rouge">EXPALIN</code> 代码运行后得到的结果如下图所示。我们可以通过查看 <code class="highlighter-rouge">type</code> 一列探索索引的使用情况，发现 <code class="highlighter-rouge">users as u</code> 表扫了全量表（<em>type 为 ALL</em>），当我们的 user 表非常大的情况下，这里肯定会存在问题。其实在创建 <code class="highlighter-rouge">users</code> 表的时候我刻意少创建了一个索引，理论上应该在 <code class="highlighter-rouge">users.username</code> 这个字段上添加索引。</p>
+
+<p><img src="/assets/pic/mysql-curd-join-explain-02.png" alt="" /></p>
+
+<h4 id="在-usersusername-字段上添加索引">在 users.username 字段上添加索引</h4>
+
+<p>可以通过下面的语句为 <code class="highlighter-rouge">users.username</code> 字段添加索引：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="nv">`users`</span> <span class="k">ADD</span> <span class="k">INDEX</span> <span class="nv">`idx_user_username`</span> <span class="p">(</span><span class="nv">`username`</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>在添加完索引以后，在此 <code class="highlighter-rouge">EXPLAIN</code> 我们的 <code class="highlighter-rouge">JOIN</code> 语句，可以得到下图的结果。可以发现 <code class="highlighter-rouge">users as u</code>的 type 已经变成了字段 <code class="highlighter-rouge">username</code> （<code class="highlighter-rouge">idx_user_username</code>）上的索引<code class="highlighter-rouge">ref</code>。</p>
+
+<p><img src="/assets/pic/mysql-curd-join-explain-03.png" alt="" /></p>
+
+<h2 id="小结">小结</h2>
+<p>本文就数据库的使用给出一些示例，通过实例代码的方式给出 <code class="highlighter-rouge">CURD</code>、<code class="highlighter-rouge">JOIN</code> 和 <code class="highlighter-rouge">EXPLAIN</code>的使用方式，在实际生产过程中可以为大家提供一些参考。
+对于 ORM 工具的使用，在检索的过程中本质是 SQL 语句的拼装、检索结果的解析，在数据库层面了解 SQL 无疑能够增强大家对 ORM 的使用的理解，从而写出更加高效可靠的代码。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://brew.sh/">The missing package manager for macOS (or Linux) — Homebrew</a> macOS 上强大的包管理器</li>
+  <li><a href="https://www.cnblogs.com/tufujie/p/9413852.html">MySQL Explain详解 - 博客园</a> 比较详尽的介绍 explain 的内容</li>
+  <li><a href="/2019/10/19/mac-mysql-reinstall.html">卸载 macOS 中的 MySQL 时遇到的疑问 - 敬维</a> 在 macOS 上安装/卸载 mysql 的介绍</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">敬维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://weibo.com/zhjw43" target="_blank">
+                    <i class="iconfont icon-weibo"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2019/11/09/effectivego-interface.html" class="read-next-link"></a>
+          <section>
+            <span>《原汁原味 Go 语言学习》(9) effective go 接口及泛型</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2019
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
