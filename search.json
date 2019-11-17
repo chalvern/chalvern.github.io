@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "《原汁原味 Go 语言学习》(10) effective go 空白标识符、嵌套",
+      "tags"     : "golang 基础 实用",
+      "url"      : "/2019/11/17/effectivego-blank-identifier-embed.html"
+    } ,
+  
+    {
       "title"    : "MySQL 数据库的基本使用示例",
       "tags"     : "数据库 经验 实用",
       "url"      : "/2019/11/16/mysql-curd-join-explain.html"
