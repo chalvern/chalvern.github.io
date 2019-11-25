@@ -5,9 +5,317 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 17 Nov 2019 13:12:27 +0800</pubDate>
-    <lastBuildDate>Sun, 17 Nov 2019 13:12:27 +0800</lastBuildDate>
+    <pubDate>Mon, 25 Nov 2019 08:06:46 +0800</pubDate>
+    <lastBuildDate>Mon, 25 Nov 2019 08:06:46 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>《原汁原味 Go 语言学习》(11) effective go 并发编程</title>
+        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#concurrency并发&quot; id=&quot;markdown-toc-concurrency并发&quot;&gt;Concurrency（并发）&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#share-by-communicating以通信的方式共享变量&quot; id=&quot;markdown-toc-share-by-communicating以通信的方式共享变量&quot;&gt;Share by communicating（以通信的方式共享变量）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#goroutinesgo-协程&quot; id=&quot;markdown-toc-goroutinesgo-协程&quot;&gt;Goroutines（Go 协程）&lt;/a&gt;        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;#channels信道&quot; id=&quot;markdown-toc-channels信道&quot;&gt;Channels（信道）&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#channels-of-channels信道中的信道&quot; id=&quot;markdown-toc-channels-of-channels信道中的信道&quot;&gt;Channels of channels（信道中的信道）&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#parallelization并行&quot; id=&quot;markdown-toc-parallelization并行&quot;&gt;Parallelization（并行）&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#a-leaky-buffer缓存漏斗&quot; id=&quot;markdown-toc-a-leaky-buffer缓存漏斗&quot;&gt;A leaky buffer（缓存漏斗）&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;资料&quot;&gt;资料&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://golang.google.cn/doc/effective_go.html&quot;&gt;effective go&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.bilibili.com/video/av76858443&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;concurrency并发&quot;&gt;Concurrency（并发）&lt;/h1&gt;
+
+&lt;h2 id=&quot;share-by-communicating以通信的方式共享变量&quot;&gt;Share by communicating（以通信的方式共享变量）&lt;/h2&gt;
+
+&lt;p&gt;并发编程是个很大的话题，本小节只考虑 Go 相关的特性。&lt;/p&gt;
+
+&lt;p&gt;在很多环境中，并发编程都不容易；为了确保正确访问共享变量，里面需要注意很多的实现细节。Go 鼓励一种不同的编程方式：避免直接在不同的线程间共享变量，而是通过信道来共享变量的值。在任何时间点只有一个协程有权访问变量的值；在设计上就杜绝了数据竞争的情况。为了鼓励这种共享变量的方式，它还有一句口号：&lt;strong&gt;不要通过共享内存进行通信，相反，通过通信来共享内存&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;当然，这种“以通信的方式共享变量”的方式也不是万能的。比如，引用计数的最佳实现方式依然是给一个整数添加一个互斥锁的方式。但是作为一种高级别方式，使用信道来控制共享变量的访问能够让开发者更容易写出简明正确的代码。&lt;/p&gt;
+
+&lt;p&gt;那么该怎么思考这个模型呢？假设我们有一个独立线程的程序，它只运行在一个 CPU 核上，这种情况下显然没有必要进行任何同步。现在思考有另一个类似的实例，它也是独立线程的，而且也只允许在一个 CPU 核上，这个实例也不需要任何的同步。然后，我们让这两个线程进行通信；如果通信方式是同步的，那么这两个独立的线程之间就不需要其他的同步了。Unix 里的 Pipline（管道） 模式就属于类似的模型。虽然 Go 解决并发的解决方案源自 Hoare 的CSP（通信序列过程）模型，但是它也可以看做是 Unix 管道的带类型安全限定的通用版本。&lt;/p&gt;
+
+&lt;h2 id=&quot;goroutinesgo-协程&quot;&gt;Goroutines（Go 协程）&lt;/h2&gt;
+
+&lt;p&gt;之所以叫 &lt;strong&gt;goroutines（Go协程）&lt;/strong&gt; ，是因为已有的术语——线程、协程、进程等——和要传达的含义并不完全匹配。每个 Go协程 都包含同一个简单的模型：首先它是一个函数，并且它和其他的 Go协程 在同一个地址空间同时运行。Go协程 是轻量级的，消耗的资源几乎只包含分配堆栈空间花费的那一点资源；同时因为它的堆栈初始化时很小，且总是依照实际需要来增加（或释放）堆存储，它也是很廉价的（意味着我们可以很容易地创建成千上万的 goroutines）。&lt;/p&gt;
+
+&lt;p&gt;Go协程 多路复用多个操作系统线程。也就是说，假设有 m 个 Go协程 n 个系统线程，这 m 个 Go协程 里的任意一个都可能在 n 个系统线程的任意一个上面执行。因此如果某个 Go协程 因为 I/O 调用阻塞了，其他的协程可以继续运行。Go 运行时在这里的设计隐藏了很多线程创建和管理的复杂度。&lt;/p&gt;
+
+&lt;p&gt;Go协程的创建也很简单，只需要在函数/方法的前面加一个关键词 &lt;code class=&quot;highlighter-rouge&quot;&gt;go&lt;/code&gt; 就可以让这个函数/方法在一个新的 goroutine 中运行。当函数/方法调用结束时，goroutine 会静默退出。（这里有点类似于 Unix Shell 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;amp;&lt;/code&gt; 符号）&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// run list.Sort concurrently; don't wait for it.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;函数声明语法可以配合 goroutine 的声明使用。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Announce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;message&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;delay&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// Note the parentheses - must call the function.&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在 Go 中，&lt;strong&gt;函数即闭包：在实现上，如果某个变量被函数引用了，那么它就会与函数一起存活&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;因为上面的例子里函数都没有标识自己什么时候退出，我们也就无法知道它们是不是把任务完成了，因此没有太大的实践意义。为此需要引入信道。&lt;/p&gt;
+
+&lt;h3 id=&quot;channels信道&quot;&gt;Channels（信道）&lt;/h3&gt;
+
+&lt;p&gt;和映射一样，信道通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 来分配内存，返回的结果等效于是对底层数据结构的引用。在使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 时如果传入了一个可选的整数，会创建带缓存的信道；如果不传默认就是 0，此时创建的是一个没有缓存的信道或者称为同步信道。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;ci&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;            &lt;span class=&quot;c&quot;&gt;// unbuffered channel of integers&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;cj&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;         &lt;span class=&quot;c&quot;&gt;// unbuffered channel of integers&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;cs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// buffered channel of pointers to Files&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;如果两个 Go协程 通过没有缓存的信道进行通信，这个没有缓存的信道同时可以做一些同步的事情，从而保证两个 Go协程 运行在已知的状态。&lt;/p&gt;
+
+&lt;p&gt;有很多应用信道的惯例，我们可以从下面的例子开始。前面小节我们在后台启用了一个排序例程，但是无法知道这个例程什么时候执行完毕；信道可以允许我们启动一个 Goroutine 并显式地等待相应的例程结束。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// Allocate a channel.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;// Start the sort in a goroutine; when it completes, signal on the channel.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// Send a signal; value does not matter.&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;doSomethingForAWhile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;   &lt;span class=&quot;c&quot;&gt;// Wait for sort to finish; discard sent value.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在接收到数据前接收器（比如上例中 &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;-c&lt;/code&gt; 语句）会一直阻塞在那里。对于一个没有缓存的信道来说，在接收器&lt;strong&gt;接收完成&lt;/strong&gt;之前发送器也会一直阻塞在那里（属于内存模型的一部分）。如果信道有空闲的缓存空间，发送器只在值拷贝到缓存区之前是阻塞的；如果缓冲区满了，发送器会一直等待，直到有接收器消费缓存中的值。&lt;/p&gt;
+
+&lt;p&gt;带缓存的信道可以作为信号量来使用，比如可以用它来控制吞吐量。在下面的例子里，过来的请求被传到 &lt;code class=&quot;highlighter-rouge&quot;&gt;handle&lt;/code&gt;，然后 &lt;code class=&quot;highlighter-rouge&quot;&gt;handle&lt;/code&gt; 会首先给一个信道塞一个值（相当于占坑），接着处理这个请求，最后再从信道中消费一个值释放“信号量”从而给下一个消费者腾出资源。这里信道的缓冲区容量限定了 &lt;code class=&quot;highlighter-rouge&quot;&gt;process&lt;/code&gt; 的并发数量。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sem&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MaxOutstanding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;sem&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;    &lt;span class=&quot;c&quot;&gt;// Wait for active queue to drain.&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// May take a long time.&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sem&lt;/span&gt;       &lt;span class=&quot;c&quot;&gt;// Done; enable next request to run.&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Serve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// Don't wait for handle to finish.&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;一旦 &lt;code class=&quot;highlighter-rouge&quot;&gt;MaxOutstanding&lt;/code&gt; 个处理器运行 &lt;code class=&quot;highlighter-rouge&quot;&gt;process&lt;/code&gt;，任何其他的 Go协程 尝试发送数据到信道的行为都会被阻塞，直到某个 &lt;code class=&quot;highlighter-rouge&quot;&gt;handle&lt;/code&gt; 结束并消费了信道中的数据。&lt;/p&gt;
+
+&lt;p&gt;虽然很优雅，不过上面的设计是有问题的：虽然控制了最多只能有 &lt;code class=&quot;highlighter-rouge&quot;&gt;MaxOutstanding&lt;/code&gt; 个 Go协程 同时执行，但是 &lt;code class=&quot;highlighter-rouge&quot;&gt;Serve&lt;/code&gt; 会给每个进来的请求都创建一个新的 Go协程。也就是说，只要请求进来的够快，程序会无限消耗资源。我们可以通过修改 &lt;code class=&quot;highlighter-rouge&quot;&gt;Serve&lt;/code&gt; 函数限定 goroutine 的创建数量来解决这个缺陷。下面是一个显而易见的解决方案（不过隐藏了一个 bug 需要修复）：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Serve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;sem&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;// Buggy; see explanation below.&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sem&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上面代码的 bug 发生在 Go 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;for&lt;/code&gt; 循环：&lt;strong&gt;循环变量在每次迭代时会被复用&lt;/strong&gt;，因此 &lt;code class=&quot;highlighter-rouge&quot;&gt;req&lt;/code&gt; 变量在各个 Go协程 之间是共享的。由于上面的例子里我们不希望 &lt;code class=&quot;highlighter-rouge&quot;&gt;req&lt;/code&gt; 被共享，因此需要给每个 Go协程 传一个唯一的 &lt;code class=&quot;highlighter-rouge&quot;&gt;req&lt;/code&gt;。下面的代码给每个 Go协程 的闭包传递了 &lt;code class=&quot;highlighter-rouge&quot;&gt;req&lt;/code&gt; 作为其参数，因为函数参数是传值的（大家可以回顾函数那一节的内容），因此避免了上面的 bug：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Serve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;sem&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;req&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sem&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可以把上面的代码和前面带 &lt;code class=&quot;highlighter-rouge&quot;&gt;handle&lt;/code&gt; 函数的代码比较，看看闭包是如何声明并运行的。其实上面的 bug 还有一个解决方案，就是每次循环时创建一个同名的临时变量，如下面的代码所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Serve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;// Create new instance of req for the goroutine.&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;sem&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sem&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;或许 &lt;code class=&quot;highlighter-rouge&quot;&gt;req := req&lt;/code&gt; 的写法很怪异，但是在 Go 中这是合法的惯用写法。通过这种方法我们可以得到一个同名的新变量，通过刻意覆盖本地的循环变量的方式给每个 Go协程 提供了唯一的变量（而不是共享的 &lt;code class=&quot;highlighter-rouge&quot;&gt;req&lt;/code&gt; 变量）。&lt;/p&gt;
+
+&lt;p&gt;接下来让我们回到写服务器常见的资源管理的问题。上面讨论的例子里，另一种资源管理的好方法是初始化固定数目的 &lt;code class=&quot;highlighter-rouge&quot;&gt;handle&lt;/code&gt; Go协程 ，所有这些 Go协程 从信道中读取请求的数据；这种情况下 Go协程 的数目限定了同时执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;process&lt;/code&gt; 的并发数量。我们也可以给 &lt;code class=&quot;highlighter-rouge&quot;&gt;Serve&lt;/code&gt; 函数接收一个信道，并在这个信道上接收退出信号。下面的代码示例展示了上面提到的两个技术点：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Serve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clientRequests&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;quit&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;// Start handlers&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MaxOutstanding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clientRequests&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;quit&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// Wait to be told to exit.&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;channels-of-channels信道中的信道&quot;&gt;Channels of channels（信道中的信道）&lt;/h3&gt;
+
+&lt;p&gt;Go 最重要的特性之一就是：&lt;strong&gt;信道属于第一级类型&lt;/strong&gt;。信道可以像其他的类型那样初始化和传递，这个特性的一种应用是实现并行安全的多路复用模式。&lt;/p&gt;
+
+&lt;p&gt;在前面的例子中，&lt;code class=&quot;highlighter-rouge&quot;&gt;handle&lt;/code&gt; 对请求来说是一个理想的处理器，但是我们并没有提及它处理的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Request&lt;/code&gt; 类型的细节。如果 &lt;code class=&quot;highlighter-rouge&quot;&gt;Request&lt;/code&gt; 类型包含一个用来专门接收响应的信道，那么每个客户端就都可以提供自己的响应信道从而获取响应。下面给出类型 &lt;code class=&quot;highlighter-rouge&quot;&gt;Request&lt;/code&gt; 的一种定义：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;        &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;           &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;resultChan&lt;/span&gt;  &lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在 &lt;code class=&quot;highlighter-rouge&quot;&gt;Request&lt;/code&gt; 中定义了一个函数一个参数列表，同时还定义了一个信道来接收响应。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)}&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;// Send request&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;clientRequests&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;// Wait for response.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;answer: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultChan&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在服务器端，只需要修改处理器函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;handle&lt;/code&gt;，代码如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultChan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;为了让功能更丰满，上面的代码显然还有很多东西可以做，但是作为一个无锁的限流、并发、非阻塞的 RPC 系统的框架的原型，已经能说明一些问题了。&lt;/p&gt;
+
+&lt;h3 id=&quot;parallelization并行&quot;&gt;Parallelization（并行）&lt;/h3&gt;
+
+&lt;p&gt;Go协程和信道的另一个应用场景是在多 CPU 核心上进行并发运算。如果某个运算可以被分解成为同步运行的独立子过程，它就可以进行并行计算，其中当某个子过程（Go协程）结束后通过信道来通知它的结束。&lt;/p&gt;
+
+&lt;p&gt;假设我们有一个耗时的向量运算，向量中每个值的运算都是独立的，如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Vector&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;float64&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;// Apply the operation to v[i], v[i+1] ... up to v[n-1].&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Vector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DoSome&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;u&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Vector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;u&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Op&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;    &lt;span class=&quot;c&quot;&gt;// signal that this piece is done&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我们可以把循环中能够独立出来的逻辑拆分开，让每个 CPU 各自去执行。这些拆分出来的逻辑可以以任意的次序执行，在启动所有的 Go协程 后我们只需要对完成信号的数量进行计数（读取所有信道中的值），代码如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numCPU&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;// number of CPU cores&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Vector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DoAll&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;u&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Vector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numCPU&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// Buffering optional but sensible.&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numCPU&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DoSome&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numCPU&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numCPU&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;u&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;// Drain the channel.&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numCPU&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;    &lt;span class=&quot;c&quot;&gt;// wait for one task to complete&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;// All done.&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;相对于为 numCPU 创建常量的值，我们可以通过运行时来准确获取 CPU 的数量。函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;runtime.NumCPU&lt;/code&gt; 返回硬件 CPU 的核心数量，因此我们可以写为 &lt;code class=&quot;highlighter-rouge&quot;&gt;var numCPU = runtime.NumCPU()&lt;/code&gt;。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numCPU&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;runtime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NumCPU&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Go 中还有一个函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;runtime.GOMAXPROCS&lt;/code&gt;，可以用它来报告 Go 程序可以并发运行的核心数量。它的默认值是 &lt;code class=&quot;highlighter-rouge&quot;&gt;runtime.NumCPU&lt;/code&gt;，开发者可以通过设置相同名称的环境变量，或者通过显式调用这个函数（传一个正整数）来覆盖这个值。如果调用这个函数时传入的是 0，会得到这个值当前的大小。所以，我们还可以向下面这样写：&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numCPU&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;runtime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GOMAXPROCS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这里需要注意，我们不要混淆并发和并行的概念。并发是指把代码构造为独立的可执行模块；并行是指高效地在多 CPU 核心上同时执行。尽管 Go 的并发特性可以让构建并行计算变得简单，但是 Go 毕竟是一个并发的语言，它并不是一个并行语言，而且并不是所有的并行问题都契合 Go 的模型。可以查看 &lt;a href=&quot;https://blog.golang.org/2013/01/concurrency-is-not-parallelism.html&quot;&gt;这里&lt;/a&gt;查看更多相关的讨论。&lt;/p&gt;
+
+&lt;h3 id=&quot;a-leaky-buffer缓存漏斗&quot;&gt;A leaky buffer（缓存漏斗）&lt;/h3&gt;
+
+&lt;p&gt;有时候并发编程模型也可以让非并发的想法更容易表达。下面是从 RPC 包抽象出来的一个例子。客户端对应的 Go协程 循环从某些源中（可能是网络）接收数据，为了避免重复分配和回收缓存，它保存了一个空闲列表，并用一个带缓存的信道承载它。如果信道是空的，就分配一个新的缓存，否则从信道中获取一个已有的缓存。消息的缓存一旦就绪，就会被发送到 &lt;code class=&quot;highlighter-rouge&quot;&gt;serverChan&lt;/code&gt; 从而发给服务端。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;freeList&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serverChan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Buffer&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;// Grab a buffer if available; allocate if not.&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;select&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;freeList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;// Got one; nothing more to do.&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;// None free, so allocate a new one.&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;load&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;              &lt;span class=&quot;c&quot;&gt;// Read next message from the net.&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;serverChan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;      &lt;span class=&quot;c&quot;&gt;// Send to server.&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;服务端对应的 Go协程 循环获取从客户端传递过来的每个消息，处理完成后把对应的缓存释放并反还给空闲列表。&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;serverChan&lt;/span&gt;    &lt;span class=&quot;c&quot;&gt;// Wait for work.&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;// Reuse buffer if there's room.&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;select&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;freeList&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;// Buffer on free list; nothing more to do.&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;// Free list full, just carry on.&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的代码通过几行代码构建了一个漏斗桶的空闲列表。整体来看就是，客户端试图从 &lt;code class=&quot;highlighter-rouge&quot;&gt;freeList&lt;/code&gt; 获取缓存，如果没有可用的缓存它就分配一个新的缓存。服务端用完缓存后把 &lt;code class=&quot;highlighter-rouge&quot;&gt;b&lt;/code&gt; 返回给 &lt;code class=&quot;highlighter-rouge&quot;&gt;freeList&lt;/code&gt;，如果空闲列表满了，缓存会被丢弃并最终被垃圾回收器回收掉（在 &lt;code class=&quot;highlighter-rouge&quot;&gt;select&lt;/code&gt; 中 &lt;code class=&quot;highlighter-rouge&quot;&gt;default&lt;/code&gt; 的分支会在没有其他的 case 匹配的时候执行，也就意味着上面代码中 &lt;code class=&quot;highlighter-rouge&quot;&gt;select&lt;/code&gt; 语句不会阻塞）。&lt;/p&gt;
+</description>
+        <pubDate>Sun, 24 Nov 2019 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2019/11/24/effectivego-concurrent.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2019/11/24/effectivego-concurrent.html</guid>
+        
+        <category>golang</category>
+        
+        <category>基础</category>
+        
+        <category>实用</category>
+        
+        
+        <category>golang</category>
+        
+      </item>
     
       <item>
         <title>《原汁原味 Go 语言学习》(10) effective go 空白标识符、嵌套</title>
@@ -2022,119 +2330,6 @@ leaving: b
         <pubDate>Sun, 06 Oct 2019 00:00:00 +0800</pubDate>
         <link>https://jingwei.link/2019/10/06/effective-name.html</link>
         <guid isPermaLink="true">https://jingwei.link/2019/10/06/effective-name.html</guid>
-        
-        <category>golang</category>
-        
-        <category>基础</category>
-        
-        <category>实用</category>
-        
-        
-        <category>golang</category>
-        
-      </item>
-    
-      <item>
-        <title>《原汁原味 Go 语言学习》(3) effective go 命名、分号</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#名称&quot; id=&quot;markdown-toc-名称&quot;&gt;名称&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#包名&quot; id=&quot;markdown-toc-包名&quot;&gt;包名&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#获取器getters&quot; id=&quot;markdown-toc-获取器getters&quot;&gt;获取器(Getters)&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#接口名&quot; id=&quot;markdown-toc-接口名&quot;&gt;接口名&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#混合驼峰式命名&quot; id=&quot;markdown-toc-混合驼峰式命名&quot;&gt;混合驼峰式命名&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#分号&quot; id=&quot;markdown-toc-分号&quot;&gt;分号&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&quot;资料&quot;&gt;资料&lt;/h1&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://golang.google.cn/doc/effective_go.html&quot;&gt;effective go 源文档地址&lt;/a&gt;
-&lt;a href=&quot;https://www.bilibili.com/video/av70193421/&quot;&gt;本文的 bilibili 视频地址&lt;/a&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;名称&quot;&gt;名称&lt;/h1&gt;
-
-&lt;p&gt;和其他编程语言类似，命名在 Go 语言中也很讲究。Go 中的命名甚至属于语法的一部分：名称的首字母是否大写决定这个名称在包外的可见性。因此很有必要花一些时间来了解 Go 程序中的命名规范。&lt;/p&gt;
-
-&lt;h2 id=&quot;包名&quot;&gt;包名&lt;/h2&gt;
-
-&lt;p&gt;当包被导入（import）后，包名会成为包的访问器。比如，在 &lt;code class=&quot;highlighter-rouge&quot;&gt;import &quot;bytes&quot;&lt;/code&gt; 后，导入此包的文件就可以使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;bytes.Buffer&lt;/code&gt; 来访问 &lt;code class=&quot;highlighter-rouge&quot;&gt;bytes&lt;/code&gt; 包内的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Buffer&lt;/code&gt; 结构体了。如果使用某包的所有源代码都通过包名调用这个包的内容，这就意味着这个包的包名名称应该足够好：短、简洁且释义。按照惯例，包名应该是小写字符、且应该是一个独立的单词；包名里不应该包含下划线，也不应该是驼峰样式的名称。如果你定义了一个包，包名应该尽可能地简单，因为每个使用这个包的人都需要一个字符一个字符地把包名敲出来（字符太多敲起来麻烦）；我们不需要担心我们的包名和已经存在的包名称上会冲突；对于导入某个包的源码来说，包名指定了默认的访问器名称，不过没有必要在所有导入这个包的源码中都使用这个默认的名称。&lt;/p&gt;
-
-&lt;p&gt;很少的情况下，同一个源文件中导入的两个包可能有相同的包名，这时候给冲突的包定义一个新的本地访问器名称就可以了。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-	&lt;span class=&quot;s&quot;&gt;&quot;github.com/chalvern/sugar&quot;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;github.com/chalvern/sugar&quot;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;// 同样都是 &quot;github.com/chalvern/sugar&quot;，但是可以设置不同的别名&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;// 如果不设置别名，默认是 `sugar`&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;sugar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello sugar&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello log&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;导入包的时候使用的是包的全路径（比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;github.com/chalvern/sugar&quot;&lt;/code&gt;），它唯一决定了使用的是哪个包，因此即使出现了另一个名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;sugar&lt;/code&gt; 的包，使用上也不会出现混淆。&lt;/p&gt;
-
-&lt;p&gt;另一个约定是，包名一般设置为它的源文件所在的目录名，比如目录 &lt;code class=&quot;highlighter-rouge&quot;&gt;src/encoding/base64&lt;/code&gt; 定义的包引入时的路径是 &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;encoding/base64&quot;&lt;/code&gt;，我们应该把包名定义为&lt;code class=&quot;highlighter-rouge&quot;&gt;base64&lt;/code&gt;，不应该写成 encoding_base64，也不应该写成 encodingBase64。&lt;/p&gt;
-
-&lt;p&gt;一个包被导入后一般通过它的包名来访问其内容，因此在包中导出的名字可以借助包名来避免含糊不清（不要在源文件中使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;import . package/name&lt;/code&gt; 的方式导入包，否则包里的名称很容易与源文件夹中的名称混淆）。比如，在 &lt;code class=&quot;highlighter-rouge&quot;&gt;bufio&lt;/code&gt; 包里带缓存的读类型应该是 Reader 而不是 BufReader, 因为当开发者看到 &lt;code class=&quot;highlighter-rouge&quot;&gt;bufio.Reader&lt;/code&gt; 的时候就已经知道这是个带缓存的 Reader 了，这种方式的定义不仅简洁而且不失准确性。进一步讲，因为被导入的实体经常与他们的包名一起取用，因此 &lt;code class=&quot;highlighter-rouge&quot;&gt;bufio.Reader&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;io.Reader&lt;/code&gt; 虽然都是 &lt;code class=&quot;highlighter-rouge&quot;&gt;Reader&lt;/code&gt; 但是二者是不会冲突的。同样的道理，对于包 &lt;a href=&quot;https://golang.google.cn/pkg/container/ring/&quot;&gt;ring&lt;/a&gt;，包里包含唯一导出的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Ring&lt;/code&gt; 结构体，创建 &lt;code class=&quot;highlighter-rouge&quot;&gt;Ring&lt;/code&gt; 的新对象的函数按一般的思维可以被命名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;NewRing()&lt;/code&gt;，但是因为 &lt;code class=&quot;highlighter-rouge&quot;&gt;Ring&lt;/code&gt; 是包里唯一导出的类型，并且因为包名叫 &lt;code class=&quot;highlighter-rouge&quot;&gt;ring&lt;/code&gt;，因此这个创建新对象的方法可以命名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;New()&lt;/code&gt;，这样使用这个包的调用方就可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;ring.New()&lt;/code&gt; 来创建 &lt;code class=&quot;highlighter-rouge&quot;&gt;Ring&lt;/code&gt; 的对象了（是不是感觉很简单）。总之，根据包的这些使用规范来选择一个好名称吧。&lt;/p&gt;
-
-&lt;p&gt;另一个短小精悍的例子是 &lt;code class=&quot;highlighter-rouge&quot;&gt;once.Do&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;once.Do(setup)&lt;/code&gt; 读起来自然且流畅，如果把名字改成 &lt;code class=&quot;highlighter-rouge&quot;&gt;once.DoOrWaitUntilDone(setup)&lt;/code&gt; 好像并没有必要。长名称并不会让事物更具有可读性。相对于长的命名方式，注释文档往往具有有更高的价值。&lt;/p&gt;
-
-&lt;h2 id=&quot;获取器getters&quot;&gt;获取器(Getters)&lt;/h2&gt;
-
-&lt;p&gt;Go 并没有对获取器（getter）和设置器（setter）提供自动的支持；不过我们可以自己提供获取器和设置器，而且一般也推荐这么做；但是对 Go 语言来说把 Get 放进获取器的名字里显得既不明智也没太大必要。比如一个结构体有一个名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;owner&lt;/code&gt; 的字段（小写，意味着非导出，在包外不能直接访问这个变量），它的获取器的名字应该叫 &lt;code class=&quot;highlighter-rouge&quot;&gt;Owner()&lt;/code&gt;（大写字母，可导出），而不是 &lt;code class=&quot;highlighter-rouge&quot;&gt;GetOwner()&lt;/code&gt;。在 Go 语言中大写字母名称可以导出，这种机制使方法名与字段名可以不冲突，不需要添加 &lt;code class=&quot;highlighter-rouge&quot;&gt;Get&lt;/code&gt; 就可以满足我们的需求了。假如设置器函数是必须的，设置器函数可以取名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;SetOwner()&lt;/code&gt;，这个时候就要加上 &lt;code class=&quot;highlighter-rouge&quot;&gt;Set&lt;/code&gt; 这个单词了（这里或许有点过头了。。）。如此，下面的代码读起来都很流畅：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;owner&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;obj&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Owner&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;owner&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;obj&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SetOwner&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;接口名&quot;&gt;接口名&lt;/h2&gt;
-
-&lt;p&gt;通常情况下，只有一个方法的接口的名称是方法名加 “er” 后缀，或者类似构造而成的代理名词，比如：Reader, Writer, Formatter, CloseNotifier 等。这种命名方式有许多被开发者熟知的接口以及方法。&lt;/p&gt;
-
-&lt;p&gt;以 Read, Write, Close, Flush, String 等命名方法都有规范的签名（声明）和含义；为了避免混淆，你自己的方法除非有相同的签名和含义，否则不要以这些名字命名。而假如自定义的类型存在一个方法和某个已存的类型的方法功能相似，这个时候取相同的名字就可以了。比如假如你定义了一个字符串转换的方法，直接命名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 而不要命名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;ToString&lt;/code&gt;。&lt;/p&gt;
-
-&lt;h2 id=&quot;混合驼峰式命名&quot;&gt;混合驼峰式命名&lt;/h2&gt;
-
-&lt;p&gt;最后，Go 惯例中使用混合驼峰 MixedCaps 或 mixedCaps 来组织多个单词组合的名称，不推荐使用下划线的方式。&lt;/p&gt;
-
-&lt;h1 id=&quot;分号&quot;&gt;分号&lt;/h1&gt;
-
-&lt;p&gt;像 C 语言那样，Go 语言使用分号来结束语句；但是和 C 不同的是，这些分号并不在源码中出现。实际上，词法分析器通过一种简单的规则自动插入分号，从而允许在源码中不写分号。&lt;/p&gt;
-
-&lt;p&gt;分号插入的规则是：如果 ① 行尾符号的最后一个符号是一个标识符（包括 int 和 float64 等）、② 数字或字符串常量之类的基本字面、或者是 ③  &lt;code class=&quot;highlighter-rouge&quot;&gt;break continue fallthrough return ++ -- ) }&lt;/code&gt; 其中任意一个标记，词法分析器就会在这些标记后面插入一个分号。可以简单总结为：“如果一个标识符的下一个字符是行尾符，且这个标识符可以终止一条语句，就插入一个分号”。&lt;/p&gt;
-
-&lt;p&gt;紧接在右大括号前面的分号可以省略，因此表达式 &lt;code class=&quot;highlighter-rouge&quot;&gt;go func() { for { dst &amp;lt;- &amp;lt;-src } }()&lt;/code&gt; 不会插入任何的分号。Go 程序中只有一种显式使用分号的情况就是 &lt;code class=&quot;highlighter-rouge&quot;&gt;for&lt;/code&gt; 循环语句，通过分号来分割&lt;strong&gt;初始化语句&lt;/strong&gt;、&lt;strong&gt;条件语句&lt;/strong&gt;和&lt;strong&gt;迭代变量修改语句&lt;/strong&gt;。当然，如果你想在一行里写多条语句，应该显式地使用分号来分割这些语句。&lt;/p&gt;
-
-&lt;p&gt;上面讲到的分号插入规则存在一个局限性：你不可以把控制结构语句（&lt;code class=&quot;highlighter-rouge&quot;&gt;if&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;for&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;switch&lt;/code&gt;, 或者 &lt;code class=&quot;highlighter-rouge&quot;&gt;select&lt;/code&gt;）的左大括号放在新的一行，而是应该放在同一行中。如果你把 &lt;code class=&quot;highlighter-rouge&quot;&gt;if&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;for&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;switch&lt;/code&gt;, 或者 &lt;code class=&quot;highlighter-rouge&quot;&gt;select&lt;/code&gt; 紧跟着的大括号放在新的一行，根据分号的插入规则，左大括号前面会被插入一个分号，这肯定不是我们想要的效果。可以看下面的例子及其反例：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;不应该写成下面的样子：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// wrong!&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;           &lt;span class=&quot;c&quot;&gt;// wrong!&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h1 id=&quot;参考&quot;&gt;参考&lt;/h1&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/books/tree/master/golang/official_go_learning&quot;&gt;原汁原味 Go 语言学习(教案)&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Fri, 04 Oct 2019 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2019/10/04/effectivego-name-semicolons.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2019/10/04/effectivego-name-semicolons.html</guid>
         
         <category>golang</category>
         
