@@ -150,9 +150,9 @@ Author: Ray-Eldath
     <article class="markdown-body">
       <ul id="markdown-toc">
   <li><a href="#资料" id="markdown-toc-资料">资料</a></li>
-  <li><a href="#errors错误" id="markdown-toc-errors错误">Errors（错误）</a>    <ul>
+  <li><a href="#错误errors" id="markdown-toc-错误errors">错误（Errors）</a>    <ul>
       <li><a href="#panicpanic" id="markdown-toc-panicpanic">Panic（Panic）</a></li>
-      <li><a href="#recover恢复" id="markdown-toc-recover恢复">Recover（恢复）</a></li>
+      <li><a href="#恢复recover" id="markdown-toc-恢复recover">恢复（Recover）</a></li>
     </ul>
   </li>
 </ul>
@@ -164,7 +164,7 @@ Author: Ray-Eldath
   <li><a href="https://www.bilibili.com/video/av77541066">本文的视频地址</a></li>
 </ul>
 
-<h1 id="errors错误">Errors（错误）</h1>
+<h1 id="错误errors">错误（Errors）</h1>
 
 <p>原则上，第三方库在报错时能给调用者返回有指示含义的错误信息。像之前提到的 Go 的<strong>多返回值</strong>特性让<strong>同时返回普通返回值和详尽的错误描述</strong>变得很简单。通过这个特性来提供详细的错误信息是一种很好的代码风格。比如，系统库函数 <code class="highlighter-rouge">os.Open</code> 在发生错误的时候不仅返回一个 <code class="highlighter-rouge">nil</code> 的指针，同时返回一个错误变量来描述出问题的原因。</p>
 
@@ -249,7 +249,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h2 id="recover恢复">Recover（恢复）</h2>
+<h2 id="恢复recover">恢复（Recover）</h2>
 
 <p>在发生运行时错误时，比如越界访问切片，或者类型断言失败，<code class="highlighter-rouge">panic</code> 会被调用，此时当前函数的执行立即停止，并且开始展开 Goroutine 的堆栈，在这个过程中被推迟执行（defer）的函数会被依次执行。如果堆栈一直展开到达了 goroutine 的栈顶，代码就退出了。我们可以通过内建的 <code class="highlighter-rouge">recover</code> 函数来重新获取 goroutine 的控制权并且恢复其正常的执行。</p>
 
@@ -363,6 +363,18 @@ Author: Ray-Eldath
       
     </section>
     <section class="post-footer-item read-next">
+      
+      <div class="read-next-item">
+        <a href="/2019/11/30/you-can-be-my-coworker.html" class="read-next-link"></a>
+        <section>
+          <span>为团队寻找后端开发工程师（招聘）</span>
+          <p>写在前面</p>
+        </section>
+        
+        <div class="filter"></div>
+        <img src="" alt="">
+        
+     </div>
       
 
       

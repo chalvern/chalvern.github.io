@@ -150,14 +150,14 @@ Author: Ray-Eldath
     <article class="markdown-body">
       <ul id="markdown-toc">
   <li><a href="#资料" id="markdown-toc-资料">资料</a></li>
-  <li><a href="#initialization初始化" id="markdown-toc-initialization初始化">Initialization（初始化）</a>    <ul>
-      <li><a href="#constants常量" id="markdown-toc-constants常量">Constants（常量）</a></li>
-      <li><a href="#variables变量" id="markdown-toc-variables变量">Variables（变量）</a></li>
-      <li><a href="#the-init-functioninit-函数" id="markdown-toc-the-init-functioninit-函数">The init function（init 函数）</a></li>
+  <li><a href="#初始化initialization" id="markdown-toc-初始化initialization">初始化（Initialization）</a>    <ul>
+      <li><a href="#常量constants" id="markdown-toc-常量constants">常量（Constants）</a></li>
+      <li><a href="#变量variables" id="markdown-toc-变量variables">变量（Variables）</a></li>
+      <li><a href="#init-函数the-init-function" id="markdown-toc-init-函数the-init-function">init 函数（The init function）</a></li>
     </ul>
   </li>
-  <li><a href="#methods方法" id="markdown-toc-methods方法">Methods（方法）</a>    <ul>
-      <li><a href="#pointers-vs-values指针与值" id="markdown-toc-pointers-vs-values指针与值">Pointers vs. Values（指针与值）</a></li>
+  <li><a href="#方法methods" id="markdown-toc-方法methods">方法（Methods）</a>    <ul>
+      <li><a href="#指针与值pointers-vs-values" id="markdown-toc-指针与值pointers-vs-values">指针与值（Pointers vs. Values）</a></li>
     </ul>
   </li>
 </ul>
@@ -167,11 +167,11 @@ Author: Ray-Eldath
 
 <p><a href="https://www.bilibili.com/video/av74451767">本文的视频地址</a></p>
 
-<h1 id="initialization初始化">Initialization（初始化）</h1>
+<h1 id="初始化initialization">初始化（Initialization）</h1>
 
 <p>表面上看 Go 的初始化方式与 C/C++ 的初始化方法没有太大区别，但事实上 Go 的初始化方式更强大。Go 语言可以在初始化过程中直接创建复合结构类型（比如 结构体、映射、切片等），能够正确处理初始化对象之间的顺序问题（包括不同的包之间对象的初始化顺序）。</p>
 
-<h2 id="constants常量">Constants（常量）</h2>
+<h2 id="常量constants">常量（Constants）</h2>
 
 <p>在 Go 中，常量仅仅指常量。常量（包括包裹在函数内的常量）在编译时就会被创建，它只能是数字、字符（UTF8符文）、字符串或布尔值。由于常量在编译时就要确定下来，因此定义常量的表达式必须是<strong>编译器可以执行</strong>的常量表达式。比如 <code class="highlighter-rouge">1&lt;&lt;3</code> 是一个常量表达式，<code class="highlighter-rouge">math.Sin(math.Pi/4)</code> 不是常量表达式，因为 <code class="highlighter-rouge">math.Sin</code> 只能在运行时调用，不能在编译时调用。</p>
 
@@ -221,7 +221,7 @@ Author: Ray-Eldath
 
 <p>上面的代码通过使用 <code class="highlighter-rouge">Sprintf</code> 来实现 <code class="highlighter-rouge">ByteSize</code> 的 <code class="highlighter-rouge">String</code> 方法是安全的（不存在上一小节提到的循环调用问题），因为使用了 <code class="highlighter-rouge">%f</code> 格式符，而它不是一个字符串格式化符：<code class="highlighter-rouge">Sprintf</code> 只在需要字符串类型的时候才会调用 <code class="highlighter-rouge">String</code> 方法，<code class="highlighter-rouge">%f</code> 指定的是浮点值，也就自然而然避免了上面代码中 <code class="highlighter-rouge">String</code> 方法调用 <code class="highlighter-rouge">fmt.Sprintf</code> 方法后者再进一步触发 <code class="highlighter-rouge">String</code> 方法的循环调用链。</p>
 
-<h2 id="variables变量">Variables（变量）</h2>
+<h2 id="变量variables">变量（Variables）</h2>
 
 <p>可以像常量那样初始化变量，但是变量的初始化表达式可以是在运行时进行计算的通用表达式。</p>
 
@@ -232,7 +232,7 @@ Author: Ray-Eldath
 <span class="p">)</span>
 </code></pre></div></div>
 
-<h2 id="the-init-functioninit-函数">The init function（init 函数）</h2>
+<h2 id="init-函数the-init-function">init 函数（The init function）</h2>
 
 <p><strong>每个源文件</strong>都可以定义 <code class="highlighter-rouge">init</code> 函数用来初始化它需要的状态。（事实上每个文件可以有多个 <code class="highlighter-rouge">init</code> 函数，而且这些 <code class="highlighter-rouge">init</code> 函数会按序执行，比如 <a href="https://github.com/chalvern/gosmile/tree/template/db/migration">gosmile</a> 数据库迁移的设计就可以利用这个特性）。<code class="highlighter-rouge">init</code> 会在包中所有的变量声明被执行后再调用，而且只在所有被导入的包初始化以后才会被调用（被导入的包先初始化，然后常量和变量被初始化，接着才是 <code class="highlighter-rouge">init</code> 函数的执行）。</p>
 
@@ -253,9 +253,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h1 id="methods方法">Methods（方法）</h1>
+<h1 id="方法methods">方法（Methods）</h1>
 
-<h2 id="pointers-vs-values指针与值">Pointers vs. Values（指针与值）</h2>
+<h2 id="指针与值pointers-vs-values">指针与值（Pointers vs. Values）</h2>
 
 <p>就像看到的 <code class="highlighter-rouge">ByteSize</code> 那样，我们可以给任何有名称的类型（除了指针和接口）定义方法，并不限定必须是结构体类型。</p>
 

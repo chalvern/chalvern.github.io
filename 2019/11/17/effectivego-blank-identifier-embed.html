@@ -150,14 +150,14 @@ Author: Ray-Eldath
     <article class="markdown-body">
       <ul id="markdown-toc">
   <li><a href="#资料" id="markdown-toc-资料">资料</a></li>
-  <li><a href="#the-blank-identifier空白标识符" id="markdown-toc-the-blank-identifier空白标识符">The blank identifier（空白标识符）</a>    <ul>
-      <li><a href="#the-blank-identifier-in-multiple-assignment多值赋值语句中的空白标识符" id="markdown-toc-the-blank-identifier-in-multiple-assignment多值赋值语句中的空白标识符">The blank identifier in multiple assignment（多值赋值语句中的空白标识符）</a></li>
-      <li><a href="#unused-imports-and-variables未使用的导入与未使用的变量" id="markdown-toc-unused-imports-and-variables未使用的导入与未使用的变量">Unused imports and variables（未使用的导入与未使用的变量）</a></li>
-      <li><a href="#import-for-side-effect为了副作用的导入" id="markdown-toc-import-for-side-effect为了副作用的导入">Import for side effect（为了副作用的导入）</a></li>
-      <li><a href="#interface-checks接口检查" id="markdown-toc-interface-checks接口检查">Interface checks（接口检查）</a></li>
+  <li><a href="#空白标识符the-blank-identifier" id="markdown-toc-空白标识符the-blank-identifier">空白标识符（The blank identifier）</a>    <ul>
+      <li><a href="#多值赋值语句中的空白标识符the-blank-identifier-in-multiple-assignment" id="markdown-toc-多值赋值语句中的空白标识符the-blank-identifier-in-multiple-assignment">多值赋值语句中的空白标识符（The blank identifier in multiple assignment）</a></li>
+      <li><a href="#未使用的导入与未使用的变量unused-imports-and-variables" id="markdown-toc-未使用的导入与未使用的变量unused-imports-and-variables">未使用的导入与未使用的变量（Unused imports and variables）</a></li>
+      <li><a href="#为了副作用的导入import-for-side-effect" id="markdown-toc-为了副作用的导入import-for-side-effect">为了副作用的导入（Import for side effect）</a></li>
+      <li><a href="#接口检查interface-checks" id="markdown-toc-接口检查interface-checks">接口检查（Interface checks）</a></li>
     </ul>
   </li>
-  <li><a href="#embedding嵌套" id="markdown-toc-embedding嵌套">Embedding（嵌套）</a></li>
+  <li><a href="#嵌套embedding" id="markdown-toc-嵌套embedding">嵌套（Embedding）</a></li>
 </ul>
 
 <h2 id="资料">资料</h2>
@@ -167,11 +167,11 @@ Author: Ray-Eldath
   <li><a href="https://www.bilibili.com/video/av75898542">本文的视频地址</a></li>
 </ul>
 
-<h1 id="the-blank-identifier空白标识符">The blank identifier（空白标识符）</h1>
+<h1 id="空白标识符the-blank-identifier">空白标识符（The blank identifier）</h1>
 
 <p>至此为止我们已经提到过很多次空白标识符，在 “for-range 循环” 和 “映射 maps” 小节都有提到。空白标识符可以被任意类型的任意值进行赋值，而且这些值会静默地被丢弃掉。它有点像 Unix 的 <code class="highlighter-rouge">/dev/null</code> 文件描述符：空白标识符（_）表示一个只写的值，它可以作为占位符使用，如果有一个变量的值不会被使用但是又必须要设置一个变量来接收这个值，此时就可以使用空白标识符。当然，除此外空白标识符的用处还有很多。</p>
 
-<h2 id="the-blank-identifier-in-multiple-assignment多值赋值语句中的空白标识符">The blank identifier in multiple assignment（多值赋值语句中的空白标识符）</h2>
+<h2 id="多值赋值语句中的空白标识符the-blank-identifier-in-multiple-assignment">多值赋值语句中的空白标识符（The blank identifier in multiple assignment）</h2>
 
 <p>for-range 循环中的空白标识符是一种通用情况的特例：属于多值赋值语句。</p>
 
@@ -191,7 +191,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h2 id="unused-imports-and-variables未使用的导入与未使用的变量">Unused imports and variables（未使用的导入与未使用的变量）</h2>
+<h2 id="未使用的导入与未使用的变量unused-imports-and-variables">未使用的导入与未使用的变量（Unused imports and variables）</h2>
 
 <p>如果导入了没有使用的包或者声明了没有使用的变量，代码编译的时候编译器都会报错。如果导入一个包却不使用它会让程序显得臃肿而且会拖慢代码的编译速度；一个变量初始化未经使用则意味着计算资源的浪费，有时候甚至意味着很大的缺陷（bug）。不过，代码在开发过程中总会出现尚未使用的导入和变量，如果仅仅为了编译通过而删掉他们后面写到对应的逻辑以后再把它们加回来，这种操作显得有点烦人，此时就可以使用空白标识符：</p>
 
@@ -241,7 +241,7 @@ Author: Ray-Eldath
 
 <p>传统意义上来说，为了避免编译器报错的全局声明语句（类似上面代码中的 <code class="highlighter-rouge">var _ = fmt.Printf</code> 和 <code class="highlighter-rouge">var _ io.Reader</code>）应该紧跟在导入语句的后面并且注释一下情况，这样未来可以方便地找到这些语句，同时还能够作为一种删除提醒。</p>
 
-<h2 id="import-for-side-effect为了副作用的导入">Import for side effect（为了副作用的导入）</h2>
+<h2 id="为了副作用的导入import-for-side-effect">为了副作用的导入（Import for side effect）</h2>
 
 <p>在前面的例子中，空白标识符的使用仅仅意味着代码还在开发状态，像 <code class="highlighter-rouge">fmt</code> 和 <code class="highlighter-rouge">io</code> 这种未经使用的包最后要么被使用要么被移除。不过真实编码过程中我们可能只需要导入包从而引起某种副作用，但是确实不会在文件中显式地使用这个包。</p>
 
@@ -252,7 +252,7 @@ Author: Ray-Eldath
 
 <p>因为没有其他地方使用 <code class="highlighter-rouge">net/http/pprof</code> 这个包，这种方式的导入可以很明显地表明目的：在这个文件中这个包没有名字，之所以导入它只是为了获得这个包的副效果。</p>
 
-<h2 id="interface-checks接口检查">Interface checks（接口检查）</h2>
+<h2 id="接口检查interface-checks">接口检查（Interface checks）</h2>
 
 <p>就像我们在“接口”那一节看到的，类型不需要显式指明自己实现了哪些接口。相反，类型仅需实现接口中包含的方法隐式地来实现接口。实际编码中，大部分的接口转换都是静态的，因此在编译时就会进行类型检查。比如，如果一个函数希望得到 <code class="highlighter-rouge">io.Reader</code> 类型的参数，可以给它传递一个实现了 <code class="highlighter-rouge">io.Reader</code> 的 <code class="highlighter-rouge">*os.File</code> 类型的变量，如果 <code class="highlighter-rouge">*os.File</code> 没有实现 <code class="highlighter-rouge">io.Reader</code> 接口，代码不能编译通过。</p>
 
@@ -277,7 +277,7 @@ Author: Ray-Eldath
 
 <p>在上面的这种情况下，空白标识符的出现标明声明语句仅仅为了类型检查，而并不会创建一个变量。但是，如果知道类型肯定满足某个接口则没有必要做这种声明。通常情况下，这种用法仅在源码中不存在静态类型转换的情况时使用，而这种情况其实很少见到。</p>
 
-<h1 id="embedding嵌套">Embedding（嵌套）</h1>
+<h1 id="嵌套embedding">嵌套（Embedding）</h1>
 
 <p>Go 没有子类的概念，但是我们可以通过在结构体或接口中<strong>嵌套</strong>某个类型来实现类似的功能。</p>
 

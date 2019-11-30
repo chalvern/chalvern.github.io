@@ -150,12 +150,12 @@ Author: Ray-Eldath
     <article class="markdown-body">
       <ul id="markdown-toc">
   <li><a href="#资料" id="markdown-toc-资料">资料</a></li>
-  <li><a href="#interfaces-and-other-types接口与其他类型" id="markdown-toc-interfaces-and-other-types接口与其他类型">Interfaces and other types（接口与其他类型）</a>    <ul>
-      <li><a href="#interfaces接口" id="markdown-toc-interfaces接口">Interfaces（接口）</a></li>
-      <li><a href="#conversions类型转换" id="markdown-toc-conversions类型转换">Conversions（类型转换）</a></li>
-      <li><a href="#interface-conversions-and-type-assertions接口转换与类型断言" id="markdown-toc-interface-conversions-and-type-assertions接口转换与类型断言">Interface conversions and type assertions（接口转换与类型断言）</a></li>
-      <li><a href="#generality泛型" id="markdown-toc-generality泛型">Generality（泛型）</a></li>
-      <li><a href="#interfaces-and-methods接口与方法" id="markdown-toc-interfaces-and-methods接口与方法">Interfaces and methods（接口与方法）</a></li>
+  <li><a href="#接口与其他类型interfaces-and-other-types" id="markdown-toc-接口与其他类型interfaces-and-other-types">接口与其他类型（Interfaces and other types）</a>    <ul>
+      <li><a href="#接口interfaces" id="markdown-toc-接口interfaces">接口（Interfaces）</a></li>
+      <li><a href="#类型转换conversions" id="markdown-toc-类型转换conversions">类型转换（Conversions）</a></li>
+      <li><a href="#接口转换与类型断言interface-conversions-and-type-assertions" id="markdown-toc-接口转换与类型断言interface-conversions-and-type-assertions">接口转换与类型断言（Interface conversions and type assertions）</a></li>
+      <li><a href="#泛型generality" id="markdown-toc-泛型generality">泛型（Generality）</a></li>
+      <li><a href="#接口与方法interfaces-and-methods" id="markdown-toc-接口与方法interfaces-and-methods">接口与方法（Interfaces and methods）</a></li>
     </ul>
   </li>
 </ul>
@@ -165,9 +165,9 @@ Author: Ray-Eldath
 
 <p><a href="https://www.bilibili.com/video/av75076225">本文的视频地址</a></p>
 
-<h1 id="interfaces-and-other-types接口与其他类型">Interfaces and other types（接口与其他类型）</h1>
+<h1 id="接口与其他类型interfaces-and-other-types">接口与其他类型（Interfaces and other types）</h1>
 
-<h2 id="interfaces接口">Interfaces（接口）</h2>
+<h2 id="接口interfaces">接口（Interfaces）</h2>
 
 <p>在 Go 中，可以用接口来指定一个对象的行为：如果一个对象可以做<strong>某件事情</strong>，那么它就可以用在<strong>某个指定的地方</strong>。之前已经看到过几个简单的例子：① 实现 <code class="highlighter-rouge">String</code> 方法可以自定义类型的打印格式，② <code class="highlighter-rouge">Fprintf</code> 可以向任何实现了 <code class="highlighter-rouge">Write</code> 方法的类型打印内容。在 Go 源码中，有很多只包含一两个方法的接口，一般情况下这些接口的名称直接衍生自他们所包含的方法，比如只有一个 <code class="highlighter-rouge">Write</code> 方法的 <code class="highlighter-rouge">io.Writer</code> 接口。</p>
 
@@ -207,7 +207,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h2 id="conversions类型转换">Conversions（类型转换）</h2>
+<h2 id="类型转换conversions">类型转换（Conversions）</h2>
 
 <p>上面 <code class="highlighter-rouge">Sequence</code> 的 <code class="highlighter-rouge">String</code> 方法（复杂度为 O(N²)）做了很多 <code class="highlighter-rouge">Sprint</code> 已经做完的事情——<code class="highlighter-rouge">Sprint</code> 函数内置了打印集合类型值的功能。因此如果调用 <code class="highlighter-rouge">Sprint</code> 前我们把 <code class="highlighter-rouge">Sequence</code> 转换为普通的 <code class="highlighter-rouge">[]int</code>，就可以避免重复的工作同时还会加快执行速度。</p>
 
@@ -234,7 +234,7 @@ Author: Ray-Eldath
 
 <p>上面的代码把 <code class="highlighter-rouge">Sequence</code> 转换为不同的类型从而使用每种类型包含的功能，每种转换完成一部分的工作，一起达成最后期望的效果；语句 <code class="highlighter-rouge">sort.IntSlice(s)</code> 把 <code class="highlighter-rouge">s</code> 转换为 <code class="highlighter-rouge">sort.IntSlice</code> 类型，这种类型实现了 <code class="highlighter-rouge">sort.Interface</code> 接口，因此可以直接调用 <code class="highlighter-rouge">Sort()</code> 方法，就避免我们自己在定义 <code class="highlighter-rouge">Len/Less/Swap</code> 方法了。这种类型变来变去的用法看起来不同寻常，但是写起来很高效。</p>
 
-<h2 id="interface-conversions-and-type-assertions接口转换与类型断言">Interface conversions and type assertions（接口转换与类型断言）</h2>
+<h2 id="接口转换与类型断言interface-conversions-and-type-assertions">接口转换与类型断言（Interface conversions and type assertions）</h2>
 
 <p><strong>类型 switch</strong> 语法是类型转换的一种方式：他首先接收某个<strong>接口变量</strong>，然后在每个 case 里把接口变量转换为对应的类型。下面的代码是简化版的 <code class="highlighter-rouge">fmt.Printf</code> 方法，用来展示如何通过类型 switch 把一个接口变量转换成字符串。如果接口变量已经是一个字符串，只需要把这个字符串值返回就可以了；否则假如它实现了 <code class="highlighter-rouge">String</code> 方法（实现了 <code class="highlighter-rouge">Stringer</code> 接口），我们可以通过调用这个方法并返回其结果。</p>
 
@@ -284,7 +284,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h2 id="generality泛型">Generality（泛型）</h2>
+<h2 id="泛型generality">泛型（Generality）</h2>
 
 <p>如果类型的存在只是为了实现某个接口，除了接口中限定必须要实现的方法没有其他需要导出的方法，此时就没有必要导出这个类型，只需导出对应接口即可，表明这个类型的值除了接口里定义的方法外没有其他的方法。假如对同一个接口有不同的实现，这种做法还能避免重复地给方法写文档（只需要在接口里注明每种方法的作用、用法，各个类型实现这些方法的时候只需要简单注明是哪个接口的方法就可以了）。</p>
 
@@ -314,7 +314,7 @@ Author: Ray-Eldath
 
 <p><code class="highlighter-rouge">NewCTR</code> 不局限应用到某种特定的加密算法和数据源，它能够应用在所有实现了 <code class="highlighter-rouge">Block</code> 接口和 <code class="highlighter-rouge">Stream</code> 接口的加密算法上面。同时因为 <code class="highlighter-rouge">NewCTR</code> 返回的是 <code class="highlighter-rouge">Stream</code> 接口类型，因此用其他的加密算法替代 <code class="highlighter-rouge">CTR</code> 算法也很简单，只需要把调用了 <code class="highlighter-rouge">NewCTR</code> 的地方替换成为其他加密算法的构造器就可以了。</p>
 
-<h2 id="interfaces-and-methods接口与方法">Interfaces and methods（接口与方法）</h2>
+<h2 id="接口与方法interfaces-and-methods">接口与方法（Interfaces and methods）</h2>
 
 <p>在 Go 中几乎所有东西都可以关联方法，都可以满足某个接口。其中一个例子是定义了 <code class="highlighter-rouge">Handler</code> 接口的 <code class="highlighter-rouge">http</code> 包：任何实现了 <code class="highlighter-rouge">Handler</code> 接口的对象都可以处理 HTTP 请求。</p>
 

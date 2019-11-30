@@ -150,13 +150,13 @@ Author: Ray-Eldath
     <article class="markdown-body">
       <ul id="markdown-toc">
   <li><a href="#资料" id="markdown-toc-资料">资料</a></li>
-  <li><a href="#concurrency并发" id="markdown-toc-concurrency并发">Concurrency（并发）</a>    <ul>
-      <li><a href="#share-by-communicating以通信的方式共享变量" id="markdown-toc-share-by-communicating以通信的方式共享变量">Share by communicating（以通信的方式共享变量）</a></li>
-      <li><a href="#goroutinesgo-协程" id="markdown-toc-goroutinesgo-协程">Goroutines（Go 协程）</a>        <ul>
-          <li><a href="#channels信道" id="markdown-toc-channels信道">Channels（信道）</a></li>
-          <li><a href="#channels-of-channels信道中的信道" id="markdown-toc-channels-of-channels信道中的信道">Channels of channels（信道中的信道）</a></li>
-          <li><a href="#parallelization并行" id="markdown-toc-parallelization并行">Parallelization（并行）</a></li>
-          <li><a href="#a-leaky-buffer缓存漏斗" id="markdown-toc-a-leaky-buffer缓存漏斗">A leaky buffer（缓存漏斗）</a></li>
+  <li><a href="#并发concurrency" id="markdown-toc-并发concurrency">并发（Concurrency）</a>    <ul>
+      <li><a href="#以通信的方式共享变量share-by-communicating" id="markdown-toc-以通信的方式共享变量share-by-communicating">以通信的方式共享变量（Share by communicating）</a></li>
+      <li><a href="#go-协程goroutines" id="markdown-toc-go-协程goroutines">Go 协程（Goroutines）</a>        <ul>
+          <li><a href="#信道channels" id="markdown-toc-信道channels">信道（Channels）</a></li>
+          <li><a href="#信道中的信道channels-of-channels" id="markdown-toc-信道中的信道channels-of-channels">信道中的信道（Channels of channels）</a></li>
+          <li><a href="#并行parallelization" id="markdown-toc-并行parallelization">并行（Parallelization）</a></li>
+          <li><a href="#缓存漏斗a-leaky-buffer" id="markdown-toc-缓存漏斗a-leaky-buffer">缓存漏斗（A leaky buffer）</a></li>
         </ul>
       </li>
     </ul>
@@ -169,9 +169,9 @@ Author: Ray-Eldath
 
 <p><a href="https://www.bilibili.com/video/av76858443">本文的视频地址</a></p>
 
-<h1 id="concurrency并发">Concurrency（并发）</h1>
+<h1 id="并发concurrency">并发（Concurrency）</h1>
 
-<h2 id="share-by-communicating以通信的方式共享变量">Share by communicating（以通信的方式共享变量）</h2>
+<h2 id="以通信的方式共享变量share-by-communicating">以通信的方式共享变量（Share by communicating）</h2>
 
 <p>并发编程是个很大的话题，本小节只考虑 Go 相关的特性。</p>
 
@@ -181,7 +181,7 @@ Author: Ray-Eldath
 
 <p>那么该怎么思考这个模型呢？假设我们有一个独立线程的程序，它只运行在一个 CPU 核上，这种情况下显然没有必要进行任何同步。现在思考有另一个类似的实例，它也是独立线程的，而且也只允许在一个 CPU 核上，这个实例也不需要任何的同步。然后，我们让这两个线程进行通信；如果通信方式是同步的，那么这两个独立的线程之间就不需要其他的同步了。Unix 里的 Pipline（管道） 模式就属于类似的模型。虽然 Go 解决并发的解决方案源自 Hoare 的CSP（通信序列过程）模型，但是它也可以看做是 Unix 管道的带类型安全限定的通用版本。</p>
 
-<h2 id="goroutinesgo-协程">Goroutines（Go 协程）</h2>
+<h2 id="go-协程goroutines">Go 协程（Goroutines）</h2>
 
 <p>之所以叫 <strong>goroutines（Go协程）</strong> ，是因为已有的术语——线程、协程、进程等——和要传达的含义并不完全匹配。每个 Go协程 都包含同一个简单的模型：首先它是一个函数，并且它和其他的 Go协程 在同一个地址空间同时运行。Go协程 是轻量级的，消耗的资源几乎只包含分配堆栈空间花费的那一点资源；同时因为它的堆栈初始化时很小，且总是依照实际需要来增加（或释放）堆存储，它也是很廉价的（意味着我们可以很容易地创建成千上万的 goroutines）。</p>
 
@@ -206,7 +206,7 @@ Author: Ray-Eldath
 
 <p>因为上面的例子里函数都没有标识自己什么时候退出，我们也就无法知道它们是不是把任务完成了，因此没有太大的实践意义。为此需要引入信道。</p>
 
-<h3 id="channels信道">Channels（信道）</h3>
+<h3 id="信道channels">信道（Channels）</h3>
 
 <p>和映射一样，信道通过 <code class="highlighter-rouge">make</code> 来分配内存，返回的结果等效于是对底层数据结构的引用。在使用 <code class="highlighter-rouge">make</code> 时如果传入了一个可选的整数，会创建带缓存的信道；如果不传默认就是 0，此时创建的是一个没有缓存的信道或者称为同步信道。</p>
 
@@ -310,7 +310,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h3 id="channels-of-channels信道中的信道">Channels of channels（信道中的信道）</h3>
+<h3 id="信道中的信道channels-of-channels">信道中的信道（Channels of channels）</h3>
 
 <p>Go 最重要的特性之一就是：<strong>信道属于第一级类型</strong>。信道可以像其他的类型那样初始化和传递，这个特性的一种应用是实现并行安全的多路复用模式。</p>
 
@@ -350,7 +350,7 @@ Author: Ray-Eldath
 
 <p>为了让功能更丰满，上面的代码显然还有很多东西可以做，但是作为一个无锁的限流、并发、非阻塞的 RPC 系统的框架的原型，已经能说明一些问题了。</p>
 
-<h3 id="parallelization并行">Parallelization（并行）</h3>
+<h3 id="并行parallelization">并行（Parallelization）</h3>
 
 <p>Go协程和信道的另一个应用场景是在多 CPU 核心上进行并发运算。如果某个运算可以被分解成为同步运行的独立子过程，它就可以进行并行计算，其中当某个子过程（Go协程）结束后通过信道来通知它的结束。</p>
 
@@ -396,7 +396,7 @@ Author: Ray-Eldath
 
 <p>这里需要注意，我们不要混淆并发和并行的概念。并发是指把代码构造为独立的可执行模块；并行是指高效地在多 CPU 核心上同时执行。尽管 Go 的并发特性可以让构建并行计算变得简单，但是 Go 毕竟是一个并发的语言，它并不是一个并行语言，而且并不是所有的并行问题都契合 Go 的模型。可以查看 <a href="https://blog.golang.org/2013/01/concurrency-is-not-parallelism.html">这里</a>查看更多相关的讨论。</p>
 
-<h3 id="a-leaky-buffer缓存漏斗">A leaky buffer（缓存漏斗）</h3>
+<h3 id="缓存漏斗a-leaky-buffer">缓存漏斗（A leaky buffer）</h3>
 
 <p>有时候并发编程模型也可以让非并发的想法更容易表达。下面是从 RPC 包抽象出来的一个例子。客户端对应的 Go协程 循环从某些源中（可能是网络）接收数据，为了避免重复分配和回收缓存，它保存了一个空闲列表，并用一个带缓存的信道承载它。如果信道是空的，就分配一个新的缓存，否则从信道中获取一个已有的缓存。消息的缓存一旦就绪，就会被发送到 <code class="highlighter-rouge">serverChan</code> 从而发给服务端。</p>
 

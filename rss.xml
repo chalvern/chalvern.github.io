@@ -5,17 +5,57 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 30 Nov 2019 15:15:17 +0800</pubDate>
-    <lastBuildDate>Sat, 30 Nov 2019 15:15:17 +0800</lastBuildDate>
+    <pubDate>Sat, 30 Nov 2019 18:27:03 +0800</pubDate>
+    <lastBuildDate>Sat, 30 Nov 2019 18:27:03 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>为团队寻找后端开发工程师（招聘）</title>
+        <description>&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
+
+&lt;p&gt;程序员是“活到老学到老”的践行者，无论是前端开发者还是后端开发者，都是如此。希望你也是这样的程序员。&lt;/p&gt;
+
+&lt;p&gt;再加入当前的公司（&lt;strong&gt;上海·桂林路&lt;/strong&gt;）后，随着公司业务逐渐展开，发现团队里的事情也多起来了，因此开贴找一起共事一起学习的同事。&lt;/p&gt;
+
+&lt;h2 id=&quot;后端开发工程师&quot;&gt;后端开发工程师&lt;/h2&gt;
+
+&lt;p&gt;职位描述：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;参与完成项目的系统分析、设计，并负责业务功能与底层基础功能的功能设计、代码实现。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;希望你：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;有 2 年以上的后端开发经验；&lt;/li&gt;
+  &lt;li&gt;熟练使用 Java/Go/Python 中的一种或多种编程语言；&lt;/li&gt;
+  &lt;li&gt;了解并能熟练使用常见的数据库（Mysql、ElasticSearch、MongoDB、Redis 等）；&lt;/li&gt;
+  &lt;li&gt;掌握计算机基本理论知识，包括基础网络、存储、算法等；&lt;/li&gt;
+  &lt;li&gt;如果自我感觉良好，可以不受上面条款的限制。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;欢迎邮件（zhjw43@163.com）骚扰。&lt;/p&gt;
+</description>
+        <pubDate>Sat, 30 Nov 2019 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2019/11/30/you-can-be-my-coworker.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2019/11/30/you-can-be-my-coworker.html</guid>
+        
+        <category>管理</category>
+        
+        <category>实用</category>
+        
+        
+        <category>管理</category>
+        
+      </item>
     
       <item>
         <title>《原汁原味 Go 语言学习》(12) effective go 错误抛出与捕获、恢复</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#errors错误&quot; id=&quot;markdown-toc-errors错误&quot;&gt;Errors（错误）&lt;/a&gt;    &lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#错误errors&quot; id=&quot;markdown-toc-错误errors&quot;&gt;错误（Errors）&lt;/a&gt;    &lt;ul&gt;
       &lt;li&gt;&lt;a href=&quot;#panicpanic&quot; id=&quot;markdown-toc-panicpanic&quot;&gt;Panic（Panic）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#recover恢复&quot; id=&quot;markdown-toc-recover恢复&quot;&gt;Recover（恢复）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#恢复recover&quot; id=&quot;markdown-toc-恢复recover&quot;&gt;恢复（Recover）&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
@@ -27,7 +67,7 @@
   &lt;li&gt;&lt;a href=&quot;https://www.bilibili.com/video/av77541066&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h1 id=&quot;errors错误&quot;&gt;Errors（错误）&lt;/h1&gt;
+&lt;h1 id=&quot;错误errors&quot;&gt;错误（Errors）&lt;/h1&gt;
 
 &lt;p&gt;原则上，第三方库在报错时能给调用者返回有指示含义的错误信息。像之前提到的 Go 的&lt;strong&gt;多返回值&lt;/strong&gt;特性让&lt;strong&gt;同时返回普通返回值和详尽的错误描述&lt;/strong&gt;变得很简单。通过这个特性来提供详细的错误信息是一种很好的代码风格。比如，系统库函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;os.Open&lt;/code&gt; 在发生错误的时候不仅返回一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;nil&lt;/code&gt; 的指针，同时返回一个错误变量来描述出问题的原因。&lt;/p&gt;
 
@@ -112,7 +152,7 @@
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;recover恢复&quot;&gt;Recover（恢复）&lt;/h2&gt;
+&lt;h2 id=&quot;恢复recover&quot;&gt;恢复（Recover）&lt;/h2&gt;
 
 &lt;p&gt;在发生运行时错误时，比如越界访问切片，或者类型断言失败，&lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 会被调用，此时当前函数的执行立即停止，并且开始展开 Goroutine 的堆栈，在这个过程中被推迟执行（defer）的函数会被依次执行。如果堆栈一直展开到达了 goroutine 的栈顶，代码就退出了。我们可以通过内建的 &lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 函数来重新获取 goroutine 的控制权并且恢复其正常的执行。&lt;/p&gt;
 
@@ -202,13 +242,13 @@
         <title>《原汁原味 Go 语言学习》(11) effective go 并发编程</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#concurrency并发&quot; id=&quot;markdown-toc-concurrency并发&quot;&gt;Concurrency（并发）&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#share-by-communicating以通信的方式共享变量&quot; id=&quot;markdown-toc-share-by-communicating以通信的方式共享变量&quot;&gt;Share by communicating（以通信的方式共享变量）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#goroutinesgo-协程&quot; id=&quot;markdown-toc-goroutinesgo-协程&quot;&gt;Goroutines（Go 协程）&lt;/a&gt;        &lt;ul&gt;
-          &lt;li&gt;&lt;a href=&quot;#channels信道&quot; id=&quot;markdown-toc-channels信道&quot;&gt;Channels（信道）&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href=&quot;#channels-of-channels信道中的信道&quot; id=&quot;markdown-toc-channels-of-channels信道中的信道&quot;&gt;Channels of channels（信道中的信道）&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href=&quot;#parallelization并行&quot; id=&quot;markdown-toc-parallelization并行&quot;&gt;Parallelization（并行）&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href=&quot;#a-leaky-buffer缓存漏斗&quot; id=&quot;markdown-toc-a-leaky-buffer缓存漏斗&quot;&gt;A leaky buffer（缓存漏斗）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#并发concurrency&quot; id=&quot;markdown-toc-并发concurrency&quot;&gt;并发（Concurrency）&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#以通信的方式共享变量share-by-communicating&quot; id=&quot;markdown-toc-以通信的方式共享变量share-by-communicating&quot;&gt;以通信的方式共享变量（Share by communicating）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#go-协程goroutines&quot; id=&quot;markdown-toc-go-协程goroutines&quot;&gt;Go 协程（Goroutines）&lt;/a&gt;        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;#信道channels&quot; id=&quot;markdown-toc-信道channels&quot;&gt;信道（Channels）&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#信道中的信道channels-of-channels&quot; id=&quot;markdown-toc-信道中的信道channels-of-channels&quot;&gt;信道中的信道（Channels of channels）&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#并行parallelization&quot; id=&quot;markdown-toc-并行parallelization&quot;&gt;并行（Parallelization）&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#缓存漏斗a-leaky-buffer&quot; id=&quot;markdown-toc-缓存漏斗a-leaky-buffer&quot;&gt;缓存漏斗（A leaky buffer）&lt;/a&gt;&lt;/li&gt;
         &lt;/ul&gt;
       &lt;/li&gt;
     &lt;/ul&gt;
@@ -221,9 +261,9 @@
 
 &lt;p&gt;&lt;a href=&quot;https://www.bilibili.com/video/av76858443&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/p&gt;
 
-&lt;h1 id=&quot;concurrency并发&quot;&gt;Concurrency（并发）&lt;/h1&gt;
+&lt;h1 id=&quot;并发concurrency&quot;&gt;并发（Concurrency）&lt;/h1&gt;
 
-&lt;h2 id=&quot;share-by-communicating以通信的方式共享变量&quot;&gt;Share by communicating（以通信的方式共享变量）&lt;/h2&gt;
+&lt;h2 id=&quot;以通信的方式共享变量share-by-communicating&quot;&gt;以通信的方式共享变量（Share by communicating）&lt;/h2&gt;
 
 &lt;p&gt;并发编程是个很大的话题，本小节只考虑 Go 相关的特性。&lt;/p&gt;
 
@@ -233,7 +273,7 @@
 
 &lt;p&gt;那么该怎么思考这个模型呢？假设我们有一个独立线程的程序，它只运行在一个 CPU 核上，这种情况下显然没有必要进行任何同步。现在思考有另一个类似的实例，它也是独立线程的，而且也只允许在一个 CPU 核上，这个实例也不需要任何的同步。然后，我们让这两个线程进行通信；如果通信方式是同步的，那么这两个独立的线程之间就不需要其他的同步了。Unix 里的 Pipline（管道） 模式就属于类似的模型。虽然 Go 解决并发的解决方案源自 Hoare 的CSP（通信序列过程）模型，但是它也可以看做是 Unix 管道的带类型安全限定的通用版本。&lt;/p&gt;
 
-&lt;h2 id=&quot;goroutinesgo-协程&quot;&gt;Goroutines（Go 协程）&lt;/h2&gt;
+&lt;h2 id=&quot;go-协程goroutines&quot;&gt;Go 协程（Goroutines）&lt;/h2&gt;
 
 &lt;p&gt;之所以叫 &lt;strong&gt;goroutines（Go协程）&lt;/strong&gt; ，是因为已有的术语——线程、协程、进程等——和要传达的含义并不完全匹配。每个 Go协程 都包含同一个简单的模型：首先它是一个函数，并且它和其他的 Go协程 在同一个地址空间同时运行。Go协程 是轻量级的，消耗的资源几乎只包含分配堆栈空间花费的那一点资源；同时因为它的堆栈初始化时很小，且总是依照实际需要来增加（或释放）堆存储，它也是很廉价的（意味着我们可以很容易地创建成千上万的 goroutines）。&lt;/p&gt;
 
@@ -258,7 +298,7 @@
 
 &lt;p&gt;因为上面的例子里函数都没有标识自己什么时候退出，我们也就无法知道它们是不是把任务完成了，因此没有太大的实践意义。为此需要引入信道。&lt;/p&gt;
 
-&lt;h3 id=&quot;channels信道&quot;&gt;Channels（信道）&lt;/h3&gt;
+&lt;h3 id=&quot;信道channels&quot;&gt;信道（Channels）&lt;/h3&gt;
 
 &lt;p&gt;和映射一样，信道通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 来分配内存，返回的结果等效于是对底层数据结构的引用。在使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 时如果传入了一个可选的整数，会创建带缓存的信道；如果不传默认就是 0，此时创建的是一个没有缓存的信道或者称为同步信道。&lt;/p&gt;
 
@@ -362,7 +402,7 @@
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h3 id=&quot;channels-of-channels信道中的信道&quot;&gt;Channels of channels（信道中的信道）&lt;/h3&gt;
+&lt;h3 id=&quot;信道中的信道channels-of-channels&quot;&gt;信道中的信道（Channels of channels）&lt;/h3&gt;
 
 &lt;p&gt;Go 最重要的特性之一就是：&lt;strong&gt;信道属于第一级类型&lt;/strong&gt;。信道可以像其他的类型那样初始化和传递，这个特性的一种应用是实现并行安全的多路复用模式。&lt;/p&gt;
 
@@ -402,7 +442,7 @@
 
 &lt;p&gt;为了让功能更丰满，上面的代码显然还有很多东西可以做，但是作为一个无锁的限流、并发、非阻塞的 RPC 系统的框架的原型，已经能说明一些问题了。&lt;/p&gt;
 
-&lt;h3 id=&quot;parallelization并行&quot;&gt;Parallelization（并行）&lt;/h3&gt;
+&lt;h3 id=&quot;并行parallelization&quot;&gt;并行（Parallelization）&lt;/h3&gt;
 
 &lt;p&gt;Go协程和信道的另一个应用场景是在多 CPU 核心上进行并发运算。如果某个运算可以被分解成为同步运行的独立子过程，它就可以进行并行计算，其中当某个子过程（Go协程）结束后通过信道来通知它的结束。&lt;/p&gt;
 
@@ -448,7 +488,7 @@
 
 &lt;p&gt;这里需要注意，我们不要混淆并发和并行的概念。并发是指把代码构造为独立的可执行模块；并行是指高效地在多 CPU 核心上同时执行。尽管 Go 的并发特性可以让构建并行计算变得简单，但是 Go 毕竟是一个并发的语言，它并不是一个并行语言，而且并不是所有的并行问题都契合 Go 的模型。可以查看 &lt;a href=&quot;https://blog.golang.org/2013/01/concurrency-is-not-parallelism.html&quot;&gt;这里&lt;/a&gt;查看更多相关的讨论。&lt;/p&gt;
 
-&lt;h3 id=&quot;a-leaky-buffer缓存漏斗&quot;&gt;A leaky buffer（缓存漏斗）&lt;/h3&gt;
+&lt;h3 id=&quot;缓存漏斗a-leaky-buffer&quot;&gt;缓存漏斗（A leaky buffer）&lt;/h3&gt;
 
 &lt;p&gt;有时候并发编程模型也可以让非并发的想法更容易表达。下面是从 RPC 包抽象出来的一个例子。客户端对应的 Go协程 循环从某些源中（可能是网络）接收数据，为了避免重复分配和回收缓存，它保存了一个空闲列表，并用一个带缓存的信道承载它。如果信道是空的，就分配一个新的缓存，否则从信道中获取一个已有的缓存。消息的缓存一旦就绪，就会被发送到 &lt;code class=&quot;highlighter-rouge&quot;&gt;serverChan&lt;/code&gt; 从而发给服务端。&lt;/p&gt;
 
@@ -510,14 +550,14 @@
         <title>《原汁原味 Go 语言学习》(10) effective go 空白标识符、嵌套</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#the-blank-identifier空白标识符&quot; id=&quot;markdown-toc-the-blank-identifier空白标识符&quot;&gt;The blank identifier（空白标识符）&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#the-blank-identifier-in-multiple-assignment多值赋值语句中的空白标识符&quot; id=&quot;markdown-toc-the-blank-identifier-in-multiple-assignment多值赋值语句中的空白标识符&quot;&gt;The blank identifier in multiple assignment（多值赋值语句中的空白标识符）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#unused-imports-and-variables未使用的导入与未使用的变量&quot; id=&quot;markdown-toc-unused-imports-and-variables未使用的导入与未使用的变量&quot;&gt;Unused imports and variables（未使用的导入与未使用的变量）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#import-for-side-effect为了副作用的导入&quot; id=&quot;markdown-toc-import-for-side-effect为了副作用的导入&quot;&gt;Import for side effect（为了副作用的导入）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#interface-checks接口检查&quot; id=&quot;markdown-toc-interface-checks接口检查&quot;&gt;Interface checks（接口检查）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#空白标识符the-blank-identifier&quot; id=&quot;markdown-toc-空白标识符the-blank-identifier&quot;&gt;空白标识符（The blank identifier）&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#多值赋值语句中的空白标识符the-blank-identifier-in-multiple-assignment&quot; id=&quot;markdown-toc-多值赋值语句中的空白标识符the-blank-identifier-in-multiple-assignment&quot;&gt;多值赋值语句中的空白标识符（The blank identifier in multiple assignment）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#未使用的导入与未使用的变量unused-imports-and-variables&quot; id=&quot;markdown-toc-未使用的导入与未使用的变量unused-imports-and-variables&quot;&gt;未使用的导入与未使用的变量（Unused imports and variables）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#为了副作用的导入import-for-side-effect&quot; id=&quot;markdown-toc-为了副作用的导入import-for-side-effect&quot;&gt;为了副作用的导入（Import for side effect）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#接口检查interface-checks&quot; id=&quot;markdown-toc-接口检查interface-checks&quot;&gt;接口检查（Interface checks）&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#embedding嵌套&quot; id=&quot;markdown-toc-embedding嵌套&quot;&gt;Embedding（嵌套）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#嵌套embedding&quot; id=&quot;markdown-toc-嵌套embedding&quot;&gt;嵌套（Embedding）&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&quot;资料&quot;&gt;资料&lt;/h2&gt;
@@ -527,11 +567,11 @@
   &lt;li&gt;&lt;a href=&quot;https://www.bilibili.com/video/av75898542&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h1 id=&quot;the-blank-identifier空白标识符&quot;&gt;The blank identifier（空白标识符）&lt;/h1&gt;
+&lt;h1 id=&quot;空白标识符the-blank-identifier&quot;&gt;空白标识符（The blank identifier）&lt;/h1&gt;
 
 &lt;p&gt;至此为止我们已经提到过很多次空白标识符，在 “for-range 循环” 和 “映射 maps” 小节都有提到。空白标识符可以被任意类型的任意值进行赋值，而且这些值会静默地被丢弃掉。它有点像 Unix 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/null&lt;/code&gt; 文件描述符：空白标识符（_）表示一个只写的值，它可以作为占位符使用，如果有一个变量的值不会被使用但是又必须要设置一个变量来接收这个值，此时就可以使用空白标识符。当然，除此外空白标识符的用处还有很多。&lt;/p&gt;
 
-&lt;h2 id=&quot;the-blank-identifier-in-multiple-assignment多值赋值语句中的空白标识符&quot;&gt;The blank identifier in multiple assignment（多值赋值语句中的空白标识符）&lt;/h2&gt;
+&lt;h2 id=&quot;多值赋值语句中的空白标识符the-blank-identifier-in-multiple-assignment&quot;&gt;多值赋值语句中的空白标识符（The blank identifier in multiple assignment）&lt;/h2&gt;
 
 &lt;p&gt;for-range 循环中的空白标识符是一种通用情况的特例：属于多值赋值语句。&lt;/p&gt;
 
@@ -551,7 +591,7 @@
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;unused-imports-and-variables未使用的导入与未使用的变量&quot;&gt;Unused imports and variables（未使用的导入与未使用的变量）&lt;/h2&gt;
+&lt;h2 id=&quot;未使用的导入与未使用的变量unused-imports-and-variables&quot;&gt;未使用的导入与未使用的变量（Unused imports and variables）&lt;/h2&gt;
 
 &lt;p&gt;如果导入了没有使用的包或者声明了没有使用的变量，代码编译的时候编译器都会报错。如果导入一个包却不使用它会让程序显得臃肿而且会拖慢代码的编译速度；一个变量初始化未经使用则意味着计算资源的浪费，有时候甚至意味着很大的缺陷（bug）。不过，代码在开发过程中总会出现尚未使用的导入和变量，如果仅仅为了编译通过而删掉他们后面写到对应的逻辑以后再把它们加回来，这种操作显得有点烦人，此时就可以使用空白标识符：&lt;/p&gt;
 
@@ -601,7 +641,7 @@
 
 &lt;p&gt;传统意义上来说，为了避免编译器报错的全局声明语句（类似上面代码中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;var _ = fmt.Printf&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;var _ io.Reader&lt;/code&gt;）应该紧跟在导入语句的后面并且注释一下情况，这样未来可以方便地找到这些语句，同时还能够作为一种删除提醒。&lt;/p&gt;
 
-&lt;h2 id=&quot;import-for-side-effect为了副作用的导入&quot;&gt;Import for side effect（为了副作用的导入）&lt;/h2&gt;
+&lt;h2 id=&quot;为了副作用的导入import-for-side-effect&quot;&gt;为了副作用的导入（Import for side effect）&lt;/h2&gt;
 
 &lt;p&gt;在前面的例子中，空白标识符的使用仅仅意味着代码还在开发状态，像 &lt;code class=&quot;highlighter-rouge&quot;&gt;fmt&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;io&lt;/code&gt; 这种未经使用的包最后要么被使用要么被移除。不过真实编码过程中我们可能只需要导入包从而引起某种副作用，但是确实不会在文件中显式地使用这个包。&lt;/p&gt;
 
@@ -612,7 +652,7 @@
 
 &lt;p&gt;因为没有其他地方使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;net/http/pprof&lt;/code&gt; 这个包，这种方式的导入可以很明显地表明目的：在这个文件中这个包没有名字，之所以导入它只是为了获得这个包的副效果。&lt;/p&gt;
 
-&lt;h2 id=&quot;interface-checks接口检查&quot;&gt;Interface checks（接口检查）&lt;/h2&gt;
+&lt;h2 id=&quot;接口检查interface-checks&quot;&gt;接口检查（Interface checks）&lt;/h2&gt;
 
 &lt;p&gt;就像我们在“接口”那一节看到的，类型不需要显式指明自己实现了哪些接口。相反，类型仅需实现接口中包含的方法隐式地来实现接口。实际编码中，大部分的接口转换都是静态的，因此在编译时就会进行类型检查。比如，如果一个函数希望得到 &lt;code class=&quot;highlighter-rouge&quot;&gt;io.Reader&lt;/code&gt; 类型的参数，可以给它传递一个实现了 &lt;code class=&quot;highlighter-rouge&quot;&gt;io.Reader&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;*os.File&lt;/code&gt; 类型的变量，如果 &lt;code class=&quot;highlighter-rouge&quot;&gt;*os.File&lt;/code&gt; 没有实现 &lt;code class=&quot;highlighter-rouge&quot;&gt;io.Reader&lt;/code&gt; 接口，代码不能编译通过。&lt;/p&gt;
 
@@ -637,7 +677,7 @@
 
 &lt;p&gt;在上面的这种情况下，空白标识符的出现标明声明语句仅仅为了类型检查，而并不会创建一个变量。但是，如果知道类型肯定满足某个接口则没有必要做这种声明。通常情况下，这种用法仅在源码中不存在静态类型转换的情况时使用，而这种情况其实很少见到。&lt;/p&gt;
 
-&lt;h1 id=&quot;embedding嵌套&quot;&gt;Embedding（嵌套）&lt;/h1&gt;
+&lt;h1 id=&quot;嵌套embedding&quot;&gt;嵌套（Embedding）&lt;/h1&gt;
 
 &lt;p&gt;Go 没有子类的概念，但是我们可以通过在结构体或接口中&lt;strong&gt;嵌套&lt;/strong&gt;某个类型来实现类似的功能。&lt;/p&gt;
 
@@ -1015,12 +1055,12 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
         <title>《原汁原味 Go 语言学习》(9) effective go 接口及泛型</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#interfaces-and-other-types接口与其他类型&quot; id=&quot;markdown-toc-interfaces-and-other-types接口与其他类型&quot;&gt;Interfaces and other types（接口与其他类型）&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#interfaces接口&quot; id=&quot;markdown-toc-interfaces接口&quot;&gt;Interfaces（接口）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#conversions类型转换&quot; id=&quot;markdown-toc-conversions类型转换&quot;&gt;Conversions（类型转换）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#interface-conversions-and-type-assertions接口转换与类型断言&quot; id=&quot;markdown-toc-interface-conversions-and-type-assertions接口转换与类型断言&quot;&gt;Interface conversions and type assertions（接口转换与类型断言）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#generality泛型&quot; id=&quot;markdown-toc-generality泛型&quot;&gt;Generality（泛型）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#interfaces-and-methods接口与方法&quot; id=&quot;markdown-toc-interfaces-and-methods接口与方法&quot;&gt;Interfaces and methods（接口与方法）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#接口与其他类型interfaces-and-other-types&quot; id=&quot;markdown-toc-接口与其他类型interfaces-and-other-types&quot;&gt;接口与其他类型（Interfaces and other types）&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#接口interfaces&quot; id=&quot;markdown-toc-接口interfaces&quot;&gt;接口（Interfaces）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#类型转换conversions&quot; id=&quot;markdown-toc-类型转换conversions&quot;&gt;类型转换（Conversions）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#接口转换与类型断言interface-conversions-and-type-assertions&quot; id=&quot;markdown-toc-接口转换与类型断言interface-conversions-and-type-assertions&quot;&gt;接口转换与类型断言（Interface conversions and type assertions）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#泛型generality&quot; id=&quot;markdown-toc-泛型generality&quot;&gt;泛型（Generality）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#接口与方法interfaces-and-methods&quot; id=&quot;markdown-toc-接口与方法interfaces-and-methods&quot;&gt;接口与方法（Interfaces and methods）&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
@@ -1030,9 +1070,9 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
 
 &lt;p&gt;&lt;a href=&quot;https://www.bilibili.com/video/av75076225&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/p&gt;
 
-&lt;h1 id=&quot;interfaces-and-other-types接口与其他类型&quot;&gt;Interfaces and other types（接口与其他类型）&lt;/h1&gt;
+&lt;h1 id=&quot;接口与其他类型interfaces-and-other-types&quot;&gt;接口与其他类型（Interfaces and other types）&lt;/h1&gt;
 
-&lt;h2 id=&quot;interfaces接口&quot;&gt;Interfaces（接口）&lt;/h2&gt;
+&lt;h2 id=&quot;接口interfaces&quot;&gt;接口（Interfaces）&lt;/h2&gt;
 
 &lt;p&gt;在 Go 中，可以用接口来指定一个对象的行为：如果一个对象可以做&lt;strong&gt;某件事情&lt;/strong&gt;，那么它就可以用在&lt;strong&gt;某个指定的地方&lt;/strong&gt;。之前已经看到过几个简单的例子：① 实现 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法可以自定义类型的打印格式，② &lt;code class=&quot;highlighter-rouge&quot;&gt;Fprintf&lt;/code&gt; 可以向任何实现了 &lt;code class=&quot;highlighter-rouge&quot;&gt;Write&lt;/code&gt; 方法的类型打印内容。在 Go 源码中，有很多只包含一两个方法的接口，一般情况下这些接口的名称直接衍生自他们所包含的方法，比如只有一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;Write&lt;/code&gt; 方法的 &lt;code class=&quot;highlighter-rouge&quot;&gt;io.Writer&lt;/code&gt; 接口。&lt;/p&gt;
 
@@ -1072,7 +1112,7 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;conversions类型转换&quot;&gt;Conversions（类型转换）&lt;/h2&gt;
+&lt;h2 id=&quot;类型转换conversions&quot;&gt;类型转换（Conversions）&lt;/h2&gt;
 
 &lt;p&gt;上面 &lt;code class=&quot;highlighter-rouge&quot;&gt;Sequence&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法（复杂度为 O(N²)）做了很多 &lt;code class=&quot;highlighter-rouge&quot;&gt;Sprint&lt;/code&gt; 已经做完的事情——&lt;code class=&quot;highlighter-rouge&quot;&gt;Sprint&lt;/code&gt; 函数内置了打印集合类型值的功能。因此如果调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Sprint&lt;/code&gt; 前我们把 &lt;code class=&quot;highlighter-rouge&quot;&gt;Sequence&lt;/code&gt; 转换为普通的 &lt;code class=&quot;highlighter-rouge&quot;&gt;[]int&lt;/code&gt;，就可以避免重复的工作同时还会加快执行速度。&lt;/p&gt;
 
@@ -1099,7 +1139,7 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
 
 &lt;p&gt;上面的代码把 &lt;code class=&quot;highlighter-rouge&quot;&gt;Sequence&lt;/code&gt; 转换为不同的类型从而使用每种类型包含的功能，每种转换完成一部分的工作，一起达成最后期望的效果；语句 &lt;code class=&quot;highlighter-rouge&quot;&gt;sort.IntSlice(s)&lt;/code&gt; 把 &lt;code class=&quot;highlighter-rouge&quot;&gt;s&lt;/code&gt; 转换为 &lt;code class=&quot;highlighter-rouge&quot;&gt;sort.IntSlice&lt;/code&gt; 类型，这种类型实现了 &lt;code class=&quot;highlighter-rouge&quot;&gt;sort.Interface&lt;/code&gt; 接口，因此可以直接调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Sort()&lt;/code&gt; 方法，就避免我们自己在定义 &lt;code class=&quot;highlighter-rouge&quot;&gt;Len/Less/Swap&lt;/code&gt; 方法了。这种类型变来变去的用法看起来不同寻常，但是写起来很高效。&lt;/p&gt;
 
-&lt;h2 id=&quot;interface-conversions-and-type-assertions接口转换与类型断言&quot;&gt;Interface conversions and type assertions（接口转换与类型断言）&lt;/h2&gt;
+&lt;h2 id=&quot;接口转换与类型断言interface-conversions-and-type-assertions&quot;&gt;接口转换与类型断言（Interface conversions and type assertions）&lt;/h2&gt;
 
 &lt;p&gt;&lt;strong&gt;类型 switch&lt;/strong&gt; 语法是类型转换的一种方式：他首先接收某个&lt;strong&gt;接口变量&lt;/strong&gt;，然后在每个 case 里把接口变量转换为对应的类型。下面的代码是简化版的 &lt;code class=&quot;highlighter-rouge&quot;&gt;fmt.Printf&lt;/code&gt; 方法，用来展示如何通过类型 switch 把一个接口变量转换成字符串。如果接口变量已经是一个字符串，只需要把这个字符串值返回就可以了；否则假如它实现了 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法（实现了 &lt;code class=&quot;highlighter-rouge&quot;&gt;Stringer&lt;/code&gt; 接口），我们可以通过调用这个方法并返回其结果。&lt;/p&gt;
 
@@ -1149,7 +1189,7 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;generality泛型&quot;&gt;Generality（泛型）&lt;/h2&gt;
+&lt;h2 id=&quot;泛型generality&quot;&gt;泛型（Generality）&lt;/h2&gt;
 
 &lt;p&gt;如果类型的存在只是为了实现某个接口，除了接口中限定必须要实现的方法没有其他需要导出的方法，此时就没有必要导出这个类型，只需导出对应接口即可，表明这个类型的值除了接口里定义的方法外没有其他的方法。假如对同一个接口有不同的实现，这种做法还能避免重复地给方法写文档（只需要在接口里注明每种方法的作用、用法，各个类型实现这些方法的时候只需要简单注明是哪个接口的方法就可以了）。&lt;/p&gt;
 
@@ -1179,7 +1219,7 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;NewCTR&lt;/code&gt; 不局限应用到某种特定的加密算法和数据源，它能够应用在所有实现了 &lt;code class=&quot;highlighter-rouge&quot;&gt;Block&lt;/code&gt; 接口和 &lt;code class=&quot;highlighter-rouge&quot;&gt;Stream&lt;/code&gt; 接口的加密算法上面。同时因为 &lt;code class=&quot;highlighter-rouge&quot;&gt;NewCTR&lt;/code&gt; 返回的是 &lt;code class=&quot;highlighter-rouge&quot;&gt;Stream&lt;/code&gt; 接口类型，因此用其他的加密算法替代 &lt;code class=&quot;highlighter-rouge&quot;&gt;CTR&lt;/code&gt; 算法也很简单，只需要把调用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;NewCTR&lt;/code&gt; 的地方替换成为其他加密算法的构造器就可以了。&lt;/p&gt;
 
-&lt;h2 id=&quot;interfaces-and-methods接口与方法&quot;&gt;Interfaces and methods（接口与方法）&lt;/h2&gt;
+&lt;h2 id=&quot;接口与方法interfaces-and-methods&quot;&gt;接口与方法（Interfaces and methods）&lt;/h2&gt;
 
 &lt;p&gt;在 Go 中几乎所有东西都可以关联方法，都可以满足某个接口。其中一个例子是定义了 &lt;code class=&quot;highlighter-rouge&quot;&gt;Handler&lt;/code&gt; 接口的 &lt;code class=&quot;highlighter-rouge&quot;&gt;http&lt;/code&gt; 包：任何实现了 &lt;code class=&quot;highlighter-rouge&quot;&gt;Handler&lt;/code&gt; 接口的对象都可以处理 HTTP 请求。&lt;/p&gt;
 
@@ -1295,14 +1335,14 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
         <title>《原汁原味 Go 语言学习》(8) effective go 初始化及方法部分</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#initialization初始化&quot; id=&quot;markdown-toc-initialization初始化&quot;&gt;Initialization（初始化）&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#constants常量&quot; id=&quot;markdown-toc-constants常量&quot;&gt;Constants（常量）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#variables变量&quot; id=&quot;markdown-toc-variables变量&quot;&gt;Variables（变量）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#the-init-functioninit-函数&quot; id=&quot;markdown-toc-the-init-functioninit-函数&quot;&gt;The init function（init 函数）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#初始化initialization&quot; id=&quot;markdown-toc-初始化initialization&quot;&gt;初始化（Initialization）&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#常量constants&quot; id=&quot;markdown-toc-常量constants&quot;&gt;常量（Constants）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#变量variables&quot; id=&quot;markdown-toc-变量variables&quot;&gt;变量（Variables）&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#init-函数the-init-function&quot; id=&quot;markdown-toc-init-函数the-init-function&quot;&gt;init 函数（The init function）&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#methods方法&quot; id=&quot;markdown-toc-methods方法&quot;&gt;Methods（方法）&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#pointers-vs-values指针与值&quot; id=&quot;markdown-toc-pointers-vs-values指针与值&quot;&gt;Pointers vs. Values（指针与值）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#方法methods&quot; id=&quot;markdown-toc-方法methods&quot;&gt;方法（Methods）&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#指针与值pointers-vs-values&quot; id=&quot;markdown-toc-指针与值pointers-vs-values&quot;&gt;指针与值（Pointers vs. Values）&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
@@ -1312,11 +1352,11 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
 
 &lt;p&gt;&lt;a href=&quot;https://www.bilibili.com/video/av74451767&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/p&gt;
 
-&lt;h1 id=&quot;initialization初始化&quot;&gt;Initialization（初始化）&lt;/h1&gt;
+&lt;h1 id=&quot;初始化initialization&quot;&gt;初始化（Initialization）&lt;/h1&gt;
 
 &lt;p&gt;表面上看 Go 的初始化方式与 C/C++ 的初始化方法没有太大区别，但事实上 Go 的初始化方式更强大。Go 语言可以在初始化过程中直接创建复合结构类型（比如 结构体、映射、切片等），能够正确处理初始化对象之间的顺序问题（包括不同的包之间对象的初始化顺序）。&lt;/p&gt;
 
-&lt;h2 id=&quot;constants常量&quot;&gt;Constants（常量）&lt;/h2&gt;
+&lt;h2 id=&quot;常量constants&quot;&gt;常量（Constants）&lt;/h2&gt;
 
 &lt;p&gt;在 Go 中，常量仅仅指常量。常量（包括包裹在函数内的常量）在编译时就会被创建，它只能是数字、字符（UTF8符文）、字符串或布尔值。由于常量在编译时就要确定下来，因此定义常量的表达式必须是&lt;strong&gt;编译器可以执行&lt;/strong&gt;的常量表达式。比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;1&amp;lt;&amp;lt;3&lt;/code&gt; 是一个常量表达式，&lt;code class=&quot;highlighter-rouge&quot;&gt;math.Sin(math.Pi/4)&lt;/code&gt; 不是常量表达式，因为 &lt;code class=&quot;highlighter-rouge&quot;&gt;math.Sin&lt;/code&gt; 只能在运行时调用，不能在编译时调用。&lt;/p&gt;
 
@@ -1366,7 +1406,7 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
 
 &lt;p&gt;上面的代码通过使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Sprintf&lt;/code&gt; 来实现 &lt;code class=&quot;highlighter-rouge&quot;&gt;ByteSize&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法是安全的（不存在上一小节提到的循环调用问题），因为使用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;%f&lt;/code&gt; 格式符，而它不是一个字符串格式化符：&lt;code class=&quot;highlighter-rouge&quot;&gt;Sprintf&lt;/code&gt; 只在需要字符串类型的时候才会调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法，&lt;code class=&quot;highlighter-rouge&quot;&gt;%f&lt;/code&gt; 指定的是浮点值，也就自然而然避免了上面代码中 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;fmt.Sprintf&lt;/code&gt; 方法后者再进一步触发 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法的循环调用链。&lt;/p&gt;
 
-&lt;h2 id=&quot;variables变量&quot;&gt;Variables（变量）&lt;/h2&gt;
+&lt;h2 id=&quot;变量variables&quot;&gt;变量（Variables）&lt;/h2&gt;
 
 &lt;p&gt;可以像常量那样初始化变量，但是变量的初始化表达式可以是在运行时进行计算的通用表达式。&lt;/p&gt;
 
@@ -1377,7 +1417,7 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
 &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;the-init-functioninit-函数&quot;&gt;The init function（init 函数）&lt;/h2&gt;
+&lt;h2 id=&quot;init-函数the-init-function&quot;&gt;init 函数（The init function）&lt;/h2&gt;
 
 &lt;p&gt;&lt;strong&gt;每个源文件&lt;/strong&gt;都可以定义 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数用来初始化它需要的状态。（事实上每个文件可以有多个 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数，而且这些 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数会按序执行，比如 &lt;a href=&quot;https://github.com/chalvern/gosmile/tree/template/db/migration&quot;&gt;gosmile&lt;/a&gt; 数据库迁移的设计就可以利用这个特性）。&lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 会在包中所有的变量声明被执行后再调用，而且只在所有被导入的包初始化以后才会被调用（被导入的包先初始化，然后常量和变量被初始化，接着才是 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数的执行）。&lt;/p&gt;
 
@@ -1398,9 +1438,9 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h1 id=&quot;methods方法&quot;&gt;Methods（方法）&lt;/h1&gt;
+&lt;h1 id=&quot;方法methods&quot;&gt;方法（Methods）&lt;/h1&gt;
 
-&lt;h2 id=&quot;pointers-vs-values指针与值&quot;&gt;Pointers vs. Values（指针与值）&lt;/h2&gt;
+&lt;h2 id=&quot;指针与值pointers-vs-values&quot;&gt;指针与值（Pointers vs. Values）&lt;/h2&gt;
 
 &lt;p&gt;就像看到的 &lt;code class=&quot;highlighter-rouge&quot;&gt;ByteSize&lt;/code&gt; 那样，我们可以给任何有名称的类型（除了指针和接口）定义方法，并不限定必须是结构体类型。&lt;/p&gt;
 
@@ -2094,182 +2134,6 @@ edit /etc/hostconfig and remove the line &lt;span class=&quot;nv&quot;&gt;MYSQLC
         
         
         <category>实用</category>
-        
-      </item>
-    
-      <item>
-        <title>《原汁原味 Go 语言学习》(5) effective go 函数部分</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#函数&quot; id=&quot;markdown-toc-函数&quot;&gt;函数&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#多返回值&quot; id=&quot;markdown-toc-多返回值&quot;&gt;多返回值&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#命名的返回变量&quot; id=&quot;markdown-toc-命名的返回变量&quot;&gt;命名的返回变量&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#defer-推迟函数&quot; id=&quot;markdown-toc-defer-推迟函数&quot;&gt;defer 推迟函数&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&quot;资料&quot;&gt;资料&lt;/h1&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://golang.google.cn/doc/effective_go.html&quot;&gt;effective go 源文档地址&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.bilibili.com/video/av71150528&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;函数&quot;&gt;函数&lt;/h1&gt;
-
-&lt;h2 id=&quot;多返回值&quot;&gt;多返回值&lt;/h2&gt;
-&lt;p&gt;Go 语言非同寻常的一个特性是它的函数和方法可以返回多个值。和 C 语言比，Go 语言的这个特性可以避免 C 程序中不优雅的使用习惯：比如通过返回 -1 表示 EOF 错误，比如为达到某个目的通过地址传值的方式传入某个参数然后修改这个参数（参考后面 &lt;code class=&quot;highlighter-rouge&quot;&gt;nextInt&lt;/code&gt; 的例子）。&lt;/p&gt;
-
-&lt;p&gt;在 C 语言中，写错误由负数表示，错误码与错误类型的对应关系则保存在内存里，必要的时候手动去查找这个对应关系。在 Go 语言中， Write（写） 可以同时返回一个数值和一个错误，能很自然地表明这种含义：“虽然你成功写了一些字节，但是因为设备满了导致剩了一些字节没有写成功。” Go 标准库中包 &lt;code class=&quot;highlighter-rouge&quot;&gt;os&lt;/code&gt; 中的 Write 方法的定义是 &lt;code class=&quot;highlighter-rouge&quot;&gt;func (file *File) Write(b []byte) (n int, err error)&lt;/code&gt;，它返回写成功的数量，而且当 n != len(b) 的时候还会返回一个非空的错误。这是一种很常见的形式，可以在“错误处理”的章节查看更多的例子。&lt;/p&gt;
-
-&lt;p&gt;同样的，多返回值的特性还可以避免传入一个指针类型的参数来承接返回值。下面给出了一个简单明了的函数，其功能是在一个字节数组的某个位置开始获取一个数字，然后返回这个数字以及下一个位置。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nextInt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isDigit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isDigit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;sc&quot;&gt;'0'&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;可以用上面的函数来扫描切片 b 中的数字：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nextInt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;如果函数只能返回一个值，那么 &lt;code class=&quot;highlighter-rouge&quot;&gt;nextInt&lt;/code&gt; 将只能返回&lt;strong&gt;目标数字&lt;/strong&gt;，但是没有办法返回找到的这个目标数字的位置，为了获取这个位置，就必须给 &lt;code class=&quot;highlighter-rouge&quot;&gt;nextInt&lt;/code&gt; 函数传入一个指针类型的参数，然后在 &lt;code class=&quot;highlighter-rouge&quot;&gt;nextInt&lt;/code&gt; 函数里面修改这个值，从而让它的调用方获取这个值。&lt;/p&gt;
-
-&lt;h2 id=&quot;命名的返回变量&quot;&gt;命名的返回变量&lt;/h2&gt;
-
-&lt;p&gt;Go 语言中可以给函数的返回值（或者结果值）指定名称，这样就可以在函数体中像使用入参那样使用返回值变量了。返回值一旦被命名成为变量，它们就会在函数执行之初被初始化为对应类型的零值；如果函数执行了 return 命令且 return 后面没有显式指定任何参数，那么 return 语句执行时返回值变量的值就是实际意义上的返回值。&lt;/p&gt;
-
-&lt;p&gt;函数返回值的命名不是必要的，但是他们可以让代码更简洁明了——他们属于文档的一部分。比如我们把 nextInt 的返回值分别命名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;value&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;nextPos&lt;/code&gt;，就能很清楚地表明返回的是&lt;strong&gt;值&lt;/strong&gt;和&lt;strong&gt;位置&lt;/strong&gt;，比如下面的定义：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nextInt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pos&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nextPos&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;因为命名的返回值在函数原型之初就已经被初始化好了，因此可以直接 return ，这种应用方式能让代码变得更简洁。下面给出了 io.ReadFull 的一个版本，很好地应用了这个特性：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ReadFull&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Reader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nr&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;nr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Read&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nr&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;defer-推迟函数&quot;&gt;defer 推迟函数&lt;/h2&gt;
-
-&lt;p&gt;Go 语言的 defer 语句可以指定某个函数（被 deferred 的函数）在当前函数返回给调用者之前再运行。defer 的这种用法有点不寻常，但是非常有用：当代码中引用了某个资源（某个 Mutex 锁、打开了某个文件），不管程序执行到哪里都必须释放这个资源，这种情况使用 defer 就很方便处理。defer 典型的应用就是&lt;strong&gt;解锁互斥锁&lt;/strong&gt;和&lt;strong&gt;关闭文件句柄&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// Contents returns the file's contents as a string.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Contents&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// f.Close will run when we're finished.&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Read&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;// append is discussed later.&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EOF&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;
-            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// f will be closed if we return here.&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;// f will be closed if we return here.&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;通过 defer 的方式推迟执行类似上例中 &lt;code class=&quot;highlighter-rouge&quot;&gt;f.Close()&lt;/code&gt; 函数的用法有两个好处。第一，它能保证调用必然会被执行，防止以后修改函数逻辑（比如加了另一个 return 的分支）忘记关闭文件句柄。第二，这种用法意味着打开文件与关闭文件的代码可以放在一起写，比起分开写的方式（打开文件句柄的代码在函数开始的地方，关闭的代码在函数末尾）更直观也更容易理解。&lt;/p&gt;
-
-&lt;p&gt;当 defer 语句执行的时候，传递给 defer 的函数（也可能是一个方法）的参数表达式马上就会运算，不会推迟到与被 defer 的函数一起执行。比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;defer fmt.Printf(&quot;%d &quot;, i+i)&lt;/code&gt;，在这条语句执行的时候，&lt;code class=&quot;highlighter-rouge&quot;&gt;i+i&lt;/code&gt; 立马会被执行得到一个值，而&lt;code class=&quot;highlighter-rouge&quot;&gt;fmt.Printf&lt;/code&gt; 会被推迟到最后再执行。上面的特性意味着我们需要避免函数执行过程中被 defer 的参数值被修改，同时意味着我们可以通过一条推迟语句推迟多个函数执行体。下面是一个简单的示例（仅仅是示例，实际开发中不会这么写）：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%d &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;被延迟的函数会按照后进先出（LIFO）的顺序依次执行，因此上面的代码在函数返回后会打印出 &lt;code class=&quot;highlighter-rouge&quot;&gt;4 3 2 1 0&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;defer 的应用的另一个具有象征意义的例子是跟踪整个程序中函数的执行顺序。我们可以简单的写一段跟踪代码如下：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;trace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;entering:&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;untrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;leaving:&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;// Use them like this:&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;trace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;a&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;untrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;a&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;// do something....&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面我们提到过，当 &lt;code class=&quot;highlighter-rouge&quot;&gt;defer&lt;/code&gt; 表达式开始执行时，被 defer 的函数的参数表达式马上就会被执行，利用这个特性我们可以写出更优雅的代码。上面的 &lt;code class=&quot;highlighter-rouge&quot;&gt;trace&lt;/code&gt; 函数可以作为 &lt;code class=&quot;highlighter-rouge&quot;&gt;untrace&lt;/code&gt; 函数的参数使用，修改后的代码如下：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;trace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;entering:&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;un&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;leaving:&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;un&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;trace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;a&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;in a&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;un&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;trace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;b&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;in b&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;运行上面的代码输出的结果如下：&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-entering: b
-&lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;b
-entering: a
-&lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;a
-leaving: a
-leaving: b
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;对于习惯了通过不同的代码块来管理资源（比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;python&lt;/code&gt; 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;try...except...else...finally&lt;/code&gt; 这种用法，通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;finally&lt;/code&gt; 来控制必然需要执行的一些逻辑）的其他语言的开发者来说，，可能 defer 的使用有点奇特，但是 defer 最有意思也最具应用价值的地方恰恰是因为 defer 并不基于块而是基于函数来起作用，让代码变得更简洁，让编码更容易。在 panic 和 recover 小节我们会看到一些其他应用 defer 的例子。&lt;/p&gt;
-</description>
-        <pubDate>Sun, 13 Oct 2019 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2019/10/13/effectivego-function.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2019/10/13/effectivego-function.html</guid>
-        
-        <category>golang</category>
-        
-        <category>基础</category>
-        
-        <category>实用</category>
-        
-        
-        <category>golang</category>
         
       </item>
     
