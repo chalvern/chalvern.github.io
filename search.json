@@ -3,7 +3,13 @@
     {
       "title"    : "为团队寻找后端开发工程师（招聘）",
       "tags"     : "管理 实用",
-      "url"      : "/2019/11/30/you-can-be-my-coworker.html"
+      "url"      : "/2019/12/14/you-can-be-my-coworker.html"
+    } ,
+  
+    {
+      "title"    : "《原汁原味 Go 语言学习》(13) Go 内存模型",
+      "tags"     : "golang 基础 实用",
+      "url"      : "/2019/12/14/go-mem-model.html"
     } ,
   
     {
