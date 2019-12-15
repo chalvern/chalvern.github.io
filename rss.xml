@@ -5,8 +5,8 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 14 Dec 2019 16:29:16 +0800</pubDate>
-    <lastBuildDate>Sat, 14 Dec 2019 16:29:16 +0800</lastBuildDate>
+    <pubDate>Sun, 15 Dec 2019 17:24:44 +0800</pubDate>
+    <lastBuildDate>Sun, 15 Dec 2019 17:24:44 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -52,6 +52,7 @@
       <item>
         <title>《原汁原味 Go 语言学习》(13) Go 内存模型</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#简介introduction&quot; id=&quot;markdown-toc-简介introduction&quot;&gt;简介（Introduction）&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#建议advice&quot; id=&quot;markdown-toc-建议advice&quot;&gt;建议（Advice）&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#发生在之前happens-before&quot; id=&quot;markdown-toc-发生在之前happens-before&quot;&gt;发生在…之前（Happens Before）&lt;/a&gt;&lt;/li&gt;
@@ -72,7 +73,12 @@
   &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://golang.google.cn/ref/mem&quot;&gt;Go 内存模型原文地址&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&quot;资料&quot;&gt;资料&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://golang.google.cn/ref/mem&quot;&gt;Go 内存模型原文地址&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.bilibili.com/video/av79339158/&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h2 id=&quot;简介introduction&quot;&gt;简介（Introduction）&lt;/h2&gt;
 
