@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>为团队寻找后端开发工程师（招聘） - 敬维</title>
+    <title>更实用的 Go 开发的社区论坛——apollo 开源项目介绍 - 敬维</title>
     <meta name="author"  content="敬维">
-    <meta name="description" content="为团队寻找后端开发工程师（招聘）">
-    <meta name="keywords"  content="管理, 实用">
+    <meta name="description" content="更实用的 Go 开发的社区论坛——apollo 开源项目介绍">
+    <meta name="keywords"  content="golang, 实用, 最佳实践">
     <!-- Open Graph -->
-    <meta property="og:title" content="为团队寻找后端开发工程师（招聘） - 敬维">
+    <meta property="og:title" content="更实用的 Go 开发的社区论坛——apollo 开源项目介绍 - 敬维">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jingwei.link/2020/01/03/you-can-be-my-coworker.html">
+    <meta property="og:url" content="https://jingwei.link/2020/02/08/appolo-go-web-blog.html">
     <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
     <meta property="og:site_name" content="敬维">
     <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
@@ -122,16 +122,18 @@ Author: Ray-Eldath
       <div class="post-tags">
         
           
-            <a href="https://jingwei.link/tags#%E7%AE%A1%E7%90%86" class="post-tag">管理</a>
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
           
             <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
           
+            <a href="https://jingwei.link/tags#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="post-tag">最佳实践</a>
+          
         
       </div>
-      <h1>为团队寻找后端开发工程师（招聘）</h1>
+      <h1>更实用的 Go 开发的社区论坛——apollo 开源项目介绍</h1>
       <div class="post-meta">
         <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
-        <time class="post-meta-item" datetime="20-01-03"><i class="iconfont icon-date"></i>03 Jan 2020</time>
+        <time class="post-meta-item" datetime="20-02-08"><i class="iconfont icon-date"></i>08 Feb 2020</time>
       </div>
     </div>
     
@@ -142,34 +144,98 @@ Author: Ray-Eldath
 
   <div class="post-content visible">
     
-    <h2 class="post-subtitle">团队需要对技术有追求的同学支援</h2>
+    <h2 class="post-subtitle">详情请查看 https://github.com/chalvern/apollo</h2>
     
 
     <article class="markdown-body">
-      <h2 id="写在前面">写在前面</h2>
-
-<p>程序员是“活到老学到老”的践行者，无论是前端开发者还是后端开发者，都是如此。希望你也是这样的程序员。</p>
-
-<p>在加入当前的公司（<strong>上海·桂林路</strong>）后，随着公司业务逐渐展开，发现团队里的事情也多起来了，因此开贴找一起共事一起学习的同事。</p>
-
-<h2 id="后端开发工程师">后端开发工程师</h2>
-
-<p>职位描述：</p>
-<ul>
-  <li>参与完成项目的系统分析、设计，并负责业务功能与底层基础功能的功能设计、代码实现。</li>
+      <ul id="markdown-toc">
+  <li><a href="#apollo-项目" id="markdown-toc-apollo-项目">apollo 项目</a>    <ul>
+      <li><a href="#使用到的库或框架" id="markdown-toc-使用到的库或框架">使用到的库（或框架）</a></li>
+    </ul>
+  </li>
+  <li><a href="#安装运行" id="markdown-toc-安装运行">安装运行</a>    <ul>
+      <li><a href="#环境要求" id="markdown-toc-环境要求">环境要求</a></li>
+      <li><a href="#详细步骤" id="markdown-toc-详细步骤">详细步骤</a></li>
+    </ul>
+  </li>
+  <li><a href="#其他资料" id="markdown-toc-其他资料">其他资料</a></li>
 </ul>
 
-<p>希望你：</p>
+<h1 id="apollo-项目">apollo 项目</h1>
+
+<p><a href="https://github.com/chalvern/apollo">apollo</a> 项目的主体是一个 go 语言原生的 bbs 社区系统，主要为了弥补当前 go 语言原生社区系统的空白。在前后端分离盛行的今天，越来越多的技术细节被默认存在，无形中也就增加了初学者在这个技术栈的学习门槛。<a href="https://github.com/chalvern/apollo">apollo</a> 项目专注在 go 技术栈，从命令行启动、配置读取，到数据库访问、html模板渲染，均直接采用了 go 对应的库；除了语言层面的学习，<a href="https://github.com/chalvern/apollo">apollo</a> 项目还抽象了一些 web 设计中可能涉及的基本点，从而便于初学者未来了解设计更为宏大的项目。</p>
+
+<p>由于经验尚浅，再加上时间因素约束，项目中难免有一些不雅的设计，欢迎大家创建 issue 指出问题，并欢迎大家提交更为完善的代码。</p>
+
+<p>设计细节请查看 <a href="https://github.com/chalvern/apollo/tree/master/wiki">wiki</a>。</p>
+
+<h2 id="使用到的库或框架">使用到的库（或框架）</h2>
 
 <ul>
-  <li>有 2 年以上的后端开发经验；</li>
-  <li>熟练使用 Java/Go/Python 中的一种或多种编程语言；</li>
-  <li>了解并能熟练使用常见的数据库（Mysql、ElasticSearch、MongoDB、Redis 等）；</li>
-  <li>掌握计算机基本理论知识，包括基础网络、存储、算法等；</li>
-  <li>如果自我感觉良好，可以不受上面条款的限制。</li>
+  <li>web——<a href="https://github.com/gin-gonic/gin">gin</a></li>
+  <li>ORM——<a href="https://github.com/jinzhu/gorm">gorm</a></li>
+  <li>日志——<a href="https://github.com/uber-go/zap">uber/zap</a>/<a href="https://github.com/chalvern/sugar">sugar</a></li>
+  <li>配置——<a href="https://github.com/spf13/viper">viper</a></li>
+  <li>其他可参考 <a href="../go.mod">go.mod</a> 文件</li>
 </ul>
 
-<p>欢迎邮件（zhjw43@163.com）骚扰。</p>
+<h1 id="安装运行">安装运行</h1>
+
+<p>apollo 是一个功能轻完备的项目，目前它已具备注册、登陆、注销、发帖、编辑、回复等功能，可以在一些简单应用场景下使用。可以到 http://www.jianzhoubian.com) 预览，测试好像只能使用 http 协议而不能使用 https 协议访问=。=</p>
+
+<h2 id="环境要求">环境要求</h2>
+
+<ul>
+  <li>安装 go（version &gt;= 1.13）</li>
+  <li>安装 MySQL（apollo 使用了 5.7.28 进行的开发)</li>
+  <li>（可选）安装 make (Linux 和 MacOS 上默认应该都有)，如果没有安装，则需要手动运行一些命令</li>
+</ul>
+
+<h2 id="详细步骤">详细步骤</h2>
+
+<ol>
+  <li>下载本仓库的代码(后面的操作都是在项目目录下执行)；</li>
+  <li>根据 <code class="highlighter-rouge">configs/config.yml.example</code> 创建 <code class="highlighter-rouge">configs/config.yml</code> 文件；</li>
+  <li>根据 <code class="highlighter-rouge">configs/config.yml</code> 中数据库（database）的配置，在 MySQL 中创建用户及数据库。下面以 <code class="highlighter-rouge">apollo</code> 为例</li>
+</ol>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 创建 apollo 数据库，默认字符集为 utf8mb4</span>
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="nv">`apollo`</span> <span class="k">DEFAULT</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="o">=</span> <span class="nv">`utf8mb4`</span><span class="p">;</span>
+
+<span class="c1">-- 创建用户名为 jingwei 密码为 20200101 的用户，并赋权 apollo 的所有权限给 jingwei</span>
+<span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="n">apollo</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="n">jingwei</span><span class="o">@</span><span class="nv">"%"</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="nv">"20200101"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p>迁移数据表结构：</p>
+
+    <p>1.1 如果安装了 <code class="highlighter-rouge">make</code> 工具，直接运行 <code class="highlighter-rouge">make migrate</code> 即可完成数据表的迁移。</p>
+
+    <p>1.2 如果没有安装 <code class="highlighter-rouge">make</code> 工具，依次执行：</p>
+  </li>
+</ol>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下载依赖</span>
+go mod tidy
+<span class="c"># 构建 apollo.exe 二进制执行文件</span>
+go build <span class="nt">-o</span> apollo.exe main.go
+
+<span class="c"># 执行迁移</span>
+./apollo.exe migrate
+</code></pre></div></div>
+
+<ol>
+  <li>通过命令 <code class="highlighter-rouge">./apollo.exe</code> 运行 <code class="highlighter-rouge">apollo</code> 项目。</li>
+  <li>通过浏览器访问 <code class="highlighter-rouge">localhost:2020</code> 即可看到对应的页面。</li>
+</ol>
+
+<h1 id="其他资料">其他资料</h1>
+
+<ul>
+  <li><a href="https://www.bilibili.com/video/av86199253">视频介绍</a> 【原汁原味go语言学习】(14) 实践篇之 apollo 开源项目介绍</li>
+</ul>
+
 
     </article>
 
@@ -215,25 +281,13 @@ Author: Ray-Eldath
     </section>
     <section class="post-footer-item read-next">
       
-      <div class="read-next-item">
-        <a href="/2020/02/08/appolo-go-web-blog.html" class="read-next-link"></a>
-        <section>
-          <span>更实用的 Go 开发的社区论坛——apollo 开源项目介绍</span>
-          <p></p>
-        </section>
-        
-        <div class="filter"></div>
-        <img src="" alt="">
-        
-     </div>
-      
 
       
       <div class="read-next-item">
-        <a href="/2019/12/14/go-mem-model.html" class="read-next-link"></a>
+        <a href="/2020/01/03/you-can-be-my-coworker.html" class="read-next-link"></a>
           <section>
-            <span>《原汁原味 Go 语言学习》(13) Go 内存模型</span>
-            <p></p>
+            <span>为团队寻找后端开发工程师（招聘）</span>
+            <p>写在前面</p>
           </section>
           
           <div class="filter"></div>
