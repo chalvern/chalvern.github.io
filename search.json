@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "如何为 Go 语言源码仓库贡献代码",
+      "tags"     : "golang 最佳实践",
+      "url"      : "/2020/03/15/contribute_golang_process.html"
+    } ,
+  
+    {
       "title"    : "更实用的 Go 开发的社区论坛——apollo 开源项目介绍",
       "tags"     : "golang 实用 最佳实践",
       "url"      : "/2020/02/08/appolo-go-web-blog.html"

@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>更实用的 Go 开发的社区论坛——apollo 开源项目介绍 - 敬维</title>
+    <title>如何为 Go 语言源码仓库贡献代码 - 敬维</title>
     <meta name="author"  content="敬维">
-    <meta name="description" content="更实用的 Go 开发的社区论坛——apollo 开源项目介绍">
-    <meta name="keywords"  content="golang, 实用, 最佳实践">
+    <meta name="description" content="如何为 Go 语言源码仓库贡献代码">
+    <meta name="keywords"  content="golang, 最佳实践">
     <!-- Open Graph -->
-    <meta property="og:title" content="更实用的 Go 开发的社区论坛——apollo 开源项目介绍 - 敬维">
+    <meta property="og:title" content="如何为 Go 语言源码仓库贡献代码 - 敬维">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jingwei.link/2020/02/08/appolo-go-web-blog.html">
+    <meta property="og:url" content="https://jingwei.link/2020/03/15/contribute_golang_process.html">
     <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
     <meta property="og:site_name" content="敬维">
     <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
@@ -124,16 +124,14 @@ Author: Ray-Eldath
           
             <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
           
-            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
-          
             <a href="https://jingwei.link/tags#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="post-tag">最佳实践</a>
           
         
       </div>
-      <h1>更实用的 Go 开发的社区论坛——apollo 开源项目介绍</h1>
+      <h1>如何为 Go 语言源码仓库贡献代码</h1>
       <div class="post-meta">
         <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
-        <time class="post-meta-item" datetime="20-02-08"><i class="iconfont icon-date"></i>08 Feb 2020</time>
+        <time class="post-meta-item" datetime="20-03-15"><i class="iconfont icon-date"></i>15 Mar 2020</time>
       </div>
     </div>
     
@@ -144,97 +142,55 @@ Author: Ray-Eldath
 
   <div class="post-content visible">
     
-    <h2 class="post-subtitle">详情请查看 https://github.com/chalvern/apollo</h2>
+    <h2 class="post-subtitle">修正Go内存模型官方文档中的错误</h2>
     
 
     <article class="markdown-body">
       <ul id="markdown-toc">
-  <li><a href="#apollo-项目" id="markdown-toc-apollo-项目">apollo 项目</a>    <ul>
-      <li><a href="#使用到的库或框架" id="markdown-toc-使用到的库或框架">使用到的库（或框架）</a></li>
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#为-go-语言源码仓库贡献代码" id="markdown-toc-为-go-语言源码仓库贡献代码">为 Go 语言源码仓库贡献代码</a>    <ul>
+      <li><a href="#我们往往忽略了官方材料的学习" id="markdown-toc-我们往往忽略了官方材料的学习">我们往往忽略了官方材料的学习</a></li>
+      <li><a href="#如何为-go-语言源码仓库贡献代码" id="markdown-toc-如何为-go-语言源码仓库贡献代码">如何为 Go 语言源码仓库贡献代码</a></li>
     </ul>
   </li>
-  <li><a href="#安装运行" id="markdown-toc-安装运行">安装运行</a>    <ul>
-      <li><a href="#环境要求" id="markdown-toc-环境要求">环境要求</a></li>
-      <li><a href="#详细步骤" id="markdown-toc-详细步骤">详细步骤</a></li>
-    </ul>
-  </li>
-  <li><a href="#其他资料" id="markdown-toc-其他资料">其他资料</a></li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
 </ul>
 
-<h1 id="apollo-项目">apollo 项目</h1>
+<h2 id="写在前面">写在前面</h2>
 
-<p><a href="https://github.com/chalvern/apollo">apollo</a> 项目的主体是一个 go 语言原生的 bbs 社区系统，主要为了弥补当前 go 语言原生社区系统的空白。在前后端分离盛行的今天，越来越多的技术细节被默认存在，无形中也就增加了初学者在这个技术栈的学习门槛。<a href="https://github.com/chalvern/apollo">apollo</a> 项目专注在 go 技术栈，从命令行启动、配置读取，到数据库访问、html模板渲染，均直接采用了 go 对应的库；除了语言层面的学习，<a href="https://github.com/chalvern/apollo">apollo</a> 项目还抽象了一些 web 设计中可能涉及的基本点，从而便于初学者未来了解设计更为宏大的项目。</p>
+<p>二零一九年（2019）利用业余的时间做了一套<a href="https://github.com/chalvern/books/tree/master/go/official_go_learning">《原汁原味Go语言学习》</a>的视频课程，主要涉及到 Go 官方的几个文档资料的学习。在翻译官方文档的过程中发现有一处错误（前前后后看了很多遍，每次看到都觉得不爽），调研后发现是 Go 源码仓库中的文档，于是心血来潮修正错误并提交了 commit，私心里还琢磨着如果代码被合并自己以后岂不就可以吹嘘是<strong>Go语言源码的贡献者</strong>了？</p>
 
-<p>由于经验尚浅，再加上时间因素约束，项目中难免有一些不雅的设计，欢迎大家创建 issue 指出问题，并欢迎大家提交更为完善的代码。</p>
+<p>按照官方指引，春节放假前提交修正并得到管理员的正反馈，然后一直关注了好久但不见代码被合并，一度以为自己的这个提交被忽略了，不过最近看到已经被合并到了<a href="https://github.com/golang/go/commit/34830beffa6396129bd9d9da58afb7a046775d49">Go主分支</a>。开心😸。</p>
 
-<p>设计细节请查看 <a href="https://github.com/chalvern/apollo/tree/master/wiki">wiki</a>。</p>
+<p>其实整个提交过程还是比较流畅的，现在简单总结记录一下供自己以及他人参考。</p>
 
-<h2 id="使用到的库或框架">使用到的库（或框架）</h2>
+<h2 id="为-go-语言源码仓库贡献代码">为 Go 语言源码仓库贡献代码</h2>
 
-<ul>
-  <li>web——<a href="https://github.com/gin-gonic/gin">gin</a></li>
-  <li>ORM——<a href="https://github.com/jinzhu/gorm">gorm</a></li>
-  <li>日志——<a href="https://github.com/uber-go/zap">uber/zap</a>/<a href="https://github.com/chalvern/sugar">sugar</a></li>
-  <li>配置——<a href="https://github.com/spf13/viper">viper</a></li>
-  <li>其他可参考 <a href="../go.mod">go.mod</a> 文件</li>
-</ul>
+<h3 id="我们往往忽略了官方材料的学习">我们往往忽略了官方材料的学习</h3>
 
-<h1 id="安装运行">安装运行</h1>
+<p>由于每个人学习编程的方式不同，可能无法评估出编程的最佳学习方式；但是作为熟练程度的基准，语言的官方文档理应是其最佳的学习资料。以 Go 语言为例，可能市面上存在很多 Go 语言相关的书籍，但是任何一本书都无法让自己精通 Go 语言编程（如果有类似标榜的书籍，千万不要买）；从这个角度讲，书籍只能作为编程语言学习的指引者——激起学习者的学习热情，启发学习者的学习路径——其他的技术细节和技巧仍然需要学习者自己去探索体会。</p>
 
-<p>apollo 是一个功能轻完备的项目，目前它已具备注册、登陆、注销、发帖、编辑、回复等功能，可以在一些简单应用场景下使用。可以到 http://www.jianzhoubian.com) 预览，测试好像只能使用 http 协议而不能使用 https 协议访问=。=</p>
+<p>不过虽说编程语言的官方文档是最佳的学习资料，但是官方文档往往是枯燥无趣的，因此也难怪很多人都不喜欢读。可是，编程语言的学习与掌握本就是一个枯燥无趣的过程，又有什么办法……</p>
 
-<h2 id="环境要求">环境要求</h2>
+<h3 id="如何为-go-语言源码仓库贡献代码">如何为 Go 语言源码仓库贡献代码</h3>
 
-<ul>
-  <li>安装 go（version &gt;= 1.13）</li>
-  <li>安装 MySQL（apollo 使用了 5.7.28 进行的开发)</li>
-  <li>（可选）安装 make (Linux 和 MacOS 上默认应该都有)，如果没有安装，则需要手动运行一些命令</li>
-</ul>
+<p>只需参考 《<a href="https://golang.google.cn/doc/contribute.html">Contribution Guide 官方文档</a>》即可。</p>
 
-<h2 id="详细步骤">详细步骤</h2>
+<p>大家可以看到整个文档都是英文资料，且在提交代码让别人审核的过程中也都是英文沟通交流，因此这里关键的点或许是把英文学好……</p>
+
+<p>从我个人的经验看，只要英文够好，确实发现了源码中不合理的地方，又觉得自己有好点子，都可以为 Go 语言贡献代码。为了破除大家对提交代码这件事情的神秘感，这里简单罗列一下<a href="https://golang.google.cn/doc/contribute.html">官方文档</a>里介绍的几个点：</p>
 
 <ol>
-  <li>下载本仓库的代码(后面的操作都是在项目目录下执行)；</li>
-  <li>根据 <code class="highlighter-rouge">configs/config.yml.example</code> 创建 <code class="highlighter-rouge">configs/config.yml</code> 文件；</li>
-  <li>根据 <code class="highlighter-rouge">configs/config.yml</code> 中数据库（database）的配置，在 MySQL 中创建用户及数据库。下面以 <code class="highlighter-rouge">apollo</code> 为例</li>
+  <li>首先准备好账户并签署贡献者协议（Google账户、Gerrit账户）；</li>
+  <li>配置自己本地的环境（配置 git、配置 gerrit，后者是谷歌官方提供的一个小工具，可以保持自己的 commit 信息的规范）；</li>
+  <li>修改完代码后就可以使用 gerrit 提交了;</li>
+  <li>提交完成后到 https://go.googlesource.com/ 可以观察进度，甚至可能需要根据修改意见进行内容上的阐述、修改等；</li>
+  <li>等提交的内容被完全认同以后，剩下的就是耐心等着被合并到 Master 主分支了。</li>
 </ol>
 
-<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 创建 apollo 数据库，默认字符集为 utf8mb4</span>
-<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="nv">`apollo`</span> <span class="k">DEFAULT</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="o">=</span> <span class="nv">`utf8mb4`</span><span class="p">;</span>
+<h2 id="小结">小结</h2>
 
-<span class="c1">-- 创建用户名为 jingwei 密码为 20200101 的用户，并赋权 apollo 的所有权限给 jingwei</span>
-<span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="n">apollo</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="n">jingwei</span><span class="o">@</span><span class="nv">"%"</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="nv">"20200101"</span><span class="p">;</span>
-</code></pre></div></div>
-
-<ol>
-  <li>
-    <p>迁移数据表结构：</p>
-
-    <p>1.1 如果安装了 <code class="highlighter-rouge">make</code> 工具，直接运行 <code class="highlighter-rouge">make migrate</code> 即可完成数据表的迁移。</p>
-
-    <p>1.2 如果没有安装 <code class="highlighter-rouge">make</code> 工具，依次执行：</p>
-  </li>
-</ol>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下载依赖</span>
-go mod tidy
-<span class="c"># 构建 apollo.exe 二进制执行文件</span>
-go build <span class="nt">-o</span> apollo.exe main.go
-
-<span class="c"># 执行迁移</span>
-./apollo.exe migrate
-</code></pre></div></div>
-
-<ol>
-  <li>通过命令 <code class="highlighter-rouge">./apollo.exe</code> 运行 <code class="highlighter-rouge">apollo</code> 项目。</li>
-  <li>通过浏览器访问 <code class="highlighter-rouge">localhost:2020</code> 即可看到对应的页面。</li>
-</ol>
-
-<h1 id="其他资料">其他资料</h1>
-
-<ul>
-  <li><a href="https://www.bilibili.com/video/av86199253">视频介绍</a> 【原汁原味go语言学习】(14) 实践篇之 apollo 开源项目介绍</li>
-</ul>
+<p>自己的代码被合并到主仓库，好像这份开心慢慢地也消散了。终于还是要踏踏实实地解决业务问题，如此自己的创造才是有价值的。</p>
 
 
     </article>
@@ -281,25 +237,13 @@ go build <span class="nt">-o</span> apollo.exe main.go
     </section>
     <section class="post-footer-item read-next">
       
-      <div class="read-next-item">
-        <a href="/2020/03/15/contribute_golang_process.html" class="read-next-link"></a>
-        <section>
-          <span>如何为 Go 语言源码仓库贡献代码</span>
-          <p></p>
-        </section>
-        
-        <div class="filter"></div>
-        <img src="" alt="">
-        
-     </div>
-      
 
       
       <div class="read-next-item">
-        <a href="/2020/01/03/you-can-be-my-coworker.html" class="read-next-link"></a>
+        <a href="/2020/02/08/appolo-go-web-blog.html" class="read-next-link"></a>
           <section>
-            <span>为团队寻找后端开发工程师（招聘）</span>
-            <p>写在前面</p>
+            <span>更实用的 Go 开发的社区论坛——apollo 开源项目介绍</span>
+            <p></p>
           </section>
           
           <div class="filter"></div>
