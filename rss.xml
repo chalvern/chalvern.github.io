@@ -5,9 +5,87 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 15 Mar 2020 15:40:34 +0800</pubDate>
-    <lastBuildDate>Sun, 15 Mar 2020 15:40:34 +0800</lastBuildDate>
+    <pubDate>Sun, 05 Apr 2020 20:20:05 +0800</pubDate>
+    <lastBuildDate>Sun, 05 Apr 2020 20:20:05 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>职场人士应该学什么以及如何学习（编码领域）</title>
+        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#知识的不同层级&quot; id=&quot;markdown-toc-知识的不同层级&quot;&gt;知识的不同层级&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#自己应该学习什么&quot; id=&quot;markdown-toc-自己应该学习什么&quot;&gt;自己应该学习什么&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#知识的分类应该怎么学&quot; id=&quot;markdown-toc-知识的分类应该怎么学&quot;&gt;知识的分类（应该怎么学）&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
+&lt;p&gt;俗话说，“活到老学到老”。对程序员而言，尤其如此；或者说的严重一点，程序员唯有此一条路。然而，无论是职场新人还是职场老手，能够坚持学习的人却凤毛麟角。一方面是因为&lt;strong&gt;坚持学习&lt;/strong&gt;需要很强的毅力，而人有偷懒的劣根在；另一方面则是因为学习目标模糊，不知道该学什么，也不知道该怎么学。&lt;/p&gt;
+
+&lt;p&gt;如果把坚持学习看做一个习惯，如何培养这个习惯本文不做讨论，大家可以先自行思考；本文只尝试分析知识的层级，从而便于我们认清&lt;strong&gt;自己应该学习什么以及应该怎么学习&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;知识的不同层级&quot;&gt;知识的不同层级&lt;/h2&gt;
+
+&lt;p&gt;假设任何领域的知识分为不同的层级。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+（↑实践）
+&lt;span class=&quot;c&quot;&gt;############################################################&lt;/span&gt;
+L3 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;domain knowlege&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;     | L3-1 | L3-2  |  |  L3-3 | L3-4 | 
+&lt;span class=&quot;c&quot;&gt;#########################|##############|##|##############|#&lt;/span&gt;
+L2 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;practice knowledge&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;  |    L2-1      |  |     L2-2     | 
+&lt;span class=&quot;c&quot;&gt;############################################################&lt;/span&gt;
+L1 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;general knowlege&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;###################################&lt;/span&gt;
+L0（low-level knowledge&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;###########################&lt;/span&gt;
+（↓理论）
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;（某个领域的知识等级图）&lt;/p&gt;
+
+&lt;p&gt;L0 代表&lt;strong&gt;底层基础层&lt;/strong&gt;，表示那些比较少涉及到的知识；L1 代表&lt;strong&gt;通用知识识层&lt;/strong&gt;，表示只要涉及当前领域的工作就需要掌握的基础知识；L2 代表实践层，这个层级的知识开始出现领域上的初步分化；L3 代表领域层，包含更为专业的领域知识。越往下面越偏向理论，越往上面越偏向实践。直白地理解，越往下越接近课堂里学习到的知识，越往上越接近工作中用到的知识。&lt;/p&gt;
+
+&lt;p&gt;作为一名编码者，理想情况下需要从 L0 到 L3 逐一训练自己的能力。但是在精力限制以及时间限制的情况下，无法顾全所有，只能有选择性地进行学习。&lt;/p&gt;
+
+&lt;h3 id=&quot;自己应该学习什么&quot;&gt;自己应该学习什么&lt;/h3&gt;
+
+&lt;p&gt;在讨论知识的时候，庄子曾讲“吾生也有涯，而知也无涯”，那么多知识根本学习不完；这对于学习者来说算是&lt;strong&gt;一个坏消息&lt;/strong&gt;。但是并不意味着放弃学习是一件睿智的选择（其实放弃学习是很愚蠢的选择），因为还有一个好消息，解决工作上的实际问题并不需要所有的知识，有时候解决一个问题只需要掌握一小块知识就足够了；这对于学习者来说算是&lt;strong&gt;一个好消息&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;自己应该学习什么？如果目前工作中需要某个技能，但是自己不具备这个技能，投入时间精力学习吧！如果自己未来的工作中（工作转型）需要某个技能，但是自己目前不具备这个技能，也投入时间学习吧！&lt;/p&gt;
+
+&lt;p&gt;如果自己不知道当前的工作需要哪个技能，也不知道自己未来的工作需要哪个技能，说明自己处于迷茫阶段，不妨尝试一些别的事情。对于非 IT 领域的同学，可以尝试学习一门编程语言；对于已经是 IT 领域的同学，可以尝试通读一下某个编程语言的手册文档；等等。&lt;/p&gt;
+
+&lt;h3 id=&quot;知识的分类应该怎么学&quot;&gt;知识的分类（应该怎么学）&lt;/h3&gt;
+
+&lt;p&gt;根据我的学习经历及工作经验，我发现基本上可以把知识分成下面几类：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;死记硬背型的知识点（比如九九乘法口诀）&lt;/li&gt;
+  &lt;li&gt;系统理论型的知识点（比如乘法竖列式）&lt;/li&gt;
+  &lt;li&gt;一系列的知识点形成的领域栈只是（比如仅 python 技术栈包含了成百上千个知识点）&lt;/li&gt;
+  &lt;li&gt;只有经历过才会有的知识（也就是一般所说的经验）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;这四类里面，死记硬背型的知识点需要花费时间进行记忆，如果记忆力比较好短时间或许可以掌握；系统理论型的知识点主要凭借逻辑思维能力进行学习，如果理解能力好一点也可以短时间内掌握。前面的这两种知识点通过比较短的时间是可以掌握的，但是接下来的&lt;strong&gt;领域栈只是和经验上的知识都需要时间上的打磨&lt;/strong&gt;，尤其经验，没有时间上的积累几乎是不可能有成绩的。&lt;/p&gt;
+
+&lt;p&gt;如果读者朋友已结束学生时代步入社会，或许已经可以意识到：很多聪明的小孩子自认为凭借着自己的聪明才智可以很容易地收获所有知识，从而不付出努力学习，这是一件多么愚蠢的行为。有的知识的学习本就是耗时耗精力的，是没有捷径掌握的。&lt;/p&gt;
+
+&lt;p&gt;如果&lt;strong&gt;确认了自己应该学习的领域栈，不遗余力地学习这个领域栈的知识点，然后想尽一切办法实践这些知识点吧&lt;/strong&gt;！&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 05 Apr 2020 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2020/04/05/learning-methodology.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2020/04/05/learning-methodology.html</guid>
+        
+        <category>基础</category>
+        
+        <category>实用</category>
+        
+        
+        <category>编程</category>
+        
+      </item>
     
       <item>
         <title>如何为 Go 语言源码仓库贡献代码</title>
@@ -1865,201 +1943,6 @@ mysql &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root &lt;span class=&quot
         <pubDate>Sat, 09 Nov 2019 00:00:00 +0800</pubDate>
         <link>https://jingwei.link/2019/11/09/effectivego-interface.html</link>
         <guid isPermaLink="true">https://jingwei.link/2019/11/09/effectivego-interface.html</guid>
-        
-        <category>golang</category>
-        
-        <category>基础</category>
-        
-        <category>实用</category>
-        
-        
-        <category>golang</category>
-        
-      </item>
-    
-      <item>
-        <title>《原汁原味 Go 语言学习》(8) effective go 初始化及方法部分</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#初始化initialization&quot; id=&quot;markdown-toc-初始化initialization&quot;&gt;初始化（Initialization）&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#常量constants&quot; id=&quot;markdown-toc-常量constants&quot;&gt;常量（Constants）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#变量variables&quot; id=&quot;markdown-toc-变量variables&quot;&gt;变量（Variables）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#init-函数the-init-function&quot; id=&quot;markdown-toc-init-函数the-init-function&quot;&gt;init 函数（The init function）&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#方法methods&quot; id=&quot;markdown-toc-方法methods&quot;&gt;方法（Methods）&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#指针与值pointers-vs-values&quot; id=&quot;markdown-toc-指针与值pointers-vs-values&quot;&gt;指针与值（Pointers vs. Values）&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;资料&quot;&gt;资料&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&quot;https://golang.google.cn/doc/effective_go.html&quot;&gt;effective go&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.bilibili.com/video/av74451767&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;初始化initialization&quot;&gt;初始化（Initialization）&lt;/h1&gt;
-
-&lt;p&gt;表面上看 Go 的初始化方式与 C/C++ 的初始化方法没有太大区别，但事实上 Go 的初始化方式更强大。Go 语言可以在初始化过程中直接创建复合结构类型（比如 结构体、映射、切片等），能够正确处理初始化对象之间的顺序问题（包括不同的包之间对象的初始化顺序）。&lt;/p&gt;
-
-&lt;h2 id=&quot;常量constants&quot;&gt;常量（Constants）&lt;/h2&gt;
-
-&lt;p&gt;在 Go 中，常量仅仅指常量。常量（包括包裹在函数内的常量）在编译时就会被创建，它只能是数字、字符（UTF8符文）、字符串或布尔值。由于常量在编译时就要确定下来，因此定义常量的表达式必须是&lt;strong&gt;编译器可以执行&lt;/strong&gt;的常量表达式。比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;1&amp;lt;&amp;lt;3&lt;/code&gt; 是一个常量表达式，&lt;code class=&quot;highlighter-rouge&quot;&gt;math.Sin(math.Pi/4)&lt;/code&gt; 不是常量表达式，因为 &lt;code class=&quot;highlighter-rouge&quot;&gt;math.Sin&lt;/code&gt; 只能在运行时调用，不能在编译时调用。&lt;/p&gt;
-
-&lt;p&gt;在 Go 中，枚举型常量经常通过使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;iota&lt;/code&gt; 枚举器来创建。鉴于 &lt;code class=&quot;highlighter-rouge&quot;&gt;iota&lt;/code&gt; 可以作为表达式的一部分来使用，同时表达式可以隐式地重复，因此很方便创建复杂枚举值集合。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ByteSize&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;float64&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;           &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;// ignore first value by assigning to blank identifier&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;KB&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ByteSize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;iota&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;MB&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;GB&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;TB&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;PB&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;EB&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ZB&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;YB&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;可以给自定义的任何类型添加方法（比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法），这种能力使得任意类型的值被打印时都能定义自己的输出格式。最常见的是给结构体添加方法，不过我们也可以给标量类型（比如 浮点类型 &lt;code class=&quot;highlighter-rouge&quot;&gt;ByteSize&lt;/code&gt;）添加方法。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ByteSize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;switch&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;YB&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%.2fYB&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;YB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ZB&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%.2fZB&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ZB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EB&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%.2fEB&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PB&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%.2fPB&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TB&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%.2fTB&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GB&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%.2fGB&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MB&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%.2fMB&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;KB&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%.2fKB&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%.2fB&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;表达式 &lt;code class=&quot;highlighter-rouge&quot;&gt;YB&lt;/code&gt; 会打印 &lt;code class=&quot;highlighter-rouge&quot;&gt;1.00YB&lt;/code&gt;， 而 &lt;code class=&quot;highlighter-rouge&quot;&gt;ByteSize(1e13)&lt;/code&gt; 会打印 &lt;code class=&quot;highlighter-rouge&quot;&gt;9.09TB&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;上面的代码通过使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Sprintf&lt;/code&gt; 来实现 &lt;code class=&quot;highlighter-rouge&quot;&gt;ByteSize&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法是安全的（不存在上一小节提到的循环调用问题），因为使用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;%f&lt;/code&gt; 格式符，而它不是一个字符串格式化符：&lt;code class=&quot;highlighter-rouge&quot;&gt;Sprintf&lt;/code&gt; 只在需要字符串类型的时候才会调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法，&lt;code class=&quot;highlighter-rouge&quot;&gt;%f&lt;/code&gt; 指定的是浮点值，也就自然而然避免了上面代码中 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;fmt.Sprintf&lt;/code&gt; 方法后者再进一步触发 &lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt; 方法的循环调用链。&lt;/p&gt;
-
-&lt;h2 id=&quot;变量variables&quot;&gt;变量（Variables）&lt;/h2&gt;
-
-&lt;p&gt;可以像常量那样初始化变量，但是变量的初始化表达式可以是在运行时进行计算的通用表达式。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;home&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Getenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;HOME&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Getenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;USER&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;gopath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Getenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GOPATH&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;init-函数the-init-function&quot;&gt;init 函数（The init function）&lt;/h2&gt;
-
-&lt;p&gt;&lt;strong&gt;每个源文件&lt;/strong&gt;都可以定义 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数用来初始化它需要的状态。（事实上每个文件可以有多个 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数，而且这些 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数会按序执行，比如 &lt;a href=&quot;https://github.com/chalvern/gosmile/tree/template/db/migration&quot;&gt;gosmile&lt;/a&gt; 数据库迁移的设计就可以利用这个特性）。&lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 会在包中所有的变量声明被执行后再调用，而且只在所有被导入的包初始化以后才会被调用（被导入的包先初始化，然后常量和变量被初始化，接着才是 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数的执行）。&lt;/p&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数大都是为了在真实运行开始前校验或者修复程序的状态，除此外不应该用作其他的用途。（根据开发经验，在 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 中添加过多的逻辑会让测试很难写）&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Fatal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;$USER not set&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;home&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;home&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/home/&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gopath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;gopath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;home&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/go&quot;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;// gopath may be overridden by --gopath flag on command line.&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StringVar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gopath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;gopath&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gopath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;override default GOPATH&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h1 id=&quot;方法methods&quot;&gt;方法（Methods）&lt;/h1&gt;
-
-&lt;h2 id=&quot;指针与值pointers-vs-values&quot;&gt;指针与值（Pointers vs. Values）&lt;/h2&gt;
-
-&lt;p&gt;就像看到的 &lt;code class=&quot;highlighter-rouge&quot;&gt;ByteSize&lt;/code&gt; 那样，我们可以给任何有名称的类型（除了指针和接口）定义方法，并不限定必须是结构体类型。&lt;/p&gt;
-
-&lt;p&gt;在切片一节的讨论中，我们编写了一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;Append&lt;/code&gt; 函数。其实我们可以把它定义为切片的一个方法。为了达成这个目的，首先我们需要基于切片声明一个新的类型从而方便把函数绑定到这个类型上，然后就可以很自然地在切片的变量上调用这个方法。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ByteSlice&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;slice&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ByteSlice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;// Body exactly the same as the Append function defined above.&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;由于上一小节提到的切片的特点，上面的方法仍然需要返回更新后的切片，否则方法的调用方是感知不到这种更新的。不过我们可以把接受者改为&lt;code class=&quot;highlighter-rouge&quot;&gt;ByteSlice&lt;/code&gt;的&lt;strong&gt;指针&lt;/strong&gt;从而改进上面笨拙的写法，从而避免显式地返回切片，如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ByteSlice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;slice&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;// Body as above, without the return.&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;slice&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;实际上我们可以做的更好，比如模仿标准的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Write&lt;/code&gt; 方法继续改进 &lt;code class=&quot;highlighter-rouge&quot;&gt;Append&lt;/code&gt; 函数，如下：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ByteSlice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Write&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;slice&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;// Again as above.&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;slice&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;如此，类型 &lt;code class=&quot;highlighter-rouge&quot;&gt;*ByteSlice&lt;/code&gt; 实现了便利的标准接口 &lt;code class=&quot;highlighter-rouge&quot;&gt;io.Writer&lt;/code&gt;。比如下面的代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ByteSlice&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Fprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;This hour has %d days&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面的代码中我们传递了 &lt;code class=&quot;highlighter-rouge&quot;&gt;ByteSlice&lt;/code&gt; 的地址，因为只有 &lt;code class=&quot;highlighter-rouge&quot;&gt;*ByteSlice&lt;/code&gt; 实现了 &lt;code class=&quot;highlighter-rouge&quot;&gt;io.Writer&lt;/code&gt; 接口。关于&lt;strong&gt;指针接受者和值接受者&lt;/strong&gt;的规则是：&lt;strong&gt;值方法可以在指针接受者上面和值接受者上面触发调用，但是指针方法只能被指针接受者触发调用&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;之所以有上面的规则，是因为指针方法可以修改接受者；如果在值接受者上面触发指针方法会导致方法接收一个值的拷贝，任何对该值的修改都会被丢弃，因此 Go 语言层面上不允许这种错误。不过，这里有一个特例。如果值是可取址的，当在一个值上调用指针方法的时候，Go 语言会照顾到这种常见的用法在值上自动添加一个取址运算符。比如上面的例子中，&lt;code class=&quot;highlighter-rouge&quot;&gt;b&lt;/code&gt; 是可取址的，因此我们可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;b.Write&lt;/code&gt; 调用它的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Write&lt;/code&gt; 方法，编译器会为我们把它重写为 &lt;code class=&quot;highlighter-rouge&quot;&gt;(&amp;amp;b).Write&lt;/code&gt;。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;User&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;Age&lt;/span&gt;  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;u&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SetName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;newName&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;u&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newName&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newUser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;User&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;angel&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newUser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SetName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;darling&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;c&quot;&gt;// 等效于&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SetName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;darling&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-	&lt;span class=&quot;c&quot;&gt;// 下面的代码编译报错&lt;/span&gt;
-	&lt;span class=&quot;c&quot;&gt;// cannot take the address of newUser()go&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;newUser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SetName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;darling&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;顺便提一下，&lt;code class=&quot;highlighter-rouge&quot;&gt;bytes.Buffer&lt;/code&gt; 就是通过在字节的切片上定义 &lt;code class=&quot;highlighter-rouge&quot;&gt;Write&lt;/code&gt; 方法来实现的。&lt;/p&gt;
-</description>
-        <pubDate>Sat, 02 Nov 2019 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2019/11/02/effectivego-init-and-method.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2019/11/02/effectivego-init-and-method.html</guid>
         
         <category>golang</category>
         

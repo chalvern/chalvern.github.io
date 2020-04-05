@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "职场人士应该学什么以及如何学习（编码领域）",
+      "tags"     : "基础 实用",
+      "url"      : "/2020/04/05/learning-methodology.html"
+    } ,
+  
+    {
       "title"    : "如何为 Go 语言源码仓库贡献代码",
       "tags"     : "golang 最佳实践",
       "url"      : "/2020/03/15/contribute_golang_process.html"

@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>如何为 Go 语言源码仓库贡献代码 - 敬维</title>
+    <title>职场人士应该学什么以及如何学习（编码领域） - 敬维</title>
     <meta name="author"  content="敬维">
-    <meta name="description" content="如何为 Go 语言源码仓库贡献代码">
-    <meta name="keywords"  content="golang, 最佳实践">
+    <meta name="description" content="职场人士应该学什么以及如何学习（编码领域）">
+    <meta name="keywords"  content="基础, 实用">
     <!-- Open Graph -->
-    <meta property="og:title" content="如何为 Go 语言源码仓库贡献代码 - 敬维">
+    <meta property="og:title" content="职场人士应该学什么以及如何学习（编码领域） - 敬维">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jingwei.link/2020/03/15/contribute_golang_process.html">
+    <meta property="og:url" content="https://jingwei.link/2020/04/05/learning-methodology.html">
     <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
     <meta property="og:site_name" content="敬维">
     <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
@@ -122,16 +122,16 @@ Author: Ray-Eldath
       <div class="post-tags">
         
           
-            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
           
-            <a href="https://jingwei.link/tags#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="post-tag">最佳实践</a>
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
           
         
       </div>
-      <h1>如何为 Go 语言源码仓库贡献代码</h1>
+      <h1>职场人士应该学什么以及如何学习（编码领域）</h1>
       <div class="post-meta">
         <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">敬维</a></></span>
-        <time class="post-meta-item" datetime="20-03-15"><i class="iconfont icon-date"></i>15 Mar 2020</time>
+        <time class="post-meta-item" datetime="20-04-05"><i class="iconfont icon-date"></i>05 Apr 2020</time>
       </div>
     </div>
     
@@ -142,55 +142,71 @@ Author: Ray-Eldath
 
   <div class="post-content visible">
     
-    <h2 class="post-subtitle">修正Go内存模型官方文档中的错误</h2>
+    <h2 class="post-subtitle">领域知识的不同层级分析</h2>
     
 
     <article class="markdown-body">
       <ul id="markdown-toc">
   <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
-  <li><a href="#为-go-语言源码仓库贡献代码" id="markdown-toc-为-go-语言源码仓库贡献代码">为 Go 语言源码仓库贡献代码</a>    <ul>
-      <li><a href="#我们往往忽略了官方材料的学习" id="markdown-toc-我们往往忽略了官方材料的学习">我们往往忽略了官方材料的学习</a></li>
-      <li><a href="#如何为-go-语言源码仓库贡献代码" id="markdown-toc-如何为-go-语言源码仓库贡献代码">如何为 Go 语言源码仓库贡献代码</a></li>
+  <li><a href="#知识的不同层级" id="markdown-toc-知识的不同层级">知识的不同层级</a>    <ul>
+      <li><a href="#自己应该学习什么" id="markdown-toc-自己应该学习什么">自己应该学习什么</a></li>
+      <li><a href="#知识的分类应该怎么学" id="markdown-toc-知识的分类应该怎么学">知识的分类（应该怎么学）</a></li>
     </ul>
   </li>
-  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
 </ul>
 
 <h2 id="写在前面">写在前面</h2>
+<p>俗话说，“活到老学到老”。对程序员而言，尤其如此；或者说的严重一点，程序员唯有此一条路。然而，无论是职场新人还是职场老手，能够坚持学习的人却凤毛麟角。一方面是因为<strong>坚持学习</strong>需要很强的毅力，而人有偷懒的劣根在；另一方面则是因为学习目标模糊，不知道该学什么，也不知道该怎么学。</p>
 
-<p>二零一九年（2019）利用业余的时间做了一套<a href="https://github.com/chalvern/books/tree/master/go/official_go_learning">《原汁原味Go语言学习》</a>的视频课程，主要涉及到 Go 官方的几个文档资料的学习。在翻译官方文档的过程中发现有一处错误（前前后后看了很多遍，每次看到都觉得不爽），调研后发现是 Go 源码仓库中的文档，于是心血来潮修正错误并提交了 commit，私心里还琢磨着如果代码被合并自己以后岂不就可以吹嘘是<strong>Go语言源码的贡献者</strong>了？</p>
+<p>如果把坚持学习看做一个习惯，如何培养这个习惯本文不做讨论，大家可以先自行思考；本文只尝试分析知识的层级，从而便于我们认清<strong>自己应该学习什么以及应该怎么学习</strong>。</p>
 
-<p>按照官方指引，春节放假前提交修正并得到管理员的正反馈，然后一直关注了好久但不见代码被合并，一度以为自己的这个提交被忽略了，不过最近看到已经被合并到了<a href="https://github.com/golang/go/commit/34830beffa6396129bd9d9da58afb7a046775d49">Go主分支</a>。开心😸。</p>
+<h2 id="知识的不同层级">知识的不同层级</h2>
 
-<p>其实整个提交过程还是比较流畅的，现在简单总结记录一下供自己以及他人参考。</p>
+<p>假设任何领域的知识分为不同的层级。</p>
 
-<h2 id="为-go-语言源码仓库贡献代码">为 Go 语言源码仓库贡献代码</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+（↑实践）
+<span class="c">############################################################</span>
+L3 <span class="o">(</span>domain knowlege<span class="o">)</span>     | L3-1 | L3-2  |  |  L3-3 | L3-4 | 
+<span class="c">#########################|##############|##|##############|#</span>
+L2 <span class="o">(</span>practice knowledge<span class="o">)</span>  |    L2-1      |  |     L2-2     | 
+<span class="c">############################################################</span>
+L1 <span class="o">(</span>general knowlege<span class="o">)</span>
+<span class="c">###################################</span>
+L0（low-level knowledge<span class="o">)</span>
+<span class="c">###########################</span>
+（↓理论）
+</code></pre></div></div>
+<p>（某个领域的知识等级图）</p>
 
-<h3 id="我们往往忽略了官方材料的学习">我们往往忽略了官方材料的学习</h3>
+<p>L0 代表<strong>底层基础层</strong>，表示那些比较少涉及到的知识；L1 代表<strong>通用知识识层</strong>，表示只要涉及当前领域的工作就需要掌握的基础知识；L2 代表实践层，这个层级的知识开始出现领域上的初步分化；L3 代表领域层，包含更为专业的领域知识。越往下面越偏向理论，越往上面越偏向实践。直白地理解，越往下越接近课堂里学习到的知识，越往上越接近工作中用到的知识。</p>
 
-<p>由于每个人学习编程的方式不同，可能无法评估出编程的最佳学习方式；但是作为熟练程度的基准，语言的官方文档理应是其最佳的学习资料。以 Go 语言为例，可能市面上存在很多 Go 语言相关的书籍，但是任何一本书都无法让自己精通 Go 语言编程（如果有类似标榜的书籍，千万不要买）；从这个角度讲，书籍只能作为编程语言学习的指引者——激起学习者的学习热情，启发学习者的学习路径——其他的技术细节和技巧仍然需要学习者自己去探索体会。</p>
+<p>作为一名编码者，理想情况下需要从 L0 到 L3 逐一训练自己的能力。但是在精力限制以及时间限制的情况下，无法顾全所有，只能有选择性地进行学习。</p>
 
-<p>不过虽说编程语言的官方文档是最佳的学习资料，但是官方文档往往是枯燥无趣的，因此也难怪很多人都不喜欢读。可是，编程语言的学习与掌握本就是一个枯燥无趣的过程，又有什么办法……</p>
+<h3 id="自己应该学习什么">自己应该学习什么</h3>
 
-<h3 id="如何为-go-语言源码仓库贡献代码">如何为 Go 语言源码仓库贡献代码</h3>
+<p>在讨论知识的时候，庄子曾讲“吾生也有涯，而知也无涯”，那么多知识根本学习不完；这对于学习者来说算是<strong>一个坏消息</strong>。但是并不意味着放弃学习是一件睿智的选择（其实放弃学习是很愚蠢的选择），因为还有一个好消息，解决工作上的实际问题并不需要所有的知识，有时候解决一个问题只需要掌握一小块知识就足够了；这对于学习者来说算是<strong>一个好消息</strong>。</p>
 
-<p>只需参考 《<a href="https://golang.google.cn/doc/contribute.html">Contribution Guide 官方文档</a>》即可。</p>
+<p>自己应该学习什么？如果目前工作中需要某个技能，但是自己不具备这个技能，投入时间精力学习吧！如果自己未来的工作中（工作转型）需要某个技能，但是自己目前不具备这个技能，也投入时间学习吧！</p>
 
-<p>大家可以看到整个文档都是英文资料，且在提交代码让别人审核的过程中也都是英文沟通交流，因此这里关键的点或许是把英文学好……</p>
+<p>如果自己不知道当前的工作需要哪个技能，也不知道自己未来的工作需要哪个技能，说明自己处于迷茫阶段，不妨尝试一些别的事情。对于非 IT 领域的同学，可以尝试学习一门编程语言；对于已经是 IT 领域的同学，可以尝试通读一下某个编程语言的手册文档；等等。</p>
 
-<p>从我个人的经验看，只要英文够好，确实发现了源码中不合理的地方，又觉得自己有好点子，都可以为 Go 语言贡献代码。为了破除大家对提交代码这件事情的神秘感，这里简单罗列一下<a href="https://golang.google.cn/doc/contribute.html">官方文档</a>里介绍的几个点：</p>
+<h3 id="知识的分类应该怎么学">知识的分类（应该怎么学）</h3>
 
-<ol>
-  <li>首先准备好账户并签署贡献者协议（Google账户、Gerrit账户）；</li>
-  <li>配置自己本地的环境（配置 git、配置 gerrit，后者是谷歌官方提供的一个小工具，可以保持自己的 commit 信息的规范）；</li>
-  <li>修改完代码后就可以使用 gerrit 提交了;</li>
-  <li>提交完成后到 https://go.googlesource.com/ 可以观察进度，甚至可能需要根据修改意见进行内容上的阐述、修改等；</li>
-  <li>等提交的内容被完全认同以后，剩下的就是耐心等着被合并到 Master 主分支了。</li>
-</ol>
+<p>根据我的学习经历及工作经验，我发现基本上可以把知识分成下面几类：</p>
 
-<h2 id="小结">小结</h2>
+<ul>
+  <li>死记硬背型的知识点（比如九九乘法口诀）</li>
+  <li>系统理论型的知识点（比如乘法竖列式）</li>
+  <li>一系列的知识点形成的领域栈只是（比如仅 python 技术栈包含了成百上千个知识点）</li>
+  <li>只有经历过才会有的知识（也就是一般所说的经验）</li>
+</ul>
 
-<p>自己的代码被合并到主仓库，好像这份开心慢慢地也消散了。终于还是要踏踏实实地解决业务问题，如此自己的创造才是有价值的。</p>
+<p>这四类里面，死记硬背型的知识点需要花费时间进行记忆，如果记忆力比较好短时间或许可以掌握；系统理论型的知识点主要凭借逻辑思维能力进行学习，如果理解能力好一点也可以短时间内掌握。前面的这两种知识点通过比较短的时间是可以掌握的，但是接下来的<strong>领域栈只是和经验上的知识都需要时间上的打磨</strong>，尤其经验，没有时间上的积累几乎是不可能有成绩的。</p>
+
+<p>如果读者朋友已结束学生时代步入社会，或许已经可以意识到：很多聪明的小孩子自认为凭借着自己的聪明才智可以很容易地收获所有知识，从而不付出努力学习，这是一件多么愚蠢的行为。有的知识的学习本就是耗时耗精力的，是没有捷径掌握的。</p>
+
+<p>如果<strong>确认了自己应该学习的领域栈，不遗余力地学习这个领域栈的知识点，然后想尽一切办法实践这些知识点吧</strong>！</p>
 
 
     </article>
@@ -237,24 +253,12 @@ Author: Ray-Eldath
     </section>
     <section class="post-footer-item read-next">
       
-      <div class="read-next-item">
-        <a href="/2020/04/05/learning-methodology.html" class="read-next-link"></a>
-        <section>
-          <span>职场人士应该学什么以及如何学习（编码领域）</span>
-          <p></p>
-        </section>
-        
-        <div class="filter"></div>
-        <img src="" alt="">
-        
-     </div>
-      
 
       
       <div class="read-next-item">
-        <a href="/2020/02/08/appolo-go-web-blog.html" class="read-next-link"></a>
+        <a href="/2020/03/15/contribute_golang_process.html" class="read-next-link"></a>
           <section>
-            <span>更实用的 Go 开发的社区论坛——apollo 开源项目介绍</span>
+            <span>如何为 Go 语言源码仓库贡献代码</span>
             <p></p>
           </section>
           
