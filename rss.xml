@@ -5,43 +5,43 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 18 Apr 2020 14:08:33 +0800</pubDate>
-    <lastBuildDate>Sat, 18 Apr 2020 14:08:33 +0800</lastBuildDate>
+    <pubDate>Sat, 18 Apr 2020 14:51:19 +0800</pubDate>
+    <lastBuildDate>Sat, 18 Apr 2020 14:51:19 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
         <title>人生苦短，快用 Python</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#编程语言是为业务场景服务的&quot; id=&quot;markdown-toc-编程语言是为业务场景服务的&quot;&gt;编程语言是为业务场景服务的&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#静态语言与动态语言&quot; id=&quot;markdown-toc-静态语言与动态语言&quot;&gt;静态语言与动态语言&lt;/a&gt;        &lt;ul&gt;
-          &lt;li&gt;&lt;a href=&quot;#静态语言的编写-编译并链接-执行过程&quot; id=&quot;markdown-toc-静态语言的编写-编译并链接-执行过程&quot;&gt;静态语言的①编写-②编译并链接-③执行过程&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href=&quot;#动态语言的编写-解释执行过程&quot; id=&quot;markdown-toc-动态语言的编写-解释执行过程&quot;&gt;动态语言的①编写-②解释执行过程&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#1-写在前面&quot; id=&quot;markdown-toc-1-写在前面&quot;&gt;1. 写在前面&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#2-编程语言是为业务场景服务的&quot; id=&quot;markdown-toc-2-编程语言是为业务场景服务的&quot;&gt;2. 编程语言是为业务场景服务的&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#21-静态语言与动态语言&quot; id=&quot;markdown-toc-21-静态语言与动态语言&quot;&gt;2.1 静态语言与动态语言&lt;/a&gt;        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;#211-静态语言的编写-编译并链接-执行过程&quot; id=&quot;markdown-toc-211-静态语言的编写-编译并链接-执行过程&quot;&gt;2.1.1 静态语言的①编写-②编译并链接-③执行过程&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#212-动态语言的编写-解释执行过程&quot; id=&quot;markdown-toc-212-动态语言的编写-解释执行过程&quot;&gt;2.1.2 动态语言的①编写-②解释执行过程&lt;/a&gt;&lt;/li&gt;
         &lt;/ul&gt;
       &lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#人生苦短快用python&quot; id=&quot;markdown-toc-人生苦短快用python&quot;&gt;人生苦短，快用Python&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#22-人生苦短快用python&quot; id=&quot;markdown-toc-22-人生苦短快用python&quot;&gt;2.2 人生苦短，快用Python&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#3-小结&quot; id=&quot;markdown-toc-3-小结&quot;&gt;3 小结&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
+&lt;h2 id=&quot;1-写在前面&quot;&gt;1. 写在前面&lt;/h2&gt;
 
 &lt;p&gt;从 &lt;a href=&quot;https://www.ruby-lang.org/&quot;&gt;Ruby&lt;/a&gt; 语言到 &lt;a href=&quot;https://golang.google.cn/&quot;&gt;Go&lt;/a&gt; 语言，目前终于开始使用 &lt;a href=&quot;https://www.python.org/&quot;&gt;Python&lt;/a&gt; 进行编码。&lt;/p&gt;
 
-&lt;p&gt;对于&lt;strong&gt;职场新手&lt;/strong&gt;，可能首先会提出一个问题：难道 &lt;strong&gt;Ruby&lt;/strong&gt;/&lt;strong&gt;Go&lt;/strong&gt; 不香吗？难道 &lt;strong&gt;Python&lt;/strong&gt; 比其他两个语言好？其实都不是。如果我们认同&lt;strong&gt;“技术是为业务服务的”&lt;/strong&gt;这个论调，那么&lt;strong&gt;“编程语言是为业务场景服务的”&lt;/strong&gt;，仅此而已。&lt;/p&gt;
+&lt;p&gt;对于&lt;strong&gt;职场新手&lt;/strong&gt;，可能首先会提出一个问题：难道 &lt;strong&gt;Ruby&lt;/strong&gt;/&lt;strong&gt;Go&lt;/strong&gt; 不香吗？难道 &lt;strong&gt;Python&lt;/strong&gt; 比其他两个语言好？其实都不是。如果我们认同&lt;strong&gt;“技术是为业务服务的”&lt;/strong&gt;这个论调，那么&lt;strong&gt;“编程语言应该为业务场景服务”&lt;/strong&gt;，仅此而已。&lt;/p&gt;
 
-&lt;h2 id=&quot;编程语言是为业务场景服务的&quot;&gt;编程语言是为业务场景服务的&lt;/h2&gt;
+&lt;h2 id=&quot;2-编程语言是为业务场景服务的&quot;&gt;2. 编程语言是为业务场景服务的&lt;/h2&gt;
 
 &lt;p&gt;根据业务场景选择合适的编程语言，使得当前场景的开发收益最大化。当用户量不是很多（机器没什么压力）而业务逻辑却比较繁杂（开发者编码有压力）的情况下，使用 Python 编码或许是一个较为明智的选择。&lt;/p&gt;
 
-&lt;h3 id=&quot;静态语言与动态语言&quot;&gt;静态语言与动态语言&lt;/h3&gt;
+&lt;h3 id=&quot;21-静态语言与动态语言&quot;&gt;2.1 静态语言与动态语言&lt;/h3&gt;
 
 &lt;p&gt;所谓静态语言，是指代码在编译的时候（简称&lt;strong&gt;编译时&lt;/strong&gt;）变量的类型就可以确定的语言，比如 C/C++、Java、Go、Object-C 等；所谓静态语言，是指代码在运行的时候（简称&lt;strong&gt;运行时&lt;/strong&gt;）变量的类型才可以确定的语言，比如 Python、Ruby、JavaScript、PHP、SQL等。&lt;/p&gt;
 
-&lt;p&gt;所谓&lt;strong&gt;编译时&lt;/strong&gt;，是指把我们编写的代码文本转换成为机器可以执行的代码的环境上下文，它会&lt;strong&gt;产出&lt;/strong&gt;一个机器可以执行的二进制文件。所谓&lt;strong&gt;运行时&lt;/strong&gt;，是指可执行的二进制文件在 CPU 上真实执行的上下文。&lt;/p&gt;
+&lt;p&gt;进一步，所以&lt;strong&gt;编译时&lt;/strong&gt;，是指把代码文本转换为机器可执行文件的环境上下文，它会&lt;strong&gt;产出&lt;/strong&gt;一个机器可以执行的二进制文件。所谓&lt;strong&gt;运行时&lt;/strong&gt;，是指可执行的二进制文件在 CPU 上真实执行的上下文。&lt;/p&gt;
 
-&lt;h4 id=&quot;静态语言的编写-编译并链接-执行过程&quot;&gt;静态语言的①编写-②编译并链接-③执行过程&lt;/h4&gt;
+&lt;h4 id=&quot;211-静态语言的编写-编译并链接-执行过程&quot;&gt;2.1.1 静态语言的①编写-②编译并链接-③执行过程&lt;/h4&gt;
 
 &lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// cat main.go&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;
@@ -53,51 +53,50 @@
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;当我们使用 Go &lt;strong&gt;编写&lt;/strong&gt;业务逻辑（比如上面的&lt;code class=&quot;highlighter-rouge&quot;&gt;hello world&lt;/code&gt;代码），在执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;go run main.go&lt;/code&gt; 的时候，Go 开发工具链隐含地帮我们首先&lt;strong&gt;编译并链接源码&lt;/strong&gt;生成可以执行的二进制文件，然后&lt;strong&gt;运行&lt;/strong&gt;这个二进制文件。也就是说，&lt;code class=&quot;highlighter-rouge&quot;&gt;go run main.go&lt;/code&gt; 等效于 ①&lt;code class=&quot;highlighter-rouge&quot;&gt;go build main.go&lt;/code&gt; + ②&lt;code class=&quot;highlighter-rouge&quot;&gt;./mian&lt;/code&gt; 这两个命令。&lt;/p&gt;
+&lt;p&gt;当我们使用 Go &lt;strong&gt;编写&lt;/strong&gt;业务逻辑（比如上面的&lt;code class=&quot;highlighter-rouge&quot;&gt;hello world&lt;/code&gt;代码）并执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;go run main.go&lt;/code&gt; 的时候，Go 开发工具链隐含地帮我们首先&lt;strong&gt;编译并链接源码&lt;/strong&gt;生成可以执行的二进制文件，紧接着&lt;strong&gt;运行&lt;/strong&gt;这个二进制文件。也就是说，&lt;code class=&quot;highlighter-rouge&quot;&gt;go run main.go&lt;/code&gt; 等效于 ①&lt;code class=&quot;highlighter-rouge&quot;&gt;go build main.go&lt;/code&gt; + ②&lt;code class=&quot;highlighter-rouge&quot;&gt;./mian&lt;/code&gt; 这两个命令操作。&lt;/p&gt;
 
-&lt;p&gt;我们可以简单地认为 &lt;code class=&quot;highlighter-rouge&quot;&gt;go build main.go&lt;/code&gt; 是 Go 代码的编译时，产物是一个可执行的二进制文件 &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;；执行&lt;code class=&quot;highlighter-rouge&quot;&gt;./main&lt;/code&gt; 是 Go 代码的运行时，此时我们编写的逻辑开始**在 CPU 上执行。&lt;/p&gt;
+&lt;p&gt;我们可以简单地认为 &lt;code class=&quot;highlighter-rouge&quot;&gt;go build main.go&lt;/code&gt; 是 Go 代码的编译时，产物是一个可执行的二进制文件 &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;；命令&lt;code class=&quot;highlighter-rouge&quot;&gt;./main&lt;/code&gt; 是 Go 代码的运行时，此时我们编写的逻辑&lt;em&gt;开始&lt;/em&gt;在 CPU 上执行。&lt;/p&gt;
 
-&lt;h4 id=&quot;动态语言的编写-解释执行过程&quot;&gt;动态语言的①编写-②解释执行过程&lt;/h4&gt;
+&lt;h4 id=&quot;212-动态语言的编写-解释执行过程&quot;&gt;2.1.2 动态语言的①编写-②解释执行过程&lt;/h4&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# cat hello.py
 &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello world&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;当我们使用 Python &lt;strong&gt;编写&lt;/strong&gt;业务逻辑(比如上面的代码)，在执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;python hello.py&lt;/code&gt; 的时候，Python 解释器直接帮我们&lt;strong&gt;解释并执行&lt;/strong&gt;业务逻辑。由于人与机器之间的隔阂，python 源码最终也会变成机器可以执行的代码，但是相对于静态语言，&lt;strong&gt;动态语言不存在编译后机器可执行的二进制产物&lt;/strong&gt;。换句话说，Python 的解释器一边编译源码，一边执行编译生成的代码。&lt;/p&gt;
+&lt;p&gt;当我们使用 Python &lt;strong&gt;编写&lt;/strong&gt;业务逻辑(比如上面的代码)，在执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;python hello.py&lt;/code&gt; 的时候，Python 解释器直接帮我们&lt;strong&gt;解释并执行&lt;/strong&gt;业务逻辑。由于人与机器之间的隔阂，python 源码最终也要变成机器可以执行的代码；但是相对于静态语言，&lt;strong&gt;动态语言不存在编译后机器可执行的二进制产物&lt;/strong&gt;。换句话说，Python 的解释器一边编译源码，一边执行编译生成的代码。&lt;/p&gt;
 
-&lt;h3 id=&quot;人生苦短快用python&quot;&gt;人生苦短，快用Python&lt;/h3&gt;
+&lt;h3 id=&quot;22-人生苦短快用python&quot;&gt;2.2 人生苦短，快用Python&lt;/h3&gt;
 
-&lt;p&gt;仅仅缺省编译链接过程并不能成为选择动态语言和 Python 的理由，原因很简单：但凡使用 Python 能够解决的问题，均可以使用其他非 Python 的方式解决。&lt;/p&gt;
+&lt;p&gt;仅仅缺省编译链接过程并不能成为选择动态语言 Python 的理由，原因很简单：但凡使用 Python 能够解决的问题，均可以使用其他非 Python 的方案解决。&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;我们可以使用 Python 处理文件（重命名、修改内容），其实也可以使用 Go 或者 Java 等完成同样的任务；&lt;/li&gt;
-  &lt;li&gt;我们可以使用 Python 处理表格数据，其实也可以使用 Go 或者 Java 等处理表格数据并达到同样的效果；&lt;/li&gt;
-  &lt;li&gt;我们可以使用 Python 编写爬虫工具，其实也可以使用 GO 或者 Java 等实现爬虫工具；&lt;/li&gt;
+  &lt;li&gt;我们可以使用 Python 处理文件（重命名、修改内容），也可以使用 Go 或者 Java 等完成同样的任务；&lt;/li&gt;
+  &lt;li&gt;我们可以使用 Python 处理表格数据，也可以使用 Go 或者 Java 等处理表格数据并达到同样的效果；&lt;/li&gt;
+  &lt;li&gt;我们可以使用 Python 编写爬虫工具，也可以使用 GO 或者 Java 等实现爬虫工具；&lt;/li&gt;
   &lt;li&gt;我们可以使用 Python 编写 Web 服务，而使用 Go 或者 Java 等也可以编写 Web 服务甚至生态更完整；&lt;/li&gt;
   &lt;li&gt;我们可以使用 Python 实践 AI 算法，而其他的语言也可以完成类似的工作（只不过生态不如 Python）；&lt;/li&gt;
   &lt;li&gt;其他……&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;基于上面的事实，并不存在必学 Python 的理由。可能 Python 只是让一些细节上让完成上面列出的任务更简单，比如文件的读取、类型的转换（字符串转数字）、序列号与反序列化（json字符串与json对象之间互相转换），等等；Python 语言本身封装了一些工具方法做上面的事情，而 Python 的第三方包进一步扩展了整个生态。&lt;/p&gt;
+&lt;p&gt;基于上面的事实，并不存在必学 Python 的理由。可能 Python 只是一些细节上让完成上面列出的任务更简单，比如文件的读取、类型的转换（字符串与数字的互转）、序列号与反序列化（json字符串与json对象之间互转），等等；Python 语言本身封装了一些工具方法很容易地完成这些事情，而 Python 的第三方包进一步扩展了整个生态。&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Python 可以更快地处理文件（重命名、修改内容），比如几行代码就可以实现文件的打开、读取、写入、关闭；&lt;/li&gt;
+  &lt;li&gt;Python 可以更简单地处理文件（重命名、修改内容），比如几行代码就可以实现文件的打开、读取、写入、关闭；&lt;/li&gt;
   &lt;li&gt;Python 可以更快地处理表格数据，比如可以方便地循环迭代每一行每一个格子，也可以很方便地对表格数据进行格式转换；&lt;/li&gt;
   &lt;li&gt;Python 可以更快地处理爬取到的数据，比如可以方便地把 json 字符串转换成为 json 对象进行进一步的处理；&lt;/li&gt;
-  &lt;li&gt;Python 在 AI 算法实践领域几乎是霸权地位，因为那些懂算法的人更喜欢写 Python 代码，使得 Python 技术栈包含了几乎所有 AI 相关的算法；&lt;/li&gt;
+  &lt;li&gt;Python 在 AI 算法实践领域几乎是霸权地位（因为那些懂算法的人更喜欢写 Python 代码），使得 Python 技术栈几乎包含了所有 AI 相关的算法；&lt;/li&gt;
   &lt;li&gt;其他……&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;基于上面的考虑，其实可以尝试学一下 Python。&lt;/p&gt;
 
-&lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
+&lt;h2 id=&quot;3-小结&quot;&gt;3 小结&lt;/h2&gt;
 
 &lt;p&gt;因为 Python 提供的一些便利性，当用户量不是很多（机器没什么压力）而业务逻辑却比较繁杂（开发者编码有压力）的情况下，使用 Python 编码是一个较为明智的选择：&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;释放开发者的生产力，把注意力放在业务逻辑的梳理；&lt;/li&gt;
-  &lt;li&gt;很容易地扩充编码队伍；&lt;/li&gt;
-  &lt;li&gt;待业务成功，把 Python 技术栈替换为其他技术栈。&lt;/li&gt;
+  &lt;li&gt;释放开发者把注意力放在业务逻辑的理解与梳理；&lt;/li&gt;
+  &lt;li&gt;很容易地扩充编码队伍（容易培养或招纳新成员）.&lt;/li&gt;
 &lt;/ul&gt;
 
 </description>
