@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "人生苦短，快用 Python",
+      "tags"     : "python 基础 实用",
+      "url"      : "/2020/04/18/use-python-quickly.html"
+    } ,
+  
+    {
       "title"    : "职场人士应该学什么以及学习方法（编码领域）",
       "tags"     : "基础 实用",
       "url"      : "/2020/04/05/learning-methodology.html"

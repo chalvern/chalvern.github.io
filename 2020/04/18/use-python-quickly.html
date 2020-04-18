@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人生苦短，快用 Python - 敬维</title>
+    <meta name="author"  content="Jing维">
+    <meta name="description" content="人生苦短，快用 Python">
+    <meta name="keywords"  content="python, 基础, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="人生苦短，快用 Python - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2020/04/18/use-python-quickly.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#python" class="post-tag">python</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>人生苦短，快用 Python</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">Jing维</a></></span>
+        <time class="post-meta-item" datetime="20-04-18"><i class="iconfont icon-date"></i>18 Apr 2020</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">写了一阵子 Python 代码发现真香</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#编程语言是为业务场景服务的" id="markdown-toc-编程语言是为业务场景服务的">编程语言是为业务场景服务的</a>    <ul>
+      <li><a href="#静态语言与动态语言" id="markdown-toc-静态语言与动态语言">静态语言与动态语言</a>        <ul>
+          <li><a href="#静态语言的编写-编译并链接-执行过程" id="markdown-toc-静态语言的编写-编译并链接-执行过程">静态语言的①编写-②编译并链接-③执行过程</a></li>
+          <li><a href="#动态语言的编写-解释执行过程" id="markdown-toc-动态语言的编写-解释执行过程">动态语言的①编写-②解释执行过程</a></li>
+        </ul>
+      </li>
+      <li><a href="#人生苦短快用python" id="markdown-toc-人生苦短快用python">人生苦短，快用Python</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+
+<p>从 <a href="https://www.ruby-lang.org/">Ruby</a> 语言到 <a href="https://golang.google.cn/">Go</a> 语言，目前终于开始使用 <a href="https://www.python.org/">Python</a> 进行编码。</p>
+
+<p>对于<strong>职场新手</strong>，可能首先会提出一个问题：难道 <strong>Ruby</strong>/<strong>Go</strong> 不香吗？难道 <strong>Python</strong> 比其他两个语言好？其实都不是。如果我们认同<strong>“技术是为业务服务的”</strong>这个论调，那么<strong>“编程语言是为业务场景服务的”</strong>，仅此而已。</p>
+
+<h2 id="编程语言是为业务场景服务的">编程语言是为业务场景服务的</h2>
+
+<p>根据业务场景选择合适的编程语言，使得当前场景的开发收益最大化。当用户量不是很多（机器没什么压力）而业务逻辑却比较繁杂（开发者编码有压力）的情况下，使用 Python 编码或许是一个较为明智的选择。</p>
+
+<h3 id="静态语言与动态语言">静态语言与动态语言</h3>
+
+<p>所谓静态语言，是指代码在编译的时候（简称<strong>编译时</strong>）变量的类型就可以确定的语言，比如 C/C++、Java、Go、Object-C 等；所谓静态语言，是指代码在运行的时候（简称<strong>运行时</strong>）变量的类型才可以确定的语言，比如 Python、Ruby、JavaScript、PHP、SQL等。</p>
+
+<p>所谓<strong>编译时</strong>，是指把我们编写的代码文本转换成为机器可以执行的代码的环境上下文，它会<strong>产出</strong>一个机器可以执行的二进制文件。所谓<strong>运行时</strong>，是指可执行的二进制文件在 CPU 上真实执行的上下文。</p>
+
+<h4 id="静态语言的编写-编译并链接-执行过程">静态语言的①编写-②编译并链接-③执行过程</h4>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
+<span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"hello world"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>当我们使用 Go <strong>编写</strong>业务逻辑（比如上面的<code class="highlighter-rouge">hello world</code>代码），在执行 <code class="highlighter-rouge">go run main.go</code> 的时候，Go 开发工具链隐含地帮我们首先<strong>编译并链接源码</strong>生成可以执行的二进制文件，然后<strong>运行</strong>这个二进制文件。也就是说，<code class="highlighter-rouge">go run main.go</code> 等效于 ①<code class="highlighter-rouge">go build main.go</code> + ②<code class="highlighter-rouge">./mian</code> 这两个命令。</p>
+
+<p>我们可以简单地认为 <code class="highlighter-rouge">go build main.go</code> 是 Go 代码的编译时，产物是一个可执行的二进制文件 <code class="highlighter-rouge">main</code>；执行<code class="highlighter-rouge">./main</code> 是 Go 代码的运行时，此时我们编写的逻辑开始**在 CPU 上执行。</p>
+
+<h4 id="动态语言的编写-解释执行过程">动态语言的①编写-②解释执行过程</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># cat hello.py
+</span><span class="k">print</span><span class="p">(</span><span class="s">"hello world"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>当我们使用 Python <strong>编写</strong>业务逻辑(比如上面的代码)，在执行 <code class="highlighter-rouge">python hello.py</code> 的时候，Python 解释器直接帮我们<strong>解释并执行</strong>业务逻辑。由于人与机器之间的隔阂，python 源码最终也会变成机器可以执行的代码，但是相对于静态语言，<strong>动态语言不存在编译后机器可执行的二进制产物</strong>。换句话说，Python 的解释器一边编译源码，一边执行编译生成的代码。</p>
+
+<h3 id="人生苦短快用python">人生苦短，快用Python</h3>
+
+<p>仅仅缺省编译链接过程并不能成为选择动态语言和 Python 的理由，原因很简单：但凡使用 Python 能够解决的问题，均可以使用其他非 Python 的方式解决。</p>
+
+<ul>
+  <li>我们可以使用 Python 处理文件（重命名、修改内容），其实也可以使用 Go 或者 Java 等完成同样的任务；</li>
+  <li>我们可以使用 Python 处理表格数据，其实也可以使用 Go 或者 Java 等处理表格数据并达到同样的效果；</li>
+  <li>我们可以使用 Python 编写爬虫工具，其实也可以使用 GO 或者 Java 等实现爬虫工具；</li>
+  <li>我们可以使用 Python 编写 Web 服务，而使用 Go 或者 Java 等也可以编写 Web 服务甚至生态更完整；</li>
+  <li>我们可以使用 Python 实践 AI 算法，而其他的语言也可以完成类似的工作（只不过生态不如 Python）；</li>
+  <li>其他……</li>
+</ul>
+
+<p>基于上面的事实，并不存在必学 Python 的理由。可能 Python 只是让一些细节上让完成上面列出的任务更简单，比如文件的读取、类型的转换（字符串转数字）、序列号与反序列化（json字符串与json对象之间互相转换），等等；Python 语言本身封装了一些工具方法做上面的事情，而 Python 的第三方包进一步扩展了整个生态。</p>
+
+<ul>
+  <li>Python 可以更快地处理文件（重命名、修改内容），比如几行代码就可以实现文件的打开、读取、写入、关闭；</li>
+  <li>Python 可以更快地处理表格数据，比如可以方便地循环迭代每一行每一个格子，也可以很方便地对表格数据进行格式转换；</li>
+  <li>Python 可以更快地处理爬取到的数据，比如可以方便地把 json 字符串转换成为 json 对象进行进一步的处理；</li>
+  <li>Python 在 AI 算法实践领域几乎是霸权地位，因为那些懂算法的人更喜欢写 Python 代码，使得 Python 技术栈包含了几乎所有 AI 相关的算法；</li>
+  <li>其他……</li>
+</ul>
+
+<p>基于上面的考虑，其实可以尝试学一下 Python。</p>
+
+<h2 id="小结">小结</h2>
+
+<p>因为 Python 提供的一些便利性，当用户量不是很多（机器没什么压力）而业务逻辑却比较繁杂（开发者编码有压力）的情况下，使用 Python 编码是一个较为明智的选择：</p>
+
+<ul>
+  <li>释放开发者的生产力，把注意力放在业务逻辑的梳理；</li>
+  <li>很容易地扩充编码队伍；</li>
+  <li>待业务成功，把 Python 技术栈替换为其他技术栈。</li>
+</ul>
+
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">Jing维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2020/04/05/learning-methodology.html" class="read-next-link"></a>
+          <section>
+            <span>职场人士应该学什么以及学习方法（编码领域）</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2020
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
