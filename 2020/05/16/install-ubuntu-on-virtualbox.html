@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《从0到1学习后端开发》之搭建 Linux 环境 - 敬维</title>
+    <meta name="author"  content="Jing维">
+    <meta name="description" content="《从0到1学习后端开发》之搭建 Linux 环境">
+    <meta name="keywords"  content="课程, 基础, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="《从0到1学习后端开发》之搭建 Linux 环境 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2020/05/16/install-ubuntu-on-virtualbox.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E8%AF%BE%E7%A8%8B" class="post-tag">课程</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>《从0到1学习后端开发》之搭建 Linux 环境</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">Jing维</a></></span>
+        <time class="post-meta-item" datetime="20-05-16"><i class="iconfont icon-date"></i>16 May 2020</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">图文教案：介绍了在 Windows 平台搭建 virtualBox+Ubuntu 环境</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#初衷" id="markdown-toc-初衷">初衷</a></li>
+  <li><a href="#假如目前的你处于下面描述的处境" id="markdown-toc-假如目前的你处于下面描述的处境">假如目前的你处于下面描述的处境</a></li>
+  <li><a href="#获取-linux-环境的三种方式" id="markdown-toc-获取-linux-环境的三种方式">获取 Linux 环境的三种方式</a></li>
+  <li><a href="#虚拟机安装-linux-环境" id="markdown-toc-虚拟机安装-linux-环境">虚拟机安装 Linux 环境</a>    <ul>
+      <li><a href="#windows-系统简单使用" id="markdown-toc-windows-系统简单使用">Windows 系统简单使用</a></li>
+      <li><a href="#安装虚拟机-virtualbox" id="markdown-toc-安装虚拟机-virtualbox">安装虚拟机 virtualBox</a></li>
+      <li><a href="#下载-ubuntu-镜像" id="markdown-toc-下载-ubuntu-镜像">下载 Ubuntu 镜像</a></li>
+      <li><a href="#在-virtualbox-安装-ubuntu-系统" id="markdown-toc-在-virtualbox-安装-ubuntu-系统">在 virtualBox 安装 Ubuntu 系统</a></li>
+      <li><a href="#ubuntu-系统熟悉" id="markdown-toc-ubuntu-系统熟悉">Ubuntu 系统熟悉</a></li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+
+<p>本文是《从0到1学习后端开发》的首篇教案文档。《从0到1学习后端开发》是面向在校大学生、非 IT 工作人员的后端开发入门实践教程，可至 <a href="https://space.bilibili.com/425571569">https://space.bilibili.com/425571569</a> 查看对应的视频资料。</p>
+
+<h2 id="初衷">初衷</h2>
+<p>这一小节我们尝试搭建 Linux 环境。</p>
+
+<p>之所以搭建 Linux 环境，主要是因为太多的人只接触过 Windows 系统，没有接触过甚至不知道有 Linux 操作系统这件事情。而在我的认知里，后端开发者的基本技能之一就应该是能够使用 Linux 做一些基础的事情，比如查看/编辑文件、安装/配置应用、搭建/维护某种开发环境，等等。</p>
+
+<p>更为重要的，后端开发者编写的代码大概率是部署在 Linux 服务器上面的，和 Linux 靠的越近，意味着与代码的运行环境越近，写出优质代码的概率更高，排查线上问题的能力也会更好。</p>
+
+<p>论证使用 Linux 的好处并不是本教程的重点，本教程会假设大家已经意识到这一点，并正在尝试寻找一套靠谱的教程入门后端开发，那么选择本套教程就对了。即使未来因为各种原因本套视频进行不下去，也可以私下联系我（<a href="https://jingwei.link">个人主页</a>，发个邮件总会的吧=。=)讨论各种问题。</p>
+
+<h2 id="假如目前的你处于下面描述的处境">假如目前的你处于下面描述的处境</h2>
+
+<ol>
+  <li>
+    <p>有一台安装了 Windows 系统的电脑（笔记本或者台式机）；如果已经有 Linux 系统安装在物理机上面，或者财力雄厚有苹果电脑（类 Unix 系统，和 Linux 有相同的祖上），都可以直接跳到后面的内容去。</p>
+  </li>
+  <li>
+    <p>想要学习后端开发的知识，尤其指 python 或者 Go 语言；这两个语言前者学习比较简单，后者比较流行，而本人主要在这两个技术栈，因此选定它们两个。如果想学习其他的语言，考虑到知识的迁移性，学习 python 和 Go 也会对自己学习其他语言有所帮助。</p>
+  </li>
+  <li>
+    <p>自律（比如不怎么睡懒觉）；我奶奶经常教育我们几个孙辈们说，“如果什么都不想去做，那就什么都不会获得”。想要生活改变必须自己首先改变，想学习知识必须要付出或者牺牲一些东西，大道理这里不讲太多。</p>
+  </li>
+  <li>
+    <p>到此，万事具备只欠一个 Linux 环境了。</p>
+  </li>
+</ol>
+
+<h2 id="获取-linux-环境的三种方式">获取 Linux 环境的三种方式</h2>
+
+<ol>
+  <li>Linux 系统直接安装在物理机上面，就是说电脑开机后直接加载运行的就是 Linux 系统；</li>
+  <li>一个物理机上面安装了 Windows 系统和 Linux 系统（所谓的双系统）；</li>
+  <li>在虚拟机上安装 Linux 系统。</li>
+</ol>
+
+<p>上面的三种方式各有利弊，</p>
+
+<p>第一种意味着你下了很大的决心学习使用 Linux，并且与 Windows 系统生态下的各种绚丽的应用（包括游戏）说了再见。</p>
+
+<p>第二种意味着你花了很多时间调研安装双系统的细节，并且很可能因为某些操作失误格式化过磁盘（数据丢失）。</p>
+
+<p>第三种最简单，但是意味着你的机器配置足够高（至少两个核四个线程，且 4G 以上的内存），而且还要忍受速率慢的问题。</p>
+
+<p>鉴于前两种的牺牲比较大，而本系列课程定位是入门，因此默认大家按照第三种的方式进行学习，可以学习一定时间找到感觉以后再考虑另外两种方式。</p>
+
+<h2 id="虚拟机安装-linux-环境">虚拟机安装 Linux 环境</h2>
+
+<h3 id="windows-系统简单使用">Windows 系统简单使用</h3>
+
+<ol>
+  <li>桌面整理，把用户文件夹调整出来放桌面上面；</li>
+  <li>查看系统配置；</li>
+  <li>安装/卸载软件；</li>
+  <li>调整启动项；</li>
+</ol>
+
+<h3 id="安装虚拟机-virtualbox">安装虚拟机 virtualBox</h3>
+
+<ol>
+  <li>下载 virtualBox 虚拟机；通过搜索引擎查找到官方网站的下载地址并下载安装包。</li>
+  <li>根据安装包进行安装。</li>
+</ol>
+
+<h3 id="下载-ubuntu-镜像">下载 Ubuntu 镜像</h3>
+
+<ol>
+  <li>认识 Ubuntu 官网；</li>
+  <li>认识 “开源镜像站”；</li>
+  <li>下载 ubuntu-18.04 版本</li>
+</ol>
+
+<h3 id="在-virtualbox-安装-ubuntu-系统">在 virtualBox 安装 Ubuntu 系统</h3>
+
+<ol>
+  <li>新建实例，并配置；</li>
+  <li>安装界面；</li>
+  <li>启动</li>
+</ol>
+
+<h3 id="ubuntu-系统熟悉">Ubuntu 系统熟悉</h3>
+
+<ol>
+  <li>启动关机按钮</li>
+  <li>基本信息</li>
+  <li>查看快捷方式，并打开 terminal</li>
+  <li>认识并调整设置 terminal 的快捷键</li>
+  <li>认识应用列表</li>
+  <li>认识软件商城，并安装一个软件（VLC）</li>
+</ol>
+
+<h2 id="小结">小结</h2>
+
+<p>本节课程主要带领大家在虚拟机上面安装 Ubuntu（Linux）操作系统，可至 <a href="https://space.bilibili.com/425571569">https://space.bilibili.com/425571569</a> 查看对应的视频资料。</p>
+
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">Jing维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+      <div class="read-next-item">
+        <a href="/2020/05/17/git-installation-and-usage.html" class="read-next-link"></a>
+        <section>
+          <span>《从0到1学习后端开发》之git安装、概念图解及简单使用</span>
+          <p></p>
+        </section>
+        
+        <div class="filter"></div>
+        <img src="" alt="">
+        
+     </div>
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2020/04/25/learning-is-long-journey.html" class="read-next-link"></a>
+          <section>
+            <span>学习在一朝一夕，更在长长久久</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2020
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>

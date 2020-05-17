@@ -1,6 +1,24 @@
 [
   
     {
+      "title"    : "《从0到1学习后端开发》之git安装、概念图解及简单使用",
+      "tags"     : "课程 基础 实用",
+      "url"      : "/2020/05/17/git-installation-and-usage.html"
+    } ,
+  
+    {
+      "title"    : "《从0到1学习后端开发》之搭建 Linux 环境",
+      "tags"     : "课程 基础 实用",
+      "url"      : "/2020/05/16/install-ubuntu-on-virtualbox.html"
+    } ,
+  
+    {
+      "title"    : "学习在一朝一夕，更在长长久久",
+      "tags"     : "碎碎念 基础 实用",
+      "url"      : "/2020/04/25/learning-is-long-journey.html"
+    } ,
+  
+    {
       "title"    : "人生苦短，快用 Python",
       "tags"     : "python 基础 实用",
       "url"      : "/2020/04/18/use-python-quickly.html"

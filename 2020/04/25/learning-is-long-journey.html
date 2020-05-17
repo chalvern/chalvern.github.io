@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习在一朝一夕，更在长长久久 - 敬维</title>
+    <meta name="author"  content="Jing维">
+    <meta name="description" content="学习在一朝一夕，更在长长久久">
+    <meta name="keywords"  content="碎碎念, 基础, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="学习在一朝一夕，更在长长久久 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2020/04/25/learning-is-long-journey.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E7%A2%8E%E7%A2%8E%E5%BF%B5" class="post-tag">碎碎念</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>学习在一朝一夕，更在长长久久</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">Jing维</a></></span>
+        <time class="post-meta-item" datetime="20-04-25"><i class="iconfont icon-date"></i>25 Apr 2020</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">来一点坚持下去的理由与坚持下去的动力</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#坚持下去的理由与动力" id="markdown-toc-坚持下去的理由与动力">坚持下去的理由与动力</a></li>
+  <li><a href="#应该学什么" id="markdown-toc-应该学什么">应该学什么</a></li>
+  <li><a href="#如何坚持学习" id="markdown-toc-如何坚持学习">如何坚持学习</a></li>
+</ul>
+
+<p>思考一下，我们在自己的技术栈里是否每天都有提升？</p>
+
+<h2 id="坚持下去的理由与动力">坚持下去的理由与动力</h2>
+
+<p>平时的生活里，不知不觉就懈怠了。</p>
+
+<p>可怕的是自己意识不到这种懈怠，甚至有时候还把“仰望星空/思考人生”作为懈怠的理由堂而皇之地颓废自己。</p>
+
+<p>如果我们接受自己一生平庸，那么生活处于懈怠的常态也无可厚非。但是大部分人对自己的生活都是有诉求的，而且在自己当前的诉求得到满足之后还会衍生出另外的诉求（人贪婪的本性）。</p>
+
+<p>有时候我就会感慨，如果之前的岁月里（每天/每周/每月/每年）做了某件事情，那么现在的自己该有多么厉害。这种感慨说明当前的自己知道了需要的技能，但是对当下状况的改善几乎无济于事。不过反过来想，<strong>如果能够预判到未来自己的短板或需要的技能，是不是现在就可以（每天/每周/每月/每年）做某件事情准备起来呢</strong>？</p>
+
+<p>那么未来的自己需要哪些技能？</p>
+
+<h2 id="应该学什么">应该学什么</h2>
+
+<p>如果知道自己需要的技能，并且清楚掌握这些技能所要学习的教材、书籍、文档等，技能的提升一般是很“迅猛”的。</p>
+
+<p>难点在于<strong>大部分时候我们不清楚自己需要什么技能</strong>，不清楚应该学习哪本教材、书籍，不清楚应该阅读什么文档、源码。针对这种情况，笔者根据自己的经验总结出下面几个点：</p>
+
+<ol>
+  <li>想一想自己期望的营生方式，以及在这种营生方式下具体的工作内容是什么，从而确定自己所需技能的范畴领域；</li>
+  <li>确定技能领域后，①有条件的情况下锁定一个领路人（比如工作上以学徒的方式向有经验的人学习）②没有条件的情况下，从最基础的官方教程开始自行学习，这里强调以官方教程入手，避免被带偏；</li>
+  <li>坚持学习 10000+ 个小时。</li>
+</ol>
+
+<h2 id="如何坚持学习">如何坚持学习</h2>
+
+<p>阻碍学习的两个拦路障：一个是无知，也就是不知道自己应该学习什么（可以参照上一小节的内容）；另一个是懒惰——人的另一个本性。</p>
+
+<p>首先应该提一个老少皆宜的大道理：<strong>不努力学习，能力是不会稳定提升的；不持续学习，个人也会局限在某个特定的水平</strong>。因此”如何坚持学习“就变成了如何克服懒惰的本性。</p>
+
+<p>根据经验，不妨从一个简单的习惯开始：比如坚持每天跑 1000 米，比如坚持每天做 20 个俯卧撑，比如坚持每天做 50 个仰卧起坐，再比如坚持每天温习一首古诗词，或者坚持每天背诵一个英文单词…… 坚持做一件简单又无聊的事情的价值是什么呢？除去身体素质和精神境界上的提升（哪怕是微弱的），还可以<strong>逐渐养成自律与坚持的品质</strong>。</p>
+
+<p><strong>自律与坚持</strong>在成年人世界里是两个非常稀缺的品质。如果想培养这两种品质，总要付出一些东西；可能是少放松几局游戏，可能是少仰望一会儿星空，还可能是少睡几刻钟……</p>
+
+<p>总之，耐心地磨时间吧。没有其他的捷径。</p>
+
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">Jing维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+      <div class="read-next-item">
+        <a href="/2020/05/16/install-ubuntu-on-virtualbox.html" class="read-next-link"></a>
+        <section>
+          <span>《从0到1学习后端开发》之搭建 Linux 环境</span>
+          <p></p>
+        </section>
+        
+        <div class="filter"></div>
+        <img src="" alt="">
+        
+     </div>
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2020/04/18/use-python-quickly.html" class="read-next-link"></a>
+          <section>
+            <span>人生苦短，快用 Python</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2020
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
