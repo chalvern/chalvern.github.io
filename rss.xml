@@ -5,8 +5,8 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 21 May 2020 21:58:51 +0800</pubDate>
-    <lastBuildDate>Thu, 21 May 2020 21:58:51 +0800</lastBuildDate>
+    <pubDate>Thu, 21 May 2020 22:00:38 +0800</pubDate>
+    <lastBuildDate>Thu, 21 May 2020 22:00:38 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -22,6 +22,7 @@
   &lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#对技术包括编程语言怀有敬畏之心&quot; id=&quot;markdown-toc-对技术包括编程语言怀有敬畏之心&quot;&gt;对技术（包括编程语言）怀有敬畏之心&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&quot;为什么是-python-和-go-这两门语言&quot;&gt;为什么是 python 和 go 这两门语言&lt;/h2&gt;
@@ -97,6 +98,12 @@
 &lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
 
 &lt;p&gt;本文简单介绍了　go、java、python 的语言模型。介绍了本系列课程选择 python 和 go 两种语言的理由。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/books&quot;&gt;本系列课程教案库&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Thu, 21 May 2020 00:00:00 +0800</pubDate>
         <link>https://jingwei.link/2020/05/21/go-java-python-language-model.html</link>
@@ -126,6 +133,7 @@
     &lt;/ul&gt;
   &lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
@@ -215,6 +223,11 @@
 
 &lt;p&gt;本文简单介绍了 git 的安装与初级使用，可至 &lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;https://space.bilibili.com/425571569&lt;/a&gt; 查看对应的视频资料。&lt;/p&gt;
 
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/books&quot;&gt;本系列课程教案库&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Sun, 17 May 2020 00:00:00 +0800</pubDate>
         <link>https://jingwei.link/2020/05/17/git-installation-and-usage.html</link>
@@ -247,6 +260,7 @@
     &lt;/ul&gt;
   &lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
@@ -346,6 +360,11 @@
 
 &lt;p&gt;本节课程主要带领大家在虚拟机上面安装 Ubuntu（Linux）操作系统，可至 &lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;https://space.bilibili.com/425571569&lt;/a&gt; 查看对应的视频资料。&lt;/p&gt;
 
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/books&quot;&gt;本系列课程教案库&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Sat, 16 May 2020 00:00:00 +0800</pubDate>
         <link>https://jingwei.link/2020/05/16/install-ubuntu-on-virtualbox.html</link>
