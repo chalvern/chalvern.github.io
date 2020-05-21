@@ -5,9 +5,113 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 17 May 2020 18:14:13 +0800</pubDate>
-    <lastBuildDate>Sun, 17 May 2020 18:14:13 +0800</lastBuildDate>
+    <pubDate>Thu, 21 May 2020 21:58:51 +0800</pubDate>
+    <lastBuildDate>Thu, 21 May 2020 21:58:51 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>《从0到1学习后端开发》之Go、Java、Python语言模型对比</title>
+        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#为什么是-python-和-go-这两门语言&quot; id=&quot;markdown-toc-为什么是-python-和-go-这两门语言&quot;&gt;为什么是 python 和 go 这两门语言&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#简单对比gopythonjava的模型&quot; id=&quot;markdown-toc-简单对比gopythonjava的模型&quot;&gt;简单对比go/python/java的模型&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#go语言&quot; id=&quot;markdown-toc-go语言&quot;&gt;go语言&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#java-语言&quot; id=&quot;markdown-toc-java-语言&quot;&gt;java 语言&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#python-语言&quot; id=&quot;markdown-toc-python-语言&quot;&gt;python 语言&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#python-执行速度慢的三点原因&quot; id=&quot;markdown-toc-python-执行速度慢的三点原因&quot;&gt;python 执行速度慢的三点原因&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#对技术包括编程语言怀有敬畏之心&quot; id=&quot;markdown-toc-对技术包括编程语言怀有敬畏之心&quot;&gt;对技术（包括编程语言）怀有敬畏之心&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;为什么是-python-和-go-这两门语言&quot;&gt;为什么是 python 和 go 这两门语言&lt;/h2&gt;
+
+&lt;p&gt;作为一个系列课程，可能有必要详尽地说明一下，为什么选择的是 python 和 go 这两门语言；有的同学可能更希望选定的是 java、Rust、C/C++ 等其他语言。&lt;/p&gt;
+
+&lt;p&gt;在前面的课程里有提到过， python 是我目前工作的主要编程语言， go 是我曾经主力使用且一直跟踪其发展的编程语言。而且站在一个稍微有点经验的程序员的视角，&lt;strong&gt;不存在最好的语言，存在最适合的语言&lt;/strong&gt;。作为一名中高级的开发者，大家会发现自己平日里的工作所解决的困难都是业务相关的复杂度，编程语言的迁移（假如真的存在这种情况）相对反而会是比较容易的，只要团队里有比较靠谱的人带队，从入门到有产出花不了太多时间。&lt;/p&gt;
+
+&lt;p&gt;不过，根据 &lt;a href=&quot;https://www.tiobe.com&quot;&gt;TIOBE&lt;/a&gt; 指数 java 依然是最流行的工业级编程语言，其热度长期占据排行榜首位，大家可以自行斟酌吧。&lt;/p&gt;
+
+&lt;h2 id=&quot;简单对比gopythonjava的模型&quot;&gt;简单对比go/python/java的模型&lt;/h2&gt;
+
+&lt;p&gt;在正式开始 python 和 go 的学习之前，让我们首先简单地比较一下几种编程语言的模型，这里我选择了比较有代表性的 go、python 和 java。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/pic/004_why_python_and_go.png&quot; alt=&quot;几种编程语言的模型&quot; title=&quot;几种编程语言的模型&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我们看一下各个编程语言“从源码到机器执行”所经历的环节。大家都是从源码开始，最终都是电脑的 CPU 和 内存来承载执行源码对应的逻辑。&lt;/p&gt;
+
+&lt;p&gt;首先我先给大家注点鸡血，程序员写代码控制的主要是 CPU 和 内存，它们属于机器的一种；挖掘机或其他的车也是机器的一种，如果我们能够合理地摆弄那几个操纵杆学会开车，那么没有理由学不会开电脑。唯手熟尔，仅此而已。&lt;/p&gt;
+
+&lt;h3 id=&quot;go语言&quot;&gt;go语言&lt;/h3&gt;
+&lt;p&gt;让我们首先看一下 go 语言。&lt;/p&gt;
+
+&lt;p&gt;go 诞生自 2009 年，和 python（1991）、java（1995）比起来算是一门比较新的语言，理论上具有后发优势，语言特性会比较先进。这也是建议大家学习它的一个原因。&lt;/p&gt;
+
+&lt;p&gt;go 语言和 c 语言类似，经过编译后会生成可直接执行的二进制文件。图中使用“很快地编译“，是因为 go 语言编译起来非常快，这也是 go 语言涉及之处的一个目标；我们可以拿另一个比较新且流行的编程语言 Rust 简单对比，go 的编译速度比 rust 可以快一个数量级。举个例子，如果 Rust 项目编译使用 30 分钟（TiKV 项目），那么 go 语言复杂度相当的项目（TiDB）可能三分钟就构建完成了。&lt;/p&gt;
+
+&lt;p&gt;go 编译生成的二进制文件可以直接被加载到机器上运行，也就是说，go 编译生成的二进制文件直接是机器可识别的内容(或者说，go 编译生成的汇编代码就是 CPU 指令集对应的代码)。这与 python 和 java 是完全不同的。&lt;/p&gt;
+
+&lt;h3 id=&quot;java-语言&quot;&gt;java 语言&lt;/h3&gt;
+
+&lt;p&gt;java 生态里非常引人注目的是 JVM（java virtual machine，java虚拟机）。对于虚拟机，大部分人的认知可能局限在 virtualBox、VMware 等，本课程最初也介绍了在虚拟机 virtualBox 上安装 Ubuntu 系统的具体步骤。我们可以把虚拟机认为是一种对硬件的抽象，基于我们电脑硬件的 CPU 的指令集，模拟出特定指令集合的计算单元。同样地，java 虚拟机也对硬件 CPU 和内存资源进行了抽象，而且抽象后可以运行 java 字节码。&lt;/p&gt;
+
+&lt;p&gt;java 源码编译后生成 java 字节码，字节码由 java 虚拟机的指令集组成，可以在 JVM 平台执行。&lt;/p&gt;
+
+&lt;p&gt;我们经常见到的 Jar 包和 War 包都是字节码文件包，是源码编译后的产物。相对 go 来说， java 的编译过程要慢很多，常常会让电脑卡顿好一会儿。&lt;/p&gt;
+
+&lt;p&gt;简单讲，java 从源码到执行的过程是： 源码中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;1+1&lt;/code&gt; 语句，首先被编译成为 JVM 的命令（字节码），然后字节码由 JVM 加载，并被 JVM 转义成为 CPU 的指令从而得以执行。CPU 运行 java 代码时，我们的 CPU ①一边做字节码到CPU指令的转义，②一边运行实际转义后的语句。相对于 go 语言只运行CPU指令的情况， java 的 CPU 使用效率会低一些。&lt;/p&gt;
+
+&lt;p&gt;不过 java 作为一门工业级的编程语言，很多大牛为 JVM 的优化做了很多的事情，这也使得基于 JVM 的编程语言的运行效率与裸 CPU 的编程语言的运行效率差距没那么大了。因此，在 JVM 的平台上，还诞生了 kotlin 、Jython 这种编程语言，它们都是编译生成 JVM 指令集的字节码，然后在 JVM 上运行。&lt;/p&gt;
+
+&lt;h3 id=&quot;python-语言&quot;&gt;python 语言&lt;/h3&gt;
+
+&lt;p&gt;使用 python 开发，从源码到机器执行并没有显式地编译过程，只需把源码加载到解释器就可以正常运行了。&lt;/p&gt;
+
+&lt;p&gt;就像前面提到的，类似 &lt;code class=&quot;highlighter-rouge&quot;&gt;1+1&lt;/code&gt; 这样的源码是不可能直接在 CPU 上执行的，那么 python 源码是如何运行在&lt;strong&gt;机器&lt;/strong&gt;上的呢？实际上 python 解释器会在内部把 python 源码编译形成 python 字节码，然后再把这些字节码加载到解释器的运行时（python 虚拟机）进行执行。&lt;/p&gt;
+
+&lt;p&gt;除了“隐式编译”这个步骤，python 几乎与 java 是一样的。而且 python 解释器只会在第一次加载运行 python 源码的时候存在“隐式编译”这个步骤，并且把编译生成的 python 字节码保存为 .pyc 文件，再以后执行时会首先加载 pyc 文件，从而省去了重复编译的步骤。&lt;/p&gt;
+
+&lt;p&gt;既然 python 与 java 类似，那么为什么我们经常听到大家讲“python运行速度慢”而很少听到“java执行速度慢”呢？这其实涉及到语言另外的问题。&lt;/p&gt;
+
+&lt;h3 id=&quot;python-执行速度慢的三点原因&quot;&gt;python 执行速度慢的三点原因&lt;/h3&gt;
+
+&lt;p&gt;首先应该科普一下：80%的业务还没跑到编程语言出现性能瓶颈就被淘汰了。因此有时候&lt;strong&gt;偏执&lt;/strong&gt;执行效率并不睿智，&lt;strong&gt;“不存在最好的语言，存在最适合的语言”&lt;/strong&gt;就是这个道理。&lt;/p&gt;
+
+&lt;p&gt;① 首先看&lt;strong&gt;静态语言与动态语言&lt;/strong&gt;的区别。静态语言的类型检查在编译时进行，而动态语言的类型检查在运行时进行。java 是一种静态语言，其类型检查在我们编译 java 源码时就完成了；比如当有类型赋值错误时，会直接编译失败。而 python 是一种动态语言，其类型检查放在了运行时，因此会占用运行时的计算资源，导致执行速度慢。&lt;/p&gt;
+
+&lt;p&gt;② 另一方面，为了便利性 python 的数据类型的粒度取的比较粗（比如整型不区分精度，可以表示任意大的值），而 CPU 固有的数据位（单次读写最大位数）有限，在转换过程中会存在性能损耗。&lt;/p&gt;
+
+&lt;p&gt;③ python 在 1991 年诞生时，CPU 是单核的，因此语言模型对多核的支持不好。在 python 虚拟机（运行时）中，存在一个 GIL（Global interpreter lock，解释器全局锁），限制一个解释器同一时间只能转义一条字节码为机器码，无疑这会限制 python 对多核的使用。&lt;/p&gt;
+
+&lt;h2 id=&quot;对技术包括编程语言怀有敬畏之心&quot;&gt;对技术（包括编程语言）怀有敬畏之心&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;对编程语言怀有敬畏之心;&lt;/li&gt;
+  &lt;li&gt;对后端开发怀有敬畏之心；&lt;/li&gt;
+  &lt;li&gt;对技术怀有敬畏之心；&lt;/li&gt;
+  &lt;li&gt;对生活怀有敬畏之心。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;发现很多人因为各种原因忘了初心，达到某个水平后不再精进自己。希望我们都可以心怀敬畏，不断进取吧。&lt;/p&gt;
+
+&lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
+
+&lt;p&gt;本文简单介绍了　go、java、python 的语言模型。介绍了本系列课程选择 python 和 go 两种语言的理由。&lt;/p&gt;
+</description>
+        <pubDate>Thu, 21 May 2020 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2020/05/21/go-java-python-language-model.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2020/05/21/go-java-python-language-model.html</guid>
+        
+        <category>课程</category>
+        
+        <category>基础</category>
+        
+        <category>实用</category>
+        
+        
+        <category>课程</category>
+        
+      </item>
     
       <item>
         <title>《从0到1学习后端开发》之git安装、概念图解及简单使用</title>
@@ -1082,195 +1186,6 @@ go build &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; apollo.exe main.go
         <pubDate>Sat, 14 Dec 2019 00:00:00 +0800</pubDate>
         <link>https://jingwei.link/2019/12/14/go-mem-model.html</link>
         <guid isPermaLink="true">https://jingwei.link/2019/12/14/go-mem-model.html</guid>
-        
-        <category>golang</category>
-        
-        <category>基础</category>
-        
-        <category>实用</category>
-        
-        
-        <category>golang</category>
-        
-      </item>
-    
-      <item>
-        <title>《原汁原味 Go 语言学习》(12) effective go 错误抛出与捕获、恢复</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#错误errors&quot; id=&quot;markdown-toc-错误errors&quot;&gt;错误（Errors）&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#panicpanic&quot; id=&quot;markdown-toc-panicpanic&quot;&gt;Panic（Panic）&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#恢复recover&quot; id=&quot;markdown-toc-恢复recover&quot;&gt;恢复（Recover）&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;资料&quot;&gt;资料&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://golang.google.cn/doc/effective_go.html&quot;&gt;effective go&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.bilibili.com/video/av77541066&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&quot;错误errors&quot;&gt;错误（Errors）&lt;/h1&gt;
-
-&lt;p&gt;原则上，第三方库在报错时能给调用者返回有指示含义的错误信息。像之前提到的 Go 的&lt;strong&gt;多返回值&lt;/strong&gt;特性让&lt;strong&gt;同时返回普通返回值和详尽的错误描述&lt;/strong&gt;变得很简单。通过这个特性来提供详细的错误信息是一种很好的代码风格。比如，系统库函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;os.Open&lt;/code&gt; 在发生错误的时候不仅返回一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;nil&lt;/code&gt; 的指针，同时返回一个错误变量来描述出问题的原因。&lt;/p&gt;
-
-&lt;p&gt;为了方便，错误有一个专门的类型 &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt;，它是一个内建的接口。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;包的创建者可以为自定义类型实现 &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt; 接口，为调用者提供一些错误的上下文从而便于排查错误。就像刚刚提到的，系统库函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;os.Open&lt;/code&gt; 除了返回 &lt;code class=&quot;highlighter-rouge&quot;&gt;*os.File&lt;/code&gt; 类型的值外，还返回了一个错误值；如果文件打开成功，错误值是 &lt;code class=&quot;highlighter-rouge&quot;&gt;nil&lt;/code&gt;，如果文件打开失败，会返回 &lt;code class=&quot;highlighter-rouge&quot;&gt;os.PathError&lt;/code&gt; 错误：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// PathError records an error and the operation and&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;// file path that caused it.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PathError&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Op&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;    &lt;span class=&quot;c&quot;&gt;// &quot;open&quot;, &quot;unlink&quot;, etc.&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Path&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// The associated file.&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Err&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;    &lt;span class=&quot;c&quot;&gt;// Returned by the system call.&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PathError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Op&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Path&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;: &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面 &lt;code class=&quot;highlighter-rouge&quot;&gt;PathError&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Error&lt;/code&gt; 方法会产生下面类似的字符串提示：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;open /etc/passwx: no such file or directory
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面的错误信息里面&lt;strong&gt;包含了&lt;/strong&gt;出问题的①文件名、②操作以及③触发的操作系统错误，这个信息对找出问题是很有帮助的，即使函数被层层调用报出这个错误也很容易定位问题。相比较而言，这种示意的输出比 “找不到相关的文件或目录” 这种提示要有用的多。&lt;/p&gt;
-
-&lt;p&gt;大多数情况下，错误字符串最好能输出他们的源信息，比如什么操作导致的什么错误，比如哪个包的什么错误，等等。以包 &lt;code class=&quot;highlighter-rouge&quot;&gt;image&lt;/code&gt; 为例，由未知格式导致的编码错误的字符串提示统一都是：“图片：未知的格式”。&lt;/p&gt;
-
-&lt;p&gt;如果调用者关注详细的错误类型，那就可以用 &lt;strong&gt;类型 switch&lt;/strong&gt; 或者&lt;strong&gt;类型断言&lt;/strong&gt;来查找特定的错误并抽取它的详细信息。对于下面代码中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;PathErrors&lt;/code&gt;，为了从操作失败中恢复，它可能包含了一个内部的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Err&lt;/code&gt; 字段：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ok&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PathError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ok&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;syscall&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ENOSPC&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c&quot;&gt;// 没有空间了，删除一些临时文件获取空间，然后重试&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;deleteTempFiles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;// Recover some space.&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;第二个 &lt;code class=&quot;highlighter-rouge&quot;&gt;if&lt;/code&gt; 语句是一个类型断言，如果断言失败了，&lt;code class=&quot;highlighter-rouge&quot;&gt;ok&lt;/code&gt; 值就是 false，此时 &lt;code class=&quot;highlighter-rouge&quot;&gt;e&lt;/code&gt; 的值是 &lt;code class=&quot;highlighter-rouge&quot;&gt;nil&lt;/code&gt;；如果断言成功，&lt;code class=&quot;highlighter-rouge&quot;&gt;ok&lt;/code&gt; 值是 true，此时意味着错误值的类型是 &lt;code class=&quot;highlighter-rouge&quot;&gt;*os.PathError&lt;/code&gt;，接着 &lt;code class=&quot;highlighter-rouge&quot;&gt;e&lt;/code&gt; 就可以做进一步的检查并执行对应的操作了。&lt;/p&gt;
-
-&lt;h2 id=&quot;panicpanic&quot;&gt;Panic（Panic）&lt;/h2&gt;
-
-&lt;p&gt;报错最常见的方式是给调用者返回一个额外的 &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt; 类型的值；典型的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Read&lt;/code&gt; 方法是一个很好的例子，它返回字节数的同时还返回一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt;类型的值。那么我们思考，如果错误没有被覆盖怎么办呢？这时候程序可能不能继续运行下去。&lt;/p&gt;
-
-&lt;p&gt;Go 的内建函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 会创建一个运行时错误，并且终止程序的执行。这个函数可以接收一个任意类型的参数（通常是一个字符串），程序终止后会把这个参数打印出来。除此之外，还可以使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 来表明代码里存在一些不应该发生的逻辑，比如存在一个无限循环逻辑，如下面的代码所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// A toy implementation of cube root using Newton's method.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CubeRoot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;float64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;float64&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;   &lt;span class=&quot;c&quot;&gt;// Arbitrary initial value&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1e6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;prevz&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;veryClose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prevz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;// A million iterations has not converged; something is wrong.&lt;/span&gt;
-    &lt;span class=&quot;nb&quot;&gt;panic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;CubeRoot(%g) did not converge&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面的代码只是一个示例，真实的&lt;strong&gt;库&lt;/strong&gt;代码逻辑中应该避免使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 函数。假如问题可以被预知并被处理掉，比起终止整个程序更好的方式是让代码继续运行下去。在少有的一些情况下，使用 panic 能简化编码逻辑，比如在计数例子的初始化过程中可以使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt;：如果包不能成功启用，意味着可能发生了什么重大的错误，此时可以抛出 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt;。下面代码示例中如果没有设置 &lt;code class=&quot;highlighter-rouge&quot;&gt;USER&lt;/code&gt; 系统变量，就抛出 &lt;code class=&quot;highlighter-rouge&quot;&gt;Panic&lt;/code&gt;：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Getenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;USER&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nb&quot;&gt;panic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;no value for $USER&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;恢复recover&quot;&gt;恢复（Recover）&lt;/h2&gt;
-
-&lt;p&gt;在发生运行时错误时，比如越界访问切片，或者类型断言失败，&lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 会被调用，此时当前函数的执行立即停止，并且开始展开 Goroutine 的堆栈，在这个过程中被推迟执行（defer）的函数会被依次执行。如果堆栈一直展开到达了 goroutine 的栈顶，代码就退出了。我们可以通过内建的 &lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 函数来重新获取 goroutine 的控制权并且恢复其正常的执行。&lt;/p&gt;
-
-&lt;p&gt;调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 可以停止堆栈的展开，并获取得到传递给 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 的参数。因为在堆栈展开的过程中只有被 defer 的函数会被执行，因此 &lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 只有放在被 defer 的函数中才有意义。&lt;/p&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 的一个应用场景是：当服务器中有失败的 Goroutine 的时候，直接关闭对应的 Goroutine，避免影响其他正在执行的 Goroutine。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;workChan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;work&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;workChan&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;safelyDo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;safelyDo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;work&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;recover&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;work failed:&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;do&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;在上面的例子中，如果 &lt;code class=&quot;highlighter-rouge&quot;&gt;do(work)&lt;/code&gt; 运行时出错（&lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt;），结果会被记录下来，并且 Goroutine 会干净利落地退出而不会影响到其他的 Goroutine。对于上面的情况，在&lt;strong&gt;推迟&lt;/strong&gt;函数中直接调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 就可以完全处理相应的状况，不需要做其他的事情。&lt;/p&gt;
-
-&lt;p&gt;如果不是在被 defer 的函数中调用，&lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 总是返回 &lt;code class=&quot;highlighter-rouge&quot;&gt;nil&lt;/code&gt; 值；因此，被推迟执行的函数逻辑里可以调用使用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 的第三方库。比如，在 &lt;code class=&quot;highlighter-rouge&quot;&gt;safelyDo&lt;/code&gt; 的推迟函数里可以在调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 之前调用一个日志函数，日志相关的逻辑不会受 panicking 的状态的影响。&lt;/p&gt;
-
-&lt;p&gt;使用上面例子中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;recovery&lt;/code&gt; 的用法，&lt;code class=&quot;highlighter-rouge&quot;&gt;do&lt;/code&gt; 函数（包含它调用的任何东西）可以通过调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 干净利落地处理任何坏状况。我们可以把这种模式应用在复杂的软件中从而简化错误处理。让我们看一下理想状态下的 &lt;code class=&quot;highlighter-rouge&quot;&gt;regexp&lt;/code&gt; 包，可以通过调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 并传入一个本地的错误类型来解析错误信息（这里指的是&lt;strong&gt;准确地解析&lt;/strong&gt;，继续看下面的解释）。下面的代码定义了 &lt;code class=&quot;highlighter-rouge&quot;&gt;Error&lt;/code&gt; 类型， &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;Compile&lt;/code&gt; 方法：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// Error is the type of a parse error; it satisfies the error interface.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;// error is a method of *Regexp that reports parsing errors by&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;// panicking with an Error.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regexp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Regexp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nb&quot;&gt;panic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;// Compile returns a parsed representation of the regular expression.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Compile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;str&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regexp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Regexp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;regexp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Regexp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;// doParse will panic if there is a parse error.&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;recover&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;regexp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;    &lt;span class=&quot;c&quot;&gt;// Clear return value.&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;// Will re-panic if not a parse error.&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;regexp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;doParse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;如果 &lt;code class=&quot;highlighter-rouge&quot;&gt;doParse&lt;/code&gt; 报错，恢复的代码块会把返回值 &lt;code class=&quot;highlighter-rouge&quot;&gt;regexp&lt;/code&gt; 设置为 &lt;code class=&quot;highlighter-rouge&quot;&gt;nil&lt;/code&gt;——被 defer 的函数可以修改命名的返回值。然后在 &lt;code class=&quot;highlighter-rouge&quot;&gt;err&lt;/code&gt; 的赋值语句断言 &lt;code class=&quot;highlighter-rouge&quot;&gt;e&lt;/code&gt; 是不是一个本地类型的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Error&lt;/code&gt;。如果它不是本地的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Error&lt;/code&gt;，类型断言会失败，从而造成一个新的 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt;，因此堆栈会就像没有被中断过一样继续展开。这种检查意味着如果有未预知的事情发生，比如索引溢出，即使我们使用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 处理了解析错误的报错，代码依然会报错。&lt;/p&gt;
-
-&lt;p&gt;有了上面错误处理的逻辑以后，配合定义的 &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt; 方法，同时简化了报错的方式，不用再想着手动处理堆栈的事情（因为 &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt; 方法绑定到了类型上，而且与内建的 &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt; 类型有相同的名字，因此使用起来也很优雅自然，）。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;re&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;'*' illegal at start of expression&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;虽然 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic/recover&lt;/code&gt; 的这种模式很有用，但是应该只限定在一个包里使用。&lt;code class=&quot;highlighter-rouge&quot;&gt;Parse&lt;/code&gt; 没有把 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 暴露给自己的调用者，而是把内部的 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 转换成了 &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt; 值返回，这是一个可供参考的最佳实践。&lt;/p&gt;
-
-&lt;p&gt;需要注意，如果 &lt;code class=&quot;highlighter-rouge&quot;&gt;recover&lt;/code&gt; 后又发生了 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt;，这种写法会改变 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 的值。不过幸运的是，在崩溃报告中原始报错和新的报错都会打印出来，因此导致错误的根源依然是可见的。如果想展示引发 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt; 的原始值，可以写一点代码来过滤未知问题然后用原生的错误重新发起 &lt;code class=&quot;highlighter-rouge&quot;&gt;panic&lt;/code&gt;，这一点大家可以自己来实践一下。&lt;/p&gt;
-
-&lt;p&gt;【effective go 完】&lt;/p&gt;
-</description>
-        <pubDate>Sat, 30 Nov 2019 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2019/11/30/effectivego-errors.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2019/11/30/effectivego-errors.html</guid>
         
         <category>golang</category>
         
