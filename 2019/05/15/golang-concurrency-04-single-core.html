@@ -165,6 +165,8 @@ Author: Ray-Eldath
 
 <p>本文简单介绍 Golang 中配置可用 CPU 核的方法及其可能导致的误解。</p>
 
+<p>(截止到 2020年05月 此文章中所描述的案例已经不适合了。go 在推出 1.14 版本后，运行时调度改为异步抢占，因此文章中的“逻辑死锁”已经不存在了。此文章仅可作为 go 版本演化的一个案例看。)</p>
+
 <h2 id="golang-在单核上的并发问题">Golang 在单核上的“并发”问题</h2>
 <h3 id="gotour上的乌龙案例">gotour上的乌龙案例</h3>
 <p>在<a href="/2019/05/12/golang-concurrency-03-map.html">上一篇博客</a>中介绍了 Golang 并发编程中 <code class="highlighter-rouge">map</code> 类型的“脆弱”性。具体地，Golang 的运行时（<code class="highlighter-rouge">runtime</code>）会强校验并发读写的状态，如果发现有协程（<code class="highlighter-rouge">goroutine</code>）读 <code class="highlighter-rouge">map</code> 同时有其他协程读或者写同一个 <code class="highlighter-rouge">map</code>，程序就会直接异常退出。</p>
