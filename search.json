@@ -1,19 +1,25 @@
 [
   
     {
-      "title"    : "《从0到1学习后端开发》之Go、Java、Python语言模型对比",
+      "title"    : "《从0到1学习后端开发》之源码安装Python3及其HelloWorld的执行",
+      "tags"     : "课程 基础 实用",
+      "url"      : "/2020/05/24/python-helloworld.html"
+    } ,
+  
+    {
+      "title"    : "《从0到1学习后端开发》（3）Go、Java、Python语言模型对比",
       "tags"     : "课程 基础 实用",
       "url"      : "/2020/05/21/go-java-python-language-model.html"
     } ,
   
     {
-      "title"    : "《从0到1学习后端开发》之git安装、概念图解及简单使用",
+      "title"    : "《从0到1学习后端开发》（2）git安装、概念图解及简单使用",
       "tags"     : "课程 基础 实用",
       "url"      : "/2020/05/17/git-installation-and-usage.html"
     } ,
   
     {
-      "title"    : "《从0到1学习后端开发》之搭建 Linux 环境",
+      "title"    : "《从0到1学习后端开发》（1）搭建 Linux 环境",
       "tags"     : "课程 基础 实用",
       "url"      : "/2020/05/16/install-ubuntu-on-virtualbox.html"
     } ,

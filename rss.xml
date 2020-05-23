@@ -5,13 +5,145 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 23 May 2020 08:20:26 +0800</pubDate>
-    <lastBuildDate>Sat, 23 May 2020 08:20:26 +0800</lastBuildDate>
+    <pubDate>Sun, 24 May 2020 00:15:07 +0800</pubDate>
+    <lastBuildDate>Sun, 24 May 2020 00:15:07 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
-        <title>《从0到1学习后端开发》之Go、Java、Python语言模型对比</title>
+        <title>《从0到1学习后端开发》之源码安装Python3及其HelloWorld的执行</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#python-的-hello-world&quot; id=&quot;markdown-toc-python-的-hello-world&quot;&gt;Python 的 hello world&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#简易版的-helloworld&quot; id=&quot;markdown-toc-简易版的-helloworld&quot;&gt;简易版的 helloworld&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#高级版-helloworld&quot; id=&quot;markdown-toc-高级版-helloworld&quot;&gt;高级版 helloworld&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
+
+&lt;p&gt;《从0到1学习后端开发》是面向在校大学生、非 IT 工作人员的免费后端开发入门实践教程，可至 &lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;https://space.bilibili.com/425571569&lt;/a&gt; 查看对应的视频资料。&lt;/p&gt;
+
+&lt;h1 id=&quot;python-的-hello-world&quot;&gt;Python 的 hello world&lt;/h1&gt;
+
+&lt;p&gt;基础决定最终可达到的高度。&lt;/p&gt;
+
+&lt;p&gt;本节内容首先带着大家利用 ubuntu 原生的 python 进行简易版 helloworld 的编写与执行；然后带着大家按需安装特定版本的 python，并配置对应的开发环境。&lt;/p&gt;
+
+&lt;h2 id=&quot;简易版的-helloworld&quot;&gt;简易版的 helloworld&lt;/h2&gt;
+
+&lt;p&gt;在前面安装 vscode 的那一节我们已经编写过 &lt;code class=&quot;highlighter-rouge&quot;&gt;python&lt;/code&gt; 的 helloworld。&lt;/p&gt;
+
+&lt;p&gt;由于 ubuntu18.04 系统已经默认安装了 python3 解释器，因此可以很方便写出并运行 helloworld。简单讲分成几步：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;创建一个项目目录，比如我们在家目录下面使用命令 &lt;code class=&quot;highlighter-rouge&quot;&gt;mkdir&lt;/code&gt; 创建对应的目录；然后通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;code .&lt;/code&gt; 命令打开对应的目录作为工作目录。&lt;/li&gt;
+  &lt;li&gt;检查 vscode 是否安装 Python 插件；&lt;/li&gt;
+  &lt;li&gt;创建 helloworld.py 文件并编写内容 &lt;code class=&quot;highlighter-rouge&quot;&gt;print(&quot;hello world&quot;)&lt;/code&gt;;&lt;/li&gt;
+  &lt;li&gt;配置对应的解释器，可以直接执行输出结果。&lt;/li&gt;
+  &lt;li&gt;也可以在命令行使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;python3 helloworld.py&lt;/code&gt; 来执行对应的文件得出结果。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;上面简易版的 helloworld 直接使用了 ubuntu 系统默认带的 python3 环境，具体的是 &lt;code class=&quot;highlighter-rouge&quot;&gt;python 3.6.9&lt;/code&gt; 版本，版本比较老。另一方面，在我们实际项目的开发过程中，大部分会指定特定的 python 版本进行开发，这个时候就需要我们在我们的本地安装对应的版本，搭建匹配的开发环境。接下来就让我们看一下如何从源码安装特定版本的 python。&lt;/p&gt;
+
+&lt;h2 id=&quot;高级版-helloworld&quot;&gt;高级版 helloworld&lt;/h2&gt;
+
+&lt;p&gt;为什么提出“高阶版的 helloworld”呢？这是一个“基础决定最终可达到的高度”的问题；&lt;strong&gt;“要想楼层盖的高，就看地基打多牢”&lt;/strong&gt;，话糙理不糙。作为一名开发者，如果只会扎架子（比如动口只是架构、方案、设计模式），优雅而丰满的项目大厦是建不成的。不过很多人把扎好架子作为目标，不去关注基础上细节，因此丢失了很多乐趣，也限制了自己可达的高度，还是有点惋惜的。&lt;/p&gt;
+
+&lt;p&gt;我们高阶版的 helloworld 希望可以给大家开一个好头，尝试从一个简单的 helloworld 里挖掘一些其他有意思的东西。&lt;/p&gt;
+
+&lt;p&gt;接下来让我们安装特定版本的 python，比如选定 3.8.3 进行安装 。&lt;/p&gt;
+
+&lt;p&gt;首先让我们下载 python3.8.3 的源码。无论是 python 还是 go，它们都是开源的语言，因此我们都是到它们的官网找到对应的源码的下载链接，相对其他一些地方的下载链接要靠谱很多。这里顺便建议大家平日里可以多逛官网，作为我们最重要的的一手资料进行学习。&lt;/p&gt;
+
+&lt;p&gt;为了适应终端命令行，我们采用命令行的方式下载并安装。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;首先选择一个合适的目录，然后从官网找到对应的链接后复制，通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz&lt;/code&gt; 进行下载。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;下载完成后得到的是一个为方便传输的压缩包，需要我们把它解压缩，通过在当前目录执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;tar -xzf Python-3.8.3.tgz&lt;/code&gt; 即可完成，在当前目录生成一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;Python-3.8.3&lt;/code&gt; 的目录。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;我们可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;code Python-3.8.3&lt;/code&gt; 来打开对应的目录，简单预览一下 python 的源码项目（源码阅读一般流程）。&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;
+        &lt;p&gt;大概浏览一下，咦，发现 python 源码库里有好多 c 语言文件，可以知道 python 是基于 c 语言进行开发的，是不是很神奇 ^_^；&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;查看对应的 README，可以看到 源码库中有一个 README.rst 文件，查看一遍说了什么（英文学习多么重要啊）。我们目前只关注安装相关的内容，因此找到一段命令做参考，并看到有 &lt;code class=&quot;highlighter-rouge&quot;&gt;./configure --help&lt;/code&gt;，那我们有必要探索一番。（在命令行环境多打 &lt;code class=&quot;highlighter-rouge&quot;&gt;--help&lt;/code&gt; 是一个好习惯）&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;其他的我们暂时不关注，先放着不管，不过可以看到原来一个牛x的项目是这个样子的。&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;./configure --help&lt;/code&gt; 查看配置项，然后通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;./configure --prefix=$HOME/software/mypy&lt;/code&gt; 进行配置；也可以有选择地添加建议的参数，比如添加优化参数保证使用所有稳定的优化方案 &lt;code class=&quot;highlighter-rouge&quot;&gt;./configure --prefix=$HOME/software/mypy --enable-optimizations&lt;/code&gt;。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;make install&lt;/code&gt; 来编译并安装源码。在整个过程中可能会有一些警告的提示或者错误的提示，静待看最后的总结报告。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;安装依赖（整个需要我们通过比较久的经验做积累才可以慢慢理解为什么需要这些依赖）。这里我积累了几个必要的，大家先安装一下。如果未来在项目开发过程中使用到了其他的依赖，则可以按照类似的步骤进行安装。&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;
+        &lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo apt install zlib1g.dev&lt;/code&gt; 安装 zlib 依赖（整个是在安装 python 的时候就会需要）&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo apt install libssl-dev&lt;/code&gt; 安装 ssl 依赖（编写 web 相关的服务的时候会用到）&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo apt install libffi-dev&lt;/code&gt; 安装 libffi 依赖（当 pip install 的时候会用到）&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;重新通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;./configure --prefix=$HOME/software/mypy&lt;/code&gt; 来配置生成对应的 make 文件。并通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;make install&lt;/code&gt; 编译安装。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;安装完成以后，就可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;~/software/mypy/bin/python3&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;~/software/mypy/bin/pip3&lt;/code&gt;把玩了。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;为了便利性，我们可以把新安装的 python 的 bin 目录添加到 PATH 中去，这样就可以直接使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;python3&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;pip3&lt;/code&gt; 命令了。具体地，在 &lt;code class=&quot;highlighter-rouge&quot;&gt;$HOME/.bashrc&lt;/code&gt; 文件的最后添加 &lt;code class=&quot;highlighter-rouge&quot;&gt;export PATH=&quot;$HOME/software/mypy/bin:$PATH&quot;&lt;/code&gt;，然后重启终端或对应的服务即可。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
+
+&lt;p&gt;本小节介绍了 Python 的 helloworld，首先介绍利用 ubuntu 原带的 python 作为解释器，然后重点带大家安装自己的 python 解释器。并使用自己安装的解释器执行了 hellworld 脚本。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/books&quot;&gt;本系列课程教案库&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;视频链接地址（视频课程8）&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sun, 24 May 2020 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2020/05/24/python-helloworld.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2020/05/24/python-helloworld.html</guid>
+        
+        <category>课程</category>
+        
+        <category>基础</category>
+        
+        <category>实用</category>
+        
+        
+        <category>课程</category>
+        
+      </item>
+    
+      <item>
+        <title>《从0到1学习后端开发》（3）Go、Java、Python语言模型对比</title>
+        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#为什么是-python-和-go-这两门语言&quot; id=&quot;markdown-toc-为什么是-python-和-go-这两门语言&quot;&gt;为什么是 python 和 go 这两门语言&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#简单对比gopythonjava的模型&quot; id=&quot;markdown-toc-简单对比gopythonjava的模型&quot;&gt;简单对比go/python/java的模型&lt;/a&gt;    &lt;ul&gt;
       &lt;li&gt;&lt;a href=&quot;#go语言&quot; id=&quot;markdown-toc-go语言&quot;&gt;go语言&lt;/a&gt;&lt;/li&gt;
@@ -24,6 +156,10 @@
   &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
+
+&lt;p&gt;《从0到1学习后端开发》是面向在校大学生、非 IT 工作人员的免费后端开发入门实践教程，可至 &lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;https://space.bilibili.com/425571569&lt;/a&gt; 查看对应的视频资料。&lt;/p&gt;
 
 &lt;h2 id=&quot;为什么是-python-和-go-这两门语言&quot;&gt;为什么是 python 和 go 这两门语言&lt;/h2&gt;
 
@@ -103,6 +239,7 @@
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/books&quot;&gt;本系列课程教案库&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;视频链接地址（视频课程7）&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Thu, 21 May 2020 00:00:00 +0800</pubDate>
@@ -121,7 +258,7 @@
       </item>
     
       <item>
-        <title>《从0到1学习后端开发》之git安装、概念图解及简单使用</title>
+        <title>《从0到1学习后端开发》（2）git安装、概念图解及简单使用</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#下载并安装-git&quot; id=&quot;markdown-toc-下载并安装-git&quot;&gt;下载并安装 git&lt;/a&gt;&lt;/li&gt;
@@ -138,7 +275,7 @@
 
 &lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
 
-&lt;p&gt;本文是《从0到1学习后端开发》的首篇教案文档。《从0到1学习后端开发》是面向在校大学生、非 IT 工作人员的后端开发入门实践教程，可至 &lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;https://space.bilibili.com/425571569&lt;/a&gt; 查看对应的视频资料。&lt;/p&gt;
+&lt;p&gt;《从0到1学习后端开发》是面向在校大学生、非 IT 工作人员的免费后端开发入门实践教程，可至 &lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;https://space.bilibili.com/425571569&lt;/a&gt; 查看对应的视频资料。&lt;/p&gt;
 
 &lt;h2 id=&quot;下载并安装-git&quot;&gt;下载并安装 git&lt;/h2&gt;
 
@@ -227,6 +364,7 @@
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/books&quot;&gt;本系列课程教案库&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;视频链接地址（视频课程6）&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Sun, 17 May 2020 00:00:00 +0800</pubDate>
@@ -245,7 +383,7 @@
       </item>
     
       <item>
-        <title>《从0到1学习后端开发》之搭建 Linux 环境</title>
+        <title>《从0到1学习后端开发》（1）搭建 Linux 环境</title>
         <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#初衷&quot; id=&quot;markdown-toc-初衷&quot;&gt;初衷&lt;/a&gt;&lt;/li&gt;
@@ -265,7 +403,7 @@
 
 &lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
 
-&lt;p&gt;本文是《从0到1学习后端开发》的首篇教案文档。《从0到1学习后端开发》是面向在校大学生、非 IT 工作人员的后端开发入门实践教程，可至 &lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;https://space.bilibili.com/425571569&lt;/a&gt; 查看对应的视频资料。&lt;/p&gt;
+&lt;p&gt;本文是《从0到1学习后端开发》的首篇教案文档。《从0到1学习后端开发》是面向在校大学生、非 IT 工作人员的免费后端开发入门实践教程，可至 &lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;https://space.bilibili.com/425571569&lt;/a&gt; 查看对应的视频资料。&lt;/p&gt;
 
 &lt;h2 id=&quot;初衷&quot;&gt;初衷&lt;/h2&gt;
 &lt;p&gt;这一小节我们尝试搭建 Linux 环境。&lt;/p&gt;
@@ -364,6 +502,7 @@
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/chalvern/books&quot;&gt;本系列课程教案库&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;视频链接地址（视频课程1、2、3）&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Sat, 16 May 2020 00:00:00 +0800</pubDate>
@@ -836,384 +975,6 @@ go build &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; apollo.exe main.go
         
         
         <category>管理</category>
-        
-      </item>
-    
-      <item>
-        <title>《原汁原味 Go 语言学习》(13) Go 内存模型</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#资料&quot; id=&quot;markdown-toc-资料&quot;&gt;资料&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#简介introduction&quot; id=&quot;markdown-toc-简介introduction&quot;&gt;简介（Introduction）&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#建议advice&quot; id=&quot;markdown-toc-建议advice&quot;&gt;建议（Advice）&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#发生在之前happens-before&quot; id=&quot;markdown-toc-发生在之前happens-before&quot;&gt;发生在…之前（Happens Before）&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#同步化synchronization&quot; id=&quot;markdown-toc-同步化synchronization&quot;&gt;同步化（Synchronization）&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#初始化&quot; id=&quot;markdown-toc-初始化&quot;&gt;初始化&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#go协程的创建&quot; id=&quot;markdown-toc-go协程的创建&quot;&gt;Go协程的创建&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#go协程的销毁&quot; id=&quot;markdown-toc-go协程的销毁&quot;&gt;Go协程的销毁&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#信道通信&quot; id=&quot;markdown-toc-信道通信&quot;&gt;信道通信&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#锁&quot; id=&quot;markdown-toc-锁&quot;&gt;锁&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#单次运行&quot; id=&quot;markdown-toc-单次运行&quot;&gt;单次运行&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#不正确的同步方式&quot; id=&quot;markdown-toc-不正确的同步方式&quot;&gt;不正确的同步方式&lt;/a&gt;        &lt;ul&gt;
-          &lt;li&gt;&lt;a href=&quot;#错误一双重检查锁定&quot; id=&quot;markdown-toc-错误一双重检查锁定&quot;&gt;错误一：双重检查锁定&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href=&quot;#错误二某个值的循环检查&quot; id=&quot;markdown-toc-错误二某个值的循环检查&quot;&gt;错误二：某个值的循环检查&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href=&quot;#错误三循环检查的变形&quot; id=&quot;markdown-toc-错误三循环检查的变形&quot;&gt;错误三：循环检查的变形&lt;/a&gt;&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;资料&quot;&gt;资料&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://golang.google.cn/ref/mem&quot;&gt;Go 内存模型原文地址&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.bilibili.com/video/av79339158/&quot;&gt;本文的视频地址&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;简介introduction&quot;&gt;简介（Introduction）&lt;/h2&gt;
-
-&lt;p&gt;&lt;strong&gt;Go 内存模型&lt;/strong&gt;涉及到两个 Go协程 之间对同一个变量的读写。假如有一个变量，其中一个 Go协程(a) 写这个变量，另一个 Go协程(b) 读这个变量；Go 内存模型定义了&lt;strong&gt;什么情况下&lt;/strong&gt; Go协程(b) 能够确保读取到由 Go协程(a) 写入的值。&lt;/p&gt;
-
-&lt;h2 id=&quot;建议advice&quot;&gt;建议（Advice）&lt;/h2&gt;
-
-&lt;p&gt;多协程并发修改数据的程序必须保证各个步骤串行执行。&lt;/p&gt;
-
-&lt;p&gt;为了串行执行各步，可以使用&lt;strong&gt;信道&lt;/strong&gt;或 &lt;a href=&quot;https://golang.google.cn/pkg/sync/&quot;&gt;sync&lt;/a&gt; 和 &lt;a href=&quot;https://golang.google.cn/pkg/sync/atomic/&quot;&gt;sync/atomic&lt;/a&gt; 两个包里的同步原语来保护被共享的数据。&lt;/p&gt;
-
-&lt;p&gt;因为并发编程是一件很复杂的事情，请大家在学习本文的基础上再多加练习，不能仅依赖本文来掌握并发编程的知识。&lt;/p&gt;
-
-&lt;h2 id=&quot;发生在之前happens-before&quot;&gt;发生在…之前（Happens Before）&lt;/h2&gt;
-
-&lt;p&gt;在一个 Go协程 里，对同一个变量的读写必然是按照代码编写的顺序来执行的。对于多个变量的读写，如果重新排序不影响代码逻辑的正常执行，编译器和处理器可能会对多个变量的读写过程&lt;strong&gt;重新排序&lt;/strong&gt;；比如对于 &lt;code class=&quot;highlighter-rouge&quot;&gt;a = 1; b = 2&lt;/code&gt; 这两个语句，在同一个 Go协程 里先执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;a=1&lt;/code&gt; 还是先执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;b=2&lt;/code&gt; 其实是没有区别的。但是，因为重新排列执行顺序的情况的存在，会导致某个 Go协程 所观察到的执行顺序可能与另一个 Go协程 观察到的执行顺序不一样。还是拿 &lt;code class=&quot;highlighter-rouge&quot;&gt;a = 1; b = 2&lt;/code&gt; 举例，如果在某个协程里依次执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;a = 1; b = 2&lt;/code&gt;，由于&lt;strong&gt;重新排序&lt;/strong&gt;的存在可能另一个 Go协程 观察到的事实是 &lt;code class=&quot;highlighter-rouge&quot;&gt;b&lt;/code&gt; 的值先被更新，而 &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; 的值被后更新。&lt;/p&gt;
-
-&lt;p&gt;为了表征读写需求，我们可以定义“发生在…之前”，用来表示 Go 语言中某一小段内存命令的执行顺序。如果事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;e1&lt;/code&gt; 发生在事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;e2&lt;/code&gt; 之前，此时我们就认为 &lt;code class=&quot;highlighter-rouge&quot;&gt;e2&lt;/code&gt; 发生在 &lt;code class=&quot;highlighter-rouge&quot;&gt;e1&lt;/code&gt; 之后。如果事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;e1&lt;/code&gt; 既不发生在事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;e2&lt;/code&gt; 之前，也不发生在 &lt;code class=&quot;highlighter-rouge&quot;&gt;e2&lt;/code&gt; 之后，此时我们就认为 &lt;code class=&quot;highlighter-rouge&quot;&gt;e1&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;e2&lt;/code&gt; 同时发生（并发）。&lt;/p&gt;
-
-&lt;p&gt;在一个 Go协程 内部，谁发生在谁之前的顺序就是代码显式定义的顺序。比如：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;肯定是 &lt;code class=&quot;highlighter-rouge&quot;&gt;a := 1&lt;/code&gt; 先执行，&lt;code class=&quot;highlighter-rouge&quot;&gt;fmt.Println(a)&lt;/code&gt; 后执行。&lt;/p&gt;
-
-&lt;p&gt;当 Go协程 不仅仅局限在一个的时候，存在下面两个规则：&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;规则一&lt;/strong&gt;：如果存在一个变量 v，如果下面的两个条件都满足，则读操作 &lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; &lt;strong&gt;允许观察到&lt;/strong&gt;（可能观察到，也可能观察不到）写操作 &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; 写入的值：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; &lt;strong&gt;不在&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; 之前发生；&lt;/li&gt;
-  &lt;li&gt;不存在其他的 &lt;code class=&quot;highlighter-rouge&quot;&gt;w’&lt;/code&gt; 在 &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; 之后发生，也不存在 &lt;code class=&quot;highlighter-rouge&quot;&gt;w’&lt;/code&gt; 在 &lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; 之前发生。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;strong&gt;规则二&lt;/strong&gt;：为了保证读操作 &lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; 读取到的是写操作 &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; 写入的值，需要确保 &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; 是唯一允许被 &lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; 观察到的写操作。如果下面的两个条件都满足，则 &lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; 保证能够观察到 &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; 写入的值：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; 发生在 &lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; 之前；&lt;/li&gt;
-  &lt;li&gt;其他对共享变量 &lt;code class=&quot;highlighter-rouge&quot;&gt;v&lt;/code&gt; 的写操作要么发生在 &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; 之前，要么发生在 &lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; 之后。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;规则二的条件比规则一的条件更为严格，它要求没有其他的写操作和 &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; 并发地发生。&lt;/p&gt;
-
-&lt;p&gt;在一个 Go协程 里是不存在并发的，因此规则一和规则二是等效的：读操作 &lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; 可以观察到最近一次写操作 &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; 写入的值。但是，当多个协程访问一个共享变量的时候，就必须&lt;strong&gt;使用同步事件来构建&lt;/strong&gt;“发生在…之前”的条件，从而保证读操作观察到的一定是想要的写操作。&lt;/p&gt;
-
-&lt;p&gt;在内存模型中，变量 &lt;code class=&quot;highlighter-rouge&quot;&gt;v&lt;/code&gt; 的零值初始化操作等同于一个写操作。&lt;/p&gt;
-
-&lt;p&gt;如果变量的值大于&lt;strong&gt;单机器字&lt;/strong&gt;（CPU 从内存单次读取的字节数），那么 CPU 在读和写这个变量的时候是以一种不可预知顺序的多次执行&lt;strong&gt;单机器字&lt;/strong&gt;的操作，这也是  &lt;a href=&quot;https://golang.google.cn/pkg/sync/atomic/&quot;&gt;sync/atomic&lt;/a&gt;  包存在的价值。&lt;/p&gt;
-
-&lt;h2 id=&quot;同步化synchronization&quot;&gt;同步化（Synchronization）&lt;/h2&gt;
-
-&lt;h3 id=&quot;初始化&quot;&gt;初始化&lt;/h3&gt;
-
-&lt;p&gt;程序的初始化是在一个单独的 Go协程 中进行的，但是这个协程可以创建其他的 Go协程 并且二者并发执行。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;如果一个包 &lt;code class=&quot;highlighter-rouge&quot;&gt;p&lt;/code&gt; 导入了包 &lt;code class=&quot;highlighter-rouge&quot;&gt;q&lt;/code&gt;， 那么 &lt;code class=&quot;highlighter-rouge&quot;&gt;q&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数的执行&lt;strong&gt;发生在&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;p&lt;/code&gt;的所有 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数的执行&lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;main.main&lt;/code&gt; 的执行&lt;strong&gt;发生在&lt;/strong&gt;所有的 &lt;code class=&quot;highlighter-rouge&quot;&gt;init&lt;/code&gt; 函数执行完成&lt;strong&gt;之后&lt;/strong&gt;。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;go协程的创建&quot;&gt;Go协程的创建&lt;/h3&gt;
-
-&lt;p&gt;在 Go 语言中通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;go&lt;/code&gt; 语句创建新的 Go协程 发生在这个 Go协程 的执行&lt;strong&gt;之前&lt;/strong&gt;。比如下面的例子：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hello&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;hello, world&quot;&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;调用函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello&lt;/code&gt; 会在调用后的某个时间点打印 “hello, world” ，这个时间点可能在 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello&lt;/code&gt; 函数返回之前，也可能在 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello&lt;/code&gt; 函数返回之后。&lt;/p&gt;
-
-&lt;h3 id=&quot;go协程的销毁&quot;&gt;Go协程的销毁&lt;/h3&gt;
-
-&lt;p&gt;Go协程的退出无法确保&lt;strong&gt;发生在&lt;/strong&gt;程序的某个事件&lt;strong&gt;之前&lt;/strong&gt;。比如下面的例子：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hello&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;hello&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;其中 &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; 的赋值语句没有任何的同步事件，因此无法保证被其他任意的 Go 协程观察到这个赋值事件的存在。事实上，一些编译器可能会在编译阶段删除上面代码中的整个 &lt;code class=&quot;highlighter-rouge&quot;&gt;go&lt;/code&gt; 语句。&lt;/p&gt;
-
-&lt;p&gt;如果某个 Go协程 里发生的事件必然要被另一个 Go协程 观察到，需要使用同步机制进行保证，比如使用&lt;strong&gt;锁&lt;/strong&gt;或者&lt;strong&gt;信道&lt;/strong&gt;（channel）通信来构建一个相对的事件发生顺序。&lt;/p&gt;
-
-&lt;h3 id=&quot;信道通信&quot;&gt;信道通信&lt;/h3&gt;
-
-&lt;p&gt;信道通信是 Go协程 间事件同步的主要方式。在某个特定的信道上&lt;strong&gt;发送&lt;/strong&gt;一个数据，则对应地可以在这个信道上&lt;strong&gt;接收&lt;/strong&gt;一个数据，一般情况下是在不同的 Go协程 间发送与接收。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;规则一&lt;/strong&gt;：在某个信道上发送数据的事件&lt;strong&gt;发生在&lt;/strong&gt;相应的接收事件&lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;看下面的代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;hello, world&quot;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面这段代码保证了 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello, world&lt;/code&gt; 的打印。因为信道的写入事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;c &amp;lt;- 0&lt;/code&gt; &lt;strong&gt;发生在&lt;/strong&gt;读取事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;-c&lt;/code&gt; &lt;strong&gt;之前&lt;/strong&gt;，而 &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;-c&lt;/code&gt; &lt;strong&gt;发生在&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;print(a)&lt;/code&gt;&lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;规则二&lt;/strong&gt;：信道的关闭事件&lt;strong&gt;发生在&lt;/strong&gt;从信道接收到零值（由信道关闭触发）&lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;在前面的例子中，可以使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;close(c)&lt;/code&gt; 来替代 &lt;code class=&quot;highlighter-rouge&quot;&gt;c &amp;lt;- 0&lt;/code&gt; 语句来保证同样的效果。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;规则三&lt;/strong&gt;：对于没有缓存的信道，数据的接收事件&lt;strong&gt;发生在&lt;/strong&gt;数据发送完成&lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;比如下面的代码（类似上面给出的代码，但是使用了没有缓存的信道，且发送和接收的语句交换了一下）：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;hello, world&quot;&lt;/span&gt;
-	&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面这段代码依然可以保证可以打印 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello, world&lt;/code&gt;。因为信道的写入事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;c &amp;lt;- 0&lt;/code&gt; &lt;strong&gt;发生在&lt;/strong&gt;读取事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;-c&lt;/code&gt; &lt;strong&gt;之前&lt;/strong&gt;，而 &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;-c&lt;/code&gt; &lt;strong&gt;发生在&lt;/strong&gt;写入事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;c &amp;lt;- 0&lt;/code&gt; 完成&lt;strong&gt;之前&lt;/strong&gt;，同时写入事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;c &amp;lt;- 0&lt;/code&gt; 的完成&lt;strong&gt;发生在&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;print&lt;/code&gt; &lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;上面的代码，如果信道是带缓存的（比如 &lt;code class=&quot;highlighter-rouge&quot;&gt;c = make(chan int, 1)&lt;/code&gt;），程序将不能保证会打印出 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello, world&lt;/code&gt;，它可能会打印出空字符串，也可能崩溃退出，或者表现出一些其他的症状。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;规则四&lt;/strong&gt;：对于容量为 C 的信道，接收第 k 个元素的事件&lt;strong&gt;发生在&lt;/strong&gt;第 k+C 个元素的发送&lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;规则四是规则三在&lt;strong&gt;带缓存的信道&lt;/strong&gt;上的推广。它使得带缓存的信道可以模拟出&lt;strong&gt;计数信号量&lt;/strong&gt;：信道中元素的个数&lt;strong&gt;表示&lt;/strong&gt;活跃数，信道的容量&lt;strong&gt;表示&lt;/strong&gt;最大的可并发数；发送一个元素&lt;strong&gt;意味着&lt;/strong&gt;获取一个信号量，接收一个元素&lt;strong&gt;意味着&lt;/strong&gt;释放这个信号量。这是一种常见的限制并发的用法。&lt;/p&gt;
-
-&lt;p&gt;下面的代码给工作列表中的每个入口都开启一个 Go协程，但是通过配合一个固定长度的信道保证了同时最多有 3 个运行的工作（最多 3 个并发）。&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;limit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;work&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-			&lt;span class=&quot;n&quot;&gt;limit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;
-			&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-			&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;limit&lt;/span&gt;
-		&lt;span class=&quot;p&quot;&gt;}(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;锁&quot;&gt;锁&lt;/h3&gt;
-
-&lt;p&gt;包 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync&lt;/code&gt; 实现了两类锁数据类型，分别是 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.Mutex&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.RWMutex&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;规则一&lt;/strong&gt;：对于类型为  &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.Mutex&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.RWMutex&lt;/code&gt; 的变量 &lt;code class=&quot;highlighter-rouge&quot;&gt;l&lt;/code&gt;，如果存在 n 和 m 且满足 &lt;code class=&quot;highlighter-rouge&quot;&gt;n &amp;lt; m&lt;/code&gt;，则 &lt;code class=&quot;highlighter-rouge&quot;&gt;l.Unlock()&lt;/code&gt; 的第 n 次调用返回发生在&lt;code class=&quot;highlighter-rouge&quot;&gt;l.Lock()&lt;/code&gt;的第 m 次调用返回&lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;比如下面的代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Mutex&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;hello, world&quot;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Unlock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面这段代码保证能够打印 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello, world&lt;/code&gt;。&lt;code class=&quot;highlighter-rouge&quot;&gt;l.Unlock()&lt;/code&gt;的第 1 次调用返回（在函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;f&lt;/code&gt; 内部）&lt;strong&gt;发生在&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;l.Lock()&lt;/code&gt; 的第 2 次调用返回&lt;strong&gt;之前&lt;/strong&gt;，后者&lt;strong&gt;发生在&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;print&lt;/code&gt; &lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;规则二&lt;/strong&gt;：存在类型 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync.RWMutex&lt;/code&gt; 的变量 &lt;code class=&quot;highlighter-rouge&quot;&gt;l&lt;/code&gt;，如果 &lt;code class=&quot;highlighter-rouge&quot;&gt;l.RLock&lt;/code&gt; 的调用返回&lt;strong&gt;发生在&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;l.Unlock&lt;/code&gt; 的第 n 次调用返回&lt;strong&gt;之后&lt;/strong&gt;，那么其对应的 &lt;code class=&quot;highlighter-rouge&quot;&gt;l.RUnlock&lt;/code&gt; &lt;strong&gt;发生在&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;l.Lock&lt;/code&gt; 的第 n+1 次调用返回&lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;h3 id=&quot;单次运行&quot;&gt;单次运行&lt;/h3&gt;
-
-&lt;p&gt;包 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync&lt;/code&gt; 还提供了 &lt;code class=&quot;highlighter-rouge&quot;&gt;Once&lt;/code&gt; 类型用来保证多协程的初始化的安全。多个 Go协程 可以并发执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;once.Do(f)&lt;/code&gt; 来执行函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;f&lt;/code&gt;， 且只会有一个 Go协程 会运行 &lt;code class=&quot;highlighter-rouge&quot;&gt;f()&lt;/code&gt;，其他的 Go 协程会阻塞到那&lt;strong&gt;单次执行的&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;f()&lt;/code&gt; 的返回。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;规则一&lt;/strong&gt;：函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;f()&lt;/code&gt; 在 &lt;code class=&quot;highlighter-rouge&quot;&gt;once.Do(f)&lt;/code&gt; 的单次调用返回&lt;strong&gt;发生在&lt;/strong&gt;其他所有的 &lt;code class=&quot;highlighter-rouge&quot;&gt;once.Do(f)&lt;/code&gt; 调用返回&lt;strong&gt;之前&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;比如下面的代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;once&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Once&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;hello, world&quot;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doprint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;once&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Do&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;twoprint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doprint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doprint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面的代码中 &lt;code class=&quot;highlighter-rouge&quot;&gt;twoprint&lt;/code&gt; 函数只会调用一次 &lt;code class=&quot;highlighter-rouge&quot;&gt;setup&lt;/code&gt; 函数。函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;setup&lt;/code&gt; 函数的执行返回&lt;strong&gt;发生在&lt;/strong&gt;所有的 &lt;code class=&quot;highlighter-rouge&quot;&gt;print&lt;/code&gt; 调用&lt;strong&gt;之前&lt;/strong&gt;，同时会打印出两次 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello, world&lt;/code&gt;。&lt;/p&gt;
-
-&lt;h3 id=&quot;不正确的同步方式&quot;&gt;不正确的同步方式&lt;/h3&gt;
-
-&lt;p&gt;对某个变量的读操作 &lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; 一定概率可以观察到对同一个变量的并发写操作 &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt;，但是即使这件事情发生了，也并不意味着&lt;strong&gt;发生在&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;r&lt;/code&gt; &lt;strong&gt;之后&lt;/strong&gt;的其他读操作可以观察到&lt;strong&gt;发生在&lt;/strong&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; &lt;strong&gt;之前&lt;/strong&gt;的其他写操作。&lt;/p&gt;
-
-&lt;p&gt;比如下面的代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面的代码里函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;g&lt;/code&gt; 可能会先打印 2（b的值），然后打印 0（a的值）；可能大家会认为既然 b 的值已经被赋值为 2 了，那么 a 的值肯定被赋值为 1 了，但事实是两个事件的先后在这里是没有办法确定的。&lt;/p&gt;
-
-&lt;p&gt;上面的事实可以证明下面的几个常见的错误。&lt;/p&gt;
-
-&lt;h4 id=&quot;错误一双重检查锁定&quot;&gt;错误一：双重检查锁定&lt;/h4&gt;
-
-&lt;p&gt;双重检查锁定是一种尝试避免同步开销的尝试。比如下面的例子，&lt;code class=&quot;highlighter-rouge&quot;&gt;twoprint&lt;/code&gt; 函数可能会被&lt;strong&gt;错误地&lt;/strong&gt;编写为：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;done&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;hello, world&quot;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;done&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doprint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;done&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;once&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Do&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;twoprint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doprint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doprint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;在 &lt;code class=&quot;highlighter-rouge&quot;&gt;doprint&lt;/code&gt; 函数中，观察到对 &lt;code class=&quot;highlighter-rouge&quot;&gt;done&lt;/code&gt; 的写操作并不意味着能够观察到对 &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; 的写操作。应该注意，上面的写法依然有可能打印出空字符串而不是“hello, world”字符串。&lt;/p&gt;
-
-&lt;h4 id=&quot;错误二某个值的循环检查&quot;&gt;错误二：某个值的循环检查&lt;/h4&gt;
-
-&lt;p&gt;另一个常见的错误用法是对某个值的循环检查，比如下面的代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;done&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;hello, world&quot;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;done&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;done&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;和上一个例子类似，&lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;函数中观察到对 &lt;code class=&quot;highlighter-rouge&quot;&gt;done&lt;/code&gt; 的写操作并不意味着可以观察到对 &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; 的写操作，因此上面的代码依然可能会打印出空字符串。更为恐怖的，由于两个 Go协程 之间缺少同步事件，&lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt; 函数甚至可能永远无法观察到对 &lt;code class=&quot;highlighter-rouge&quot;&gt;done&lt;/code&gt; 变量的写操作，导致 &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt; 中的 for 循环永远执行下去。&lt;/p&gt;
-
-&lt;h4 id=&quot;错误三循环检查的变形&quot;&gt;错误三：循环检查的变形&lt;/h4&gt;
-
-&lt;p&gt;错误二存在一个变形，如下面的代码所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;hello, world&quot;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上面的代码即使 &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt; 函数观察到 &lt;code class=&quot;highlighter-rouge&quot;&gt;g != nil&lt;/code&gt;并且退出了它的 for 循环，依然没有办法保证它可以观察到被初始化的 &lt;code class=&quot;highlighter-rouge&quot;&gt;g.msg&lt;/code&gt; 值。&lt;/p&gt;
-
-&lt;p&gt;避免上面几个错误用法的方式是一样的：显式使用同步语句。&lt;/p&gt;
-
-</description>
-        <pubDate>Sat, 14 Dec 2019 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2019/12/14/go-mem-model.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2019/12/14/go-mem-model.html</guid>
-        
-        <category>golang</category>
-        
-        <category>基础</category>
-        
-        <category>实用</category>
-        
-        
-        <category>golang</category>
         
       </item>
     

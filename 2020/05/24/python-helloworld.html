@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《从0到1学习后端开发》之源码安装Python3及其HelloWorld的执行 - 敬维</title>
+    <meta name="author"  content="Jing维">
+    <meta name="description" content="《从0到1学习后端开发》之源码安装Python3及其HelloWorld的执行">
+    <meta name="keywords"  content="课程, 基础, 实用">
+    <!-- Open Graph -->
+    <meta property="og:title" content="《从0到1学习后端开发》之源码安装Python3及其HelloWorld的执行 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2020/05/24/python-helloworld.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E8%AF%BE%E7%A8%8B" class="post-tag">课程</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+        
+      </div>
+      <h1>《从0到1学习后端开发》之源码安装Python3及其HelloWorld的执行</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">Jing维</a></></span>
+        <time class="post-meta-item" datetime="20-05-24"><i class="iconfont icon-date"></i>24 May 2020</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">教案：介绍源码安装 Python3 的具体步骤及 HelloWorld 的编写与执行(视频课程8)</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#python-的-hello-world" id="markdown-toc-python-的-hello-world">Python 的 hello world</a>    <ul>
+      <li><a href="#简易版的-helloworld" id="markdown-toc-简易版的-helloworld">简易版的 helloworld</a></li>
+      <li><a href="#高级版-helloworld" id="markdown-toc-高级版-helloworld">高级版 helloworld</a></li>
+      <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+      <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+
+<p>《从0到1学习后端开发》是面向在校大学生、非 IT 工作人员的免费后端开发入门实践教程，可至 <a href="https://space.bilibili.com/425571569">https://space.bilibili.com/425571569</a> 查看对应的视频资料。</p>
+
+<h1 id="python-的-hello-world">Python 的 hello world</h1>
+
+<p>基础决定最终可达到的高度。</p>
+
+<p>本节内容首先带着大家利用 ubuntu 原生的 python 进行简易版 helloworld 的编写与执行；然后带着大家按需安装特定版本的 python，并配置对应的开发环境。</p>
+
+<h2 id="简易版的-helloworld">简易版的 helloworld</h2>
+
+<p>在前面安装 vscode 的那一节我们已经编写过 <code class="highlighter-rouge">python</code> 的 helloworld。</p>
+
+<p>由于 ubuntu18.04 系统已经默认安装了 python3 解释器，因此可以很方便写出并运行 helloworld。简单讲分成几步：</p>
+
+<ol>
+  <li>创建一个项目目录，比如我们在家目录下面使用命令 <code class="highlighter-rouge">mkdir</code> 创建对应的目录；然后通过 <code class="highlighter-rouge">code .</code> 命令打开对应的目录作为工作目录。</li>
+  <li>检查 vscode 是否安装 Python 插件；</li>
+  <li>创建 helloworld.py 文件并编写内容 <code class="highlighter-rouge">print("hello world")</code>;</li>
+  <li>配置对应的解释器，可以直接执行输出结果。</li>
+  <li>也可以在命令行使用 <code class="highlighter-rouge">python3 helloworld.py</code> 来执行对应的文件得出结果。</li>
+</ol>
+
+<p>上面简易版的 helloworld 直接使用了 ubuntu 系统默认带的 python3 环境，具体的是 <code class="highlighter-rouge">python 3.6.9</code> 版本，版本比较老。另一方面，在我们实际项目的开发过程中，大部分会指定特定的 python 版本进行开发，这个时候就需要我们在我们的本地安装对应的版本，搭建匹配的开发环境。接下来就让我们看一下如何从源码安装特定版本的 python。</p>
+
+<h2 id="高级版-helloworld">高级版 helloworld</h2>
+
+<p>为什么提出“高阶版的 helloworld”呢？这是一个“基础决定最终可达到的高度”的问题；<strong>“要想楼层盖的高，就看地基打多牢”</strong>，话糙理不糙。作为一名开发者，如果只会扎架子（比如动口只是架构、方案、设计模式），优雅而丰满的项目大厦是建不成的。不过很多人把扎好架子作为目标，不去关注基础上细节，因此丢失了很多乐趣，也限制了自己可达的高度，还是有点惋惜的。</p>
+
+<p>我们高阶版的 helloworld 希望可以给大家开一个好头，尝试从一个简单的 helloworld 里挖掘一些其他有意思的东西。</p>
+
+<p>接下来让我们安装特定版本的 python，比如选定 3.8.3 进行安装 。</p>
+
+<p>首先让我们下载 python3.8.3 的源码。无论是 python 还是 go，它们都是开源的语言，因此我们都是到它们的官网找到对应的源码的下载链接，相对其他一些地方的下载链接要靠谱很多。这里顺便建议大家平日里可以多逛官网，作为我们最重要的的一手资料进行学习。</p>
+
+<p>为了适应终端命令行，我们采用命令行的方式下载并安装。</p>
+
+<ol>
+  <li>
+    <p>首先选择一个合适的目录，然后从官网找到对应的链接后复制，通过 <code class="highlighter-rouge">wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz</code> 进行下载。</p>
+  </li>
+  <li>
+    <p>下载完成后得到的是一个为方便传输的压缩包，需要我们把它解压缩，通过在当前目录执行 <code class="highlighter-rouge">tar -xzf Python-3.8.3.tgz</code> 即可完成，在当前目录生成一个 <code class="highlighter-rouge">Python-3.8.3</code> 的目录。</p>
+  </li>
+  <li>
+    <p>我们可以通过 <code class="highlighter-rouge">code Python-3.8.3</code> 来打开对应的目录，简单预览一下 python 的源码项目（源码阅读一般流程）。</p>
+
+    <ol>
+      <li>
+        <p>大概浏览一下，咦，发现 python 源码库里有好多 c 语言文件，可以知道 python 是基于 c 语言进行开发的，是不是很神奇 ^_^；</p>
+      </li>
+      <li>
+        <p>查看对应的 README，可以看到 源码库中有一个 README.rst 文件，查看一遍说了什么（英文学习多么重要啊）。我们目前只关注安装相关的内容，因此找到一段命令做参考，并看到有 <code class="highlighter-rouge">./configure --help</code>，那我们有必要探索一番。（在命令行环境多打 <code class="highlighter-rouge">--help</code> 是一个好习惯）</p>
+      </li>
+      <li>
+        <p>其他的我们暂时不关注，先放着不管，不过可以看到原来一个牛x的项目是这个样子的。</p>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <p>通过 <code class="highlighter-rouge">./configure --help</code> 查看配置项，然后通过 <code class="highlighter-rouge">./configure --prefix=$HOME/software/mypy</code> 进行配置；也可以有选择地添加建议的参数，比如添加优化参数保证使用所有稳定的优化方案 <code class="highlighter-rouge">./configure --prefix=$HOME/software/mypy --enable-optimizations</code>。</p>
+  </li>
+  <li>
+    <p>通过 <code class="highlighter-rouge">make</code> 和 <code class="highlighter-rouge">make install</code> 来编译并安装源码。在整个过程中可能会有一些警告的提示或者错误的提示，静待看最后的总结报告。</p>
+  </li>
+  <li>
+    <p>安装依赖（整个需要我们通过比较久的经验做积累才可以慢慢理解为什么需要这些依赖）。这里我积累了几个必要的，大家先安装一下。如果未来在项目开发过程中使用到了其他的依赖，则可以按照类似的步骤进行安装。</p>
+
+    <ol>
+      <li>
+        <p>通过 <code class="highlighter-rouge">sudo apt install zlib1g.dev</code> 安装 zlib 依赖（整个是在安装 python 的时候就会需要）</p>
+      </li>
+      <li>
+        <p>通过 <code class="highlighter-rouge">sudo apt install libssl-dev</code> 安装 ssl 依赖（编写 web 相关的服务的时候会用到）</p>
+      </li>
+      <li>
+        <p>通过 <code class="highlighter-rouge">sudo apt install libffi-dev</code> 安装 libffi 依赖（当 pip install 的时候会用到）</p>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <p>重新通过 <code class="highlighter-rouge">./configure --prefix=$HOME/software/mypy</code> 来配置生成对应的 make 文件。并通过 <code class="highlighter-rouge">make</code> 和 <code class="highlighter-rouge">make install</code> 编译安装。</p>
+  </li>
+  <li>
+    <p>安装完成以后，就可以通过 <code class="highlighter-rouge">~/software/mypy/bin/python3</code> 和 <code class="highlighter-rouge">~/software/mypy/bin/pip3</code>把玩了。</p>
+  </li>
+  <li>
+    <p>为了便利性，我们可以把新安装的 python 的 bin 目录添加到 PATH 中去，这样就可以直接使用 <code class="highlighter-rouge">python3</code> 和 <code class="highlighter-rouge">pip3</code> 命令了。具体地，在 <code class="highlighter-rouge">$HOME/.bashrc</code> 文件的最后添加 <code class="highlighter-rouge">export PATH="$HOME/software/mypy/bin:$PATH"</code>，然后重启终端或对应的服务即可。</p>
+  </li>
+</ol>
+
+<h2 id="小结">小结</h2>
+
+<p>本小节介绍了 Python 的 helloworld，首先介绍利用 ubuntu 原带的 python 作为解释器，然后重点带大家安装自己的 python 解释器。并使用自己安装的解释器执行了 hellworld 脚本。</p>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+  <li><a href="https://github.com/chalvern/books">本系列课程教案库</a></li>
+  <li><a href="https://space.bilibili.com/425571569">视频链接地址（视频课程8）</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">Jing维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2020/05/21/go-java-python-language-model.html" class="read-next-link"></a>
+          <section>
+            <span>《从0到1学习后端开发》（3）Go、Java、Python语言模型对比</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2020
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
