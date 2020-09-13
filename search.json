@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "不写文章专注做视频，这里要荒废一段时间了",
+      "tags"     : "课程 基础 实用",
+      "url"      : "/2020/09/13/what-iam-doing-now.html"
+    } ,
+  
+    {
       "title"    : "《从0到1学习后端开发》之源码安装Python3及其HelloWorld的执行",
       "tags"     : "课程 基础 实用",
       "url"      : "/2020/05/24/python-helloworld.html"

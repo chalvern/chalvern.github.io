@@ -5,9 +5,39 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 24 May 2020 00:15:07 +0800</pubDate>
-    <lastBuildDate>Sun, 24 May 2020 00:15:07 +0800</lastBuildDate>
+    <pubDate>Sun, 13 Sep 2020 20:40:23 +0800</pubDate>
+    <lastBuildDate>Sun, 13 Sep 2020 20:40:23 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>不写文章专注做视频，这里要荒废一段时间了</title>
+        <description>&lt;h2 id=&quot;都是输出都挺开心&quot;&gt;都是输出，都挺开心&lt;/h2&gt;
+
+&lt;p&gt;如题，最近一段时间迷上了做视频，因此这里要荒废一段时间了。&lt;/p&gt;
+
+&lt;p&gt;其实无论是写文字还是做视频，于我而言都是一件挺开心的事情。而人活着最重要的是开心。&lt;/p&gt;
+
+&lt;h2 id=&quot;视频链接&quot;&gt;视频链接&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://space.bilibili.com/425571569&quot;&gt;https://space.bilibili.com/425571569&lt;/a&gt;  B站个人页面&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Sun, 13 Sep 2020 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2020/09/13/what-iam-doing-now.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2020/09/13/what-iam-doing-now.html</guid>
+        
+        <category>课程</category>
+        
+        <category>基础</category>
+        
+        <category>实用</category>
+        
+        
+        <category>视频</category>
+        
+      </item>
     
       <item>
         <title>《从0到1学习后端开发》之源码安装Python3及其HelloWorld的执行</title>
@@ -935,46 +965,6 @@ go build &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; apollo.exe main.go
         
         
         <category>golang</category>
-        
-      </item>
-    
-      <item>
-        <title>为团队寻找后端开发工程师（招聘）</title>
-        <description>&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
-
-&lt;p&gt;程序员是“活到老学到老”的践行者，无论是前端开发者还是后端开发者，都是如此。希望你也是这样的程序员。&lt;/p&gt;
-
-&lt;p&gt;在加入当前的公司（&lt;strong&gt;上海·桂林路&lt;/strong&gt;）后，随着公司业务逐渐展开，发现团队里的事情也多起来了，因此开贴找一起共事一起学习的同事。&lt;/p&gt;
-
-&lt;h2 id=&quot;后端开发工程师&quot;&gt;后端开发工程师&lt;/h2&gt;
-
-&lt;p&gt;职位描述：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;参与完成项目的系统分析、设计，并负责业务功能与底层基础功能的功能设计、代码实现。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;希望你：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;有 2 年以上的后端开发经验；&lt;/li&gt;
-  &lt;li&gt;熟练使用 Java/Go/Python 中的一种或多种编程语言；&lt;/li&gt;
-  &lt;li&gt;了解并能熟练使用常见的数据库（Mysql、ElasticSearch、MongoDB、Redis 等）；&lt;/li&gt;
-  &lt;li&gt;掌握计算机基本理论知识，包括基础网络、存储、算法等；&lt;/li&gt;
-  &lt;li&gt;如果自我感觉良好，可以不受上面条款的限制。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;欢迎邮件（zhjw43@163.com）骚扰。&lt;/p&gt;
-</description>
-        <pubDate>Fri, 03 Jan 2020 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2020/01/03/you-can-be-my-coworker.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2020/01/03/you-can-be-my-coworker.html</guid>
-        
-        <category>管理</category>
-        
-        <category>实用</category>
-        
-        
-        <category>管理</category>
         
       </item>
     
