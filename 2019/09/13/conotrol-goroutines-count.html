@@ -263,8 +263,8 @@ hello 6!
 	<span class="p">}</span>
 	<span class="c">// b) 把 job 依次推送到 jobsChan 供 goroutine 消费</span>
 	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">jobsCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
 		<span class="n">jobsChan</span> <span class="o">&lt;-</span> <span class="n">i</span>
-		<span class="n">group</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
 		<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"index: %d,goroutine Num: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">runtime</span><span class="o">.</span><span class="n">NumGoroutine</span><span class="p">())</span>
 	<span class="p">}</span>
 	<span class="n">group</span><span class="o">.</span><span class="n">Wait</span><span class="p">()</span>
@@ -386,7 +386,7 @@ hello 9
     2018
     -
   
-  2020
+  2021
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>
