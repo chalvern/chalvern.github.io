@@ -181,7 +181,7 @@ Author: Ray-Eldath
 
 <p>对于一个刚刚开始学习 《C 语言程序设计》课程的大学生来说，编译出自己的 “Hello World” 往往意味着很多事先的准备工作（至少先把课堂上老师三言两语带过的开发环境搭建起来）。</p>
 
-<p>之前因为项目的需要我魔改过日志收集工具 <a href="https://github.com/fluent/fluent-bit">fluent/fluent-bit</a> ，这是一个主要由 <code class="highlighter-rouge">C</code> 语言进行开发的项目，而我对 <code class="highlighter-rouge">C</code> 语言的认识还停留在大学课堂的水平，更何况我本地没有搭建过开发 C 的环境。</p>
+<p>之前因为项目的需要我魔改过日志收集工具 <a href="https://github.com/fluent/fluent-bit">fluent/fluent-bit</a> ，这是一个主要由 <code class="language-plaintext highlighter-rouge">C</code> 语言进行开发的项目，而我对 <code class="language-plaintext highlighter-rouge">C</code> 语言的认识还停留在大学课堂的水平，更何况我本地没有搭建过开发 C 的环境。</p>
 
 <p>容器化技术能很好地解决上面的问题。职业开发者使用 Docker（容器化技术的一种）把环境搭建的过程封装到容器里，并以镜像的形式复制到生产环境得以“复现”相同的环境。作为知识学习者，完全可以利用相似的技术“复现”老师课堂上使用的环境。而作为知识探索者，在修改了 fluent-bit 的源码后，我利用其源码中提供的 Dockerfile 很方便地实现了定制化源码的编译，快速验证了思路可行性及定制化功能的可用性。</p>
 
@@ -189,13 +189,13 @@ Author: Ray-Eldath
 
 <h3 id="容器化的-go-开发环境">容器化的 Go 开发环境</h3>
 
-<p>为了说明问题并方便读者能容易地在自己机器上验证，我在《<a href="https://jingwei.link/2019/03/15/golang-json-unmarshal-using.html">Go 反序列化 JSON 字符串的两种常见用法</a>》和 《<a href="https://jingwei.link/2019/03/16/golang-json-performance.html">浅谈 Go 标准库对 JSON 的处理效率</a>》两篇博客里刻意贴了<strong>完整</strong>而冗长的源码内容。虽说 <code class="highlighter-rouge">package</code> 和 <code class="highlighter-rouge">import</code> 语句对博客的内容并没有任何作用，但是如果因为多这样几句内容就能让代码成为完整可运行的源码，从而节省读者自己构造完整源代码的时间，我认为是值得且必要的。</p>
+<p>为了说明问题并方便读者能容易地在自己机器上验证，我在《<a href="https://jingwei.link/2019/03/15/golang-json-unmarshal-using.html">Go 反序列化 JSON 字符串的两种常见用法</a>》和 《<a href="https://jingwei.link/2019/03/16/golang-json-performance.html">浅谈 Go 标准库对 JSON 的处理效率</a>》两篇博客里刻意贴了<strong>完整</strong>而冗长的源码内容。虽说 <code class="language-plaintext highlighter-rouge">package</code> 和 <code class="language-plaintext highlighter-rouge">import</code> 语句对博客的内容并没有任何作用，但是如果因为多这样几句内容就能让代码成为完整可运行的源码，从而节省读者自己构造完整源代码的时间，我认为是值得且必要的。</p>
 
 <p>可以把思考更进一步，如果读者朋友没有 Go 开发环境（或者与作者本地的开发环境不一致），如何才能以一种低成本的方式开始这一切呢？不知不觉就想到了 Docker 技术（都是套路😀）。</p>
 
 <h4 id="定制化-go-开发环境镜像">定制化 Go 开发环境镜像</h4>
 
-<p>想要低成本获取 Go 开发环境，思路很简单，把 Go 开发环境打包到容器里（其实 <a href="https://hub.docker.com/_/golang">官方</a> 已经存在这种镜像），大家只需要拉取相应的镜像然后运行就可以了。如下面的<a href="https://github.com/chalvern/smile/blob/master/docker/Dockerfile">源码</a>所示，为了方便编辑并调试 Go 源码，我在 Go 官方镜像的基础上安装并简单配置了 <code class="highlighter-rouge">vim</code> 和 <code class="highlighter-rouge">delve</code>，并把镜像推送到了 <a href="https://hub.docker.com/r/chalvern/golang">Docker Hub</a> 仓库中。更详尽的内容可以参考 <a href="https://github.com/chalvern/smile">GitHub - chalvern/smile</a> 。</p>
+<p>想要低成本获取 Go 开发环境，思路很简单，把 Go 开发环境打包到容器里（其实 <a href="https://hub.docker.com/_/golang">官方</a> 已经存在这种镜像），大家只需要拉取相应的镜像然后运行就可以了。如下面的<a href="https://github.com/chalvern/smile/blob/master/docker/Dockerfile">源码</a>所示，为了方便编辑并调试 Go 源码，我在 Go 官方镜像的基础上安装并简单配置了 <code class="language-plaintext highlighter-rouge">vim</code> 和 <code class="language-plaintext highlighter-rouge">delve</code>，并把镜像推送到了 <a href="https://hub.docker.com/r/chalvern/golang">Docker Hub</a> 仓库中。更详尽的内容可以参考 <a href="https://github.com/chalvern/smile">GitHub - chalvern/smile</a> 。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cat https://github.com/chalvern/smile/blob/master/docker/Dockerfile</span>
 FROM golang:1.12
@@ -216,21 +216,21 @@ WORKDIR <span class="nv">$GOPATH</span>
 <h4 id="运行-go-开发环境镜像">运行 Go 开发环境镜像</h4>
 
 <ol>
-  <li>拉取镜像：<code class="highlighter-rouge">docker pull chalvern/golang:1.12</code></li>
-  <li>以 privileged 方式运行镜像：<code class="highlighter-rouge">docker run -it --privileged chalvern/golang:1.12 bash</code></li>
+  <li>拉取镜像：<code class="language-plaintext highlighter-rouge">docker pull chalvern/golang:1.12</code></li>
+  <li>以 privileged 方式运行镜像：<code class="language-plaintext highlighter-rouge">docker run -it --privileged chalvern/golang:1.12 bash</code></li>
   <li>此时便有了一个 Go 开发环境。</li>
 </ol>
 
 <h3 id="环境上下文一致的必要性">环境（上下文）一致的必要性</h3>
 <p>我在学生时代发现一个很有趣的现象，国外的教材往往页码很足整本书很厚，而中文的教材页码比较少相对要薄一些。排除一部分语言表达力的因素，主要是因为国外的教材喜欢包含比较多知识之外的细节。</p>
 
-<p>以《C 语言程序设计》类似的书籍来说，是直接从 <code class="highlighter-rouge">Hello World</code> 讲起好呢？还是从详细的环境搭建步骤讲起好呢？我记得当年在学习 C 语言编程的时候，为了搭建开发环境到图书馆找了很多资料，最终也未“复现”教科书上一模一样的开发环境，导致在学习过程中产生非常多的疑惑。有的同学在疑惑面前退缩了，渐渐失去了编码的兴趣，最终的成绩自然也不如人意。</p>
+<p>以《C 语言程序设计》类似的书籍来说，是直接从 <code class="language-plaintext highlighter-rouge">Hello World</code> 讲起好呢？还是从详细的环境搭建步骤讲起好呢？我记得当年在学习 C 语言编程的时候，为了搭建开发环境到图书馆找了很多资料，最终也未“复现”教科书上一模一样的开发环境，导致在学习过程中产生非常多的疑惑。有的同学在疑惑面前退缩了，渐渐失去了编码的兴趣，最终的成绩自然也不如人意。</p>
 
 <p>国外教材比较厚重的另一个原因，是国外教材中喜欢包含比较详细的参考文献。那么，书籍或者博客中，是否应该把参考文献放进正文呢？我认为是必要的。把参考文献列出来，一方面可以表达对相关论点提出者的尊重，另一方面则方便让读者能够进一步了解论点的渊源或者进一步考证“真相”。书里或博客里所论述的是“集百家之长的一家之言”呢？还是纯碎个人思考得出来的“一家之言”呢？不同的分类，其说服力以及可采纳率其实是不一样的；如果混淆在一起使人不可分辨，容易让人忽视共识的力量，</p>
 
 <h2 id="小结">小结</h2>
 
-<p>本文尝试通过容器技术（docker）降低<strong>探索</strong> Golang 技术开发的门槛。相比于把开发环境直接安装到自己的电脑上“尝鲜”，容器化技术能够很好地避免 Go 开发环境及其依赖项（比如 <code class="highlighter-rouge">$GOPATH</code>、<code class="highlighter-rouge">$GOROOT</code> 等变量）对电脑的污染，同时容器化技术能够很好地“复现”一致可用的开发环境，避免引入其他变量，从而降低技术探索的难度。</p>
+<p>本文尝试通过容器技术（docker）降低<strong>探索</strong> Golang 技术开发的门槛。相比于把开发环境直接安装到自己的电脑上“尝鲜”，容器化技术能够很好地避免 Go 开发环境及其依赖项（比如 <code class="language-plaintext highlighter-rouge">$GOPATH</code>、<code class="language-plaintext highlighter-rouge">$GOROOT</code> 等变量）对电脑的污染，同时容器化技术能够很好地“复现”一致可用的开发环境，避免引入其他变量，从而降低技术探索的难度。</p>
 
 <h2 id="参考">参考</h2>
 <ul>
@@ -319,7 +319,7 @@ WORKDIR <span class="nv">$GOPATH</span>
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

@@ -166,16 +166,16 @@ Author: Ray-Eldath
 
 <h1 id="错误errors">错误（Errors）</h1>
 
-<p>原则上，第三方库在报错时能给调用者返回有指示含义的错误信息。像之前提到的 Go 的<strong>多返回值</strong>特性让<strong>同时返回普通返回值和详尽的错误描述</strong>变得很简单。通过这个特性来提供详细的错误信息是一种很好的代码风格。比如，系统库函数 <code class="highlighter-rouge">os.Open</code> 在发生错误的时候不仅返回一个 <code class="highlighter-rouge">nil</code> 的指针，同时返回一个错误变量来描述出问题的原因。</p>
+<p>原则上，第三方库在报错时能给调用者返回有指示含义的错误信息。像之前提到的 Go 的<strong>多返回值</strong>特性让<strong>同时返回普通返回值和详尽的错误描述</strong>变得很简单。通过这个特性来提供详细的错误信息是一种很好的代码风格。比如，系统库函数 <code class="language-plaintext highlighter-rouge">os.Open</code> 在发生错误的时候不仅返回一个 <code class="language-plaintext highlighter-rouge">nil</code> 的指针，同时返回一个错误变量来描述出问题的原因。</p>
 
-<p>为了方便，错误有一个专门的类型 <code class="highlighter-rouge">error</code>，它是一个内建的接口。</p>
+<p>为了方便，错误有一个专门的类型 <code class="language-plaintext highlighter-rouge">error</code>，它是一个内建的接口。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="kt">error</span> <span class="k">interface</span> <span class="p">{</span>
     <span class="n">Error</span><span class="p">()</span> <span class="kt">string</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>包的创建者可以为自定义类型实现 <code class="highlighter-rouge">error</code> 接口，为调用者提供一些错误的上下文从而便于排查错误。就像刚刚提到的，系统库函数 <code class="highlighter-rouge">os.Open</code> 除了返回 <code class="highlighter-rouge">*os.File</code> 类型的值外，还返回了一个错误值；如果文件打开成功，错误值是 <code class="highlighter-rouge">nil</code>，如果文件打开失败，会返回 <code class="highlighter-rouge">os.PathError</code> 错误：</p>
+<p>包的创建者可以为自定义类型实现 <code class="language-plaintext highlighter-rouge">error</code> 接口，为调用者提供一些错误的上下文从而便于排查错误。就像刚刚提到的，系统库函数 <code class="language-plaintext highlighter-rouge">os.Open</code> 除了返回 <code class="language-plaintext highlighter-rouge">*os.File</code> 类型的值外，还返回了一个错误值；如果文件打开成功，错误值是 <code class="language-plaintext highlighter-rouge">nil</code>，如果文件打开失败，会返回 <code class="language-plaintext highlighter-rouge">os.PathError</code> 错误：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// PathError records an error and the operation and</span>
 <span class="c">// file path that caused it.</span>
@@ -190,16 +190,16 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>上面 <code class="highlighter-rouge">PathError</code> 的 <code class="highlighter-rouge">Error</code> 方法会产生下面类似的字符串提示：</p>
+<p>上面 <code class="language-plaintext highlighter-rouge">PathError</code> 的 <code class="language-plaintext highlighter-rouge">Error</code> 方法会产生下面类似的字符串提示：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>open /etc/passwx: no such file or directory
 </code></pre></div></div>
 
 <p>上面的错误信息里面<strong>包含了</strong>出问题的①文件名、②操作以及③触发的操作系统错误，这个信息对找出问题是很有帮助的，即使函数被层层调用报出这个错误也很容易定位问题。相比较而言，这种示意的输出比 “找不到相关的文件或目录” 这种提示要有用的多。</p>
 
-<p>大多数情况下，错误字符串最好能输出他们的源信息，比如什么操作导致的什么错误，比如哪个包的什么错误，等等。以包 <code class="highlighter-rouge">image</code> 为例，由未知格式导致的编码错误的字符串提示统一都是：“图片：未知的格式”。</p>
+<p>大多数情况下，错误字符串最好能输出他们的源信息，比如什么操作导致的什么错误，比如哪个包的什么错误，等等。以包 <code class="language-plaintext highlighter-rouge">image</code> 为例，由未知格式导致的编码错误的字符串提示统一都是：“图片：未知的格式”。</p>
 
-<p>如果调用者关注详细的错误类型，那就可以用 <strong>类型 switch</strong> 或者<strong>类型断言</strong>来查找特定的错误并抽取它的详细信息。对于下面代码中的 <code class="highlighter-rouge">PathErrors</code>，为了从操作失败中恢复，它可能包含了一个内部的 <code class="highlighter-rouge">Err</code> 字段：</p>
+<p>如果调用者关注详细的错误类型，那就可以用 <strong>类型 switch</strong> 或者<strong>类型断言</strong>来查找特定的错误并抽取它的详细信息。对于下面代码中的 <code class="language-plaintext highlighter-rouge">PathErrors</code>，为了从操作失败中恢复，它可能包含了一个内部的 <code class="language-plaintext highlighter-rouge">Err</code> 字段：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">try</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">try</span> <span class="o">&lt;</span> <span class="m">2</span><span class="p">;</span> <span class="n">try</span><span class="o">++</span> <span class="p">{</span>
     <span class="n">file</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -215,13 +215,13 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>第二个 <code class="highlighter-rouge">if</code> 语句是一个类型断言，如果断言失败了，<code class="highlighter-rouge">ok</code> 值就是 false，此时 <code class="highlighter-rouge">e</code> 的值是 <code class="highlighter-rouge">nil</code>；如果断言成功，<code class="highlighter-rouge">ok</code> 值是 true，此时意味着错误值的类型是 <code class="highlighter-rouge">*os.PathError</code>，接着 <code class="highlighter-rouge">e</code> 就可以做进一步的检查并执行对应的操作了。</p>
+<p>第二个 <code class="language-plaintext highlighter-rouge">if</code> 语句是一个类型断言，如果断言失败了，<code class="language-plaintext highlighter-rouge">ok</code> 值就是 false，此时 <code class="language-plaintext highlighter-rouge">e</code> 的值是 <code class="language-plaintext highlighter-rouge">nil</code>；如果断言成功，<code class="language-plaintext highlighter-rouge">ok</code> 值是 true，此时意味着错误值的类型是 <code class="language-plaintext highlighter-rouge">*os.PathError</code>，接着 <code class="language-plaintext highlighter-rouge">e</code> 就可以做进一步的检查并执行对应的操作了。</p>
 
 <h2 id="panicpanic">Panic（Panic）</h2>
 
-<p>报错最常见的方式是给调用者返回一个额外的 <code class="highlighter-rouge">error</code> 类型的值；典型的 <code class="highlighter-rouge">Read</code> 方法是一个很好的例子，它返回字节数的同时还返回一个 <code class="highlighter-rouge">error</code>类型的值。那么我们思考，如果错误没有被覆盖怎么办呢？这时候程序可能不能继续运行下去。</p>
+<p>报错最常见的方式是给调用者返回一个额外的 <code class="language-plaintext highlighter-rouge">error</code> 类型的值；典型的 <code class="language-plaintext highlighter-rouge">Read</code> 方法是一个很好的例子，它返回字节数的同时还返回一个 <code class="language-plaintext highlighter-rouge">error</code>类型的值。那么我们思考，如果错误没有被覆盖怎么办呢？这时候程序可能不能继续运行下去。</p>
 
-<p>Go 的内建函数 <code class="highlighter-rouge">panic</code> 会创建一个运行时错误，并且终止程序的执行。这个函数可以接收一个任意类型的参数（通常是一个字符串），程序终止后会把这个参数打印出来。除此之外，还可以使用 <code class="highlighter-rouge">panic</code> 来表明代码里存在一些不应该发生的逻辑，比如存在一个无限循环逻辑，如下面的代码所示：</p>
+<p>Go 的内建函数 <code class="language-plaintext highlighter-rouge">panic</code> 会创建一个运行时错误，并且终止程序的执行。这个函数可以接收一个任意类型的参数（通常是一个字符串），程序终止后会把这个参数打印出来。除此之外，还可以使用 <code class="language-plaintext highlighter-rouge">panic</code> 来表明代码里存在一些不应该发生的逻辑，比如存在一个无限循环逻辑，如下面的代码所示：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// A toy implementation of cube root using Newton's method.</span>
 <span class="k">func</span> <span class="n">CubeRoot</span><span class="p">(</span><span class="n">x</span> <span class="kt">float64</span><span class="p">)</span> <span class="kt">float64</span> <span class="p">{</span>
@@ -238,7 +238,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>上面的代码只是一个示例，真实的<strong>库</strong>代码逻辑中应该避免使用 <code class="highlighter-rouge">panic</code> 函数。假如问题可以被预知并被处理掉，比起终止整个程序更好的方式是让代码继续运行下去。在少有的一些情况下，使用 panic 能简化编码逻辑，比如在计数例子的初始化过程中可以使用 <code class="highlighter-rouge">panic</code>：如果包不能成功启用，意味着可能发生了什么重大的错误，此时可以抛出 <code class="highlighter-rouge">panic</code>。下面代码示例中如果没有设置 <code class="highlighter-rouge">USER</code> 系统变量，就抛出 <code class="highlighter-rouge">Panic</code>：</p>
+<p>上面的代码只是一个示例，真实的<strong>库</strong>代码逻辑中应该避免使用 <code class="language-plaintext highlighter-rouge">panic</code> 函数。假如问题可以被预知并被处理掉，比起终止整个程序更好的方式是让代码继续运行下去。在少有的一些情况下，使用 panic 能简化编码逻辑，比如在计数例子的初始化过程中可以使用 <code class="language-plaintext highlighter-rouge">panic</code>：如果包不能成功启用，意味着可能发生了什么重大的错误，此时可以抛出 <code class="language-plaintext highlighter-rouge">panic</code>。下面代码示例中如果没有设置 <code class="language-plaintext highlighter-rouge">USER</code> 系统变量，就抛出 <code class="language-plaintext highlighter-rouge">Panic</code>：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">Getenv</span><span class="p">(</span><span class="s">"USER"</span><span class="p">)</span>
 
@@ -251,11 +251,11 @@ Author: Ray-Eldath
 
 <h2 id="恢复recover">恢复（Recover）</h2>
 
-<p>在发生运行时错误时，比如越界访问切片，或者类型断言失败，<code class="highlighter-rouge">panic</code> 会被调用，此时当前函数的执行立即停止，并且开始展开 Goroutine 的堆栈，在这个过程中被推迟执行（defer）的函数会被依次执行。如果堆栈一直展开到达了 goroutine 的栈顶，代码就退出了。我们可以通过内建的 <code class="highlighter-rouge">recover</code> 函数来重新获取 goroutine 的控制权并且恢复其正常的执行。</p>
+<p>在发生运行时错误时，比如越界访问切片，或者类型断言失败，<code class="language-plaintext highlighter-rouge">panic</code> 会被调用，此时当前函数的执行立即停止，并且开始展开 Goroutine 的堆栈，在这个过程中被推迟执行（defer）的函数会被依次执行。如果堆栈一直展开到达了 goroutine 的栈顶，代码就退出了。我们可以通过内建的 <code class="language-plaintext highlighter-rouge">recover</code> 函数来重新获取 goroutine 的控制权并且恢复其正常的执行。</p>
 
-<p>调用 <code class="highlighter-rouge">recover</code> 可以停止堆栈的展开，并获取得到传递给 <code class="highlighter-rouge">panic</code> 的参数。因为在堆栈展开的过程中只有被 defer 的函数会被执行，因此 <code class="highlighter-rouge">recover</code> 只有放在被 defer 的函数中才有意义。</p>
+<p>调用 <code class="language-plaintext highlighter-rouge">recover</code> 可以停止堆栈的展开，并获取得到传递给 <code class="language-plaintext highlighter-rouge">panic</code> 的参数。因为在堆栈展开的过程中只有被 defer 的函数会被执行，因此 <code class="language-plaintext highlighter-rouge">recover</code> 只有放在被 defer 的函数中才有意义。</p>
 
-<p><code class="highlighter-rouge">recover</code> 的一个应用场景是：当服务器中有失败的 Goroutine 的时候，直接关闭对应的 Goroutine，避免影响其他正在执行的 Goroutine。</p>
+<p><code class="language-plaintext highlighter-rouge">recover</code> 的一个应用场景是：当服务器中有失败的 Goroutine 的时候，直接关闭对应的 Goroutine，避免影响其他正在执行的 Goroutine。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">server</span><span class="p">(</span><span class="n">workChan</span> <span class="o">&lt;-</span><span class="k">chan</span> <span class="o">*</span><span class="n">Work</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="n">work</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">workChan</span> <span class="p">{</span>
@@ -273,11 +273,11 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>在上面的例子中，如果 <code class="highlighter-rouge">do(work)</code> 运行时出错（<code class="highlighter-rouge">panic</code>），结果会被记录下来，并且 Goroutine 会干净利落地退出而不会影响到其他的 Goroutine。对于上面的情况，在<strong>推迟</strong>函数中直接调用 <code class="highlighter-rouge">recover</code> 就可以完全处理相应的状况，不需要做其他的事情。</p>
+<p>在上面的例子中，如果 <code class="language-plaintext highlighter-rouge">do(work)</code> 运行时出错（<code class="language-plaintext highlighter-rouge">panic</code>），结果会被记录下来，并且 Goroutine 会干净利落地退出而不会影响到其他的 Goroutine。对于上面的情况，在<strong>推迟</strong>函数中直接调用 <code class="language-plaintext highlighter-rouge">recover</code> 就可以完全处理相应的状况，不需要做其他的事情。</p>
 
-<p>如果不是在被 defer 的函数中调用，<code class="highlighter-rouge">recover</code> 总是返回 <code class="highlighter-rouge">nil</code> 值；因此，被推迟执行的函数逻辑里可以调用使用了 <code class="highlighter-rouge">panic</code> 和 <code class="highlighter-rouge">recover</code> 的第三方库。比如，在 <code class="highlighter-rouge">safelyDo</code> 的推迟函数里可以在调用 <code class="highlighter-rouge">recover</code> 之前调用一个日志函数，日志相关的逻辑不会受 panicking 的状态的影响。</p>
+<p>如果不是在被 defer 的函数中调用，<code class="language-plaintext highlighter-rouge">recover</code> 总是返回 <code class="language-plaintext highlighter-rouge">nil</code> 值；因此，被推迟执行的函数逻辑里可以调用使用了 <code class="language-plaintext highlighter-rouge">panic</code> 和 <code class="language-plaintext highlighter-rouge">recover</code> 的第三方库。比如，在 <code class="language-plaintext highlighter-rouge">safelyDo</code> 的推迟函数里可以在调用 <code class="language-plaintext highlighter-rouge">recover</code> 之前调用一个日志函数，日志相关的逻辑不会受 panicking 的状态的影响。</p>
 
-<p>使用上面例子中的 <code class="highlighter-rouge">recovery</code> 的用法，<code class="highlighter-rouge">do</code> 函数（包含它调用的任何东西）可以通过调用 <code class="highlighter-rouge">panic</code> 干净利落地处理任何坏状况。我们可以把这种模式应用在复杂的软件中从而简化错误处理。让我们看一下理想状态下的 <code class="highlighter-rouge">regexp</code> 包，可以通过调用 <code class="highlighter-rouge">panic</code> 并传入一个本地的错误类型来解析错误信息（这里指的是<strong>准确地解析</strong>，继续看下面的解释）。下面的代码定义了 <code class="highlighter-rouge">Error</code> 类型， <code class="highlighter-rouge">error</code> 和 <code class="highlighter-rouge">Compile</code> 方法：</p>
+<p>使用上面例子中的 <code class="language-plaintext highlighter-rouge">recovery</code> 的用法，<code class="language-plaintext highlighter-rouge">do</code> 函数（包含它调用的任何东西）可以通过调用 <code class="language-plaintext highlighter-rouge">panic</code> 干净利落地处理任何坏状况。我们可以把这种模式应用在复杂的软件中从而简化错误处理。让我们看一下理想状态下的 <code class="language-plaintext highlighter-rouge">regexp</code> 包，可以通过调用 <code class="language-plaintext highlighter-rouge">panic</code> 并传入一个本地的错误类型来解析错误信息（这里指的是<strong>准确地解析</strong>，继续看下面的解释）。下面的代码定义了 <code class="language-plaintext highlighter-rouge">Error</code> 类型， <code class="language-plaintext highlighter-rouge">error</code> 和 <code class="language-plaintext highlighter-rouge">Compile</code> 方法：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Error is the type of a parse error; it satisfies the error interface.</span>
 <span class="k">type</span> <span class="n">Error</span> <span class="kt">string</span>
@@ -305,18 +305,18 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>如果 <code class="highlighter-rouge">doParse</code> 报错，恢复的代码块会把返回值 <code class="highlighter-rouge">regexp</code> 设置为 <code class="highlighter-rouge">nil</code>——被 defer 的函数可以修改命名的返回值。然后在 <code class="highlighter-rouge">err</code> 的赋值语句断言 <code class="highlighter-rouge">e</code> 是不是一个本地类型的 <code class="highlighter-rouge">Error</code>。如果它不是本地的 <code class="highlighter-rouge">Error</code>，类型断言会失败，从而造成一个新的 <code class="highlighter-rouge">panic</code>，因此堆栈会就像没有被中断过一样继续展开。这种检查意味着如果有未预知的事情发生，比如索引溢出，即使我们使用了 <code class="highlighter-rouge">panic</code> 和 <code class="highlighter-rouge">recover</code> 处理了解析错误的报错，代码依然会报错。</p>
+<p>如果 <code class="language-plaintext highlighter-rouge">doParse</code> 报错，恢复的代码块会把返回值 <code class="language-plaintext highlighter-rouge">regexp</code> 设置为 <code class="language-plaintext highlighter-rouge">nil</code>——被 defer 的函数可以修改命名的返回值。然后在 <code class="language-plaintext highlighter-rouge">err</code> 的赋值语句断言 <code class="language-plaintext highlighter-rouge">e</code> 是不是一个本地类型的 <code class="language-plaintext highlighter-rouge">Error</code>。如果它不是本地的 <code class="language-plaintext highlighter-rouge">Error</code>，类型断言会失败，从而造成一个新的 <code class="language-plaintext highlighter-rouge">panic</code>，因此堆栈会就像没有被中断过一样继续展开。这种检查意味着如果有未预知的事情发生，比如索引溢出，即使我们使用了 <code class="language-plaintext highlighter-rouge">panic</code> 和 <code class="language-plaintext highlighter-rouge">recover</code> 处理了解析错误的报错，代码依然会报错。</p>
 
-<p>有了上面错误处理的逻辑以后，配合定义的 <code class="highlighter-rouge">error</code> 方法，同时简化了报错的方式，不用再想着手动处理堆栈的事情（因为 <code class="highlighter-rouge">error</code> 方法绑定到了类型上，而且与内建的 <code class="highlighter-rouge">error</code> 类型有相同的名字，因此使用起来也很优雅自然，）。</p>
+<p>有了上面错误处理的逻辑以后，配合定义的 <code class="language-plaintext highlighter-rouge">error</code> 方法，同时简化了报错的方式，不用再想着手动处理堆栈的事情（因为 <code class="language-plaintext highlighter-rouge">error</code> 方法绑定到了类型上，而且与内建的 <code class="language-plaintext highlighter-rouge">error</code> 类型有相同的名字，因此使用起来也很优雅自然，）。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="m">0</span> <span class="p">{</span>
     <span class="n">re</span><span class="o">.</span><span class="kt">error</span><span class="p">(</span><span class="s">"'*' illegal at start of expression"</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>虽然 <code class="highlighter-rouge">panic/recover</code> 的这种模式很有用，但是应该只限定在一个包里使用。<code class="highlighter-rouge">Parse</code> 没有把 <code class="highlighter-rouge">panic</code> 暴露给自己的调用者，而是把内部的 <code class="highlighter-rouge">panic</code> 转换成了 <code class="highlighter-rouge">error</code> 值返回，这是一个可供参考的最佳实践。</p>
+<p>虽然 <code class="language-plaintext highlighter-rouge">panic/recover</code> 的这种模式很有用，但是应该只限定在一个包里使用。<code class="language-plaintext highlighter-rouge">Parse</code> 没有把 <code class="language-plaintext highlighter-rouge">panic</code> 暴露给自己的调用者，而是把内部的 <code class="language-plaintext highlighter-rouge">panic</code> 转换成了 <code class="language-plaintext highlighter-rouge">error</code> 值返回，这是一个可供参考的最佳实践。</p>
 
-<p>需要注意，如果 <code class="highlighter-rouge">recover</code> 后又发生了 <code class="highlighter-rouge">panic</code>，这种写法会改变 <code class="highlighter-rouge">panic</code> 的值。不过幸运的是，在崩溃报告中原始报错和新的报错都会打印出来，因此导致错误的根源依然是可见的。如果想展示引发 <code class="highlighter-rouge">panic</code> 的原始值，可以写一点代码来过滤未知问题然后用原生的错误重新发起 <code class="highlighter-rouge">panic</code>，这一点大家可以自己来实践一下。</p>
+<p>需要注意，如果 <code class="language-plaintext highlighter-rouge">recover</code> 后又发生了 <code class="language-plaintext highlighter-rouge">panic</code>，这种写法会改变 <code class="language-plaintext highlighter-rouge">panic</code> 的值。不过幸运的是，在崩溃报告中原始报错和新的报错都会打印出来，因此导致错误的根源依然是可见的。如果想展示引发 <code class="language-plaintext highlighter-rouge">panic</code> 的原始值，可以写一点代码来过滤未知问题然后用原生的错误重新发起 <code class="language-plaintext highlighter-rouge">panic</code>，这一点大家可以自己来实践一下。</p>
 
 <p>【effective go 完】</p>
 
@@ -397,7 +397,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

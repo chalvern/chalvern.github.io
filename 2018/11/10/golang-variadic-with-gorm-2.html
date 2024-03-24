@@ -204,9 +204,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>为了根据用户ID（UserID）获取到相应的话题（Topic），我们定义了一个<code class="highlighter-rouge">QueryByUserID </code>的方法，为了表意刻意传入了一个参数，同时在<code class="highlighter-rouge">QueryByUserID</code>的最后强行添加了一个<code class="highlighter-rouge">args</code>不定参数，从而接受调用时传入的附加的参数，在函数体内根据<code class="highlighter-rouge">args</code>的长度对它进行不同方式的应用，达到了优雅扩展<code class="highlighter-rouge">QueryByUserID</code>的功能。</p>
+<p>为了根据用户ID（UserID）获取到相应的话题（Topic），我们定义了一个<code class="language-plaintext highlighter-rouge">QueryByUserID </code>的方法，为了表意刻意传入了一个参数，同时在<code class="language-plaintext highlighter-rouge">QueryByUserID</code>的最后强行添加了一个<code class="language-plaintext highlighter-rouge">args</code>不定参数，从而接受调用时传入的附加的参数，在函数体内根据<code class="language-plaintext highlighter-rouge">args</code>的长度对它进行不同方式的应用，达到了优雅扩展<code class="language-plaintext highlighter-rouge">QueryByUserID</code>的功能。</p>
 
-<p>在添加了不定参数的情况下，调用<code class="highlighter-rouge">QueryByUserID</code>时如果想要进一步精细地搜索话题，比如想要获取<code class="highlighter-rouge">UserID为1</code>且最近一周发布的话题，可以这么写了：</p>
+<p>在添加了不定参数的情况下，调用<code class="language-plaintext highlighter-rouge">QueryByUserID</code>时如果想要进一步精细地搜索话题，比如想要获取<code class="language-plaintext highlighter-rouge">UserID为1</code>且最近一周发布的话题，可以这么写了：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">topics</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span><span class="o">.</span><span class="n">QueryByUserID</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="s">"created_at &gt; ?"</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="o">-</span><span class="m">7</span><span class="o">*</span><span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span>
 <span class="c">// ... 其他对topics 与 err 的处理</span>
@@ -215,7 +215,7 @@ Author: Ray-Eldath
 <p>总之，非常灵活！</p>
 
 <h3 id="所述最佳实践中不定参数的约定">所述最佳实践中不定参数的约定</h3>
-<p>在<code class="highlighter-rouge">QueryByUserID </code>中根据传入的不定参数的数量，采用不同的传入方式，其实这里<strong>遵循了GORM中Where条件语句的作用方式</strong>。</p>
+<p>在<code class="language-plaintext highlighter-rouge">QueryByUserID </code>中根据传入的不定参数的数量，采用不同的传入方式，其实这里<strong>遵循了GORM中Where条件语句的作用方式</strong>。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// ...</span>
 	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="m">2</span> <span class="p">{</span>
@@ -229,15 +229,15 @@ Author: Ray-Eldath
 <p><strong>首先我们先把这里的约定给出来</strong>：</p>
 
 <ol>
-  <li>当传入的<code class="highlighter-rouge">args</code>长度为1时，如果<code class="highlighter-rouge">args[0]</code>不是一个<code class="highlighter-rouge">map[string]interface{}</code>的值，这个值必须能够作用到主键上面。比如<strong>1</strong>，表示主键ID为<strong>1</strong>（<code class="highlighter-rouge">ID=1</code>）的记录；比如<strong>[]int{1,2}</strong>，表示主键ID为<strong>1和2</strong>（<code class="highlighter-rouge">ID IN (1,2)</code>）的记录；</li>
-  <li>否则，当传入的<code class="highlighter-rouge">args</code>长度为1时，<code class="highlighter-rouge">args[0]</code>必须是一个<code class="highlighter-rouge">map[string]interface{}</code>的值；</li>
-  <li>当传入的<code class="highlighter-rouge">args</code>长度大于等于2时，<code class="highlighter-rouge">args[0]</code>必须是一个<code class="highlighter-rouge">string</code>类型的值，且包含了<code class="highlighter-rouge">args[1:]</code>中同等个数的占位符。打个比方，如果<code class="highlighter-rouge">args[0]</code>真实值为<code class="highlighter-rouge">"created_at &gt; ? AND deleted_at &gt; ?"</code>，那么<code class="highlighter-rouge">args[1:]</code>则应该包含两个值，一个对应第一个<strong>问号</strong>（即创建时间），一个对应第二个<strong>问号</strong>（即删除时间）。</li>
+  <li>当传入的<code class="language-plaintext highlighter-rouge">args</code>长度为1时，如果<code class="language-plaintext highlighter-rouge">args[0]</code>不是一个<code class="language-plaintext highlighter-rouge">map[string]interface{}</code>的值，这个值必须能够作用到主键上面。比如<strong>1</strong>，表示主键ID为<strong>1</strong>（<code class="language-plaintext highlighter-rouge">ID=1</code>）的记录；比如<strong>[]int{1,2}</strong>，表示主键ID为<strong>1和2</strong>（<code class="language-plaintext highlighter-rouge">ID IN (1,2)</code>）的记录；</li>
+  <li>否则，当传入的<code class="language-plaintext highlighter-rouge">args</code>长度为1时，<code class="language-plaintext highlighter-rouge">args[0]</code>必须是一个<code class="language-plaintext highlighter-rouge">map[string]interface{}</code>的值；</li>
+  <li>当传入的<code class="language-plaintext highlighter-rouge">args</code>长度大于等于2时，<code class="language-plaintext highlighter-rouge">args[0]</code>必须是一个<code class="language-plaintext highlighter-rouge">string</code>类型的值，且包含了<code class="language-plaintext highlighter-rouge">args[1:]</code>中同等个数的占位符。打个比方，如果<code class="language-plaintext highlighter-rouge">args[0]</code>真实值为<code class="language-plaintext highlighter-rouge">"created_at &gt; ? AND deleted_at &gt; ?"</code>，那么<code class="language-plaintext highlighter-rouge">args[1:]</code>则应该包含两个值，一个对应第一个<strong>问号</strong>（即创建时间），一个对应第二个<strong>问号</strong>（即删除时间）。</li>
 </ol>
 
 <h3 id="gorm中相关函数源码解读">GORM中相关函数源码解读</h3>
 
 <h4 id="where函数">Where函数</h4>
-<p>当在GORM中调用<code class="highlighter-rouge">Where</code>方法时，通过查看源码可以知道，这个函数最底层也会使用一个不定参数，将传入到<code class="highlighter-rouge">Where</code>第一个后面的参数看成一个数组进行处理。具体地，第一个参数保存在<code class="highlighter-rouge">map[string]interface{}</code>类型的<code class="highlighter-rouge">query</code>字段，其他参数保存在<code class="highlighter-rouge">args</code>字段。</p>
+<p>当在GORM中调用<code class="language-plaintext highlighter-rouge">Where</code>方法时，通过查看源码可以知道，这个函数最底层也会使用一个不定参数，将传入到<code class="language-plaintext highlighter-rouge">Where</code>第一个后面的参数看成一个数组进行处理。具体地，第一个参数保存在<code class="language-plaintext highlighter-rouge">map[string]interface{}</code>类型的<code class="language-plaintext highlighter-rouge">query</code>字段，其他参数保存在<code class="language-plaintext highlighter-rouge">args</code>字段。</p>
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">search</span><span class="p">)</span> <span class="n">Where</span><span class="p">(</span><span class="n">query</span> <span class="k">interface</span><span class="p">{},</span> <span class="n">values</span> <span class="o">...</span><span class="k">interface</span><span class="p">{})</span> <span class="o">*</span><span class="n">search</span> <span class="p">{</span>
 	<span class="n">s</span><span class="o">.</span><span class="n">whereConditions</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">whereConditions</span><span class="p">,</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}{</span><span class="s">"query"</span><span class="o">:</span> <span class="n">query</span><span class="p">,</span> <span class="s">"args"</span><span class="o">:</span> <span class="n">values</span><span class="p">})</span>
 	<span class="k">return</span> <span class="n">s</span>
@@ -245,7 +245,7 @@ Author: Ray-Eldath
 </code></pre></div></div>
 
 <h4 id="buildcondition-函数">buildCondition 函数</h4>
-<p>通过分析源码，可以找到GORM中的<code class="highlighter-rouge">Where</code>、<code class="highlighter-rouge">Or</code>、<code class="highlighter-rouge">Not</code>定义的搜索语句最终都通过 <a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/scope.go#L528">buildCondition函数</a> 渲染成为<strong>SQL</strong>语句。</p>
+<p>通过分析源码，可以找到GORM中的<code class="language-plaintext highlighter-rouge">Where</code>、<code class="language-plaintext highlighter-rouge">Or</code>、<code class="language-plaintext highlighter-rouge">Not</code>定义的搜索语句最终都通过 <a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/scope.go#L528">buildCondition函数</a> 渲染成为<strong>SQL</strong>语句。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">scope</span> <span class="o">*</span><span class="n">Scope</span><span class="p">)</span> <span class="n">buildCondition</span><span class="p">(</span><span class="n">clause</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{},</span> <span class="n">include</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">(</span><span class="n">str</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
 <span class="c">//...</span>
@@ -287,7 +287,7 @@ Author: Ray-Eldath
 、三…个参数不能随便写。</p>
 
 <h3 id="如果期望传入多个查询条件">如果期望传入多个查询条件</h3>
-<p>在这种情况下，建议通过构造不定参数中第一个<code class="highlighter-rouge">string</code>类型的参数达成目的，比如同时通过创建时间和删除时间查找数据，则构建<code class="highlighter-rouge">"created_at &gt; ? AND deleted_at &gt; ?"</code>这种语句，后面跟着传入<strong>创建时间</strong>与<strong>删除时间</strong>即可。</p>
+<p>在这种情况下，建议通过构造不定参数中第一个<code class="language-plaintext highlighter-rouge">string</code>类型的参数达成目的，比如同时通过创建时间和删除时间查找数据，则构建<code class="language-plaintext highlighter-rouge">"created_at &gt; ? AND deleted_at &gt; ?"</code>这种语句，后面跟着传入<strong>创建时间</strong>与<strong>删除时间</strong>即可。</p>
 
 <h3 id="如果期望传入一个函数回调">如果期望传入一个函数回调</h3>
 <p>在我所遇到的应用场景中，还没有传入回调的场景，就个人经验来看，在没有强规范制约时（当前确实想不到一种合适的规范），传入回调会增加函数复杂度，造成后期代码维护困难。</p>
@@ -299,9 +299,9 @@ Author: Ray-Eldath
 <p>本文介绍了使用GORM时加入不定参数后的灵活性，以及这种灵活性背后的约束。通过对GORM中 <a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/search.go#L39">Where函数</a>和 <a href="https://github.com/jinzhu/gorm/blob/472c70caa40267cb89fd8facb07fe6454b578626/scope.go#L528">buildCondition函数</a> 源码的分析，更进一步阐释了这种不定参数的应用规范（及其缘由）：</p>
 
 <ol>
-  <li>当传入的<code class="highlighter-rouge">args</code>长度为1时，如果<code class="highlighter-rouge">args[0]</code>不是一个<code class="highlighter-rouge">map[string]interface{}</code>的值，这个值必须能够作用到主键上面；</li>
-  <li>否则，当传入的<code class="highlighter-rouge">args</code>长度为1时，<code class="highlighter-rouge">args[0]</code>必须是一个<code class="highlighter-rouge">map[string]interface{}</code>的值；</li>
-  <li>当传入的<code class="highlighter-rouge">args</code>长度大于等于2时，<code class="highlighter-rouge">args[0]</code>必须是一个<code class="highlighter-rouge">string</code>类型的值，且包含了<code class="highlighter-rouge">args[1:]</code>中同等个数的占位符。</li>
+  <li>当传入的<code class="language-plaintext highlighter-rouge">args</code>长度为1时，如果<code class="language-plaintext highlighter-rouge">args[0]</code>不是一个<code class="language-plaintext highlighter-rouge">map[string]interface{}</code>的值，这个值必须能够作用到主键上面；</li>
+  <li>否则，当传入的<code class="language-plaintext highlighter-rouge">args</code>长度为1时，<code class="language-plaintext highlighter-rouge">args[0]</code>必须是一个<code class="language-plaintext highlighter-rouge">map[string]interface{}</code>的值；</li>
+  <li>当传入的<code class="language-plaintext highlighter-rouge">args</code>长度大于等于2时，<code class="language-plaintext highlighter-rouge">args[0]</code>必须是一个<code class="language-plaintext highlighter-rouge">string</code>类型的值，且包含了<code class="language-plaintext highlighter-rouge">args[1:]</code>中同等个数的占位符。</li>
 </ol>
 
 <h2 id="参考">参考</h2>
@@ -390,7 +390,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

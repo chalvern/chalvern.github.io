@@ -169,7 +169,7 @@ Author: Ray-Eldath
 
 <h3 id="一个非常原始的数据竞争问题">一个非常原始的数据竞争问题</h3>
 
-<p>下面的代码模拟了为一个用户（<code class="highlighter-rouge">Person</code>）发放金币（<code class="highlighter-rouge">Money</code>）的代码，其中金币发放与读取分别再不同的线程里完成（读取在主线程，发放在一个子线程）。</p>
+<p>下面的代码模拟了为一个用户（<code class="language-plaintext highlighter-rouge">Person</code>）发放金币（<code class="language-plaintext highlighter-rouge">Money</code>）的代码，其中金币发放与读取分别再不同的线程里完成（读取在主线程，发放在一个子线程）。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
 <span class="k">package</span> <span class="n">main</span>
@@ -207,11 +207,11 @@ go run <span class="nt">-race</span> main.go
 <span class="c"># ....</span>
 </code></pre></div></div>
 
-<p>通过运行代码并查看输出可以确认：① 代码可以正常运行（并没有因为多个线程读写同一个变量而崩溃），② 由于数据没有同步最后输出的数据  <code class="highlighter-rouge">Money: 100</code> 与预期的数据<code class="highlighter-rouge">1100</code>存在误差，③  通过 <code class="highlighter-rouge">go run -race main.go</code> 添加 <code class="highlighter-rouge">-race</code> 标识可以发现 <strong>数据竞争</strong> 问题。</p>
+<p>通过运行代码并查看输出可以确认：① 代码可以正常运行（并没有因为多个线程读写同一个变量而崩溃），② 由于数据没有同步最后输出的数据  <code class="language-plaintext highlighter-rouge">Money: 100</code> 与预期的数据<code class="language-plaintext highlighter-rouge">1100</code>存在误差，③  通过 <code class="language-plaintext highlighter-rouge">go run -race main.go</code> 添加 <code class="language-plaintext highlighter-rouge">-race</code> 标识可以发现 <strong>数据竞争</strong> 问题。</p>
 
 <h3 id="通过加锁的方式优化有数据竞争的代码">通过加锁的方式优化有数据竞争的代码</h3>
 
-<p>下面的代码里给 <code class="highlighter-rouge">Person</code> 添加了一个读写锁 <code class="highlighter-rouge">mutext sync.RWMutex</code>，并通过添加两个方法 <code class="highlighter-rouge">GetMoney</code> 和 <code class="highlighter-rouge">AddMoney</code> 来达到读取和修改 <code class="highlighter-rouge">Money</code> 的数值的目的。</p>
+<p>下面的代码里给 <code class="language-plaintext highlighter-rouge">Person</code> 添加了一个读写锁 <code class="language-plaintext highlighter-rouge">mutext sync.RWMutex</code>，并通过添加两个方法 <code class="language-plaintext highlighter-rouge">GetMoney</code> 和 <code class="language-plaintext highlighter-rouge">AddMoney</code> 来达到读取和修改 <code class="language-plaintext highlighter-rouge">Money</code> 的数值的目的。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
@@ -255,13 +255,13 @@ go run <span class="nt">-race</span> main.go
 <span class="c"># Money: 100</span>
 </code></pre></div></div>
 
-<p>通过运行代码并查看输出可以确认：① 代码可以正常运行（并没有因为多个线程读写同一个变量而崩溃），② 由于数据没有同步最后输出的数据  <code class="highlighter-rouge">Money: 100</code> 与预期的数据<code class="highlighter-rouge">1100</code>存在误差 ③  已经没有了 <strong>数据竞争</strong> 问题。</p>
+<p>通过运行代码并查看输出可以确认：① 代码可以正常运行（并没有因为多个线程读写同一个变量而崩溃），② 由于数据没有同步最后输出的数据  <code class="language-plaintext highlighter-rouge">Money: 100</code> 与预期的数据<code class="language-plaintext highlighter-rouge">1100</code>存在误差 ③  已经没有了 <strong>数据竞争</strong> 问题。</p>
 
 <h3 id="示例代码的进一步阐释">示例代码的进一步阐释</h3>
 
 <p>上面的代码逻辑，<strong>加锁前</strong> 与 <strong>加锁后</strong>最大的区别是：加锁前 <strong>存在数据竞争问题</strong>，加锁后<strong>不存在数据竞争问题</strong>。而无论是否加锁，代码均可以正常运行，且最终同步的数据与预期的数据均存在偏差。</p>
 
-<p>之所以强调代码可以正常运行，是因为代码一定概率是会崩溃的，只是一般类型（<code class="highlighter-rouge">map</code> 类型除外）不那么容易出现崩溃的情况（任何类型变量的使用都可能会出现这个问题，详见《 <a href="http://yanyiwu.com/work/2015/02/07/golang-concurrency-safety.html">谈谈go语言编程的并发安全</a>》 和 《 <a href="https://software.intel.com/en-us/blogs/2013/01/06/benign-data-races-what-could-possibly-go-wrong">benign-data-races-what-could-possibly-go-wrong</a> 》的讨论）。</p>
+<p>之所以强调代码可以正常运行，是因为代码一定概率是会崩溃的，只是一般类型（<code class="language-plaintext highlighter-rouge">map</code> 类型除外）不那么容易出现崩溃的情况（任何类型变量的使用都可能会出现这个问题，详见《 <a href="http://yanyiwu.com/work/2015/02/07/golang-concurrency-safety.html">谈谈go语言编程的并发安全</a>》 和 《 <a href="https://software.intel.com/en-us/blogs/2013/01/06/benign-data-races-what-could-possibly-go-wrong">benign-data-races-what-could-possibly-go-wrong</a> 》的讨论）。</p>
 
 <p>由于运行时序的存在，读取得到的数据与预期的数据存在偏差可以这样解释：虽然期望里给用户加了 1000 金钱，但是如果读取是在 <strong>加 1000 金钱</strong> 之前发生的，也确实是感知不到 <strong>加 1000 金钱</strong> 这个事件的。</p>
 
@@ -355,7 +355,7 @@ go run <span class="nt">-race</span> main.go
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

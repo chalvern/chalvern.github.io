@@ -208,7 +208,7 @@ Author: Ray-Eldath
 |-main.go
 </code></pre></div></div>
 
-<p>其中<strong>views</strong>目录包含了所有的模板文件（业务&amp;布局）。需要说明的是：1）在业务模板中可以通过<strong>key</strong>值嵌套引入其他模板，比如在 <code class="highlighter-rouge">home/index.html</code> 中通过 <code class="highlighter-rouge">{{ template "home/head.tpl" . }}</code> 语句显式嵌入模板 <code class="highlighter-rouge">home/head.tpl</code>。2）布局模板中需要包含 <code class="highlighter-rouge">{{ .LayoutContent }}</code> 语句，当业务模板渲染完以后，被渲染的内容会赋值给<code class="highlighter-rouge">LayoutContent</code>这个变量传递给模板文件。</p>
+<p>其中<strong>views</strong>目录包含了所有的模板文件（业务&amp;布局）。需要说明的是：1）在业务模板中可以通过<strong>key</strong>值嵌套引入其他模板，比如在 <code class="language-plaintext highlighter-rouge">home/index.html</code> 中通过 <code class="language-plaintext highlighter-rouge">{{ template "home/head.tpl" . }}</code> 语句显式嵌入模板 <code class="language-plaintext highlighter-rouge">home/head.tpl</code>。2）布局模板中需要包含 <code class="language-plaintext highlighter-rouge">{{ .LayoutContent }}</code> 语句，当业务模板渲染完以后，被渲染的内容会赋值给<code class="language-plaintext highlighter-rouge">LayoutContent</code>这个变量传递给模板文件。</p>
 
 <p>模板文件的可能样式如下：</p>
 
@@ -255,7 +255,7 @@ Author: Ray-Eldath
 
 <h4 id="3更进一步的理解">3）更进一步的理解</h4>
 
-<p>按照第1步中的目录结构，views目录下的模板在被Simplate结构化后，会形成一个<code class="highlighter-rouge">map[string]*template.Template</code>的类型值。这个值在Simplate源码中的变量是<code class="highlighter-rouge">simplateViewPathTemplates </code>，其中索引值（string类型的key值）是 <code class="highlighter-rouge">[]string{"home/body.tpl","home/head.tpl","home/index.html","layout/default.html"}</code></p>
+<p>按照第1步中的目录结构，views目录下的模板在被Simplate结构化后，会形成一个<code class="language-plaintext highlighter-rouge">map[string]*template.Template</code>的类型值。这个值在Simplate源码中的变量是<code class="language-plaintext highlighter-rouge">simplateViewPathTemplates </code>，其中索引值（string类型的key值）是 <code class="language-plaintext highlighter-rouge">[]string{"home/body.tpl","home/head.tpl","home/index.html","layout/default.html"}</code></p>
 
 <h2 id="小结">小结</h2>
 <p>Simplate库是从业务出发抽象出的一个公共库，轻量级的Golang模板管理库，非常适合在小应用中使用。比如对于那些需要发送邮件内容的小型应用，既不想引入大的框架（比如beego），又想很好地管理自己的邮件模板，此库就非常合适。</p>
@@ -347,7 +347,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

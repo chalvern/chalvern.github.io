@@ -184,7 +184,7 @@ Author: Ray-Eldath
 <h2 id="探究正文">探究正文</h2>
 <h3 id="相关环境">相关环境</h3>
 <ul>
-  <li>两台2个核4G内存（2C4G）的虚拟机，ip分别为<code class="highlighter-rouge">192.168.205.137</code>和<code class="highlighter-rouge">192.168.205.139</code></li>
+  <li>两台2个核4G内存（2C4G）的虚拟机，ip分别为<code class="language-plaintext highlighter-rouge">192.168.205.137</code>和<code class="language-plaintext highlighter-rouge">192.168.205.139</code></li>
   <li>k8s相关控件-1.8.6</li>
   <li>etcd-3.3.10</li>
   <li>docker-18.06.1-ce</li>
@@ -232,16 +232,16 @@ compact_rev_key
 <p>通过观察可以简单得出下面几个规律：</p>
 
 <ul>
-  <li>k8s主要把自己的数据注册在<code class="highlighter-rouge">/registry/</code>前缀下面（在ETCD-v3版本后没有了目录的概念，只能一切皆前缀了）。</li>
-  <li>通过观察k8s中<code class="highlighter-rouge">deployment、namespace、pod</code>等在ETCD中的表示，可以知道这部分资源的key的格式为<code class="highlighter-rouge">/registry/#{k8s对象}/#{命名空间}/#{具体实例名}</code>。</li>
-  <li>存在一个与众不同的key值<code class="highlighter-rouge">compact_rev_key</code>，搜索可以知道这是<a href="https://github.com/kubernetes/apiserver/blob/2710b17b80fbf42c29cd3e1193433b948b10cee3/pkg/storage/etcd3/compact.go">apiserver/compact.go</a>中用来记录无效数据版本使用的；运行<code class="highlighter-rouge">etcdctl get compact_rev_key</code>可以发现，输出的是一个整形数值。</li>
+  <li>k8s主要把自己的数据注册在<code class="language-plaintext highlighter-rouge">/registry/</code>前缀下面（在ETCD-v3版本后没有了目录的概念，只能一切皆前缀了）。</li>
+  <li>通过观察k8s中<code class="language-plaintext highlighter-rouge">deployment、namespace、pod</code>等在ETCD中的表示，可以知道这部分资源的key的格式为<code class="language-plaintext highlighter-rouge">/registry/#{k8s对象}/#{命名空间}/#{具体实例名}</code>。</li>
+  <li>存在一个与众不同的key值<code class="language-plaintext highlighter-rouge">compact_rev_key</code>，搜索可以知道这是<a href="https://github.com/kubernetes/apiserver/blob/2710b17b80fbf42c29cd3e1193433b948b10cee3/pkg/storage/etcd3/compact.go">apiserver/compact.go</a>中用来记录无效数据版本使用的；运行<code class="language-plaintext highlighter-rouge">etcdctl get compact_rev_key</code>可以发现，输出的是一个整形数值。</li>
   <li>在查看ETCD时，k8s中除了必要的网络插件<a href="https://github.com/projectcalico/canal">canal</a>，未部署其他的应用，此时ETCD中只有240条数据，个人觉得这个量级没有想象中的多。</li>
 </ul>
 
-<p>有了上面的规律，可以初步得出一个结论：在研究k8s时重点关注<code class="highlighter-rouge">/registry/</code>前缀的key及其value即可。</p>
+<p>有了上面的规律，可以初步得出一个结论：在研究k8s时重点关注<code class="language-plaintext highlighter-rouge">/registry/</code>前缀的key及其value即可。</p>
 
 <h4 id="etcd中的value值">ETCD中的value值</h4>
-<p>通过上面的内容知道，k8s在ETCD中保存数据时key的取值非常讲究，规律非常容易概括出来。那么这些key值所对应的值是什么样子呢？我试着输出了<code class="highlighter-rouge">/registry/ranges/serviceips</code>和<code class="highlighter-rouge">/registry/services/endpoints/default/kubernetes</code>这两个key所对应的值，效果见下面编码展示区。</p>
+<p>通过上面的内容知道，k8s在ETCD中保存数据时key的取值非常讲究，规律非常容易概括出来。那么这些key值所对应的值是什么样子呢？我试着输出了<code class="language-plaintext highlighter-rouge">/registry/ranges/serviceips</code>和<code class="language-plaintext highlighter-rouge">/registry/services/endpoints/default/kubernetes</code>这两个key所对应的值，效果见下面编码展示区。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 获取"/registry/ranges/serviceips"所对应的值</span>
 <span class="c"># 发现这里有很多奇怪的字符=。=</span>
@@ -274,13 +274,13 @@ kubernetesdefault<span class="s2">"*</span><span class="nv">$0b6bb724</span><spa
 https�2TCP"</span>
 </code></pre></div></div>
 
-<p>可以很明显看出来，ETCD中保存的并不是输出友好的数据（比如json或xml等就是输出友好型数据）。当然，如果进一步研究可以知道，ETCD保存的是<a href="https://developers.google.com/protocol-buffers/">Protocol Buffers</a>序列化后的值。如果大家对Protobuf有研究，可以知道这个协议也是个key-value的协议，只不过会把其key-value值按照特定的算法进行压缩，不过并没有压缩的很厉害，显式输出这些值多少也能获取到一些信息；比如<code class="highlighter-rouge">/registry/services/endpoints/default/kubernetes</code>对应的<code class="highlighter-rouge">192.168.205.137、192.168.205.139</code>等值。</p>
+<p>可以很明显看出来，ETCD中保存的并不是输出友好的数据（比如json或xml等就是输出友好型数据）。当然，如果进一步研究可以知道，ETCD保存的是<a href="https://developers.google.com/protocol-buffers/">Protocol Buffers</a>序列化后的值。如果大家对Protobuf有研究，可以知道这个协议也是个key-value的协议，只不过会把其key-value值按照特定的算法进行压缩，不过并没有压缩的很厉害，显式输出这些值多少也能获取到一些信息；比如<code class="language-plaintext highlighter-rouge">/registry/services/endpoints/default/kubernetes</code>对应的<code class="language-plaintext highlighter-rouge">192.168.205.137、192.168.205.139</code>等值。</p>
 
 <h3 id="etcd中其他的key及其value">ETCD中其他的key及其value</h3>
 <p>通过上面的探索，对ETCD中存储的数据有了大体的了解，接下来就可以开始更加刺激的冒险了。</p>
 
 <h4 id="据说flannel需要使用etcd保存网络元数据">据说flannel需要使用ETCD保存网络元数据</h4>
-<p>那么，flannel在ETCD中保存的数据是什么，保存在哪个key中了呢？下面把所有网关相关的几个关键词 <code class="highlighter-rouge">canal|flannel|calico</code>输出可以知道，里面只有一个可能包含flannel所需数据的key，即<code class="highlighter-rouge">/registry/configmaps/kube-system/canal-config</code>，输出内容后对比<a href="https://coreos.com/flannel/docs/latest/flannel-config.html">关于flannel的etcd配置</a>这篇文章，很大程度可以认为就是它了（需要进一步去canal项目的源码中去确认）。</p>
+<p>那么，flannel在ETCD中保存的数据是什么，保存在哪个key中了呢？下面把所有网关相关的几个关键词 <code class="language-plaintext highlighter-rouge">canal|flannel|calico</code>输出可以知道，里面只有一个可能包含flannel所需数据的key，即<code class="language-plaintext highlighter-rouge">/registry/configmaps/kube-system/canal-config</code>，输出内容后对比<a href="https://coreos.com/flannel/docs/latest/flannel-config.html">关于flannel的etcd配置</a>这篇文章，很大程度可以认为就是它了（需要进一步去canal项目的源码中去确认）。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/<span class="nv">$ </span>etcdctl get <span class="s2">""</span> <span class="nt">--prefix</span> <span class="nt">--keys-only</span> |grep <span class="nt">-Ev</span> <span class="s2">"^$"</span> |grep <span class="s2">"canal</span><span class="se">\|</span><span class="s2">flannel</span><span class="se">\|</span><span class="s2">calico"</span>
 <span class="c"># ... 忽略很多条</span>
@@ -324,7 +324,7 @@ Events:            &lt;none&gt;
 /registry/services/specs/default/kubernetes
 </code></pre></div></div>
 
-<p>我把<code class="highlighter-rouge">/registry/services/endpoints/default/kubernetes</code>输入到搜索引擎搜索了一下，发现<a href="https://github.com/kubernetes/kubernetes/issues/19989">有人</a>在github上抛出类似的问题，从其<code class="highlighter-rouge">The three apiservers (Ip Adresses .31,.32,.33) are constantly overwriting the etcd-key /registry/services/endpoints/default/kubernetes</code>可以推测出来，这个值是api-server这个控件主动去写入的。</p>
+<p>我把<code class="language-plaintext highlighter-rouge">/registry/services/endpoints/default/kubernetes</code>输入到搜索引擎搜索了一下，发现<a href="https://github.com/kubernetes/kubernetes/issues/19989">有人</a>在github上抛出类似的问题，从其<code class="language-plaintext highlighter-rouge">The three apiservers (Ip Adresses .31,.32,.33) are constantly overwriting the etcd-key /registry/services/endpoints/default/kubernetes</code>可以推测出来，这个值是api-server这个控件主动去写入的。</p>
 
 <p>这能得出一个结论：在部署高可用集群时，如果想把多个api-server注册到集群，那么所有的api-server的服务都将会出现在default命名空间的kubernetes这个endpoints上；这也就意味着难以把集群中的一个api-server单独隔离出来而不让它对外提供服务（我当前想debug的一个问题需要这么操作，得出这个结论表示很无奈）。</p>
 
@@ -419,7 +419,7 @@ Events:            &lt;none&gt;
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

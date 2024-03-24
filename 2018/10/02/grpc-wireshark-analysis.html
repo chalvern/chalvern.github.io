@@ -186,7 +186,7 @@ Author: Ray-Eldath
 <p><img src="/assets/pic/grpc-wireshark-analysis-01.jpg" alt="gRPC调用总览" />
 【图-gRPC调用总览】</p>
 
-<p>从上图可以大体看出，在gRPC的helloworld中从client端调用server端，会有多次的HTTP2请求，大体上可以分为：<code class="highlighter-rouge">Magic-&gt;Settings-&gt;Headers-&gt;Data-&gt;Settings-&gt;Window-update,Ping-&gt;Ping-&gt;Headers,Data,Headers-&gt;Window_update,ping-&gt;Ping</code>。</p>
+<p>从上图可以大体看出，在gRPC的helloworld中从client端调用server端，会有多次的HTTP2请求，大体上可以分为：<code class="language-plaintext highlighter-rouge">Magic-&gt;Settings-&gt;Headers-&gt;Data-&gt;Settings-&gt;Window-update,Ping-&gt;Ping-&gt;Headers,Data,Headers-&gt;Window_update,ping-&gt;Ping</code>。</p>
 
 <h3 id="settings">Settings</h3>
 <p>从gRPC调用总览图可以看到，总共有两次的Settings设置，不过两次setting有相同的数据，具体数据如下：</p>
@@ -240,9 +240,9 @@ Author: Ray-Eldath
 <h2 id="grpc中的context数据">gRPC中的context数据</h2>
 <p><img src="/assets/pic/grpc-wireshark-analysis-11.jpg" alt="context源码" /></p>
 
-<p>有一天，小黄老师跑过来问：如果在gRPC从client调用server端服务时，在context中添加了一些数据，那么这些数据是如何传输到server端的？其实这些context中的数据会以header头的形式进行传输，比如上面图中所展示的代码，在context中塞了<code class="highlighter-rouge">abc=&gt;ccc</code>的键值对。</p>
+<p>有一天，小黄老师跑过来问：如果在gRPC从client调用server端服务时，在context中添加了一些数据，那么这些数据是如何传输到server端的？其实这些context中的数据会以header头的形式进行传输，比如上面图中所展示的代码，在context中塞了<code class="language-plaintext highlighter-rouge">abc=&gt;ccc</code>的键值对。</p>
 
-<p>通过抓包可以看到，<code class="highlighter-rouge">abc=&gt;ccc</code>的键值对写入了header中，如下图：</p>
+<p>通过抓包可以看到，<code class="language-plaintext highlighter-rouge">abc=&gt;ccc</code>的键值对写入了header中，如下图：</p>
 
 <p><img src="/assets/pic/grpc-wireshark-analysis-12.jpg" alt="context-wireshark" /></p>
 
@@ -333,7 +333,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

@@ -202,7 +202,7 @@ Author: Ray-Eldath
 
 <p>我们经常见到的 Jar 包和 War 包都是字节码文件包，是源码编译后的产物。相对 go 来说， java 的编译过程要慢很多，常常会让电脑卡顿好一会儿。</p>
 
-<p>简单讲，java 从源码到执行的过程是： 源码中的 <code class="highlighter-rouge">1+1</code> 语句，首先被编译成为 JVM 的命令（字节码），然后字节码由 JVM 加载，并被 JVM 转义成为 CPU 的指令从而得以执行。CPU 运行 java 代码时，我们的 CPU ①一边做字节码到CPU指令的转义，②一边运行实际转义后的语句。相对于 go 语言只运行CPU指令的情况， java 的 CPU 使用效率会低一些。</p>
+<p>简单讲，java 从源码到执行的过程是： 源码中的 <code class="language-plaintext highlighter-rouge">1+1</code> 语句，首先被编译成为 JVM 的命令（字节码），然后字节码由 JVM 加载，并被 JVM 转义成为 CPU 的指令从而得以执行。CPU 运行 java 代码时，我们的 CPU ①一边做字节码到CPU指令的转义，②一边运行实际转义后的语句。相对于 go 语言只运行CPU指令的情况， java 的 CPU 使用效率会低一些。</p>
 
 <p>不过 java 作为一门工业级的编程语言，很多大牛为 JVM 的优化做了很多的事情，这也使得基于 JVM 的编程语言的运行效率与裸 CPU 的编程语言的运行效率差距没那么大了。因此，在 JVM 的平台上，还诞生了 kotlin 、Jython 这种编程语言，它们都是编译生成 JVM 指令集的字节码，然后在 JVM 上运行。</p>
 
@@ -210,7 +210,7 @@ Author: Ray-Eldath
 
 <p>使用 python 开发，从源码到机器执行并没有显式地编译过程，只需把源码加载到解释器就可以正常运行了。</p>
 
-<p>就像前面提到的，类似 <code class="highlighter-rouge">1+1</code> 这样的源码是不可能直接在 CPU 上执行的，那么 python 源码是如何运行在<strong>机器</strong>上的呢？实际上 python 解释器会在内部把 python 源码编译形成 python 字节码，然后再把这些字节码加载到解释器的运行时（python 虚拟机）进行执行。</p>
+<p>就像前面提到的，类似 <code class="language-plaintext highlighter-rouge">1+1</code> 这样的源码是不可能直接在 CPU 上执行的，那么 python 源码是如何运行在<strong>机器</strong>上的呢？实际上 python 解释器会在内部把 python 源码编译形成 python 字节码，然后再把这些字节码加载到解释器的运行时（python 虚拟机）进行执行。</p>
 
 <p>除了“隐式编译”这个步骤，python 几乎与 java 是一样的。而且 python 解释器只会在第一次加载运行 python 源码的时候存在“隐式编译”这个步骤，并且把编译生成的 python 字节码保存为 .pyc 文件，再以后执行时会首先加载 pyc 文件，从而省去了重复编译的步骤。</p>
 
@@ -325,7 +325,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

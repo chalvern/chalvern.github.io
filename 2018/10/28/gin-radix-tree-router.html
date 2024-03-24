@@ -183,7 +183,7 @@ Author: Ray-Eldath
 
 <p>这与字典中的排序很相似。例如，对于<strong>here</strong>和<strong>hero</strong>这两个字符串，根据规则①(设j=3)，我们可以得出<strong>here</strong>排在<strong>hero</strong>前面；而对于<strong>hero</strong>和<strong>heroine</strong>这两个字符串，根据规则②，我们可以得出<strong>hero</strong>排在<strong>heroine</strong>前面。</p>
 
-<p>如果a和b是位串（二进制串），则根据规则①，有<code class="highlighter-rouge">10100 &lt; 10110</code>；根据规则②，有<code class="highlighter-rouge">10100 &lt; 101000</code>。</p>
+<p>如果a和b是位串（二进制串），则根据规则①，有<code class="language-plaintext highlighter-rouge">10100 &lt; 10110</code>；根据规则②，有<code class="language-plaintext highlighter-rouge">10100 &lt; 101000</code>。</p>
 
 <p><img src="/assets/pic/gin-radix-tree-router-01.jpg" alt="" /></p>
 
@@ -209,7 +209,7 @@ Author: Ray-Eldath
 1          └contact<span class="se">\ </span>       <span class="k">*</span>&lt;8&gt;
 </code></pre></div></div>
 
-<p>上面所展示的树中，<strong>Priority</strong>表示路由的优先级，Path表示路由路径，Handle表示路由所对应的响应函数，其中<code class="highlighter-rouge">*&lt;num&gt;</code>表示函数指针。如果对应到代码，可以认为上面的基数树是由下面的代码生成的：</p>
+<p>上面所展示的树中，<strong>Priority</strong>表示路由的优先级，Path表示路由路径，Handle表示路由所对应的响应函数，其中<code class="language-plaintext highlighter-rouge">*&lt;num&gt;</code>表示函数指针。如果对应到代码，可以认为上面的基数树是由下面的代码生成的：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/"</span><span class="p">,</span> <span class="n">f1</span><span class="p">)</span>
 <span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/search"</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
@@ -224,7 +224,7 @@ Author: Ray-Eldath
 <h3 id="gin基数树路由的局限性">Gin基数树路由的局限性</h3>
 <p>在编写Api接口时，为了表意清晰方便调用，大都尽量遵循RESTFul的风格。不过很现实的情况是，一个系统在架构（尤其定义接口）时，无法严格按照RESTFul的方式设计，总存在特殊情况，其接口跳出RESTFul的风格而存在。在这种情况下，Gin的路由便表现出其局限性。</p>
 
-<p>比如在已经注册了<code class="highlighter-rouge">/blog/:post</code>这条路由的情况下，将无法继续注册<code class="highlighter-rouge">/blog/hot</code> 与 <code class="highlighter-rouge">/blog/a/b/c</code>这两类路由。因为<code class="highlighter-rouge">/blog/:post</code>这条规则，会把<code class="highlighter-rouge">/blog/</code>后的第一个元素（以“/”分割）当做<code class="highlighter-rouge">:post</code>变量来看待，因此当在<code class="highlighter-rouge">/blog/</code>后面追加<code class="highlighter-rouge">hot</code>与<code class="highlighter-rouge">a/b/c</code>时，均会与<code class="highlighter-rouge">:post</code>这个变量的路由冲突。</p>
+<p>比如在已经注册了<code class="language-plaintext highlighter-rouge">/blog/:post</code>这条路由的情况下，将无法继续注册<code class="language-plaintext highlighter-rouge">/blog/hot</code> 与 <code class="language-plaintext highlighter-rouge">/blog/a/b/c</code>这两类路由。因为<code class="language-plaintext highlighter-rouge">/blog/:post</code>这条规则，会把<code class="language-plaintext highlighter-rouge">/blog/</code>后的第一个元素（以“/”分割）当做<code class="language-plaintext highlighter-rouge">:post</code>变量来看待，因此当在<code class="language-plaintext highlighter-rouge">/blog/</code>后面追加<code class="language-plaintext highlighter-rouge">hot</code>与<code class="language-plaintext highlighter-rouge">a/b/c</code>时，均会与<code class="language-plaintext highlighter-rouge">:post</code>这个变量的路由冲突。</p>
 
 <p>由于在RESTFul接口的实现中，路由中存在大量的变量，因此有非常大的概率会造成路由冲突。</p>
 
@@ -233,15 +233,15 @@ Author: Ray-Eldath
 
 <h4 id="接口确定性的前缀尽可能全">接口确定性的<strong>前缀尽可能全</strong></h4>
 <p>从经验来看，项目伊始就要规划好。推荐前缀中①指明是否为接口路由，②指明版本号，③指明模块或项目（代号）。
-比如<code class="highlighter-rouge">/api/v1/admin</code>表示后台管理需要的接口；比如<code class="highlighter-rouge">/api/v1/naza</code>表示开发代号为<strong>哪吒</strong>其相关的接口。</p>
+比如<code class="language-plaintext highlighter-rouge">/api/v1/admin</code>表示后台管理需要的接口；比如<code class="language-plaintext highlighter-rouge">/api/v1/naza</code>表示开发代号为<strong>哪吒</strong>其相关的接口。</p>
 
 <h4 id="局部restful接口定义">局部RESTFul接口定义</h4>
 <p>不否认RESTFul架构的表意清晰的特点，为了方便对接，可以在局部使用RESTFul的接口定义风格。比如</p>
 
 <ul>
-  <li><code class="highlighter-rouge">/api/v1/naza/activities/rules</code> 获取活动条款列表</li>
-  <li><code class="highlighter-rouge">/api/v1/naza/activity/:id/members</code>  获取某活动所有成员</li>
-  <li><code class="highlighter-rouge">/api/v1/naza/activity/:id/member/:id</code> 或许某活动中某成员信息</li>
+  <li><code class="language-plaintext highlighter-rouge">/api/v1/naza/activities/rules</code> 获取活动条款列表</li>
+  <li><code class="language-plaintext highlighter-rouge">/api/v1/naza/activity/:id/members</code>  获取某活动所有成员</li>
+  <li><code class="language-plaintext highlighter-rouge">/api/v1/naza/activity/:id/member/:id</code> 或许某活动中某成员信息</li>
 </ul>
 
 <h2 id="小结">小结</h2>
@@ -336,7 +336,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

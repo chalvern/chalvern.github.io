@@ -267,7 +267,7 @@ ptr
 <p>因此在<strong>t</strong>上面的调用的所有的 reflect.Type 的方法，其接收方都是一个 ** rtype** 的实例。</p>
 
 <h3 id="获取t指针所指向的对象">获取t指针所指向的对象</h3>
-<p>上面的<strong>t</strong>归根到底是一个指针，如果我们想获取<strong>t</strong>所指向的对象的属性，需要再调用一个函数<code class="highlighter-rouge">reflect.Elem()</code>把指针所指向的对象解析出来。</p>
+<p>上面的<strong>t</strong>归根到底是一个指针，如果我们想获取<strong>t</strong>所指向的对象的属性，需要再调用一个函数<code class="language-plaintext highlighter-rouge">reflect.Elem()</code>把指针所指向的对象解析出来。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="c">// 获取i所指向的对象的类型</span>
 	<span class="n">e</span> <span class="o">:=</span> <span class="n">t</span><span class="o">.</span><span class="n">Elem</span><span class="p">()</span>
@@ -302,7 +302,7 @@ boy
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>如果要获取指针<strong>t</strong>中的方法，可以通过reflect.Type接口中的 <code class="highlighter-rouge">Method(int) Method</code> 获取。</p>
+<p>如果要获取指针<strong>t</strong>中的方法，可以通过reflect.Type接口中的 <code class="language-plaintext highlighter-rouge">Method(int) Method</code> 获取。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"method"</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">Method</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">NumMethod</span><span class="p">()</span> <span class="o">-</span> <span class="m">1</span><span class="p">))</span>
@@ -338,10 +338,10 @@ boy
 0x1099f60
 </code></pre></div></div>
 
-<p>需要注意，这里的<code class="highlighter-rouge">0x1099f60</code>只是输入了方法的<strong>reflect.Value</strong>类型的地址（因为v.Method(v.NumMethod() - 1))）返回的是一个 <strong>reflect.Value</strong>类型实例。</p>
+<p>需要注意，这里的<code class="language-plaintext highlighter-rouge">0x1099f60</code>只是输入了方法的<strong>reflect.Value</strong>类型的地址（因为v.Method(v.NumMethod() - 1))）返回的是一个 <strong>reflect.Value</strong>类型实例。</p>
 
 <h3 id="动态方法调用">动态方法调用</h3>
-<p>通过t或者v获取到了方法以后，可以通过显示调用<code class="highlighter-rouge">Call()</code>函数进行调用，如下：</p>
+<p>通过t或者v获取到了方法以后，可以通过显示调用<code class="language-plaintext highlighter-rouge">Call()</code>函数进行调用，如下：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="c">//无输入参数的方法调用， 构造zero value</span>
 	<span class="n">args</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="n">reflect</span><span class="o">.</span><span class="n">Value</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span>
@@ -441,7 +441,7 @@ boy
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

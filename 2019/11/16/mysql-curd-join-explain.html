@@ -174,7 +174,7 @@ Author: Ray-Eldath
 </ul>
 
 <h2 id="写在前面">写在前面</h2>
-<p>对一般的开发者来说，MySQL 安装成功以后，剩下的就是基本的使用了，如果是运维开发，可能还会涉及到数据库的运维。本文暂且不考虑运维上的操作，仅就数据库的使用给出一些示例，主要包括 <code class="highlighter-rouge">CURD</code>、<code class="highlighter-rouge">JOIN</code> 和 <code class="highlighter-rouge">EXPLAIN</code>。</p>
+<p>对一般的开发者来说，MySQL 安装成功以后，剩下的就是基本的使用了，如果是运维开发，可能还会涉及到数据库的运维。本文暂且不考虑运维上的操作，仅就数据库的使用给出一些示例，主要包括 <code class="language-plaintext highlighter-rouge">CURD</code>、<code class="language-plaintext highlighter-rouge">JOIN</code> 和 <code class="language-plaintext highlighter-rouge">EXPLAIN</code>。</p>
 
 <h2 id="适用人群">适用人群</h2>
 <p>入门——初级——<strong>中级√</strong>——高级；本文适应中级及以上。</p>
@@ -202,9 +202,9 @@ brew services start mysql@5.7
 </code></pre></div></div>
 
 <h3 id="连接数据库服务">连接数据库服务</h3>
-<p>启动 MySQL 后，我们可以通过 <code class="highlighter-rouge">ps -ef |grep mysql</code> 来查看与 MySQL 相关的进程，可以发现 后台会运行一个 <code class="highlighter-rouge">mysqld</code> 的进程，也就是说我们通常所说的 “连接数据库” 其实指的是连接 <code class="highlighter-rouge">mysqld</code> 提供的数据库服务。</p>
+<p>启动 MySQL 后，我们可以通过 <code class="language-plaintext highlighter-rouge">ps -ef |grep mysql</code> 来查看与 MySQL 相关的进程，可以发现 后台会运行一个 <code class="language-plaintext highlighter-rouge">mysqld</code> 的进程，也就是说我们通常所说的 “连接数据库” 其实指的是连接 <code class="language-plaintext highlighter-rouge">mysqld</code> 提供的数据库服务。</p>
 
-<p>一般本地（自己的电脑上面）安装完 MySQL 后，会默认安装 <code class="highlighter-rouge">mysql</code> 这个命令，可以用它来连接 <code class="highlighter-rouge">mysqld</code> 提供的服务（因为真正提供数据库服务的是 mysqld，或许 MySQL 应该叫 MySQLD 比较好？ 😆）。</p>
+<p>一般本地（自己的电脑上面）安装完 MySQL 后，会默认安装 <code class="language-plaintext highlighter-rouge">mysql</code> 这个命令，可以用它来连接 <code class="language-plaintext highlighter-rouge">mysqld</code> 提供的服务（因为真正提供数据库服务的是 mysqld，或许 MySQL 应该叫 MySQLD 比较好？ 😆）。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 连接本地 localhost 端口为 3306 的数据库 hello</span>
 <span class="c"># 使用 root 用户，且要求输入密码</span>
@@ -239,7 +239,7 @@ mysql <span class="nt">-u</span> root <span class="nt">-p</span> <span class="nt
 
 <p>接下来我们模仿一个博客系统创建几个数据表，分别包括用户表 users、博客表 blogs 和评论表 comments。</p>
 
-<p>在创建表的时候我们有几个默认项，数据库引擎使用 <code class="highlighter-rouge">InnoDB</code>（小白用户只需要记住 InnoDB 可以满足绝大部分场景），字符集使用 <code class="highlighter-rouge">utf8mb4</code>。由于 <code class="highlighter-rouge">InnodB</code> 的 “聚簇索引” 和“二级索引包含引用行的主键列”的特性，默认情况下我们会创建一个类型为 <code class="highlighter-rouge">int</code> 的主键  <code class="highlighter-rouge">id</code>。</p>
+<p>在创建表的时候我们有几个默认项，数据库引擎使用 <code class="language-plaintext highlighter-rouge">InnoDB</code>（小白用户只需要记住 InnoDB 可以满足绝大部分场景），字符集使用 <code class="language-plaintext highlighter-rouge">utf8mb4</code>。由于 <code class="language-plaintext highlighter-rouge">InnodB</code> 的 “聚簇索引” 和“二级索引包含引用行的主键列”的特性，默认情况下我们会创建一个类型为 <code class="language-plaintext highlighter-rouge">int</code> 的主键  <code class="language-plaintext highlighter-rouge">id</code>。</p>
 <h4 id="创建-users-表">创建 users 表</h4>
 
 <p>下面的语句创建了用户 users 表。</p>
@@ -354,7 +354,7 @@ mysql <span class="nt">-u</span> root <span class="nt">-p</span> <span class="nt
 <p><img src="/assets/pic/mysql-curd-join-explain-01.png" alt="" /></p>
 
 <h3 id="explain-的使用">EXPLAIN 的使用</h3>
-<p>因为我们的表的内容比较少，因此运行上面 <code class="highlighter-rouge">JOIN</code> 的内容不会有慢的感觉，但是我们依然可以使用 <code class="highlighter-rouge">EXPLAIN</code> 进行一番探索。</p>
+<p>因为我们的表的内容比较少，因此运行上面 <code class="language-plaintext highlighter-rouge">JOIN</code> 的内容不会有慢的感觉，但是我们依然可以使用 <code class="language-plaintext highlighter-rouge">EXPLAIN</code> 进行一番探索。</p>
 
 <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">EXPLAIN</span>
 <span class="k">SELECT</span> <span class="n">u</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">user_id</span><span class="p">,</span>
@@ -373,23 +373,23 @@ mysql <span class="nt">-u</span> root <span class="nt">-p</span> <span class="nt
 <span class="k">WHERE</span> <span class="n">u</span><span class="p">.</span><span class="n">username</span><span class="o">=</span><span class="s1">'ws_by_hand_1'</span><span class="p">;</span>
 </code></pre></div></div>
 
-<p>上面的 <code class="highlighter-rouge">EXPALIN</code> 代码运行后得到的结果如下图所示。我们可以通过查看 <code class="highlighter-rouge">type</code> 一列探索索引的使用情况，发现 <code class="highlighter-rouge">users as u</code> 表扫了全量表（<em>type 为 ALL</em>），当我们的 user 表非常大的情况下，这里肯定会存在问题。其实在创建 <code class="highlighter-rouge">users</code> 表的时候我刻意少创建了一个索引，理论上应该在 <code class="highlighter-rouge">users.username</code> 这个字段上添加索引。</p>
+<p>上面的 <code class="language-plaintext highlighter-rouge">EXPALIN</code> 代码运行后得到的结果如下图所示。我们可以通过查看 <code class="language-plaintext highlighter-rouge">type</code> 一列探索索引的使用情况，发现 <code class="language-plaintext highlighter-rouge">users as u</code> 表扫了全量表（<em>type 为 ALL</em>），当我们的 user 表非常大的情况下，这里肯定会存在问题。其实在创建 <code class="language-plaintext highlighter-rouge">users</code> 表的时候我刻意少创建了一个索引，理论上应该在 <code class="language-plaintext highlighter-rouge">users.username</code> 这个字段上添加索引。</p>
 
 <p><img src="/assets/pic/mysql-curd-join-explain-02.png" alt="" /></p>
 
 <h4 id="在-usersusername-字段上添加索引">在 users.username 字段上添加索引</h4>
 
-<p>可以通过下面的语句为 <code class="highlighter-rouge">users.username</code> 字段添加索引：</p>
+<p>可以通过下面的语句为 <code class="language-plaintext highlighter-rouge">users.username</code> 字段添加索引：</p>
 
 <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="nv">`users`</span> <span class="k">ADD</span> <span class="k">INDEX</span> <span class="nv">`idx_user_username`</span> <span class="p">(</span><span class="nv">`username`</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>在添加完索引以后，在此 <code class="highlighter-rouge">EXPLAIN</code> 我们的 <code class="highlighter-rouge">JOIN</code> 语句，可以得到下图的结果。可以发现 <code class="highlighter-rouge">users as u</code>的 type 已经变成了字段 <code class="highlighter-rouge">username</code> （<code class="highlighter-rouge">idx_user_username</code>）上的索引<code class="highlighter-rouge">ref</code>。</p>
+<p>在添加完索引以后，在此 <code class="language-plaintext highlighter-rouge">EXPLAIN</code> 我们的 <code class="language-plaintext highlighter-rouge">JOIN</code> 语句，可以得到下图的结果。可以发现 <code class="language-plaintext highlighter-rouge">users as u</code>的 type 已经变成了字段 <code class="language-plaintext highlighter-rouge">username</code> （<code class="language-plaintext highlighter-rouge">idx_user_username</code>）上的索引<code class="language-plaintext highlighter-rouge">ref</code>。</p>
 
 <p><img src="/assets/pic/mysql-curd-join-explain-03.png" alt="" /></p>
 
 <h2 id="小结">小结</h2>
-<p>本文就数据库的使用给出一些示例，通过实例代码的方式给出 <code class="highlighter-rouge">CURD</code>、<code class="highlighter-rouge">JOIN</code> 和 <code class="highlighter-rouge">EXPLAIN</code>的使用方式，在实际生产过程中可以为大家提供一些参考。
+<p>本文就数据库的使用给出一些示例，通过实例代码的方式给出 <code class="language-plaintext highlighter-rouge">CURD</code>、<code class="language-plaintext highlighter-rouge">JOIN</code> 和 <code class="language-plaintext highlighter-rouge">EXPLAIN</code>的使用方式，在实际生产过程中可以为大家提供一些参考。
 对于 ORM 工具的使用，在检索的过程中本质是 SQL 语句的拼装、检索结果的解析，在数据库层面了解 SQL 无疑能够增强大家对 ORM 的使用的理解，从而写出更加高效可靠的代码。</p>
 
 <h2 id="参考">参考</h2>
@@ -476,7 +476,7 @@ mysql <span class="nt">-u</span> root <span class="nt">-p</span> <span class="nt
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

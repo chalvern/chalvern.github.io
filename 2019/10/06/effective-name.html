@@ -214,7 +214,7 @@ Author: Ray-Eldath
 
 <h2 id="重新声明和重新赋值">重新声明和重新赋值</h2>
 
-<p>上一小节的最后一个例子很好地阐释了 <code class="highlighter-rouge">:=</code> 短声明语句的工作方式。短声明语句 f, err := os.Open(name) 声明了两个变量：f 和 err。紧接着后面的 d, err := f.Stat() 好像又声明了两个变量： d 和 err。需要注意 err 同时出现在了两个声明语句中。在 Go 中，这种“重复声明”是允许的：err 首先由第一个语句声明，在第二个语句中被重新赋值。这意味着调用 f.Stat 时使用了上面已经被声明的 err 变量，并且给了它一个新的值。</p>
+<p>上一小节的最后一个例子很好地阐释了 <code class="language-plaintext highlighter-rouge">:=</code> 短声明语句的工作方式。短声明语句 f, err := os.Open(name) 声明了两个变量：f 和 err。紧接着后面的 d, err := f.Stat() 好像又声明了两个变量： d 和 err。需要注意 err 同时出现在了两个声明语句中。在 Go 中，这种“重复声明”是允许的：err 首先由第一个语句声明，在第二个语句中被重新赋值。这意味着调用 f.Stat 时使用了上面已经被声明的 err 变量，并且给了它一个新的值。</p>
 
 <p>在 := 声明中，即使变量 v 已经被声明过也可以再次出现，只需满足：</p>
 
@@ -466,7 +466,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

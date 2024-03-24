@@ -151,7 +151,7 @@ Author: Ray-Eldath
     </ul>
   </li>
   <li><a href="#go源码相关内容" id="markdown-toc-go源码相关内容">Go源码相关内容</a>    <ul>
-      <li><a href="#源码中的nil" id="markdown-toc-源码中的nil">源码中的<code class="highlighter-rouge">nil</code></a></li>
+      <li><a href="#源码中的nil" id="markdown-toc-源码中的nil">源码中的<code class="language-plaintext highlighter-rouge">nil</code></a></li>
       <li><a href="#源码中的interface" id="markdown-toc-源码中的interface">源码中的Interface</a></li>
     </ul>
   </li>
@@ -198,13 +198,13 @@ Author: Ray-Eldath
 mikk
 </code></pre></div></div>
 
-<p>从运行结果来看，<code class="highlighter-rouge">my</code>和<code class="highlighter-rouge">kk</code>都是空值，同事的疑惑是：明明<code class="highlighter-rouge">kk</code>的原型<code class="highlighter-rouge">KK</code>有<code class="highlighter-rouge">HappyBirthday</code>的方法声明，直觉上不应该是<code class="highlighter-rouge">nil</code>啊。</p>
+<p>从运行结果来看，<code class="language-plaintext highlighter-rouge">my</code>和<code class="language-plaintext highlighter-rouge">kk</code>都是空值，同事的疑惑是：明明<code class="language-plaintext highlighter-rouge">kk</code>的原型<code class="language-plaintext highlighter-rouge">KK</code>有<code class="language-plaintext highlighter-rouge">HappyBirthday</code>的方法声明，直觉上不应该是<code class="language-plaintext highlighter-rouge">nil</code>啊。</p>
 
 <h2 id="go源码相关内容">Go源码相关内容</h2>
 <p>看到同事的疑惑以后，我的第一反应是想到自己翻看过的<a href="https://github.com/chalvern/go">Go源码</a>。</p>
 
-<h3 id="源码中的nil">源码中的<code class="highlighter-rouge">nil</code></h3>
-<p>在<code class="highlighter-rouge">go/src/builtin/builtin.go</code>的源码中，对nil的定义如下：</p>
+<h3 id="源码中的nil">源码中的<code class="language-plaintext highlighter-rouge">nil</code></h3>
+<p>在<code class="language-plaintext highlighter-rouge">go/src/builtin/builtin.go</code>的源码中，对nil的定义如下：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// nil is a predeclared identifier representing the zero value for a</span>
 <span class="c">// pointer, channel, func, interface, map, or slice type.</span>
@@ -212,13 +212,13 @@ mikk
 <span class="k">var</span> <span class="no">nil</span> <span class="n">Type</span> <span class="c">// Type must be a pointer, channel, func, interface, map, or slice type</span>
 </code></pre></div></div>
 
-<p>大体意思是：<code class="highlighter-rouge">nil</code>代表零值；特别地，代表指针、信道、函数、接口(Interface)、map、slice的零值。也就是说，Interface的零值本就是<code class="highlighter-rouge">nil</code>。</p>
+<p>大体意思是：<code class="language-plaintext highlighter-rouge">nil</code>代表零值；特别地，代表指针、信道、函数、接口(Interface)、map、slice的零值。也就是说，Interface的零值本就是<code class="language-plaintext highlighter-rouge">nil</code>。</p>
 
-<p>而根据Go的特点，<code class="highlighter-rouge">var name Type</code> 的声明方式中<code class="highlighter-rouge">name</code>的默认值本就是零值，因此无论是<code class="highlighter-rouge">my</code>还是<code class="highlighter-rouge">kk</code>，都等于<code class="highlighter-rouge">nil</code>也便可以理解了。</p>
+<p>而根据Go的特点，<code class="language-plaintext highlighter-rouge">var name Type</code> 的声明方式中<code class="language-plaintext highlighter-rouge">name</code>的默认值本就是零值，因此无论是<code class="language-plaintext highlighter-rouge">my</code>还是<code class="language-plaintext highlighter-rouge">kk</code>，都等于<code class="language-plaintext highlighter-rouge">nil</code>也便可以理解了。</p>
 
 <h3 id="源码中的interface">源码中的Interface</h3>
 
-<p>Interface主要其作用的地方是在运行时，因此这里主要介绍<code class="highlighter-rouge">go/src/runtime/runtime2.go</code>中的两个片段。</p>
+<p>Interface主要其作用的地方是在运行时，因此这里主要介绍<code class="language-plaintext highlighter-rouge">go/src/runtime/runtime2.go</code>中的两个片段。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 带有方法的接口</span>
 <span class="k">type</span> <span class="n">iface</span> <span class="k">struct</span> <span class="p">{</span>
@@ -237,7 +237,7 @@ mikk
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>从源码可以知道，无论是<code class="highlighter-rouge">iface</code>还是<code class="highlighter-rouge">eface</code>，其底层均存在一个<code class="highlighter-rouge">data</code>字段，也就是说，无论是带方法的接口还是空接口，其的存在必然要依附有意义的数值（零值也是有意义的）才可以。可以简单认为一块内存，里面存放着变量，哪怕这个变量存放的全是零值也无所谓，但是必须要有这么一个内存变量，也就是说，<strong>只有这块内存存在了，Interface的存在才有意义</strong>。</p>
+<p>从源码可以知道，无论是<code class="language-plaintext highlighter-rouge">iface</code>还是<code class="language-plaintext highlighter-rouge">eface</code>，其底层均存在一个<code class="language-plaintext highlighter-rouge">data</code>字段，也就是说，无论是带方法的接口还是空接口，其的存在必然要依附有意义的数值（零值也是有意义的）才可以。可以简单认为一块内存，里面存放着变量，哪怕这个变量存放的全是零值也无所谓，但是必须要有这么一个内存变量，也就是说，<strong>只有这块内存存在了，Interface的存在才有意义</strong>。</p>
 
 <h2 id="再看一个例子">再看一个例子</h2>
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
@@ -270,9 +270,9 @@ mikk
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>上面的代码输出 <code class="highlighter-rouge">not nil</code>。</p>
+<p>上面的代码输出 <code class="language-plaintext highlighter-rouge">not nil</code>。</p>
 
-<p>具体的，虽然<code class="highlighter-rouge">miss()</code>返回了<code class="highlighter-rouge">零值的g</code>，但是<code class="highlighter-rouge">data</code>这时候已经有值了（虽然在这里还是个零值）。这种情况下，<code class="highlighter-rouge">angel</code>就不是<code class="highlighter-rouge">nil</code>了，因为它已经有了<code class="highlighter-rouge">data</code>。</p>
+<p>具体的，虽然<code class="language-plaintext highlighter-rouge">miss()</code>返回了<code class="language-plaintext highlighter-rouge">零值的g</code>，但是<code class="language-plaintext highlighter-rouge">data</code>这时候已经有值了（虽然在这里还是个零值）。这种情况下，<code class="language-plaintext highlighter-rouge">angel</code>就不是<code class="language-plaintext highlighter-rouge">nil</code>了，因为它已经有了<code class="language-plaintext highlighter-rouge">data</code>。</p>
 
 <h2 id="小结">小结</h2>
 <p>本文主要对比了Go的Interface的两个例子，并从源码角度简单剖析了Interface的本质。</p>
@@ -354,7 +354,7 @@ mikk
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

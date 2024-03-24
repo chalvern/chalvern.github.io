@@ -172,9 +172,9 @@ Author: Ray-Eldath
 
 <h2 id="先看两段代码">先看两段代码</h2>
 <h3 id="第一段代码">第一段代码</h3>
-<p>下面的代码是《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》中的一个示例 demo，为了说明问题增加了对单核的限制。运行 <code class="highlighter-rouge">go run -race main.go</code> 可以看到 <code class="highlighter-rouge">Money: 1100</code> 的输出。</p>
+<p>下面的代码是《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》中的一个示例 demo，为了说明问题增加了对单核的限制。运行 <code class="language-plaintext highlighter-rouge">go run -race main.go</code> 可以看到 <code class="language-plaintext highlighter-rouge">Money: 1100</code> 的输出。</p>
 
-<p>下面的代码中包含两条 <code class="highlighter-rouge">atomic.AddInt64</code> 语句，分别在两个协程中运行。如果在 <code class="highlighter-rouge">fmt.Printf</code> 语句执行时子协程已经执行，输出结果是 <code class="highlighter-rouge">Money: 2100</code>；当然，上面的代码极大概率会输出 <code class="highlighter-rouge">Money: 1100</code> ，即在 <code class="highlighter-rouge">fmt.Printf</code> 语句执行时子协程尚未执行。<strong>那么， Golang 调度器何时才会调度并运行子协程呢？</strong></p>
+<p>下面的代码中包含两条 <code class="language-plaintext highlighter-rouge">atomic.AddInt64</code> 语句，分别在两个协程中运行。如果在 <code class="language-plaintext highlighter-rouge">fmt.Printf</code> 语句执行时子协程已经执行，输出结果是 <code class="language-plaintext highlighter-rouge">Money: 2100</code>；当然，上面的代码极大概率会输出 <code class="language-plaintext highlighter-rouge">Money: 1100</code> ，即在 <code class="language-plaintext highlighter-rouge">fmt.Printf</code> 语句执行时子协程尚未执行。<strong>那么， Golang 调度器何时才会调度并运行子协程呢？</strong></p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
 <span class="k">package</span> <span class="n">main</span>
@@ -201,7 +201,7 @@ Author: Ray-Eldath
 </code></pre></div></div>
 
 <h3 id="第二段代码">第二段代码</h3>
-<p>我们可以构造一段与上一小节结构类似的代码，如下面的代码所示。通过 <code class="highlighter-rouge">go run main.go</code> 运行下面的代码可以看到输出结果中的 <code class="highlighter-rouge">panic: hello goroutine</code> ，却找不到<code class="highlighter-rouge">sum: xxxxxx</code>（如果看到的结果不一致，可以考虑增加 <code class="highlighter-rouge">for</code> 循环的终止判定条件）。<strong>也就是说，下面的代码的子协程在代码退出前被成功调度。</strong></p>
+<p>我们可以构造一段与上一小节结构类似的代码，如下面的代码所示。通过 <code class="language-plaintext highlighter-rouge">go run main.go</code> 运行下面的代码可以看到输出结果中的 <code class="language-plaintext highlighter-rouge">panic: hello goroutine</code> ，却找不到<code class="language-plaintext highlighter-rouge">sum: xxxxxx</code>（如果看到的结果不一致，可以考虑增加 <code class="language-plaintext highlighter-rouge">for</code> 循环的终止判定条件）。<strong>也就是说，下面的代码的子协程在代码退出前被成功调度。</strong></p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
 <span class="k">package</span> <span class="n">main</span>
@@ -245,7 +245,7 @@ Author: Ray-Eldath
 
 <ul>
   <li>G: 表示 goroutine，存储了 goroutine 的执行 stack 信息、goroutine 状态以及 goroutine 的任务函数等；另外 G 对象是可以重用的。</li>
-  <li>P: 表示逻辑 processor，P的数量决定了系统内最大可并行的 G 的数量（前提是系统的物理 CPU 核数&gt;=P 的数量，可以 <code class="highlighter-rouge">runtime.GOMAXPROCS(20)</code>增加 P 数量大于 CPU 核数）；P 的最大作用还是其拥有的各种 G 对象队列、链表、一些 cache 和状态。</li>
+  <li>P: 表示逻辑 processor，P的数量决定了系统内最大可并行的 G 的数量（前提是系统的物理 CPU 核数&gt;=P 的数量，可以 <code class="language-plaintext highlighter-rouge">runtime.GOMAXPROCS(20)</code>增加 P 数量大于 CPU 核数）；P 的最大作用还是其拥有的各种 G 对象队列、链表、一些 cache 和状态。</li>
   <li>M: M代表着真正的执行计算资源。在绑定有效的 P 后，进入 schedule 循环；而 schedule 循环的机制大致是从各种队列、P 的本地队列中获取 G，切换到 G 的执行栈上并执行G的函数，调用 goexit 做清理工作并回到 M，如此反复。M并不保留 G 状态，这是 G 可以跨 M 调度的基础。</li>
 </ul>
 
@@ -265,14 +265,14 @@ Author: Ray-Eldath
 <h3 id="goroutine-的抢占">goroutine 的抢占</h3>
 <p>如果一个 goroutine 不包含上面提到的几种情况，那么其他的 goroutine 就无法被调度到相应的 CPU 上面运行，这是不应该发生的。这时候就需要抢占机制来打断长时间占用 CPU 资源的 goroutine ，发起重新调度。</p>
 
-<p>Golang 运行时（runtime）中的系统监控线程 <code class="highlighter-rouge">sysmon</code> 可以找出“长时间占用”的 goroutine，从而“提醒”相应的 goroutine 该中断了。</p>
+<p>Golang 运行时（runtime）中的系统监控线程 <code class="language-plaintext highlighter-rouge">sysmon</code> 可以找出“长时间占用”的 goroutine，从而“提醒”相应的 goroutine 该中断了。</p>
 
-<p><strong>特别说明-1</strong>：<code class="highlighter-rouge">sysmon</code>在独立的 M（线程）中运行，且不需要绑定 P。这意味着，<code class="highlighter-rouge">runtime.GOMAXPROCS(1)</code>限制 P 的数量为 1 的情况下，即使一个 goroutine 一直占用这个 P 进行密集型计算（意味着 goroutine 一直占有唯一的 P），依然不影响 <code class="highlighter-rouge">sysmon</code> 的正常运行。</p>
+<p><strong>特别说明-1</strong>：<code class="language-plaintext highlighter-rouge">sysmon</code>在独立的 M（线程）中运行，且不需要绑定 P。这意味着，<code class="language-plaintext highlighter-rouge">runtime.GOMAXPROCS(1)</code>限制 P 的数量为 1 的情况下，即使一个 goroutine 一直占用这个 P 进行密集型计算（意味着 goroutine 一直占有唯一的 P），依然不影响 <code class="language-plaintext highlighter-rouge">sysmon</code> 的正常运行。</p>
 
-<p><strong>特别说明-2</strong>：<code class="highlighter-rouge">sysmon</code> 可以找到“长时间占用 P”的 goroutine，但也只是标记 goroutine 应该被抢占了，并无法强制进行 goroutine 的切换。因此本文的 “第二段代码” 在进行 <code class="highlighter-rouge">for</code> 循环时并不会被抢占，而是在 <code class="highlighter-rouge">for</code> 循环结束后执行 <code class="highlighter-rouge">fmt.Printf("sum: %d\n", sum)</code> 的时候才被抢占（因为 <code class="highlighter-rouge">for</code> 循环里没有被插入抢占检查点，也就是说抢占检查点是编译器预先插入的，在非内联的函数的前面，具体可以查看最后几篇参考文章）。</p>
+<p><strong>特别说明-2</strong>：<code class="language-plaintext highlighter-rouge">sysmon</code> 可以找到“长时间占用 P”的 goroutine，但也只是标记 goroutine 应该被抢占了，并无法强制进行 goroutine 的切换。因此本文的 “第二段代码” 在进行 <code class="language-plaintext highlighter-rouge">for</code> 循环时并不会被抢占，而是在 <code class="language-plaintext highlighter-rouge">for</code> 循环结束后执行 <code class="language-plaintext highlighter-rouge">fmt.Printf("sum: %d\n", sum)</code> 的时候才被抢占（因为 <code class="language-plaintext highlighter-rouge">for</code> 循环里没有被插入抢占检查点，也就是说抢占检查点是编译器预先插入的，在非内联的函数的前面，具体可以查看最后几篇参考文章）。</p>
 
 <h2 id="小结">小结</h2>
-<p>本文从两段代码切入，探究了 goroutine 的调度以及抢占。对于本文的第一段代码，主协程的代码并不需要消耗 <code class="highlighter-rouge">forcePreemptNS</code>（默认为 10 ms）时长的资源，而主线程也没有主动把资源让出来，因此子协程没有运行。对于本文的第二段代码，由于 <code class="highlighter-rouge">for</code> 循环消耗了大量的计算资源，满足了 <code class="highlighter-rouge">forcePreemptNS</code> 时间阈值，调用 <code class="highlighter-rouge">fmt.Printf</code> 时触发了抢占，因此子协程得以运行。</p>
+<p>本文从两段代码切入，探究了 goroutine 的调度以及抢占。对于本文的第一段代码，主协程的代码并不需要消耗 <code class="language-plaintext highlighter-rouge">forcePreemptNS</code>（默认为 10 ms）时长的资源，而主线程也没有主动把资源让出来，因此子协程没有运行。对于本文的第二段代码，由于 <code class="language-plaintext highlighter-rouge">for</code> 循环消耗了大量的计算资源，满足了 <code class="language-plaintext highlighter-rouge">forcePreemptNS</code> 时间阈值，调用 <code class="language-plaintext highlighter-rouge">fmt.Printf</code> 时触发了抢占，因此子协程得以运行。</p>
 
 <p>本文的编写历时好几天，期间查阅了大量的资料，修修改改好几次，导致本文的架构比较松散；如果大家对本文有什么疑问，可以直接邮件我进行交流 🤝。</p>
 
@@ -282,9 +282,9 @@ Author: Ray-Eldath
   <li><a href="https://www.jianshu.com/p/fc35e081d900">Golang goroutine - 简书</a> 介绍了抢占式调度的机制</li>
   <li><a href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/">也谈goroutine调度器 - Tony Bai</a> 比较系统地介绍了 goroutine 的调度</li>
   <li><a href="https://jingwei.link/2019/02/13/linux-process-thread-schedule-2.html">Linux系统调度原理浅析（二） - 敬维</a> 简单介绍了 linux 系统调度</li>
-  <li><a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/proc.go#L4378">go/proc.go at release-branch.go1.12 · golang/go · GitHub</a> <code class="highlighter-rouge">forcePreemptNS</code> 强制协程调度的变量，默认为 <code class="highlighter-rouge">10 ms</code>。</li>
-  <li><a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/proc.go#L4378">go/proc.go at release-branch.go1.12 · golang/go · GitHub</a> 如果一个 goroutine 长时间占用计算资源，<code class="highlighter-rouge">sysmon</code>可以触发抢占；<code class="highlighter-rouge">sysmon</code>在独立的 M（线程）中运行，且不需要绑定 P。</li>
-  <li><a href="https://github.com/golang/go/blob/dev.boringcrypto.go1.12/src/runtime/stack.go#L911">go/stack.go at release-branch.go1.12 · golang/go · GitHub</a> Golang 编译器会在每个非内联函数前面运行栈溢出检查，如果栈溢出则扩展栈，从而执行 <code class="highlighter-rouge">newstack()</code>函数，继而触发抢占机制</li>
+  <li><a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/proc.go#L4378">go/proc.go at release-branch.go1.12 · golang/go · GitHub</a> <code class="language-plaintext highlighter-rouge">forcePreemptNS</code> 强制协程调度的变量，默认为 <code class="language-plaintext highlighter-rouge">10 ms</code>。</li>
+  <li><a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/proc.go#L4378">go/proc.go at release-branch.go1.12 · golang/go · GitHub</a> 如果一个 goroutine 长时间占用计算资源，<code class="language-plaintext highlighter-rouge">sysmon</code>可以触发抢占；<code class="language-plaintext highlighter-rouge">sysmon</code>在独立的 M（线程）中运行，且不需要绑定 P。</li>
+  <li><a href="https://github.com/golang/go/blob/dev.boringcrypto.go1.12/src/runtime/stack.go#L911">go/stack.go at release-branch.go1.12 · golang/go · GitHub</a> Golang 编译器会在每个非内联函数前面运行栈溢出检查，如果栈溢出则扩展栈，从而执行 <code class="language-plaintext highlighter-rouge">newstack()</code>函数，继而触发抢占机制</li>
   <li><a href="https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs">Debugging performance issues in Go programs - Intel® Software</a></li>
   <li><a href="https://github.com/golang/go/issues/10958">runtime: tight loops should be preemptible · Issue #10958 · golang/go · GitHub</a> 介绍了空 for 的不可中断</li>
   <li><a href="https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html">Scheduling In Go : Part II - Go Scheduler</a> if you run any tight loops that are not making function calls, you will cause latencies within the scheduler and garbage collection</li>
@@ -368,7 +368,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

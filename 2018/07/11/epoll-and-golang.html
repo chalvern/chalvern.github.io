@@ -217,7 +217,7 @@ head-&gt;connection1-&gt;connection10
 <p>幸运的是，我们所说的百万访问量，都是人发起的，很契合epoll的使用场景。</p>
 
 <h2 id="golang中的epoll">golang中的epoll</h2>
-<p>参见<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">golang源码</a>的<code class="highlighter-rouge">src/runtime/proc.go</code>文件，其在main函数启动时，既开始在系统栈开始运行<code class="highlighter-rouge">sysmon</code>函数。</p>
+<p>参见<a href="https://github.com/chalvern/go/blob/master/src/runtime/proc.go">golang源码</a>的<code class="language-plaintext highlighter-rouge">src/runtime/proc.go</code>文件，其在main函数启动时，既开始在系统栈开始运行<code class="language-plaintext highlighter-rouge">sysmon</code>函数。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 <span class="c">//...</span>
@@ -229,7 +229,7 @@ head-&gt;connection1-&gt;connection10
 </code></pre></div></div>
 
 <h3 id="golang源码中的sysmon函数">golang源码中的sysmon函数</h3>
-<p>通过查看sysmon函数可以知道，这个函数主要的是一个无穷的<code class="highlighter-rouge">for</code>循环，负责调整时序、GC（垃圾回收）以及epoll检查等。</p>
+<p>通过查看sysmon函数可以知道，这个函数主要的是一个无穷的<code class="language-plaintext highlighter-rouge">for</code>循环，负责调整时序、GC（垃圾回收）以及epoll检查等。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// sysmon</span>
 <span class="c">// Go runtime启动时创建的，负责监控所有goroutine的状态判断是否需要GC，</span>
@@ -248,12 +248,12 @@ head-&gt;connection1-&gt;connection10
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>进一步查看<code class="highlighter-rouge">netpoll</code>函数，能发现主要有下面几个函数:</p>
+<p>进一步查看<code class="language-plaintext highlighter-rouge">netpoll</code>函数，能发现主要有下面几个函数:</p>
 
 <ol>
-  <li><code class="highlighter-rouge">epollcreate/epollcreate1</code> 创建epoll</li>
-  <li><code class="highlighter-rouge">epollctl</code> 设置epoll事件</li>
-  <li><code class="highlighter-rouge">epollwait</code>等待epoll事件</li>
+  <li><code class="language-plaintext highlighter-rouge">epollcreate/epollcreate1</code> 创建epoll</li>
+  <li><code class="language-plaintext highlighter-rouge">epollctl</code> 设置epoll事件</li>
+  <li><code class="language-plaintext highlighter-rouge">epollwait</code>等待epoll事件</li>
 </ol>
 
 <p>到这里，golang与epoll就算对接上了。因为时间问题，细节暂时就不展开了，大家感兴趣可以自己探索。</p>
@@ -348,7 +348,7 @@ head-&gt;connection1-&gt;connection10
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

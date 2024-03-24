@@ -240,13 +240,13 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>上面的示例代码，按照步骤依次：1）初始化数据库连接，这里连接到本地的<strong>sqlite</strong>数据库）。2）数据库自动表结构创建，<code class="highlighter-rouge">AutoMigrate</code>方法可以根据传入的参数反射出对象的结构，从而根据规则映射出数据库中应该创建的表结构；比如传入<code class="highlighter-rouge">&amp;Topic{}</code>会自动在数据库中生成<code class="highlighter-rouge">topics</code>表，包含<code class="highlighter-rouge">id, title, content，created_at, updated_at, deleted_at</code>等数据列。3）创建一条<code class="highlighter-rouge">Topic</code>记录。4）查找一条<code class="highlighter-rouge">id</code>为<code class="highlighter-rouge">0</code>的Topic记录。5）查找<code class="highlighter-rouge">id</code>为<code class="highlighter-rouge">0</code>的Topic列表。</p>
+<p>上面的示例代码，按照步骤依次：1）初始化数据库连接，这里连接到本地的<strong>sqlite</strong>数据库）。2）数据库自动表结构创建，<code class="language-plaintext highlighter-rouge">AutoMigrate</code>方法可以根据传入的参数反射出对象的结构，从而根据规则映射出数据库中应该创建的表结构；比如传入<code class="language-plaintext highlighter-rouge">&amp;Topic{}</code>会自动在数据库中生成<code class="language-plaintext highlighter-rouge">topics</code>表，包含<code class="language-plaintext highlighter-rouge">id, title, content，created_at, updated_at, deleted_at</code>等数据列。3）创建一条<code class="language-plaintext highlighter-rouge">Topic</code>记录。4）查找一条<code class="language-plaintext highlighter-rouge">id</code>为<code class="language-plaintext highlighter-rouge">0</code>的Topic记录。5）查找<code class="language-plaintext highlighter-rouge">id</code>为<code class="language-plaintext highlighter-rouge">0</code>的Topic列表。</p>
 
-<p>这里<strong>特别说明</strong>一下，<code class="highlighter-rouge">err = db.Where("id=?", 0).Find(&amp;topic).Error</code>这种在查询语句最后添加<code class="highlighter-rouge">.Error</code>的方式，可以把GORM查询数据库过程中发生的错误赋值到<code class="highlighter-rouge">err</code>，从而可以通过判定<code class="highlighter-rouge">err</code>的方式来决定接下来的操作。比如，当<code class="highlighter-rouge">err</code>为<code class="highlighter-rouge">nil</code>时，说明没有出现错误，代码可以正常运行；当<code class="highlighter-rouge">err</code>不为<code class="highlighter-rouge">nil</code>时，说明出现错误，可以直接抛出这个错误或者采取措施处理这个错误。</p>
+<p>这里<strong>特别说明</strong>一下，<code class="language-plaintext highlighter-rouge">err = db.Where("id=?", 0).Find(&amp;topic).Error</code>这种在查询语句最后添加<code class="language-plaintext highlighter-rouge">.Error</code>的方式，可以把GORM查询数据库过程中发生的错误赋值到<code class="language-plaintext highlighter-rouge">err</code>，从而可以通过判定<code class="language-plaintext highlighter-rouge">err</code>的方式来决定接下来的操作。比如，当<code class="language-plaintext highlighter-rouge">err</code>为<code class="language-plaintext highlighter-rouge">nil</code>时，说明没有出现错误，代码可以正常运行；当<code class="language-plaintext highlighter-rouge">err</code>不为<code class="language-plaintext highlighter-rouge">nil</code>时，说明出现错误，可以直接抛出这个错误或者采取措施处理这个错误。</p>
 
 <h3 id="示例代码的运行结果分析">示例代码的运行结果分析</h3>
 
-<p>示例代码的运行结果如下面所示，其中<code class="highlighter-rouge">record not found</code>是GORM中<code class="highlighter-rouge">ErrRecordNotFound</code>这个类型的<code class="highlighter-rouge">Error</code>的描述：</p>
+<p>示例代码的运行结果如下面所示，其中<code class="language-plaintext highlighter-rouge">record not found</code>是GORM中<code class="language-plaintext highlighter-rouge">ErrRecordNotFound</code>这个类型的<code class="language-plaintext highlighter-rouge">Error</code>的描述：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>error： record not found
 topic的id: 0
@@ -264,13 +264,13 @@ topics的长度 0
 
 <h3 id="gorm何时抛出errrecordnotfound错误-1">GORM何时抛出ErrRecordNotFound错误</h3>
 
-<p>既然存在<code class="highlighter-rouge">ErrRecordNotFound</code>这个类型的错误，很容易想到通过判定<code class="highlighter-rouge">ErrRecordNotFound</code>是否为nil来判定数据库中是否存在某个检索条件的记录。那么GORM会在什么时候抛出<code class="highlighter-rouge">ErrRecordNotFound</code>呢？</p>
+<p>既然存在<code class="language-plaintext highlighter-rouge">ErrRecordNotFound</code>这个类型的错误，很容易想到通过判定<code class="language-plaintext highlighter-rouge">ErrRecordNotFound</code>是否为nil来判定数据库中是否存在某个检索条件的记录。那么GORM会在什么时候抛出<code class="language-plaintext highlighter-rouge">ErrRecordNotFound</code>呢？</p>
 
-<p><strong>通过上面的示例及其运行结果可以知道</strong>，相同的检索条件<code class="highlighter-rouge">Where("id=?", 0)</code>，传入的接收检索结果的参数类型不同得到的结果也不同。</p>
+<p><strong>通过上面的示例及其运行结果可以知道</strong>，相同的检索条件<code class="language-plaintext highlighter-rouge">Where("id=?", 0)</code>，传入的接收检索结果的参数类型不同得到的结果也不同。</p>
 
 <ul>
-  <li>当传入<code class="highlighter-rouge">var topic Topic</code>时抛出了<code class="highlighter-rouge">ErrRecordNotFound</code>错误；</li>
-  <li>当传入<code class="highlighter-rouge">var topics []Topic</code>时不会抛出<code class="highlighter-rouge">ErrRecordNotFound</code>错误。</li>
+  <li>当传入<code class="language-plaintext highlighter-rouge">var topic Topic</code>时抛出了<code class="language-plaintext highlighter-rouge">ErrRecordNotFound</code>错误；</li>
+  <li>当传入<code class="language-plaintext highlighter-rouge">var topics []Topic</code>时不会抛出<code class="language-plaintext highlighter-rouge">ErrRecordNotFound</code>错误。</li>
 </ul>
 
 <h3 id="gorm相关源码阅读">GORM相关源码阅读</h3>
@@ -339,7 +339,7 @@ topics的长度 0
 </code></pre></div></div>
 
 <h2 id="小结">小结</h2>
-<p>本文通过一个示例来说明<code class="highlighter-rouge">record not found</code>的错误，并通过分析源码的方式详细阐明了GORM抛出<code class="highlighter-rouge">ErrRecordNotFound</code>的具体场景。具体地，1）传入接收检索结果的变量只能为Struct类型或Slice类型；2）当传入变量为Struc类型时，如果检索出来的数据为0条，会抛出<code class="highlighter-rouge">ErrRecordNotFound</code>错误；3）当传入变量为Slice类型时，任何条件下均不会抛出<code class="highlighter-rouge">ErrRecordNotFound</code>错误。</p>
+<p>本文通过一个示例来说明<code class="language-plaintext highlighter-rouge">record not found</code>的错误，并通过分析源码的方式详细阐明了GORM抛出<code class="language-plaintext highlighter-rouge">ErrRecordNotFound</code>的具体场景。具体地，1）传入接收检索结果的变量只能为Struct类型或Slice类型；2）当传入变量为Struc类型时，如果检索出来的数据为0条，会抛出<code class="language-plaintext highlighter-rouge">ErrRecordNotFound</code>错误；3）当传入变量为Slice类型时，任何条件下均不会抛出<code class="language-plaintext highlighter-rouge">ErrRecordNotFound</code>错误。</p>
 
 <h2 id="参考">参考</h2>
 <ul>
@@ -426,7 +426,7 @@ topics的长度 0
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

@@ -187,7 +187,7 @@ Author: Ray-Eldath
 
 <p>Go协程 多路复用多个操作系统线程。也就是说，假设有 m 个 Go协程 n 个系统线程，这 m 个 Go协程 里的任意一个都可能在 n 个系统线程的任意一个上面执行。因此如果某个 Go协程 因为 I/O 调用阻塞了，其他的协程可以继续运行。Go 运行时在这里的设计隐藏了很多线程创建和管理的复杂度。</p>
 
-<p>Go协程的创建也很简单，只需要在函数/方法的前面加一个关键词 <code class="highlighter-rouge">go</code> 就可以让这个函数/方法在一个新的 goroutine 中运行。当函数/方法调用结束时，goroutine 会静默退出。（这里有点类似于 Unix Shell 中的 <code class="highlighter-rouge">&amp;</code> 符号）</p>
+<p>Go协程的创建也很简单，只需要在函数/方法的前面加一个关键词 <code class="language-plaintext highlighter-rouge">go</code> 就可以让这个函数/方法在一个新的 goroutine 中运行。当函数/方法调用结束时，goroutine 会静默退出。（这里有点类似于 Unix Shell 中的 <code class="language-plaintext highlighter-rouge">&amp;</code> 符号）</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">go</span> <span class="n">list</span><span class="o">.</span><span class="n">Sort</span><span class="p">()</span>  <span class="c">// run list.Sort concurrently; don't wait for it.</span>
 </code></pre></div></div>
@@ -208,7 +208,7 @@ Author: Ray-Eldath
 
 <h3 id="信道channels">信道（Channels）</h3>
 
-<p>和映射一样，信道通过 <code class="highlighter-rouge">make</code> 来分配内存，返回的结果等效于是对底层数据结构的引用。在使用 <code class="highlighter-rouge">make</code> 时如果传入了一个可选的整数，会创建带缓存的信道；如果不传默认就是 0，此时创建的是一个没有缓存的信道或者称为同步信道。</p>
+<p>和映射一样，信道通过 <code class="language-plaintext highlighter-rouge">make</code> 来分配内存，返回的结果等效于是对底层数据结构的引用。在使用 <code class="language-plaintext highlighter-rouge">make</code> 时如果传入了一个可选的整数，会创建带缓存的信道；如果不传默认就是 0，此时创建的是一个没有缓存的信道或者称为同步信道。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ci</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="kt">int</span><span class="p">)</span>            <span class="c">// unbuffered channel of integers</span>
 <span class="n">cj</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span>         <span class="c">// unbuffered channel of integers</span>
@@ -229,9 +229,9 @@ Author: Ray-Eldath
 <span class="o">&lt;-</span><span class="n">c</span>   <span class="c">// Wait for sort to finish; discard sent value.</span>
 </code></pre></div></div>
 
-<p>在接收到数据前接收器（比如上例中 <code class="highlighter-rouge">&lt;-c</code> 语句）会一直阻塞在那里。对于一个没有缓存的信道来说，在接收器<strong>接收完成</strong>之前发送器也会一直阻塞在那里（属于内存模型的一部分）。如果信道有空闲的缓存空间，发送器只在值拷贝到缓存区之前是阻塞的；如果缓冲区满了，发送器会一直等待，直到有接收器消费缓存中的值。</p>
+<p>在接收到数据前接收器（比如上例中 <code class="language-plaintext highlighter-rouge">&lt;-c</code> 语句）会一直阻塞在那里。对于一个没有缓存的信道来说，在接收器<strong>接收完成</strong>之前发送器也会一直阻塞在那里（属于内存模型的一部分）。如果信道有空闲的缓存空间，发送器只在值拷贝到缓存区之前是阻塞的；如果缓冲区满了，发送器会一直等待，直到有接收器消费缓存中的值。</p>
 
-<p>带缓存的信道可以作为信号量来使用，比如可以用它来控制吞吐量。在下面的例子里，过来的请求被传到 <code class="highlighter-rouge">handle</code>，然后 <code class="highlighter-rouge">handle</code> 会首先给一个信道塞一个值（相当于占坑），接着处理这个请求，最后再从信道中消费一个值释放“信号量”从而给下一个消费者腾出资源。这里信道的缓冲区容量限定了 <code class="highlighter-rouge">process</code> 的并发数量。</p>
+<p>带缓存的信道可以作为信号量来使用，比如可以用它来控制吞吐量。在下面的例子里，过来的请求被传到 <code class="language-plaintext highlighter-rouge">handle</code>，然后 <code class="language-plaintext highlighter-rouge">handle</code> 会首先给一个信道塞一个值（相当于占坑），接着处理这个请求，最后再从信道中消费一个值释放“信号量”从而给下一个消费者腾出资源。这里信道的缓冲区容量限定了 <code class="language-plaintext highlighter-rouge">process</code> 的并发数量。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">sem</span> <span class="o">=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="n">MaxOutstanding</span><span class="p">)</span>
 
@@ -249,9 +249,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>一旦 <code class="highlighter-rouge">MaxOutstanding</code> 个处理器运行 <code class="highlighter-rouge">process</code>，任何其他的 Go协程 尝试发送数据到信道的行为都会被阻塞，直到某个 <code class="highlighter-rouge">handle</code> 结束并消费了信道中的数据。</p>
+<p>一旦 <code class="language-plaintext highlighter-rouge">MaxOutstanding</code> 个处理器运行 <code class="language-plaintext highlighter-rouge">process</code>，任何其他的 Go协程 尝试发送数据到信道的行为都会被阻塞，直到某个 <code class="language-plaintext highlighter-rouge">handle</code> 结束并消费了信道中的数据。</p>
 
-<p>虽然很优雅，不过上面的设计是有问题的：虽然控制了最多只能有 <code class="highlighter-rouge">MaxOutstanding</code> 个 Go协程 同时执行，但是 <code class="highlighter-rouge">Serve</code> 会给每个进来的请求都创建一个新的 Go协程。也就是说，只要请求进来的够快，程序会无限消耗资源。我们可以通过修改 <code class="highlighter-rouge">Serve</code> 函数限定 goroutine 的创建数量来解决这个缺陷。下面是一个显而易见的解决方案（不过隐藏了一个 bug 需要修复）：</p>
+<p>虽然很优雅，不过上面的设计是有问题的：虽然控制了最多只能有 <code class="language-plaintext highlighter-rouge">MaxOutstanding</code> 个 Go协程 同时执行，但是 <code class="language-plaintext highlighter-rouge">Serve</code> 会给每个进来的请求都创建一个新的 Go协程。也就是说，只要请求进来的够快，程序会无限消耗资源。我们可以通过修改 <code class="language-plaintext highlighter-rouge">Serve</code> 函数限定 goroutine 的创建数量来解决这个缺陷。下面是一个显而易见的解决方案（不过隐藏了一个 bug 需要修复）：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">Serve</span><span class="p">(</span><span class="n">queue</span> <span class="k">chan</span> <span class="o">*</span><span class="n">Request</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="n">req</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">queue</span> <span class="p">{</span>
@@ -264,7 +264,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>上面代码的 bug 发生在 Go 的 <code class="highlighter-rouge">for</code> 循环：<strong>循环变量在每次迭代时会被复用</strong>，因此 <code class="highlighter-rouge">req</code> 变量在各个 Go协程 之间是共享的。由于上面的例子里我们不希望 <code class="highlighter-rouge">req</code> 被共享，因此需要给每个 Go协程 传一个唯一的 <code class="highlighter-rouge">req</code>。下面的代码给每个 Go协程 的闭包传递了 <code class="highlighter-rouge">req</code> 作为其参数，因为函数参数是传值的（大家可以回顾函数那一节的内容），因此避免了上面的 bug：</p>
+<p>上面代码的 bug 发生在 Go 的 <code class="language-plaintext highlighter-rouge">for</code> 循环：<strong>循环变量在每次迭代时会被复用</strong>，因此 <code class="language-plaintext highlighter-rouge">req</code> 变量在各个 Go协程 之间是共享的。由于上面的例子里我们不希望 <code class="language-plaintext highlighter-rouge">req</code> 被共享，因此需要给每个 Go协程 传一个唯一的 <code class="language-plaintext highlighter-rouge">req</code>。下面的代码给每个 Go协程 的闭包传递了 <code class="language-plaintext highlighter-rouge">req</code> 作为其参数，因为函数参数是传值的（大家可以回顾函数那一节的内容），因此避免了上面的 bug：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">Serve</span><span class="p">(</span><span class="n">queue</span> <span class="k">chan</span> <span class="o">*</span><span class="n">Request</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="n">req</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">queue</span> <span class="p">{</span>
@@ -277,7 +277,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>可以把上面的代码和前面带 <code class="highlighter-rouge">handle</code> 函数的代码比较，看看闭包是如何声明并运行的。其实上面的 bug 还有一个解决方案，就是每次循环时创建一个同名的临时变量，如下面的代码所示：</p>
+<p>可以把上面的代码和前面带 <code class="language-plaintext highlighter-rouge">handle</code> 函数的代码比较，看看闭包是如何声明并运行的。其实上面的 bug 还有一个解决方案，就是每次循环时创建一个同名的临时变量，如下面的代码所示：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">Serve</span><span class="p">(</span><span class="n">queue</span> <span class="k">chan</span> <span class="o">*</span><span class="n">Request</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="n">req</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">queue</span> <span class="p">{</span>
@@ -291,9 +291,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>或许 <code class="highlighter-rouge">req := req</code> 的写法很怪异，但是在 Go 中这是合法的惯用写法。通过这种方法我们可以得到一个同名的新变量，通过刻意覆盖本地的循环变量的方式给每个 Go协程 提供了唯一的变量（而不是共享的 <code class="highlighter-rouge">req</code> 变量）。</p>
+<p>或许 <code class="language-plaintext highlighter-rouge">req := req</code> 的写法很怪异，但是在 Go 中这是合法的惯用写法。通过这种方法我们可以得到一个同名的新变量，通过刻意覆盖本地的循环变量的方式给每个 Go协程 提供了唯一的变量（而不是共享的 <code class="language-plaintext highlighter-rouge">req</code> 变量）。</p>
 
-<p>接下来让我们回到写服务器常见的资源管理的问题。上面讨论的例子里，另一种资源管理的好方法是初始化固定数目的 <code class="highlighter-rouge">handle</code> Go协程 ，所有这些 Go协程 从信道中读取请求的数据；这种情况下 Go协程 的数目限定了同时执行 <code class="highlighter-rouge">process</code> 的并发数量。我们也可以给 <code class="highlighter-rouge">Serve</code> 函数接收一个信道，并在这个信道上接收退出信号。下面的代码示例展示了上面提到的两个技术点：</p>
+<p>接下来让我们回到写服务器常见的资源管理的问题。上面讨论的例子里，另一种资源管理的好方法是初始化固定数目的 <code class="language-plaintext highlighter-rouge">handle</code> Go协程 ，所有这些 Go协程 从信道中读取请求的数据；这种情况下 Go协程 的数目限定了同时执行 <code class="language-plaintext highlighter-rouge">process</code> 的并发数量。我们也可以给 <code class="language-plaintext highlighter-rouge">Serve</code> 函数接收一个信道，并在这个信道上接收退出信号。下面的代码示例展示了上面提到的两个技术点：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">handle</span><span class="p">(</span><span class="n">queue</span> <span class="k">chan</span> <span class="o">*</span><span class="n">Request</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="n">r</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">queue</span> <span class="p">{</span>
@@ -314,7 +314,7 @@ Author: Ray-Eldath
 
 <p>Go 最重要的特性之一就是：<strong>信道属于第一级类型</strong>。信道可以像其他的类型那样初始化和传递，这个特性的一种应用是实现并行安全的多路复用模式。</p>
 
-<p>在前面的例子中，<code class="highlighter-rouge">handle</code> 对请求来说是一个理想的处理器，但是我们并没有提及它处理的 <code class="highlighter-rouge">Request</code> 类型的细节。如果 <code class="highlighter-rouge">Request</code> 类型包含一个用来专门接收响应的信道，那么每个客户端就都可以提供自己的响应信道从而获取响应。下面给出类型 <code class="highlighter-rouge">Request</code> 的一种定义：</p>
+<p>在前面的例子中，<code class="language-plaintext highlighter-rouge">handle</code> 对请求来说是一个理想的处理器，但是我们并没有提及它处理的 <code class="language-plaintext highlighter-rouge">Request</code> 类型的细节。如果 <code class="language-plaintext highlighter-rouge">Request</code> 类型包含一个用来专门接收响应的信道，那么每个客户端就都可以提供自己的响应信道从而获取响应。下面给出类型 <code class="language-plaintext highlighter-rouge">Request</code> 的一种定义：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Request</span> <span class="k">struct</span> <span class="p">{</span>
     <span class="n">args</span>        <span class="p">[]</span><span class="kt">int</span>
@@ -323,7 +323,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>在 <code class="highlighter-rouge">Request</code> 中定义了一个函数一个参数列表，同时还定义了一个信道来接收响应。</p>
+<p>在 <code class="language-plaintext highlighter-rouge">Request</code> 中定义了一个函数一个参数列表，同时还定义了一个信道来接收响应。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">sum</span><span class="p">(</span><span class="n">a</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="n">s</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">a</span> <span class="p">{</span>
@@ -339,7 +339,7 @@ Author: Ray-Eldath
 <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"answer: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&lt;-</span><span class="n">request</span><span class="o">.</span><span class="n">resultChan</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>在服务器端，只需要修改处理器函数 <code class="highlighter-rouge">handle</code>，代码如下所示：</p>
+<p>在服务器端，只需要修改处理器函数 <code class="language-plaintext highlighter-rouge">handle</code>，代码如下所示：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">handle</span><span class="p">(</span><span class="n">queue</span> <span class="k">chan</span> <span class="o">*</span><span class="n">Request</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="n">req</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">queue</span> <span class="p">{</span>
@@ -384,12 +384,12 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>相对于为 numCPU 创建常量的值，我们可以通过运行时来准确获取 CPU 的数量。函数 <code class="highlighter-rouge">runtime.NumCPU</code> 返回硬件 CPU 的核心数量，因此我们可以写为 <code class="highlighter-rouge">var numCPU = runtime.NumCPU()</code>。</p>
+<p>相对于为 numCPU 创建常量的值，我们可以通过运行时来准确获取 CPU 的数量。函数 <code class="language-plaintext highlighter-rouge">runtime.NumCPU</code> 返回硬件 CPU 的核心数量，因此我们可以写为 <code class="language-plaintext highlighter-rouge">var numCPU = runtime.NumCPU()</code>。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">numCPU</span> <span class="o">=</span> <span class="n">runtime</span><span class="o">.</span><span class="n">NumCPU</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p>Go 中还有一个函数 <code class="highlighter-rouge">runtime.GOMAXPROCS</code>，可以用它来报告 Go 程序可以并发运行的核心数量。它的默认值是 <code class="highlighter-rouge">runtime.NumCPU</code>，开发者可以通过设置相同名称的环境变量，或者通过显式调用这个函数（传一个正整数）来覆盖这个值。如果调用这个函数时传入的是 0，会得到这个值当前的大小。所以，我们还可以向下面这样写：</p>
+<p>Go 中还有一个函数 <code class="language-plaintext highlighter-rouge">runtime.GOMAXPROCS</code>，可以用它来报告 Go 程序可以并发运行的核心数量。它的默认值是 <code class="language-plaintext highlighter-rouge">runtime.NumCPU</code>，开发者可以通过设置相同名称的环境变量，或者通过显式调用这个函数（传一个正整数）来覆盖这个值。如果调用这个函数时传入的是 0，会得到这个值当前的大小。所以，我们还可以向下面这样写：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">numCPU</span> <span class="o">=</span> <span class="n">runtime</span><span class="o">.</span><span class="n">GOMAXPROCS</span><span class="p">(</span><span class="m">0</span><span class="p">)</span>
 </code></pre></div></div>
@@ -398,7 +398,7 @@ Author: Ray-Eldath
 
 <h3 id="缓存漏斗a-leaky-buffer">缓存漏斗（A leaky buffer）</h3>
 
-<p>有时候并发编程模型也可以让非并发的想法更容易表达。下面是从 RPC 包抽象出来的一个例子。客户端对应的 Go协程 循环从某些源中（可能是网络）接收数据，为了避免重复分配和回收缓存，它保存了一个空闲列表，并用一个带缓存的信道承载它。如果信道是空的，就分配一个新的缓存，否则从信道中获取一个已有的缓存。消息的缓存一旦就绪，就会被发送到 <code class="highlighter-rouge">serverChan</code> 从而发给服务端。</p>
+<p>有时候并发编程模型也可以让非并发的想法更容易表达。下面是从 RPC 包抽象出来的一个例子。客户端对应的 Go协程 循环从某些源中（可能是网络）接收数据，为了避免重复分配和回收缓存，它保存了一个空闲列表，并用一个带缓存的信道承载它。如果信道是空的，就分配一个新的缓存，否则从信道中获取一个已有的缓存。消息的缓存一旦就绪，就会被发送到 <code class="language-plaintext highlighter-rouge">serverChan</code> 从而发给服务端。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">freeList</span> <span class="o">=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="o">*</span><span class="n">Buffer</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span>
 <span class="k">var</span> <span class="n">serverChan</span> <span class="o">=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="o">*</span><span class="n">Buffer</span><span class="p">)</span>
@@ -437,7 +437,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>上面的代码通过几行代码构建了一个漏斗桶的空闲列表。整体来看就是，客户端试图从 <code class="highlighter-rouge">freeList</code> 获取缓存，如果没有可用的缓存它就分配一个新的缓存。服务端用完缓存后把 <code class="highlighter-rouge">b</code> 返回给 <code class="highlighter-rouge">freeList</code>，如果空闲列表满了，缓存会被丢弃并最终被垃圾回收器回收掉（在 <code class="highlighter-rouge">select</code> 中 <code class="highlighter-rouge">default</code> 的分支会在没有其他的 case 匹配的时候执行，也就意味着上面代码中 <code class="highlighter-rouge">select</code> 语句不会阻塞）。</p>
+<p>上面的代码通过几行代码构建了一个漏斗桶的空闲列表。整体来看就是，客户端试图从 <code class="language-plaintext highlighter-rouge">freeList</code> 获取缓存，如果没有可用的缓存它就分配一个新的缓存。服务端用完缓存后把 <code class="language-plaintext highlighter-rouge">b</code> 返回给 <code class="language-plaintext highlighter-rouge">freeList</code>，如果空闲列表满了，缓存会被丢弃并最终被垃圾回收器回收掉（在 <code class="language-plaintext highlighter-rouge">select</code> 中 <code class="language-plaintext highlighter-rouge">default</code> 的分支会在没有其他的 case 匹配的时候执行，也就意味着上面代码中 <code class="language-plaintext highlighter-rouge">select</code> 语句不会阻塞）。</p>
 
     </article>
 
@@ -516,7 +516,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

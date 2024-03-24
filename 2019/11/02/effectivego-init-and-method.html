@@ -173,9 +173,9 @@ Author: Ray-Eldath
 
 <h2 id="常量constants">常量（Constants）</h2>
 
-<p>在 Go 中，常量仅仅指常量。常量（包括包裹在函数内的常量）在编译时就会被创建，它只能是数字、字符（UTF8符文）、字符串或布尔值。由于常量在编译时就要确定下来，因此定义常量的表达式必须是<strong>编译器可以执行</strong>的常量表达式。比如 <code class="highlighter-rouge">1&lt;&lt;3</code> 是一个常量表达式，<code class="highlighter-rouge">math.Sin(math.Pi/4)</code> 不是常量表达式，因为 <code class="highlighter-rouge">math.Sin</code> 只能在运行时调用，不能在编译时调用。</p>
+<p>在 Go 中，常量仅仅指常量。常量（包括包裹在函数内的常量）在编译时就会被创建，它只能是数字、字符（UTF8符文）、字符串或布尔值。由于常量在编译时就要确定下来，因此定义常量的表达式必须是<strong>编译器可以执行</strong>的常量表达式。比如 <code class="language-plaintext highlighter-rouge">1&lt;&lt;3</code> 是一个常量表达式，<code class="language-plaintext highlighter-rouge">math.Sin(math.Pi/4)</code> 不是常量表达式，因为 <code class="language-plaintext highlighter-rouge">math.Sin</code> 只能在运行时调用，不能在编译时调用。</p>
 
-<p>在 Go 中，枚举型常量经常通过使用 <code class="highlighter-rouge">iota</code> 枚举器来创建。鉴于 <code class="highlighter-rouge">iota</code> 可以作为表达式的一部分来使用，同时表达式可以隐式地重复，因此很方便创建复杂枚举值集合。</p>
+<p>在 Go 中，枚举型常量经常通过使用 <code class="language-plaintext highlighter-rouge">iota</code> 枚举器来创建。鉴于 <code class="language-plaintext highlighter-rouge">iota</code> 可以作为表达式的一部分来使用，同时表达式可以隐式地重复，因此很方便创建复杂枚举值集合。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">ByteSize</span> <span class="kt">float64</span>
 
@@ -192,7 +192,7 @@ Author: Ray-Eldath
 <span class="p">)</span>
 </code></pre></div></div>
 
-<p>可以给自定义的任何类型添加方法（比如 <code class="highlighter-rouge">String</code> 方法），这种能力使得任意类型的值被打印时都能定义自己的输出格式。最常见的是给结构体添加方法，不过我们也可以给标量类型（比如 浮点类型 <code class="highlighter-rouge">ByteSize</code>）添加方法。</p>
+<p>可以给自定义的任何类型添加方法（比如 <code class="language-plaintext highlighter-rouge">String</code> 方法），这种能力使得任意类型的值被打印时都能定义自己的输出格式。最常见的是给结构体添加方法，不过我们也可以给标量类型（比如 浮点类型 <code class="language-plaintext highlighter-rouge">ByteSize</code>）添加方法。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">b</span> <span class="n">ByteSize</span><span class="p">)</span> <span class="n">String</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
     <span class="k">switch</span> <span class="p">{</span>
@@ -217,9 +217,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>表达式 <code class="highlighter-rouge">YB</code> 会打印 <code class="highlighter-rouge">1.00YB</code>， 而 <code class="highlighter-rouge">ByteSize(1e13)</code> 会打印 <code class="highlighter-rouge">9.09TB</code>。</p>
+<p>表达式 <code class="language-plaintext highlighter-rouge">YB</code> 会打印 <code class="language-plaintext highlighter-rouge">1.00YB</code>， 而 <code class="language-plaintext highlighter-rouge">ByteSize(1e13)</code> 会打印 <code class="language-plaintext highlighter-rouge">9.09TB</code>。</p>
 
-<p>上面的代码通过使用 <code class="highlighter-rouge">Sprintf</code> 来实现 <code class="highlighter-rouge">ByteSize</code> 的 <code class="highlighter-rouge">String</code> 方法是安全的（不存在上一小节提到的循环调用问题），因为使用了 <code class="highlighter-rouge">%f</code> 格式符，而它不是一个字符串格式化符：<code class="highlighter-rouge">Sprintf</code> 只在需要字符串类型的时候才会调用 <code class="highlighter-rouge">String</code> 方法，<code class="highlighter-rouge">%f</code> 指定的是浮点值，也就自然而然避免了上面代码中 <code class="highlighter-rouge">String</code> 方法调用 <code class="highlighter-rouge">fmt.Sprintf</code> 方法后者再进一步触发 <code class="highlighter-rouge">String</code> 方法的循环调用链。</p>
+<p>上面的代码通过使用 <code class="language-plaintext highlighter-rouge">Sprintf</code> 来实现 <code class="language-plaintext highlighter-rouge">ByteSize</code> 的 <code class="language-plaintext highlighter-rouge">String</code> 方法是安全的（不存在上一小节提到的循环调用问题），因为使用了 <code class="language-plaintext highlighter-rouge">%f</code> 格式符，而它不是一个字符串格式化符：<code class="language-plaintext highlighter-rouge">Sprintf</code> 只在需要字符串类型的时候才会调用 <code class="language-plaintext highlighter-rouge">String</code> 方法，<code class="language-plaintext highlighter-rouge">%f</code> 指定的是浮点值，也就自然而然避免了上面代码中 <code class="language-plaintext highlighter-rouge">String</code> 方法调用 <code class="language-plaintext highlighter-rouge">fmt.Sprintf</code> 方法后者再进一步触发 <code class="language-plaintext highlighter-rouge">String</code> 方法的循环调用链。</p>
 
 <h2 id="变量variables">变量（Variables）</h2>
 
@@ -234,9 +234,9 @@ Author: Ray-Eldath
 
 <h2 id="init-函数the-init-function">init 函数（The init function）</h2>
 
-<p><strong>每个源文件</strong>都可以定义 <code class="highlighter-rouge">init</code> 函数用来初始化它需要的状态。（事实上每个文件可以有多个 <code class="highlighter-rouge">init</code> 函数，而且这些 <code class="highlighter-rouge">init</code> 函数会按序执行，比如 <a href="https://github.com/chalvern/gosmile/tree/template/db/migration">gosmile</a> 数据库迁移的设计就可以利用这个特性）。<code class="highlighter-rouge">init</code> 会在包中所有的变量声明被执行后再调用，而且只在所有被导入的包初始化以后才会被调用（被导入的包先初始化，然后常量和变量被初始化，接着才是 <code class="highlighter-rouge">init</code> 函数的执行）。</p>
+<p><strong>每个源文件</strong>都可以定义 <code class="language-plaintext highlighter-rouge">init</code> 函数用来初始化它需要的状态。（事实上每个文件可以有多个 <code class="language-plaintext highlighter-rouge">init</code> 函数，而且这些 <code class="language-plaintext highlighter-rouge">init</code> 函数会按序执行，比如 <a href="https://github.com/chalvern/gosmile/tree/template/db/migration">gosmile</a> 数据库迁移的设计就可以利用这个特性）。<code class="language-plaintext highlighter-rouge">init</code> 会在包中所有的变量声明被执行后再调用，而且只在所有被导入的包初始化以后才会被调用（被导入的包先初始化，然后常量和变量被初始化，接着才是 <code class="language-plaintext highlighter-rouge">init</code> 函数的执行）。</p>
 
-<p><code class="highlighter-rouge">init</code> 函数大都是为了在真实运行开始前校验或者修复程序的状态，除此外不应该用作其他的用途。（根据开发经验，在 <code class="highlighter-rouge">init</code> 中添加过多的逻辑会让测试很难写）</p>
+<p><code class="language-plaintext highlighter-rouge">init</code> 函数大都是为了在真实运行开始前校验或者修复程序的状态，除此外不应该用作其他的用途。（根据开发经验，在 <code class="language-plaintext highlighter-rouge">init</code> 中添加过多的逻辑会让测试很难写）</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">init</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">if</span> <span class="n">user</span> <span class="o">==</span> <span class="s">""</span> <span class="p">{</span>
@@ -257,9 +257,9 @@ Author: Ray-Eldath
 
 <h2 id="指针与值pointers-vs-values">指针与值（Pointers vs. Values）</h2>
 
-<p>就像看到的 <code class="highlighter-rouge">ByteSize</code> 那样，我们可以给任何有名称的类型（除了指针和接口）定义方法，并不限定必须是结构体类型。</p>
+<p>就像看到的 <code class="language-plaintext highlighter-rouge">ByteSize</code> 那样，我们可以给任何有名称的类型（除了指针和接口）定义方法，并不限定必须是结构体类型。</p>
 
-<p>在切片一节的讨论中，我们编写了一个 <code class="highlighter-rouge">Append</code> 函数。其实我们可以把它定义为切片的一个方法。为了达成这个目的，首先我们需要基于切片声明一个新的类型从而方便把函数绑定到这个类型上，然后就可以很自然地在切片的变量上调用这个方法。</p>
+<p>在切片一节的讨论中，我们编写了一个 <code class="language-plaintext highlighter-rouge">Append</code> 函数。其实我们可以把它定义为切片的一个方法。为了达成这个目的，首先我们需要基于切片声明一个新的类型从而方便把函数绑定到这个类型上，然后就可以很自然地在切片的变量上调用这个方法。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">ByteSlice</span> <span class="p">[]</span><span class="kt">byte</span>
 
@@ -268,7 +268,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>由于上一小节提到的切片的特点，上面的方法仍然需要返回更新后的切片，否则方法的调用方是感知不到这种更新的。不过我们可以把接受者改为<code class="highlighter-rouge">ByteSlice</code>的<strong>指针</strong>从而改进上面笨拙的写法，从而避免显式地返回切片，如下所示：</p>
+<p>由于上一小节提到的切片的特点，上面的方法仍然需要返回更新后的切片，否则方法的调用方是感知不到这种更新的。不过我们可以把接受者改为<code class="language-plaintext highlighter-rouge">ByteSlice</code>的<strong>指针</strong>从而改进上面笨拙的写法，从而避免显式地返回切片，如下所示：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">ByteSlice</span><span class="p">)</span> <span class="n">Append</span><span class="p">(</span><span class="n">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">slice</span> <span class="o">:=</span> <span class="o">*</span><span class="n">p</span>
@@ -277,7 +277,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>实际上我们可以做的更好，比如模仿标准的 <code class="highlighter-rouge">Write</code> 方法继续改进 <code class="highlighter-rouge">Append</code> 函数，如下：</p>
+<p>实际上我们可以做的更好，比如模仿标准的 <code class="language-plaintext highlighter-rouge">Write</code> 方法继续改进 <code class="language-plaintext highlighter-rouge">Append</code> 函数，如下：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">ByteSlice</span><span class="p">)</span> <span class="n">Write</span><span class="p">(</span><span class="n">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="n">n</span> <span class="kt">int</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">slice</span> <span class="o">:=</span> <span class="o">*</span><span class="n">p</span>
@@ -287,15 +287,15 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>如此，类型 <code class="highlighter-rouge">*ByteSlice</code> 实现了便利的标准接口 <code class="highlighter-rouge">io.Writer</code>。比如下面的代码：</p>
+<p>如此，类型 <code class="language-plaintext highlighter-rouge">*ByteSlice</code> 实现了便利的标准接口 <code class="language-plaintext highlighter-rouge">io.Writer</code>。比如下面的代码：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">var</span> <span class="n">b</span> <span class="n">ByteSlice</span>
     <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="s">"This hour has %d days</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="m">7</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>上面的代码中我们传递了 <code class="highlighter-rouge">ByteSlice</code> 的地址，因为只有 <code class="highlighter-rouge">*ByteSlice</code> 实现了 <code class="highlighter-rouge">io.Writer</code> 接口。关于<strong>指针接受者和值接受者</strong>的规则是：<strong>值方法可以在指针接受者上面和值接受者上面触发调用，但是指针方法只能被指针接受者触发调用</strong>。</p>
+<p>上面的代码中我们传递了 <code class="language-plaintext highlighter-rouge">ByteSlice</code> 的地址，因为只有 <code class="language-plaintext highlighter-rouge">*ByteSlice</code> 实现了 <code class="language-plaintext highlighter-rouge">io.Writer</code> 接口。关于<strong>指针接受者和值接受者</strong>的规则是：<strong>值方法可以在指针接受者上面和值接受者上面触发调用，但是指针方法只能被指针接受者触发调用</strong>。</p>
 
-<p>之所以有上面的规则，是因为指针方法可以修改接受者；如果在值接受者上面触发指针方法会导致方法接收一个值的拷贝，任何对该值的修改都会被丢弃，因此 Go 语言层面上不允许这种错误。不过，这里有一个特例。如果值是可取址的，当在一个值上调用指针方法的时候，Go 语言会照顾到这种常见的用法在值上自动添加一个取址运算符。比如上面的例子中，<code class="highlighter-rouge">b</code> 是可取址的，因此我们可以通过 <code class="highlighter-rouge">b.Write</code> 调用它的 <code class="highlighter-rouge">Write</code> 方法，编译器会为我们把它重写为 <code class="highlighter-rouge">(&amp;b).Write</code>。</p>
+<p>之所以有上面的规则，是因为指针方法可以修改接受者；如果在值接受者上面触发指针方法会导致方法接收一个值的拷贝，任何对该值的修改都会被丢弃，因此 Go 语言层面上不允许这种错误。不过，这里有一个特例。如果值是可取址的，当在一个值上调用指针方法的时候，Go 语言会照顾到这种常见的用法在值上自动添加一个取址运算符。比如上面的例子中，<code class="language-plaintext highlighter-rouge">b</code> 是可取址的，因此我们可以通过 <code class="language-plaintext highlighter-rouge">b.Write</code> 调用它的 <code class="language-plaintext highlighter-rouge">Write</code> 方法，编译器会为我们把它重写为 <code class="language-plaintext highlighter-rouge">(&amp;b).Write</code>。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
@@ -324,7 +324,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>顺便提一下，<code class="highlighter-rouge">bytes.Buffer</code> 就是通过在字节的切片上定义 <code class="highlighter-rouge">Write</code> 方法来实现的。</p>
+<p>顺便提一下，<code class="language-plaintext highlighter-rouge">bytes.Buffer</code> 就是通过在字节的切片上定义 <code class="language-plaintext highlighter-rouge">Write</code> 方法来实现的。</p>
 
     </article>
 
@@ -403,7 +403,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

@@ -166,13 +166,13 @@ Author: Ray-Eldath
 <p>本文简单介绍 Golang 中 map 类型的安全使用。</p>
 
 <h2 id="golang-中-map-的使用">Golang 中 map 的使用</h2>
-<p>在业务逻辑中保存 <code class="highlighter-rouge">key-value</code> 是一个非常普遍的需求，因此 <code class="highlighter-rouge">Map</code> 的使用场景非常多。</p>
+<p>在业务逻辑中保存 <code class="language-plaintext highlighter-rouge">key-value</code> 是一个非常普遍的需求，因此 <code class="language-plaintext highlighter-rouge">Map</code> 的使用场景非常多。</p>
 
 <h3 id="不允许并发读写的-map">不允许并发读写的 map</h3>
 
-<p>在 Golang 源码实现中对 map 的要求比较高（见《 <a href="https://blog.golang.org/go-maps-in-action">Go maps in action</a>》）：<code class="highlighter-rouge">Maps are not safe for concurrent use: it's not defined what happens when you read and write to them simultaneously</code>（当并发使用时 Maps 是不安全的，当并发地读写 map 的时候无法预知会发生啥 ）。</p>
+<p>在 Golang 源码实现中对 map 的要求比较高（见《 <a href="https://blog.golang.org/go-maps-in-action">Go maps in action</a>》）：<code class="language-plaintext highlighter-rouge">Maps are not safe for concurrent use: it's not defined what happens when you read and write to them simultaneously</code>（当并发使用时 Maps 是不安全的，当并发地读写 map 的时候无法预知会发生啥 ）。</p>
 
-<p>如果不加保护地在不同的线程中读写 <code class="highlighter-rouge">map</code> 类型的数据，代码会直接崩溃并异常退出。比如下面的代码：</p>
+<p>如果不加保护地在不同的线程中读写 <code class="language-plaintext highlighter-rouge">map</code> 类型的数据，代码会直接崩溃并异常退出。比如下面的代码：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
@@ -198,7 +198,7 @@ Author: Ray-Eldath
 <span class="c"># ....(省略异常堆栈)</span>
 </code></pre></div></div>
 
-<p>从输出结果来看，Golang 运行时明确禁止 <code class="highlighter-rouge">map</code> 的并发读写，且在检测到这种情况后直接异常退出。这不同于其他数据类型，比如 <code class="highlighter-rouge">int</code>、<code class="highlighter-rouge">string</code> 等，对比下面的代码（说明：下面的代码存在隐形的并发问题，具体参考《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》）：</p>
+<p>从输出结果来看，Golang 运行时明确禁止 <code class="language-plaintext highlighter-rouge">map</code> 的并发读写，且在检测到这种情况后直接异常退出。这不同于其他数据类型，比如 <code class="language-plaintext highlighter-rouge">int</code>、<code class="language-plaintext highlighter-rouge">string</code> 等，对比下面的代码（说明：下面的代码存在隐形的并发问题，具体参考《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》）：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 运行下面的代码并不会异常退出，不同于上面 map 类型的 m 的使用</span>
 <span class="c">// go run main.go </span>
@@ -220,13 +220,13 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>再次<strong>需要说明</strong>，虽然上面的代码在不同的线程中访问 <code class="highlighter-rouge">int</code> 类型的数据并未直接异常退出，但是这种不加任何安全措施的并发读写是存在安全风险的，具体参考《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》。</p>
+<p>再次<strong>需要说明</strong>，虽然上面的代码在不同的线程中访问 <code class="language-plaintext highlighter-rouge">int</code> 类型的数据并未直接异常退出，但是这种不加任何安全措施的并发读写是存在安全风险的，具体参考《<a href="/2019/05/11/golang-concurrency-02.html">浅谈 Golang 中数据的并发同步问题（二）</a>》。</p>
 
 <h3 id="安全使用-map显而易见地加锁">安全使用 map——显而易见地加锁</h3>
 
 <p>既然 Golang 在运行时不允许对 map 的并发读写，当需要在多个线程中读写 map 时，显而易见的方式是<strong>加锁</strong>（如《<a href="/2019/05/11/golang-concurrency-01.html">浅谈 Golang 中数据的并发同步问题（一）</a>》所描述的）。</p>
 
-<p>下面的代码把 <code class="highlighter-rouge">map</code> 类型的 <code class="highlighter-rouge">m</code> 封装在一个匿名的 <code class="highlighter-rouge">struct</code> 中，同时整个匿名的 <code class="highlighter-rouge">struct</code> 继承了 <code class="highlighter-rouge">sync.RWMutex</code> 结构，因此拥有了 <strong>加读写锁</strong> 的功能，从而安全地实现了多个线程对 <code class="highlighter-rouge">map</code> 的 “并发读写”：</p>
+<p>下面的代码把 <code class="language-plaintext highlighter-rouge">map</code> 类型的 <code class="language-plaintext highlighter-rouge">m</code> 封装在一个匿名的 <code class="language-plaintext highlighter-rouge">struct</code> 中，同时整个匿名的 <code class="language-plaintext highlighter-rouge">struct</code> 继承了 <code class="language-plaintext highlighter-rouge">sync.RWMutex</code> 结构，因此拥有了 <strong>加读写锁</strong> 的功能，从而安全地实现了多个线程对 <code class="language-plaintext highlighter-rouge">map</code> 的 “并发读写”：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
@@ -260,16 +260,16 @@ Author: Ray-Eldath
 
 <h3 id="为什么-map-并发读写时会在运行时异常退出">为什么 map 并发读写时会在运行时异常退出</h3>
 
-<p>最后提一下这个问题：<strong>为什么 int、string、slice 等变量在多个线程读写时运行正常，而 map 在多个线程并发读写时会运行时异常退出？</strong> 其实这个涉及到 <code class="highlighter-rouge">map</code> 的具体实现（我知道这是一句废话 +_+）。</p>
+<p>最后提一下这个问题：<strong>为什么 int、string、slice 等变量在多个线程读写时运行正常，而 map 在多个线程并发读写时会运行时异常退出？</strong> 其实这个涉及到 <code class="language-plaintext highlighter-rouge">map</code> 的具体实现（我知道这是一句废话 +_+）。</p>
 
-<p>简单来讲，可以从Go 源码中  <a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/map.go">map 运行时相关的部分</a> 窥见一些依据：<code class="highlighter-rouge">map</code> 的增改删查可以分别对应到 <code class="highlighter-rouge">func mapassign()</code>、<code class="highlighter-rouge">func mapaccess1()</code>、<code class="highlighter-rouge">func mapdelete()</code>这几个函数，每个函数都有非常长的执行逻辑；如果多个线程并发读写同一个 <code class="highlighter-rouge">map</code>，大概率会出现 ① <code class="highlighter-rouge">mapassign</code> 函数（增加某个 <code class="highlighter-rouge">key</code> 的值）执行到一半的时候 <code class="highlighter-rouge">mapaccess1</code> 读取到一个相应的零值，②  <code class="highlighter-rouge">mapaccess1</code> 函数（读取某个 <code class="highlighter-rouge">key</code> 的值）执行到一半的时候 <code class="highlighter-rouge">mapdelete</code> 已经删除了对应的 <code class="highlighter-rouge">key</code>，等等。</p>
+<p>简单来讲，可以从Go 源码中  <a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/map.go">map 运行时相关的部分</a> 窥见一些依据：<code class="language-plaintext highlighter-rouge">map</code> 的增改删查可以分别对应到 <code class="language-plaintext highlighter-rouge">func mapassign()</code>、<code class="language-plaintext highlighter-rouge">func mapaccess1()</code>、<code class="language-plaintext highlighter-rouge">func mapdelete()</code>这几个函数，每个函数都有非常长的执行逻辑；如果多个线程并发读写同一个 <code class="language-plaintext highlighter-rouge">map</code>，大概率会出现 ① <code class="language-plaintext highlighter-rouge">mapassign</code> 函数（增加某个 <code class="language-plaintext highlighter-rouge">key</code> 的值）执行到一半的时候 <code class="language-plaintext highlighter-rouge">mapaccess1</code> 读取到一个相应的零值，②  <code class="language-plaintext highlighter-rouge">mapaccess1</code> 函数（读取某个 <code class="language-plaintext highlighter-rouge">key</code> 的值）执行到一半的时候 <code class="language-plaintext highlighter-rouge">mapdelete</code> 已经删除了对应的 <code class="language-plaintext highlighter-rouge">key</code>，等等。</p>
 
 <p><strong>同时</strong>考虑到增删数据时底层数据的改变（比如扩容重分配，这一块还没深入研究，可以自行查看源码=。=），因此保持 map 的单纯变得很重要；为避免出现难以 debug 的异常，<strong>运行时环境显式地并发异常退出也就可以理解了。</strong></p>
 
 <h2 id="小结">小结</h2>
 <p>Golang 的运行时会<strong>在 map 的增改删查过程中检测是否有并发读写的情况，当发现并发读写时直接异常退出</strong>。相对于其他数据类型（比如 int、string、slice 等），map 的并发使用是比较严苛的（安全&amp;性能的折中）；可以认为 map 的这种严苛很大程度上降低了诡异 bug 的产生，增加代码的鲁棒性。</p>
 
-<p>最后，当提到 map 的并发使用时，很多时候会提到 <code class="highlighter-rouge">sync.Map</code> 的使用，不过由于它大量使用了 <code class="highlighter-rouge">interface{}</code> 类型，使用起来并不是那么方便；目前为止，<strong>我更喜欢加读写锁的方式</strong>来使用 map 而不是使用线程安全的 <code class="highlighter-rouge">sync.Map</code> 😆</p>
+<p>最后，当提到 map 的并发使用时，很多时候会提到 <code class="language-plaintext highlighter-rouge">sync.Map</code> 的使用，不过由于它大量使用了 <code class="language-plaintext highlighter-rouge">interface{}</code> 类型，使用起来并不是那么方便；目前为止，<strong>我更喜欢加读写锁的方式</strong>来使用 map 而不是使用线程安全的 <code class="language-plaintext highlighter-rouge">sync.Map</code> 😆</p>
 
 <h2 id="参考">参考</h2>
 <ul>
@@ -279,8 +279,8 @@ Author: Ray-Eldath
   <li><a href="https://www.jianshu.com/p/10a998089486">go语言坑之并发访问map</a> 浅显易懂地介绍了 map 的坑及并发访问方法</li>
   <li><a href="https://coolshell.cn/articles/9606.html">疫苗：Java HashMap的死循环</a> 了解 Java 中 HashMap 的实现机制，可以知道 Map 的线程不安全的实现是一个普遍现象</li>
   <li><a href="https://github.com/golang/go/blob/release-branch.go1.12/src/runtime/map.go">src/runtime/map.go</a> Go 源码中 map 相关的部分（运行时）</li>
-  <li><a href="https://golang.google.cn/pkg/sync/#Map">sync - The Go Programming Language</a> Golang 官方 sync 包中包含线程安全的 <code class="highlighter-rouge">sync.Map</code></li>
-  <li><a href="https://www.jianshu.com/p/1d45e31343d8">go map的线程安全使用</a> 介绍了 <code class="highlighter-rouge">sync.Map</code> 的使用</li>
+  <li><a href="https://golang.google.cn/pkg/sync/#Map">sync - The Go Programming Language</a> Golang 官方 sync 包中包含线程安全的 <code class="language-plaintext highlighter-rouge">sync.Map</code></li>
+  <li><a href="https://www.jianshu.com/p/1d45e31343d8">go map的线程安全使用</a> 介绍了 <code class="language-plaintext highlighter-rouge">sync.Map</code> 的使用</li>
 </ul>
 
     </article>
@@ -360,7 +360,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

@@ -192,7 +192,7 @@ Author: Ray-Eldath
 <h3 id="gitlab-ce源码初探">gitlab-ce源码初探</h3>
 <p>很庆幸gitlab有开源的社区版本（代码库地址见参考），这种免费的面包这个时候就特别解饿。</p>
 
-<p>gitlab-ce源码是用<a href="http://rubyonrails.org/">Ruby on Rails</a>编写的，而作为此技术栈出身的自己，读它的代码不在话下。我到<code class="highlighter-rouge">/app/controllers/projects_controller.rb</code>去找了半天（十分钟），但是半天过去了也没有发现明显的git仓库调用的接口。</p>
+<p>gitlab-ce源码是用<a href="http://rubyonrails.org/">Ruby on Rails</a>编写的，而作为此技术栈出身的自己，读它的代码不在话下。我到<code class="language-plaintext highlighter-rouge">/app/controllers/projects_controller.rb</code>去找了半天（十分钟），但是半天过去了也没有发现明显的git仓库调用的接口。</p>
 
 <p>因为Ruby元编程的特性，代码不一定藏在了什么地方，无奈，只能去google了（此时百度就表现出局限性了）。</p>
 
@@ -200,15 +200,15 @@ Author: Ray-Eldath
 
 <p>从同事那边听到了pygit这个词，自己到github上搜到了ruby-git这个库，在git的官方地址看到了JGit这个工具。是的，这几个工具是对应语言的git接口库。</p>
 
-<p>于是，我尝试在gitlab-ce源码中全局搜索<code class="highlighter-rouge">ruby-git</code>关键词，不过最终也没有找到。</p>
+<p>于是，我尝试在gitlab-ce源码中全局搜索<code class="language-plaintext highlighter-rouge">ruby-git</code>关键词，不过最终也没有找到。</p>
 
 <h3 id="最后找到了gitaly及gitaly-client">最后找到了gitaly及gitaly-client</h3>
 
-<p>最终在gitlab-ce的源码库找到了<code class="highlighter-rouge">lib/gitlab/git</code>、<code class="highlighter-rouge">lib/gitlab/gitaly_client</code>，并且找到了 <a href="https://gitlab.com/gitlab-org/gitaly">gitaly</a> 这个仓库。</p>
+<p>最终在gitlab-ce的源码库找到了<code class="language-plaintext highlighter-rouge">lib/gitlab/git</code>、<code class="language-plaintext highlighter-rouge">lib/gitlab/gitaly_client</code>，并且找到了 <a href="https://gitlab.com/gitlab-org/gitaly">gitaly</a> 这个仓库。</p>
 
 <p><strong>gitlab</strong>把一些平台相关的内容保存在数据库中（比如用户数据、项目信息等），而所有git版本仓库的数据则通过<strong>gitaly_client</strong>这个SDK与<strong>gitlaly</strong>进行RPC调用。</p>
 
-<p><strong>gitaly</strong>对git的使用进行了封装，通过查看其源码发现，这个工具所做的事情是对git命令的封装。即对gitaly而言，它的底层也是通过调用<strong>git</strong>这个命令实现的。可以通过查看<a href="https://gitlab.com/gitlab-org/gitaly/blob/v0.115.0/internal/command/command.go#L69">internal/command/command.go</a>，发现在发起命令前，会首先获取到<strong>git</strong>的二进制包路径，也就是说gitaly会像我们手动去<code class="highlighter-rouge">git branch</code>或<code class="highlighter-rouge">git diff</code>那样去做，只是它会对输出进行自动化解析，变成代码可理解的内容然后传回给<strong>gitlaly_client</strong>。</p>
+<p><strong>gitaly</strong>对git的使用进行了封装，通过查看其源码发现，这个工具所做的事情是对git命令的封装。即对gitaly而言，它的底层也是通过调用<strong>git</strong>这个命令实现的。可以通过查看<a href="https://gitlab.com/gitlab-org/gitaly/blob/v0.115.0/internal/command/command.go#L69">internal/command/command.go</a>，发现在发起命令前，会首先获取到<strong>git</strong>的二进制包路径，也就是说gitaly会像我们手动去<code class="language-plaintext highlighter-rouge">git branch</code>或<code class="language-plaintext highlighter-rouge">git diff</code>那样去做，只是它会对输出进行自动化解析，变成代码可理解的内容然后传回给<strong>gitlaly_client</strong>。</p>
 
 <h2 id="gitlab高可用方案">gitlab高可用方案</h2>
 <p>当实现私有化部署时，最应关注的问题是高可用方案。这里面包括两层意思：1）一个是服务的高可用。跑demo式的做法肯定不可以，需要服务搭建者考虑一旦发生故障，该如何避免对用户的影响；一般的做法是启用多个副本同时提供服务，其中一个翘掉还有其他的可用。2）数据的安全。<strong>数据不能丢！数据不能丢！数据不能丢！</strong> 这个是重中之重，甚至比服务的高可用更重要。</p>
@@ -332,7 +332,7 @@ git仓库<span class="o">(</span>多副本保存<span class="o">)</span>
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

@@ -169,7 +169,7 @@ Author: Ray-Eldath
 </ul>
 
 <h2 id="当我们以域名请求某服务的时候">当我们以域名请求某服务的时候</h2>
-<p>当我们从浏览器里敲入百度网址 <code class="highlighter-rouge">www.baidu.com</code> 并按下回车键（Enter/Return 键），浏览器在与百度的服务器建立连接之前，首先需要把 <code class="highlighter-rouge">www.baidu.com</code> 转换成为 <code class="highlighter-rouge">IP</code>，然后根据这个 <code class="highlighter-rouge">IP</code> 与百度的服务器建立连接，继而完成接下来的数据传输。</p>
+<p>当我们从浏览器里敲入百度网址 <code class="language-plaintext highlighter-rouge">www.baidu.com</code> 并按下回车键（Enter/Return 键），浏览器在与百度的服务器建立连接之前，首先需要把 <code class="language-plaintext highlighter-rouge">www.baidu.com</code> 转换成为 <code class="language-plaintext highlighter-rouge">IP</code>，然后根据这个 <code class="language-plaintext highlighter-rouge">IP</code> 与百度的服务器建立连接，继而完成接下来的数据传输。</p>
 
 <h3 id="具体步骤">具体步骤</h3>
 
@@ -179,19 +179,19 @@ Author: Ray-Eldath
 
 <ol>
   <li>手机（或电脑）首先请求 DNS 服务器获取百度的 IP；</li>
-  <li>DNS 服务器从 www.baidu.com 对应的表里按照一定的算法返回某个 IP（假设为 <code class="highlighter-rouge">220.181.57.142</code>）；</li>
-  <li>手机或电脑拿到 <code class="highlighter-rouge">220.181.57.142</code> 后就发起与 <code class="highlighter-rouge">baidu-server-2</code> 的连接，形成一个 <code class="highlighter-rouge">61.147.108.199 &lt;=&gt; 220.181.57.142</code> 的连接；</li>
+  <li>DNS 服务器从 www.baidu.com 对应的表里按照一定的算法返回某个 IP（假设为 <code class="language-plaintext highlighter-rouge">220.181.57.142</code>）；</li>
+  <li>手机或电脑拿到 <code class="language-plaintext highlighter-rouge">220.181.57.142</code> 后就发起与 <code class="language-plaintext highlighter-rouge">baidu-server-2</code> 的连接，形成一个 <code class="language-plaintext highlighter-rouge">61.147.108.199 &lt;=&gt; 220.181.57.142</code> 的连接；</li>
   <li>连接建立起来后，此时才进行请求数据和响应数据的传输。</li>
 </ol>
 
 <h2 id="dns-服务器">DNS 服务器</h2>
-<p>在上图中可以看到 <code class="highlighter-rouge">DNS server</code>做的主要事情就是简单地把 <code class="highlighter-rouge">www.baidu.com</code> 转换成为对应的 <code class="highlighter-rouge">IP</code>。那么这个 IP 是如何来的呢？</p>
+<p>在上图中可以看到 <code class="language-plaintext highlighter-rouge">DNS server</code>做的主要事情就是简单地把 <code class="language-plaintext highlighter-rouge">www.baidu.com</code> 转换成为对应的 <code class="language-plaintext highlighter-rouge">IP</code>。那么这个 IP 是如何来的呢？</p>
 
-<p>当我们在某个云平台（比如 <code class="highlighter-rouge">jingwei.link</code> 这个域名是在阿里云买的）购买了一个域名后，我们就可以给这个域名添加相应的<strong>解析</strong>。把我们服务器的 <code class="highlighter-rouge">IP</code> 绑定到这个域名下面后，信息同步到相应的 DNS 服务器上，我们就可以通过域名找到我们的服务器 <code class="highlighter-rouge">IP</code> 继而访问我们的服务了。</p>
+<p>当我们在某个云平台（比如 <code class="language-plaintext highlighter-rouge">jingwei.link</code> 这个域名是在阿里云买的）购买了一个域名后，我们就可以给这个域名添加相应的<strong>解析</strong>。把我们服务器的 <code class="language-plaintext highlighter-rouge">IP</code> 绑定到这个域名下面后，信息同步到相应的 DNS 服务器上，我们就可以通过域名找到我们的服务器 <code class="language-plaintext highlighter-rouge">IP</code> 继而访问我们的服务了。</p>
 
 <h3 id="在-ubuntu-上搭建-dns-服务器">在 Ubuntu 上搭建 DNS 服务器</h3>
 
-<p>大多数情况下，我们的手机（或电脑）都会自动连接公共的 DNS 服务器，并使用这些<strong>公共的 DNS 服务器</strong>完成所有域名到 <code class="highlighter-rouge">IP</code> 的映射查询。不过，如果我们希望在某个区域（比如在公司或者大家庭里）搭建由特定人群访问的服务，这个时候就可以搭建自己的 DNS 服务器，从而自由地配置 DNS 服务器添加个性化解析的记录。</p>
+<p>大多数情况下，我们的手机（或电脑）都会自动连接公共的 DNS 服务器，并使用这些<strong>公共的 DNS 服务器</strong>完成所有域名到 <code class="language-plaintext highlighter-rouge">IP</code> 的映射查询。不过，如果我们希望在某个区域（比如在公司或者大家庭里）搭建由特定人群访问的服务，这个时候就可以搭建自己的 DNS 服务器，从而自由地配置 DNS 服务器添加个性化解析的记录。</p>
 
 <p>本文主要描述在 Ubuntu 的服务器上搭建一个 DNS 服务器的步骤（因为我给团队里拥有的几台服务器安装的都是这个系统），有的团队喜欢使用其他发行版本，比如 centOS 等，对于这些系统的配置可以根据本文的内容进一步探索。</p>
 
@@ -208,7 +208,7 @@ Author: Ray-Eldath
 
 <h4 id="配置-etcbindnamedconfoptions-文件">配置 /etc/bind/named.conf.options 文件</h4>
 
-<p><code class="highlighter-rouge">named.conf.options</code> 文件中包含一些基本的配置，比如定义 <strong>解析</strong> 文件的位置（<code class="highlighter-rouge">directory</code>）、DNS 上游服务器（<code class="highlighter-rouge">forwarders</code>）、以及一些安全性格的参数配置等。</p>
+<p><code class="language-plaintext highlighter-rouge">named.conf.options</code> 文件中包含一些基本的配置，比如定义 <strong>解析</strong> 文件的位置（<code class="language-plaintext highlighter-rouge">directory</code>）、DNS 上游服务器（<code class="language-plaintext highlighter-rouge">forwarders</code>）、以及一些安全性格的参数配置等。</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// cat /etc/bind/named.conf.options</span>
 <span class="n">options</span> <span class="p">{</span>
@@ -236,7 +236,7 @@ Author: Ray-Eldath
 
 <h4 id="配置-etcbindnamedconflocal-文件">配置 /etc/bind/named.conf.local 文件</h4>
 
-<p>可以在 <code class="highlighter-rouge">named.conf.local</code> 文件中添加自定义的域名信息（<code class="highlighter-rouge">zone</code>）以及相应的解析文件（<code class="highlighter-rouge">file</code>）。</p>
+<p>可以在 <code class="language-plaintext highlighter-rouge">named.conf.local</code> 文件中添加自定义的域名信息（<code class="language-plaintext highlighter-rouge">zone</code>）以及相应的解析文件（<code class="language-plaintext highlighter-rouge">file</code>）。</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// cat /etc/bind/named.conf.local</span>
 
@@ -250,7 +250,7 @@ Author: Ray-Eldath
 
 <h4 id="配置-varcachebindjingweilink-文件">配置 /var/cache/bind/jingwei.link 文件</h4>
 
-<p>① <code class="highlighter-rouge">/etc/bind/named.conf.options</code> 中的  <code class="highlighter-rouge">directory</code> 和 ② <code class="highlighter-rouge">/etc/bind/named.conf.local </code> 中的 <code class="highlighter-rouge">file</code> 共同指定了 <code class="highlighter-rouge">www.jingwei.link</code> 的域名解析记录包含在 <code class="highlighter-rouge">/var/cache/bind/jingwei.link</code> 文件。</p>
+<p>① <code class="language-plaintext highlighter-rouge">/etc/bind/named.conf.options</code> 中的  <code class="language-plaintext highlighter-rouge">directory</code> 和 ② <code class="language-plaintext highlighter-rouge">/etc/bind/named.conf.local </code> 中的 <code class="language-plaintext highlighter-rouge">file</code> 共同指定了 <code class="language-plaintext highlighter-rouge">www.jingwei.link</code> 的域名解析记录包含在 <code class="language-plaintext highlighter-rouge">/var/cache/bind/jingwei.link</code> 文件。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$TTL</span>	604800
 @	IN	SOA	localhost. root.localhost. <span class="o">(</span>
@@ -360,7 +360,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

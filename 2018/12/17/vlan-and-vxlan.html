@@ -186,9 +186,9 @@ Author: Ray-Eldath
 
 <p>在设计物理网络拓扑时，很难把需求一一对应到拓扑设计中，即使花了大力气按业务需求或组织架构把网络搭建起来，未来也非常大概率需求会发生变化或组织架构发生变化。这时候如果单一依靠物理网络拓扑就太难为网络架构师了。</p>
 
-<p>如上图所示，在网络搭建之初，通过<a href="https://baijiahao.baidu.com/s?id=1578115493866280873">交换机堆叠或级联</a>方式形成了一个大的二层网络，里面包含了 <code class="highlighter-rouge">PC with eth0-1~8</code> 共 8 个主机；后来业务需求发生了变化，同时为了 <a href="http://blog.51cto.com/6930123/2115373">安全和性能上的考虑</a>，需要把这些连接在同一个二层网络的机器区分开来，比如把 <code class="highlighter-rouge">eth0-1,6,7,8</code> 划分为 <code class="highlighter-rouge">vlan-1</code> 子网，把 <code class="highlighter-rouge">eth0-2,3,4,5</code> 划分为 <code class="highlighter-rouge">vlan-2</code> 子网。当 <code class="highlighter-rouge">eth0-1</code> 发送讯息时，它首先向交换机获取节点列表，这时候交换机返回给它的是 <code class="highlighter-rouge">eth0-6,7,8</code> 三个节点，其他的 <code class="highlighter-rouge">eth0-2~5</code> 则不会返回；也就是说，虽然这 8 个节点是连接在同一个物理层面的二层交换机群，但是逻辑上已经被分成了两个交换机网络，即两个 VLAN 网络。</p>
+<p>如上图所示，在网络搭建之初，通过<a href="https://baijiahao.baidu.com/s?id=1578115493866280873">交换机堆叠或级联</a>方式形成了一个大的二层网络，里面包含了 <code class="language-plaintext highlighter-rouge">PC with eth0-1~8</code> 共 8 个主机；后来业务需求发生了变化，同时为了 <a href="http://blog.51cto.com/6930123/2115373">安全和性能上的考虑</a>，需要把这些连接在同一个二层网络的机器区分开来，比如把 <code class="language-plaintext highlighter-rouge">eth0-1,6,7,8</code> 划分为 <code class="language-plaintext highlighter-rouge">vlan-1</code> 子网，把 <code class="language-plaintext highlighter-rouge">eth0-2,3,4,5</code> 划分为 <code class="language-plaintext highlighter-rouge">vlan-2</code> 子网。当 <code class="language-plaintext highlighter-rouge">eth0-1</code> 发送讯息时，它首先向交换机获取节点列表，这时候交换机返回给它的是 <code class="language-plaintext highlighter-rouge">eth0-6,7,8</code> 三个节点，其他的 <code class="language-plaintext highlighter-rouge">eth0-2~5</code> 则不会返回；也就是说，虽然这 8 个节点是连接在同一个物理层面的二层交换机群，但是逻辑上已经被分成了两个交换机网络，即两个 VLAN 网络。</p>
 
-<p>那么，如何让上图中展示的 <code class="highlighter-rouge">vlan-1</code> 中的机器与 <code class="highlighter-rouge">vlan-2</code> 中的节点互相通信呢？既然已经可以看做是两个分离的交换机网络了，通过《<a href="https://jingwei.link/2018/12/16/fundamental-network-principle.html">上一篇博文</a>》可以知道，必须通过设定 IP 并配置网关的方式才能让这两个子网里的节点连通。</p>
+<p>那么，如何让上图中展示的 <code class="language-plaintext highlighter-rouge">vlan-1</code> 中的机器与 <code class="language-plaintext highlighter-rouge">vlan-2</code> 中的节点互相通信呢？既然已经可以看做是两个分离的交换机网络了，通过《<a href="https://jingwei.link/2018/12/16/fundamental-network-principle.html">上一篇博文</a>》可以知道，必须通过设定 IP 并配置网关的方式才能让这两个子网里的节点连通。</p>
 
 <h3 id="vlan的实现">VLAN的实现</h3>
 <p>从原理上，可以把 VLAN 中节点的互通按照同一个交换机互通和跨交换机互通分别讨论。</p>
@@ -196,7 +196,7 @@ Author: Ray-Eldath
 <p>在一台未设置任何VLAN的二层交换机上，任何广播帧都会被转发给除接收端口外的所有其他端口（Flooding）。为了实现VLAN，① <strong>我们可以写一个配置文件，直接告诉交换机</strong>哪些端口属于 VLAN-1，哪些端口属于 VLAN-2。如果交换机比较高级，② 我们还可以<strong>通过 Mac 地址、IP地址 或其他用户信息来动态划分 VLAN</strong>，告诉交换机根据挂载到端口的节点的某个信息来动态地调整哪些节点属于 VLAN-1，哪些节点属于 VLAN-2。</p>
 
 <h4 id="跨越多台交换机的-vlan-的实现">跨越多台交换机的 VLAN 的实现</h4>
-<p>如果仅是同一个交换机，因为配置信息都写入了系统存储，决策哪个端口属于哪个 VLAN 是非常方便的。但是，一旦涉及到跨交换机，问题就变成了<strong>在多个大脑参与决策的情况下，如何实现信息的同步</strong>的问题。比如 <code class="highlighter-rouge">PC with eth0-2</code> 向交换机-a 询问 vlan-2 网络里的机器列表时，<strong>交换机-a 除了要返回自己身上挂载的节点外，还需要告知交换机-b 它期望得到 vlan-2 网络里的节点</strong>（而不是所有连通到交换机-b 的节点）。换句话说，势必要通过某种方式把 <strong>得到 vlan-2 网络里的节点而不是所有节点</strong> 这个信息在各交换机之间同步，否则就谈不上 vlan-2 是虚拟局域网了。（题外话，此刻应该能感受到<strong>合作的首要条件是信息同步</strong>！！！）</p>
+<p>如果仅是同一个交换机，因为配置信息都写入了系统存储，决策哪个端口属于哪个 VLAN 是非常方便的。但是，一旦涉及到跨交换机，问题就变成了<strong>在多个大脑参与决策的情况下，如何实现信息的同步</strong>的问题。比如 <code class="language-plaintext highlighter-rouge">PC with eth0-2</code> 向交换机-a 询问 vlan-2 网络里的机器列表时，<strong>交换机-a 除了要返回自己身上挂载的节点外，还需要告知交换机-b 它期望得到 vlan-2 网络里的节点</strong>（而不是所有连通到交换机-b 的节点）。换句话说，势必要通过某种方式把 <strong>得到 vlan-2 网络里的节点而不是所有节点</strong> 这个信息在各交换机之间同步，否则就谈不上 vlan-2 是虚拟局域网了。（题外话，此刻应该能感受到<strong>合作的首要条件是信息同步</strong>！！！）</p>
 
 <p>进一步地，①<strong>我们可以在每当多划分出一个 VLAN 网络时各交换机之间就多拉出一条线出来</strong>（通过交换机上的<strong>访问连接</strong>）；比如在交换机-a 与交换机-b 之间拉起两条线，一条专门用于彼此获取 vlan-1 的节点列表，另一条专门用于彼此获取 vlan-2 的节点列表。这种方式对交换机的要求比较低，不过显然可扩展性低，试想如果我们此刻多了一个 vlan-3 网络，那岂不是还要再多拉一条线。因此有了另一种方式，②<strong>通过汇聚链接（只需一条线）把各个交换机连通起来，在不同交换机间获取节点列表时只需把特定 vlan 的信息加上</strong>；比如交换机-a 向交换机-b 发请求前，在请求中添加一个标识，标明当前请求索要的是 vlan-1 的节点，当交换机-b 接收到请求后，看到标识位是 vlan-1，于是向所有的 vlan-1 中的节点发起广播，从而只给交换机-a 传回 vlan-1 中的节点列表。</p>
 
@@ -218,7 +218,7 @@ Author: Ray-Eldath
 
 <p>既然我们已经知道是通过虚拟技术实现的，那么可以画一张上图所示的架构图示意云计算中的网络架构；其中物理层就是《<a href="https://jingwei.link/2018/12/16/fundamental-network-principle.html">梦回课堂——重温基础网络拓扑原理</a>》以及本文 “网络虚拟技术——VLAN” 涉及到的技术所在的层（虽然 VLAN 也是一种虚拟技术，不过它确实在物理层工作😆），虚拟层是云主机所在的层，也就是云计算平台给客户的交付物。</p>
 
-<p>假如 vm-1 和 vm-2 是我申请到的两台云主机，从图上可以看到它们两个是运行在不同的宿主机上面的（前者在 host-1 上面，后者在 host-2 上面）。那么当 vm-1 上的服务想要访问 vm-2 上的服务的时候，网络应该怎么走呢？必然要<strong>基于物理网络来实现</strong>！也就是图中红色虚线所示意的网路：<code class="highlighter-rouge">vm-1 &lt;=&gt; host-1 &lt;=&gt; 交换机+路由器 &lt;=&gt; host-3 &lt;=&gt; vm-2</code>。从图中还可以看到，vm-1 的 IP 被分配为 <code class="highlighter-rouge">172.0.1.1/24</code>，vm-2 的 IP 被分配为 <code class="highlighter-rouge">172.0.1.2/24</code>，假如这个时候 host-1 出现了故障，vm-1 漂到了 host-2 到了 <code class="highlighter-rouge">vm-1'</code> 的位置，网路变成了 <code class="highlighter-rouge">vm-1' &lt;=&gt; host-2 &lt;=&gt; 交换机+路由器 &lt;=&gt; host-3 &lt;=&gt; vm-2</code>， 但是为了保证云主机上服务的正常，需要保证  <code class="highlighter-rouge">vm-1'</code>  的 IP 依然为 <code class="highlighter-rouge">172.0.1.1/24</code>。</p>
+<p>假如 vm-1 和 vm-2 是我申请到的两台云主机，从图上可以看到它们两个是运行在不同的宿主机上面的（前者在 host-1 上面，后者在 host-2 上面）。那么当 vm-1 上的服务想要访问 vm-2 上的服务的时候，网络应该怎么走呢？必然要<strong>基于物理网络来实现</strong>！也就是图中红色虚线所示意的网路：<code class="language-plaintext highlighter-rouge">vm-1 &lt;=&gt; host-1 &lt;=&gt; 交换机+路由器 &lt;=&gt; host-3 &lt;=&gt; vm-2</code>。从图中还可以看到，vm-1 的 IP 被分配为 <code class="language-plaintext highlighter-rouge">172.0.1.1/24</code>，vm-2 的 IP 被分配为 <code class="language-plaintext highlighter-rouge">172.0.1.2/24</code>，假如这个时候 host-1 出现了故障，vm-1 漂到了 host-2 到了 <code class="language-plaintext highlighter-rouge">vm-1'</code> 的位置，网路变成了 <code class="language-plaintext highlighter-rouge">vm-1' &lt;=&gt; host-2 &lt;=&gt; 交换机+路由器 &lt;=&gt; host-3 &lt;=&gt; vm-2</code>， 但是为了保证云主机上服务的正常，需要保证  <code class="language-plaintext highlighter-rouge">vm-1'</code>  的 IP 依然为 <code class="language-plaintext highlighter-rouge">172.0.1.1/24</code>。</p>
 
 <h3 id="一种overlay网络的实现vxlan">一种overlay网络的实现——VxLAN</h3>
 <p>由上面的描述可以知道，在虚拟层里的云主机是感知不到物理层的存在的，这样才能保证自己的完整性；也就是说， 上图（虚拟网络架构图）中的 vm-1 只能看到网路中存在一个 vm-2， 但是无法知道自己运行在哪一台宿主机上，更不知道宿主机在什么样的网络环境中。业界把能够满足这种网络需求的技术叫做 overlay 网络，而 VxLAN 是 overlay 网络的一种具体的技术实现，所以 VxLAN 也没什么神秘的。</p>
@@ -327,7 +327,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

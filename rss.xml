@@ -5,9 +5,9 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 06 Jun 2021 08:12:07 +0800</pubDate>
-    <lastBuildDate>Sun, 06 Jun 2021 08:12:07 +0800</lastBuildDate>
-    <generator>Jekyll v4.0.0</generator>
+    <pubDate>Sun, 24 Mar 2024 09:50:59 +0800</pubDate>
+    <lastBuildDate>Sun, 24 Mar 2024 09:50:59 +0800</lastBuildDate>
+    <generator>Jekyll v4.3.3</generator>
     
       <item>
         <title>不写文章专注做视频，这里要荒废一段时间了</title>
@@ -64,19 +64,19 @@
 
 &lt;h2 id=&quot;简易版的-helloworld&quot;&gt;简易版的 helloworld&lt;/h2&gt;
 
-&lt;p&gt;在前面安装 vscode 的那一节我们已经编写过 &lt;code class=&quot;highlighter-rouge&quot;&gt;python&lt;/code&gt; 的 helloworld。&lt;/p&gt;
+&lt;p&gt;在前面安装 vscode 的那一节我们已经编写过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;python&lt;/code&gt; 的 helloworld。&lt;/p&gt;
 
 &lt;p&gt;由于 ubuntu18.04 系统已经默认安装了 python3 解释器，因此可以很方便写出并运行 helloworld。简单讲分成几步：&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;创建一个项目目录，比如我们在家目录下面使用命令 &lt;code class=&quot;highlighter-rouge&quot;&gt;mkdir&lt;/code&gt; 创建对应的目录；然后通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;code .&lt;/code&gt; 命令打开对应的目录作为工作目录。&lt;/li&gt;
+  &lt;li&gt;创建一个项目目录，比如我们在家目录下面使用命令 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mkdir&lt;/code&gt; 创建对应的目录；然后通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;code .&lt;/code&gt; 命令打开对应的目录作为工作目录。&lt;/li&gt;
   &lt;li&gt;检查 vscode 是否安装 Python 插件；&lt;/li&gt;
-  &lt;li&gt;创建 helloworld.py 文件并编写内容 &lt;code class=&quot;highlighter-rouge&quot;&gt;print(&quot;hello world&quot;)&lt;/code&gt;;&lt;/li&gt;
+  &lt;li&gt;创建 helloworld.py 文件并编写内容 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;print(&quot;hello world&quot;)&lt;/code&gt;;&lt;/li&gt;
   &lt;li&gt;配置对应的解释器，可以直接执行输出结果。&lt;/li&gt;
-  &lt;li&gt;也可以在命令行使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;python3 helloworld.py&lt;/code&gt; 来执行对应的文件得出结果。&lt;/li&gt;
+  &lt;li&gt;也可以在命令行使用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;python3 helloworld.py&lt;/code&gt; 来执行对应的文件得出结果。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;上面简易版的 helloworld 直接使用了 ubuntu 系统默认带的 python3 环境，具体的是 &lt;code class=&quot;highlighter-rouge&quot;&gt;python 3.6.9&lt;/code&gt; 版本，版本比较老。另一方面，在我们实际项目的开发过程中，大部分会指定特定的 python 版本进行开发，这个时候就需要我们在我们的本地安装对应的版本，搭建匹配的开发环境。接下来就让我们看一下如何从源码安装特定版本的 python。&lt;/p&gt;
+&lt;p&gt;上面简易版的 helloworld 直接使用了 ubuntu 系统默认带的 python3 环境，具体的是 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;python 3.6.9&lt;/code&gt; 版本，版本比较老。另一方面，在我们实际项目的开发过程中，大部分会指定特定的 python 版本进行开发，这个时候就需要我们在我们的本地安装对应的版本，搭建匹配的开发环境。接下来就让我们看一下如何从源码安装特定版本的 python。&lt;/p&gt;
 
 &lt;h2 id=&quot;高级版-helloworld&quot;&gt;高级版 helloworld&lt;/h2&gt;
 
@@ -92,20 +92,20 @@
 
 &lt;ol&gt;
   &lt;li&gt;
-    &lt;p&gt;首先选择一个合适的目录，然后从官网找到对应的链接后复制，通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz&lt;/code&gt; 进行下载。&lt;/p&gt;
+    &lt;p&gt;首先选择一个合适的目录，然后从官网找到对应的链接后复制，通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz&lt;/code&gt; 进行下载。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;下载完成后得到的是一个为方便传输的压缩包，需要我们把它解压缩，通过在当前目录执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;tar -xzf Python-3.8.3.tgz&lt;/code&gt; 即可完成，在当前目录生成一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;Python-3.8.3&lt;/code&gt; 的目录。&lt;/p&gt;
+    &lt;p&gt;下载完成后得到的是一个为方便传输的压缩包，需要我们把它解压缩，通过在当前目录执行 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tar -xzf Python-3.8.3.tgz&lt;/code&gt; 即可完成，在当前目录生成一个 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Python-3.8.3&lt;/code&gt; 的目录。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;我们可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;code Python-3.8.3&lt;/code&gt; 来打开对应的目录，简单预览一下 python 的源码项目（源码阅读一般流程）。&lt;/p&gt;
+    &lt;p&gt;我们可以通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;code Python-3.8.3&lt;/code&gt; 来打开对应的目录，简单预览一下 python 的源码项目（源码阅读一般流程）。&lt;/p&gt;
 
     &lt;ol&gt;
       &lt;li&gt;
         &lt;p&gt;大概浏览一下，咦，发现 python 源码库里有好多 c 语言文件，可以知道 python 是基于 c 语言进行开发的，是不是很神奇 ^_^；&lt;/p&gt;
       &lt;/li&gt;
       &lt;li&gt;
-        &lt;p&gt;查看对应的 README，可以看到 源码库中有一个 README.rst 文件，查看一遍说了什么（英文学习多么重要啊）。我们目前只关注安装相关的内容，因此找到一段命令做参考，并看到有 &lt;code class=&quot;highlighter-rouge&quot;&gt;./configure --help&lt;/code&gt;，那我们有必要探索一番。（在命令行环境多打 &lt;code class=&quot;highlighter-rouge&quot;&gt;--help&lt;/code&gt; 是一个好习惯）&lt;/p&gt;
+        &lt;p&gt;查看对应的 README，可以看到 源码库中有一个 README.rst 文件，查看一遍说了什么（英文学习多么重要啊）。我们目前只关注安装相关的内容，因此找到一段命令做参考，并看到有 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./configure --help&lt;/code&gt;，那我们有必要探索一番。（在命令行环境多打 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--help&lt;/code&gt; 是一个好习惯）&lt;/p&gt;
       &lt;/li&gt;
       &lt;li&gt;
         &lt;p&gt;其他的我们暂时不关注，先放着不管，不过可以看到原来一个牛x的项目是这个样子的。&lt;/p&gt;
@@ -113,34 +113,34 @@
     &lt;/ol&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;./configure --help&lt;/code&gt; 查看配置项，然后通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;./configure --prefix=$HOME/software/mypy&lt;/code&gt; 进行配置；也可以有选择地添加建议的参数，比如添加优化参数保证使用所有稳定的优化方案 &lt;code class=&quot;highlighter-rouge&quot;&gt;./configure --prefix=$HOME/software/mypy --enable-optimizations&lt;/code&gt;。&lt;/p&gt;
+    &lt;p&gt;通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./configure --help&lt;/code&gt; 查看配置项，然后通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./configure --prefix=$HOME/software/mypy&lt;/code&gt; 进行配置；也可以有选择地添加建议的参数，比如添加优化参数保证使用所有稳定的优化方案 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./configure --prefix=$HOME/software/mypy --enable-optimizations&lt;/code&gt;。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;make install&lt;/code&gt; 来编译并安装源码。在整个过程中可能会有一些警告的提示或者错误的提示，静待看最后的总结报告。&lt;/p&gt;
+    &lt;p&gt;通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make&lt;/code&gt; 和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make install&lt;/code&gt; 来编译并安装源码。在整个过程中可能会有一些警告的提示或者错误的提示，静待看最后的总结报告。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;安装依赖（整个需要我们通过比较久的经验做积累才可以慢慢理解为什么需要这些依赖）。这里我积累了几个必要的，大家先安装一下。如果未来在项目开发过程中使用到了其他的依赖，则可以按照类似的步骤进行安装。&lt;/p&gt;
 
     &lt;ol&gt;
       &lt;li&gt;
-        &lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo apt install zlib1g.dev&lt;/code&gt; 安装 zlib 依赖（整个是在安装 python 的时候就会需要）&lt;/p&gt;
+        &lt;p&gt;通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo apt install zlib1g.dev&lt;/code&gt; 安装 zlib 依赖（整个是在安装 python 的时候就会需要）&lt;/p&gt;
       &lt;/li&gt;
       &lt;li&gt;
-        &lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo apt install libssl-dev&lt;/code&gt; 安装 ssl 依赖（编写 web 相关的服务的时候会用到）&lt;/p&gt;
+        &lt;p&gt;通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo apt install libssl-dev&lt;/code&gt; 安装 ssl 依赖（编写 web 相关的服务的时候会用到）&lt;/p&gt;
       &lt;/li&gt;
       &lt;li&gt;
-        &lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo apt install libffi-dev&lt;/code&gt; 安装 libffi 依赖（当 pip install 的时候会用到）&lt;/p&gt;
+        &lt;p&gt;通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo apt install libffi-dev&lt;/code&gt; 安装 libffi 依赖（当 pip install 的时候会用到）&lt;/p&gt;
       &lt;/li&gt;
     &lt;/ol&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;重新通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;./configure --prefix=$HOME/software/mypy&lt;/code&gt; 来配置生成对应的 make 文件。并通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;make install&lt;/code&gt; 编译安装。&lt;/p&gt;
+    &lt;p&gt;重新通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./configure --prefix=$HOME/software/mypy&lt;/code&gt; 来配置生成对应的 make 文件。并通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make&lt;/code&gt; 和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make install&lt;/code&gt; 编译安装。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;安装完成以后，就可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;~/software/mypy/bin/python3&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;~/software/mypy/bin/pip3&lt;/code&gt;把玩了。&lt;/p&gt;
+    &lt;p&gt;安装完成以后，就可以通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/software/mypy/bin/python3&lt;/code&gt; 和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/software/mypy/bin/pip3&lt;/code&gt;把玩了。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;为了便利性，我们可以把新安装的 python 的 bin 目录添加到 PATH 中去，这样就可以直接使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;python3&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;pip3&lt;/code&gt; 命令了。具体地，在 &lt;code class=&quot;highlighter-rouge&quot;&gt;$HOME/.bashrc&lt;/code&gt; 文件的最后添加 &lt;code class=&quot;highlighter-rouge&quot;&gt;export PATH=&quot;$HOME/software/mypy/bin:$PATH&quot;&lt;/code&gt;，然后重启终端或对应的服务即可。&lt;/p&gt;
+    &lt;p&gt;为了便利性，我们可以把新安装的 python 的 bin 目录添加到 PATH 中去，这样就可以直接使用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;python3&lt;/code&gt; 和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pip3&lt;/code&gt; 命令了。具体地，在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$HOME/.bashrc&lt;/code&gt; 文件的最后添加 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;export PATH=&quot;$HOME/software/mypy/bin:$PATH&quot;&lt;/code&gt;，然后重启终端或对应的服务即可。&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ol&gt;
 
@@ -226,7 +226,7 @@
 
 &lt;p&gt;我们经常见到的 Jar 包和 War 包都是字节码文件包，是源码编译后的产物。相对 go 来说， java 的编译过程要慢很多，常常会让电脑卡顿好一会儿。&lt;/p&gt;
 
-&lt;p&gt;简单讲，java 从源码到执行的过程是： 源码中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;1+1&lt;/code&gt; 语句，首先被编译成为 JVM 的命令（字节码），然后字节码由 JVM 加载，并被 JVM 转义成为 CPU 的指令从而得以执行。CPU 运行 java 代码时，我们的 CPU ①一边做字节码到CPU指令的转义，②一边运行实际转义后的语句。相对于 go 语言只运行CPU指令的情况， java 的 CPU 使用效率会低一些。&lt;/p&gt;
+&lt;p&gt;简单讲，java 从源码到执行的过程是： 源码中的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1+1&lt;/code&gt; 语句，首先被编译成为 JVM 的命令（字节码），然后字节码由 JVM 加载，并被 JVM 转义成为 CPU 的指令从而得以执行。CPU 运行 java 代码时，我们的 CPU ①一边做字节码到CPU指令的转义，②一边运行实际转义后的语句。相对于 go 语言只运行CPU指令的情况， java 的 CPU 使用效率会低一些。&lt;/p&gt;
 
 &lt;p&gt;不过 java 作为一门工业级的编程语言，很多大牛为 JVM 的优化做了很多的事情，这也使得基于 JVM 的编程语言的运行效率与裸 CPU 的编程语言的运行效率差距没那么大了。因此，在 JVM 的平台上，还诞生了 kotlin 、Jython 这种编程语言，它们都是编译生成 JVM 指令集的字节码，然后在 JVM 上运行。&lt;/p&gt;
 
@@ -234,7 +234,7 @@
 
 &lt;p&gt;使用 python 开发，从源码到机器执行并没有显式地编译过程，只需把源码加载到解释器就可以正常运行了。&lt;/p&gt;
 
-&lt;p&gt;就像前面提到的，类似 &lt;code class=&quot;highlighter-rouge&quot;&gt;1+1&lt;/code&gt; 这样的源码是不可能直接在 CPU 上执行的，那么 python 源码是如何运行在&lt;strong&gt;机器&lt;/strong&gt;上的呢？实际上 python 解释器会在内部把 python 源码编译形成 python 字节码，然后再把这些字节码加载到解释器的运行时（python 虚拟机）进行执行。&lt;/p&gt;
+&lt;p&gt;就像前面提到的，类似 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1+1&lt;/code&gt; 这样的源码是不可能直接在 CPU 上执行的，那么 python 源码是如何运行在&lt;strong&gt;机器&lt;/strong&gt;上的呢？实际上 python 解释器会在内部把 python 源码编译形成 python 字节码，然后再把这些字节码加载到解释器的运行时（python 虚拟机）进行执行。&lt;/p&gt;
 
 &lt;p&gt;除了“隐式编译”这个步骤，python 几乎与 java 是一样的。而且 python 解释器只会在第一次加载运行 python 源码的时候存在“隐式编译”这个步骤，并且把编译生成的 python 字节码保存为 .pyc 文件，再以后执行时会首先加载 pyc 文件，从而省去了重复编译的步骤。&lt;/p&gt;
 
@@ -311,7 +311,7 @@
 
 &lt;p&gt;在 ubuntu 中下载安装 git 还是比较简单的，&lt;/p&gt;
 
-&lt;p&gt;我们可以打开 terminal 终端，首先敲击 &lt;code class=&quot;highlighter-rouge&quot;&gt;git&lt;/code&gt; 命令，如果我们系统还没有安装 git， console 会提示我们“尚未安装 git”，并且给出 &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo apt install git&lt;/code&gt; 的命令，这个时候我们只需要复制这条命令，然后粘贴到命令行执行就可以了。&lt;/p&gt;
+&lt;p&gt;我们可以打开 terminal 终端，首先敲击 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git&lt;/code&gt; 命令，如果我们系统还没有安装 git， console 会提示我们“尚未安装 git”，并且给出 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo apt install git&lt;/code&gt; 的命令，这个时候我们只需要复制这条命令，然后粘贴到命令行执行就可以了。&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;git 
 
@@ -341,19 +341,19 @@
 &lt;p&gt;&lt;img src=&quot;/assets/pic/003_git_concepts_02.png&quot; alt=&quot;git命令图示&quot; title=&quot;Git命令及各环节流转&quot; /&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;整个仓库可以来自于某个远端仓库，比如 github 里的 &lt;a href=&quot;https://github.com/chalver/book.git&quot;&gt;https://github.com/chalver/book.git&lt;/a&gt; 仓库，我们可以直接 &lt;code class=&quot;highlighter-rouge&quot;&gt;git clone remote-repository&lt;/code&gt; 到我们的本地；&lt;/li&gt;
-  &lt;li&gt;除此之外呢我们也可以在我们的工作目录直接通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;git init&lt;/code&gt; 命令初始化一个本地的仓库。&lt;/li&gt;
+  &lt;li&gt;整个仓库可以来自于某个远端仓库，比如 github 里的 &lt;a href=&quot;https://github.com/chalver/book.git&quot;&gt;https://github.com/chalver/book.git&lt;/a&gt; 仓库，我们可以直接 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git clone remote-repository&lt;/code&gt; 到我们的本地；&lt;/li&gt;
+  &lt;li&gt;除此之外呢我们也可以在我们的工作目录直接通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git init&lt;/code&gt; 命令初始化一个本地的仓库。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;大家可以看到 workspace 就是我们正常编写内容的工作区域。当我们打开一个由 git 管理的项目的时候，里面可能已经包含了很多的代码，而且代码是以文件的形式分模块存在的。我们可能会在已有的某几个模块修改已有的函数或者提交几个新的函数，为了把我们修改的内容提交到 git 仓库，我们首先需要把我们的修改 &lt;code class=&quot;highlighter-rouge&quot;&gt;git add&lt;/code&gt; 到 stage 暂存空间，我们可以每修改一点内容都 &lt;code class=&quot;highlighter-rouge&quot;&gt;git add&lt;/code&gt; 到整个空间，从而为我们创建新的 commit 提交做准备。&lt;/p&gt;
+&lt;p&gt;大家可以看到 workspace 就是我们正常编写内容的工作区域。当我们打开一个由 git 管理的项目的时候，里面可能已经包含了很多的代码，而且代码是以文件的形式分模块存在的。我们可能会在已有的某几个模块修改已有的函数或者提交几个新的函数，为了把我们修改的内容提交到 git 仓库，我们首先需要把我们的修改 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git add&lt;/code&gt; 到 stage 暂存空间，我们可以每修改一点内容都 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git add&lt;/code&gt; 到整个空间，从而为我们创建新的 commit 提交做准备。&lt;/p&gt;
 
-&lt;p&gt;在 stage 空间，工作区域分散在各处的修改点被整合到一起。我们可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;git status&lt;/code&gt; 命令查看 stage 空间里暂存的内容。&lt;/p&gt;
+&lt;p&gt;在 stage 空间，工作区域分散在各处的修改点被整合到一起。我们可以通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git status&lt;/code&gt; 命令查看 stage 空间里暂存的内容。&lt;/p&gt;
 
-&lt;p&gt;当我们对工作区域的修改感到满意了，把内容全部添加到缓存区，那么我们就可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;git commit&lt;/code&gt; 来把我们的修改提交到本地仓库了。这里我们可以通过在 &lt;code class=&quot;highlighter-rouge&quot;&gt;git commit -m &quot;本次提交的内容&quot;&lt;/code&gt; 后添加注释来注明本地提交了什么内容。&lt;/p&gt;
+&lt;p&gt;当我们对工作区域的修改感到满意了，把内容全部添加到缓存区，那么我们就可以通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git commit&lt;/code&gt; 来把我们的修改提交到本地仓库了。这里我们可以通过在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git commit -m &quot;本次提交的内容&quot;&lt;/code&gt; 后添加注释来注明本地提交了什么内容。&lt;/p&gt;
 
-&lt;p&gt;如果我们本地的仓库来自于一个远端仓库，或者我们本地初始化的仓库配置了对应的远端仓库，我们可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;git push&lt;/code&gt; 来把本地仓库的更新同步到远端仓库。&lt;/p&gt;
+&lt;p&gt;如果我们本地的仓库来自于一个远端仓库，或者我们本地初始化的仓库配置了对应的远端仓库，我们可以通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git push&lt;/code&gt; 来把本地仓库的更新同步到远端仓库。&lt;/p&gt;
 
-&lt;p&gt;当多人协作的时候，可能出现多人同时编写同一个仓库的情况，我们 &lt;code class=&quot;highlighter-rouge&quot;&gt;git push&lt;/code&gt; 本地仓库的时候可能远端的仓库已经被别人更新过了，此时我们就没有办法 push 仓库了。不过这个时候我们可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;git pull&lt;/code&gt; 来 merge 别人的更改，这样就可以继续 push 我们的代码到远端了。&lt;/p&gt;
+&lt;p&gt;当多人协作的时候，可能出现多人同时编写同一个仓库的情况，我们 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git push&lt;/code&gt; 本地仓库的时候可能远端的仓库已经被别人更新过了，此时我们就没有办法 push 仓库了。不过这个时候我们可以通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git pull&lt;/code&gt; 来 merge 别人的更改，这样就可以继续 push 我们的代码到远端了。&lt;/p&gt;
 
 &lt;p&gt;git 中还存在分支的概念，尤其在多人协作的时候尤其重要。不过这部分的内容比较复杂且对开发者的实践要求比较高，我会在后面的课程里再单独拎出来介绍。大家可以先尝试熟练掌握本节的内容。&lt;/p&gt;
 
@@ -369,7 +369,7 @@
 
 &lt;h3 id=&quot;通过图形界面实战&quot;&gt;通过图形界面实战&lt;/h3&gt;
 &lt;ol&gt;
-  &lt;li&gt;克隆 &lt;code class=&quot;highlighter-rouge&quot;&gt;https://github.com/chalvern/books.git&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;克隆 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https://github.com/chalvern/books.git&lt;/code&gt;&lt;/li&gt;
   &lt;li&gt;修改内容并添加到暂缓区&lt;/li&gt;
   &lt;li&gt;提交&lt;/li&gt;
   &lt;li&gt;推到远端&lt;/li&gt;
@@ -379,10 +379,10 @@
 &lt;h3 id=&quot;通过命令行实战&quot;&gt;通过命令行实战&lt;/h3&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git clone https://github.com/chalvern/books.git&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git add .&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git commit -m &quot;add sth&quot;&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git push&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git clone https://github.com/chalvern/books.git&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git add .&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git commit -m &quot;add sth&quot;&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git push&lt;/code&gt;&lt;/li&gt;
   &lt;li&gt;课堂展示。&lt;/li&gt;
 &lt;/ol&gt;
 
@@ -656,17 +656,17 @@
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;当我们使用 Go &lt;strong&gt;编写&lt;/strong&gt;业务逻辑（比如上面的&lt;code class=&quot;highlighter-rouge&quot;&gt;hello world&lt;/code&gt;代码）并执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;go run main.go&lt;/code&gt; 的时候，Go 开发工具链隐含地帮我们首先&lt;strong&gt;编译并链接源码&lt;/strong&gt;生成可以执行的二进制文件，紧接着&lt;strong&gt;运行&lt;/strong&gt;这个二进制文件。也就是说，&lt;code class=&quot;highlighter-rouge&quot;&gt;go run main.go&lt;/code&gt; 等效于 ①&lt;code class=&quot;highlighter-rouge&quot;&gt;go build main.go&lt;/code&gt; + ②&lt;code class=&quot;highlighter-rouge&quot;&gt;./mian&lt;/code&gt; 这两个命令操作。&lt;/p&gt;
+&lt;p&gt;当我们使用 Go &lt;strong&gt;编写&lt;/strong&gt;业务逻辑（比如上面的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hello world&lt;/code&gt;代码）并执行 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;go run main.go&lt;/code&gt; 的时候，Go 开发工具链隐含地帮我们首先&lt;strong&gt;编译并链接源码&lt;/strong&gt;生成可以执行的二进制文件，紧接着&lt;strong&gt;运行&lt;/strong&gt;这个二进制文件。也就是说，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;go run main.go&lt;/code&gt; 等效于 ①&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;go build main.go&lt;/code&gt; + ②&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./mian&lt;/code&gt; 这两个命令操作。&lt;/p&gt;
 
-&lt;p&gt;我们可以简单地认为 &lt;code class=&quot;highlighter-rouge&quot;&gt;go build main.go&lt;/code&gt; 是 Go 代码的编译时，产物是一个可执行的二进制文件 &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;；命令&lt;code class=&quot;highlighter-rouge&quot;&gt;./main&lt;/code&gt; 是 Go 代码的运行时，此时我们编写的逻辑&lt;em&gt;开始&lt;/em&gt;在 CPU 上执行。&lt;/p&gt;
+&lt;p&gt;我们可以简单地认为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;go build main.go&lt;/code&gt; 是 Go 代码的编译时，产物是一个可执行的二进制文件 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;main&lt;/code&gt;；命令&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./main&lt;/code&gt; 是 Go 代码的运行时，此时我们编写的逻辑&lt;em&gt;开始&lt;/em&gt;在 CPU 上执行。&lt;/p&gt;
 
 &lt;h4 id=&quot;212-动态语言的编写-解释执行过程&quot;&gt;2.1.2 动态语言的①编写-②解释执行过程&lt;/h4&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# cat hello.py
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello world&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;hello world&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;当我们使用 Python &lt;strong&gt;编写&lt;/strong&gt;业务逻辑(比如上面的代码)，在执行 &lt;code class=&quot;highlighter-rouge&quot;&gt;python hello.py&lt;/code&gt; 的时候，Python 解释器直接帮我们&lt;strong&gt;解释并执行&lt;/strong&gt;业务逻辑。由于人与机器之间的隔阂，python 源码最终也要变成机器可以执行的代码；但是相对于静态语言，&lt;strong&gt;动态语言不存在编译后机器可执行的二进制产物&lt;/strong&gt;。换句话说，Python 的解释器一边编译源码，一边执行编译生成的代码。&lt;/p&gt;
+&lt;p&gt;当我们使用 Python &lt;strong&gt;编写&lt;/strong&gt;业务逻辑(比如上面的代码)，在执行 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;python hello.py&lt;/code&gt; 的时候，Python 解释器直接帮我们&lt;strong&gt;解释并执行&lt;/strong&gt;业务逻辑。由于人与机器之间的隔阂，python 源码最终也要变成机器可以执行的代码；但是相对于静态语言，&lt;strong&gt;动态语言不存在编译后机器可执行的二进制产物&lt;/strong&gt;。换句话说，Python 的解释器一边编译源码，一边执行编译生成的代码。&lt;/p&gt;
 
 &lt;h3 id=&quot;22-人生苦短快用python&quot;&gt;2.2 人生苦短，快用Python&lt;/h3&gt;
 
@@ -911,8 +911,8 @@ L0（low-level knowledge&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
 
 &lt;ol&gt;
   &lt;li&gt;下载本仓库的代码(后面的操作都是在项目目录下执行)；&lt;/li&gt;
-  &lt;li&gt;根据 &lt;code class=&quot;highlighter-rouge&quot;&gt;configs/config.yml.example&lt;/code&gt; 创建 &lt;code class=&quot;highlighter-rouge&quot;&gt;configs/config.yml&lt;/code&gt; 文件；&lt;/li&gt;
-  &lt;li&gt;根据 &lt;code class=&quot;highlighter-rouge&quot;&gt;configs/config.yml&lt;/code&gt; 中数据库（database）的配置，在 MySQL 中创建用户及数据库。下面以 &lt;code class=&quot;highlighter-rouge&quot;&gt;apollo&lt;/code&gt; 为例&lt;/li&gt;
+  &lt;li&gt;根据 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;configs/config.yml.example&lt;/code&gt; 创建 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;configs/config.yml&lt;/code&gt; 文件；&lt;/li&gt;
+  &lt;li&gt;根据 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;configs/config.yml&lt;/code&gt; 中数据库（database）的配置，在 MySQL 中创建用户及数据库。下面以 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apollo&lt;/code&gt; 为例&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;-- 创建 apollo 数据库，默认字符集为 utf8mb4&lt;/span&gt;
@@ -926,9 +926,9 @@ L0（low-level knowledge&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
   &lt;li&gt;
     &lt;p&gt;迁移数据表结构：&lt;/p&gt;
 
-    &lt;p&gt;1.1 如果安装了 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 工具，直接运行 &lt;code class=&quot;highlighter-rouge&quot;&gt;make migrate&lt;/code&gt; 即可完成数据表的迁移。&lt;/p&gt;
+    &lt;p&gt;1.1 如果安装了 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make&lt;/code&gt; 工具，直接运行 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make migrate&lt;/code&gt; 即可完成数据表的迁移。&lt;/p&gt;
 
-    &lt;p&gt;1.2 如果没有安装 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 工具，依次执行：&lt;/p&gt;
+    &lt;p&gt;1.2 如果没有安装 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make&lt;/code&gt; 工具，依次执行：&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ol&gt;
 
@@ -942,8 +942,8 @@ go build &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; apollo.exe main.go
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;通过命令 &lt;code class=&quot;highlighter-rouge&quot;&gt;./apollo.exe&lt;/code&gt; 运行 &lt;code class=&quot;highlighter-rouge&quot;&gt;apollo&lt;/code&gt; 项目。&lt;/li&gt;
-  &lt;li&gt;通过浏览器访问 &lt;code class=&quot;highlighter-rouge&quot;&gt;localhost:2020&lt;/code&gt; 即可看到对应的页面。&lt;/li&gt;
+  &lt;li&gt;通过命令 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./apollo.exe&lt;/code&gt; 运行 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apollo&lt;/code&gt; 项目。&lt;/li&gt;
+  &lt;li&gt;通过浏览器访问 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;localhost:2020&lt;/code&gt; 即可看到对应的页面。&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h1 id=&quot;其他资料&quot;&gt;其他资料&lt;/h1&gt;

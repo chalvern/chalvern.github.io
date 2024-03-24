@@ -187,12 +187,12 @@ Author: Ray-Eldath
 </ol>
 
 <h2 id="几个常用的git命令">几个常用的git命令</h2>
-<p>假设我们已经安装了git工具，运行<code class="highlighter-rouge">git version</code>能够有正常的输出（比如<code class="highlighter-rouge">git version 2.14.3</code>）。</p>
+<p>假设我们已经安装了git工具，运行<code class="language-plaintext highlighter-rouge">git version</code>能够有正常的输出（比如<code class="language-plaintext highlighter-rouge">git version 2.14.3</code>）。</p>
 
 <p>下面我们看一下几个常用的git命令，掌握这几个命令，就可以使用git进行开发了。</p>
 
 <h3 id="git-init">git init</h3>
-<p>这是初始化git的命令。运行这个命令，会在运行命令的当前目录中创建一个<code class="highlighter-rouge">.git/</code>目录，git相关的配置、版本碎片都会在这个目录中保存。</p>
+<p>这是初始化git的命令。运行这个命令，会在运行命令的当前目录中创建一个<code class="language-plaintext highlighter-rouge">.git/</code>目录，git相关的配置、版本碎片都会在这个目录中保存。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 随便切换到一个空目录</span>
 <span class="nb">cd</span> /an/empty/path
@@ -219,7 +219,7 @@ Untracked files:
 </code></pre></div></div>
 
 <h3 id="git-add">git add</h3>
-<p>这个是添加命令。我们可以从<code class="highlighter-rouge">git status</code>的输出看到<code class="highlighter-rouge">git add</code>的命令，如果运行<code class="highlighter-rouge">git add README.md</code>，就会把当前文件夹中的README.md这个文件添加到暂存区了，也就是说这个时候我们的文件已经有一个副本在<code class="highlighter-rouge">.git/</code>文件夹的某个地方了，虽然这个副本还没有被永久保存。</p>
+<p>这个是添加命令。我们可以从<code class="language-plaintext highlighter-rouge">git status</code>的输出看到<code class="language-plaintext highlighter-rouge">git add</code>的命令，如果运行<code class="language-plaintext highlighter-rouge">git add README.md</code>，就会把当前文件夹中的README.md这个文件添加到暂存区了，也就是说这个时候我们的文件已经有一个副本在<code class="language-plaintext highlighter-rouge">.git/</code>文件夹的某个地方了，虽然这个副本还没有被永久保存。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 把README.md添加到暂存区</span>
 git add README.md
@@ -238,7 +238,7 @@ git add <span class="nb">.</span>
 </code></pre></div></div>
 
 <h3 id="git-commit">git commit</h3>
-<p>如果我们把README.md永久保存成一个版本，这样再删除README.md的情况下，我们依然可以从这个版本里恢复README.md。<code class="highlighter-rouge">git commit</code>命令做的就是把暂存区中的文件保存成一个版本。</p>
+<p>如果我们把README.md永久保存成一个版本，这样再删除README.md的情况下，我们依然可以从这个版本里恢复README.md。<code class="language-plaintext highlighter-rouge">git commit</code>命令做的就是把暂存区中的文件保存成一个版本。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 把暂存区的README.md添加到一个版本记录</span>
 <span class="c"># 这样暂存区中的README.md就永久地保存到.git/目录了</span>
@@ -248,7 +248,7 @@ git commit <span class="nt">-m</span> <span class="s2">"my first commit"</span>
 </code></pre></div></div>
 
 <h3 id="git-log">git log</h3>
-<p>我们可以提交很多的版本，比如每次修改一下README.md，就按照<code class="highlighter-rouge">git add .</code>并<code class="highlighter-rouge">git commit -m “xth commit”</code>，我们怎么知道提交了多少次呢？</p>
+<p>我们可以提交很多的版本，比如每次修改一下README.md，就按照<code class="language-plaintext highlighter-rouge">git add .</code>并<code class="language-plaintext highlighter-rouge">git commit -m “xth commit”</code>，我们怎么知道提交了多少次呢？</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看有多少次提交了</span>
 git log
@@ -274,7 +274,7 @@ git clone https://github.com/chalvern/smile.git
 </code></pre></div></div>
 
 <h3 id="git-checkout">git checkout</h3>
-<p>我这个仓库以后会放很多版本，到时候如果你来查看默认的分支（master分支），有可能和我当前写这个博客的时候已经变化了很大了。为了避免这种情况，我创建了一个分支<code class="highlighter-rouge">git-foundation</code>，这样你只需checkout这个分支，就能看到现在写博客的我所看到的一模一样的内容了。</p>
+<p>我这个仓库以后会放很多版本，到时候如果你来查看默认的分支（master分支），有可能和我当前写这个博客的时候已经变化了很大了。为了避免这种情况，我创建了一个分支<code class="language-plaintext highlighter-rouge">git-foundation</code>，这样你只需checkout这个分支，就能看到现在写博客的我所看到的一模一样的内容了。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 检出git-foundation分支</span>
 git checkout git-foundation
@@ -289,7 +289,7 @@ git checkout git-foundation
   <li>如何把代码推（push）到远端与别人共享？（提示：github的使用）</li>
   <li>如果创建新的分支？（提示：git checkout -b xxx）</li>
   <li>如何查看有哪些分支？（提示：git branch 及 git branch -a）</li>
-  <li>如何知道git有哪些子命令？ （强烈推荐直接运行 <code class="highlighter-rouge">git</code> 试试，会有一大坨提示）</li>
+  <li>如何知道git有哪些子命令？ （强烈推荐直接运行 <code class="language-plaintext highlighter-rouge">git</code> 试试，会有一大坨提示）</li>
   <li>其他。</li>
 </ol>
 
@@ -380,7 +380,7 @@ git checkout git-foundation
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

@@ -156,7 +156,7 @@ Author: Ray-Eldath
       <li><a href="#使用kubeadm构建一个master节点" id="markdown-toc-使用kubeadm构建一个master节点">使用kubeadm构建一个master节点</a></li>
       <li><a href="#kubeadm-init的工作流" id="markdown-toc-kubeadm-init的工作流">kubeadm-init的工作流</a></li>
       <li><a href="#其他" id="markdown-toc-其他">其他</a>        <ul>
-          <li><a href="#通过传入配置文件的方式来运行kubeadm-init" id="markdown-toc-通过传入配置文件的方式来运行kubeadm-init">通过传入配置文件的方式来运行<code class="highlighter-rouge">kubeadm init</code></a></li>
+          <li><a href="#通过传入配置文件的方式来运行kubeadm-init" id="markdown-toc-通过传入配置文件的方式来运行kubeadm-init">通过传入配置文件的方式来运行<code class="language-plaintext highlighter-rouge">kubeadm init</code></a></li>
           <li><a href="#使用自己定制的镜像" id="markdown-toc-使用自己定制的镜像">使用自己定制的镜像</a></li>
           <li><a href="#kubeadm内置的kubelet相关配置文件" id="markdown-toc-kubeadm内置的kubelet相关配置文件">kubeadm内置的kubelet相关配置文件</a></li>
           <li><a href="#配置cri运行时" id="markdown-toc-配置cri运行时">配置CRI运行时</a></li>
@@ -173,45 +173,45 @@ Author: Ray-Eldath
 
 <p>由于Kubeadm是官方推荐的集群搭建方式，因此想着把这个命令探索一番。一方面可以对这个命令更加了解，以后使用这个命令搭建集群时也能够更自信；另一方面可以借助这个过程来探究搭建k8s的细节，了解它的一砖一瓦是如何垒砌成为庞大的集群的，对以后集群的运维也将有非常大的帮助。</p>
 
-<p>本博文将主要对kubeadm的子命令<code class="highlighter-rouge">kubeadm init</code>以及此命令背后的运转机制进行探究。</p>
+<p>本博文将主要对kubeadm的子命令<code class="language-plaintext highlighter-rouge">kubeadm init</code>以及此命令背后的运转机制进行探究。</p>
 
 <h2 id="适用人群">适用人群</h2>
 <p>入门——<strong>初级√</strong>——中级——高级；本文适应初级及以上。</p>
 
 <h2 id="kubeadm-init">kubeadm-init</h2>
 <h3 id="kubeadm是什么">kubeadm是什么</h3>
-<p>首先，kubeadm是一个构建k8s集群的工具。它提供的<code class="highlighter-rouge">kubeadm init</code>和<code class="highlighter-rouge">kubeadm join</code>两个命令是快速构建k8s集群的最佳实践。
+<p>首先，kubeadm是一个构建k8s集群的工具。它提供的<code class="language-plaintext highlighter-rouge">kubeadm init</code>和<code class="language-plaintext highlighter-rouge">kubeadm join</code>两个命令是快速构建k8s集群的最佳实践。
 其次，kubeadm工具只为构建最小可用集群，它只关心集群中最基础的组件，至于其他的插件（比如dashboard、CNI等）则不会涉及。
 不过，从我的经验来看，这些已经足够。</p>
 
 <h3 id="使用kubeadm构建一个master节点">使用kubeadm构建一个master节点</h3>
-<p>通过<code class="highlighter-rouge">kubeadm init [flags]</code>命令可以启动一个master节点。其中<code class="highlighter-rouge">[flags]</code>代表了<code class="highlighter-rouge">kubeadm init</code>命令可以传入的参数。</p>
+<p>通过<code class="language-plaintext highlighter-rouge">kubeadm init [flags]</code>命令可以启动一个master节点。其中<code class="language-plaintext highlighter-rouge">[flags]</code>代表了<code class="language-plaintext highlighter-rouge">kubeadm init</code>命令可以传入的参数。</p>
 
-<p>如果查看官方介绍，可以发现<code class="highlighter-rouge">kubeadm init</code>可以传入的参数比较多，这里只简单介绍几种（其他的大家可以到 <a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/">这里</a>查看 ）：</p>
+<p>如果查看官方介绍，可以发现<code class="language-plaintext highlighter-rouge">kubeadm init</code>可以传入的参数比较多，这里只简单介绍几种（其他的大家可以到 <a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/">这里</a>查看 ）：</p>
 
 <ul>
-  <li><code class="highlighter-rouge">--apiserver-bind-port int32     Default: 6443</code> 可以通过这个参数指定API-server的工作端口，默认是6443。</li>
-  <li><code class="highlighter-rouge">--config string</code> 可以通过这个命令传入<code class="highlighter-rouge">kubeadm</code>的配置文件，<strong>需要注意的是，这个参数是实验性质的，不推荐使用</strong>。</li>
-  <li><code class="highlighter-rouge">--dry-run</code> 带了这个参数后，运行命令将会把<code class="highlighter-rouge">kubeadm</code>做的事情输出到标准输出，但是不会实际部署任何东西。<strong>强烈推荐</strong>！</li>
-  <li><code class="highlighter-rouge">-h, --help</code> 输出帮助文档。</li>
-  <li><code class="highlighter-rouge">--node-name string</code> 指定当前节点的名称。</li>
-  <li><code class="highlighter-rouge">--pod-network-cidr string</code> 通过这个值来设定pod网络的IP地址网段；设置了这个值以后，控制平面会自动给每个节点设置CIDRs（无类别域间路由，Classless Inter-Domain Routing）。</li>
-  <li><code class="highlighter-rouge">--service-cidr string     Default: "10.96.0.0/12"</code> 设置service的CIDRs，默认为 <code class="highlighter-rouge">10.96.0.0/12</code>。</li>
-  <li><code class="highlighter-rouge">--service-dns-domain string     Default: "cluster.local"</code> 设置域名称后缀，默认为<code class="highlighter-rouge">cluster.local</code>。</li>
+  <li><code class="language-plaintext highlighter-rouge">--apiserver-bind-port int32     Default: 6443</code> 可以通过这个参数指定API-server的工作端口，默认是6443。</li>
+  <li><code class="language-plaintext highlighter-rouge">--config string</code> 可以通过这个命令传入<code class="language-plaintext highlighter-rouge">kubeadm</code>的配置文件，<strong>需要注意的是，这个参数是实验性质的，不推荐使用</strong>。</li>
+  <li><code class="language-plaintext highlighter-rouge">--dry-run</code> 带了这个参数后，运行命令将会把<code class="language-plaintext highlighter-rouge">kubeadm</code>做的事情输出到标准输出，但是不会实际部署任何东西。<strong>强烈推荐</strong>！</li>
+  <li><code class="language-plaintext highlighter-rouge">-h, --help</code> 输出帮助文档。</li>
+  <li><code class="language-plaintext highlighter-rouge">--node-name string</code> 指定当前节点的名称。</li>
+  <li><code class="language-plaintext highlighter-rouge">--pod-network-cidr string</code> 通过这个值来设定pod网络的IP地址网段；设置了这个值以后，控制平面会自动给每个节点设置CIDRs（无类别域间路由，Classless Inter-Domain Routing）。</li>
+  <li><code class="language-plaintext highlighter-rouge">--service-cidr string     Default: "10.96.0.0/12"</code> 设置service的CIDRs，默认为 <code class="language-plaintext highlighter-rouge">10.96.0.0/12</code>。</li>
+  <li><code class="language-plaintext highlighter-rouge">--service-dns-domain string     Default: "cluster.local"</code> 设置域名称后缀，默认为<code class="language-plaintext highlighter-rouge">cluster.local</code>。</li>
   <li>其他参数。</li>
 </ul>
 
 <h3 id="kubeadm-init的工作流">kubeadm-init的工作流</h3>
-<p>在运行了 <code class="highlighter-rouge">kubeadm init</code> 命令以后，都进行了那些操作呢？这里主要就是跟着官方文档来翻译一遍了：</p>
+<p>在运行了 <code class="language-plaintext highlighter-rouge">kubeadm init</code> 命令以后，都进行了那些操作呢？这里主要就是跟着官方文档来翻译一遍了：</p>
 
 <ol>
-  <li>首先会运行一系列预检代码来检查系统的状态；大部分的检查只会抛出一个警告，也有一部分会抛出异常错误从而导致工作流推出（比如没有关闭swap或者没有安装docker）。官方给出一个参数<code class="highlighter-rouge">--ignore-preflight-errors=&lt;list-of-errors&gt;</code>， 我估计八成大家用不到，除非真的明白自己在做啥。。。</li>
-  <li>生成一个用来认证k8s组件间调用的自签名的CA（Certificate Authority，证书授权）；这个证书也可以通过<code class="highlighter-rouge">--cert-dir</code>（默认是/etc/kubernetets/pki）的方式传入，那么这一步就会跳过。</li>
-  <li>把kubelet、controller-manager和scheduler等组件的配置文件写到<code class="highlighter-rouge">/etc/kubernets/</code>目录，这几个组件会使用这些配置文件来连接API-server的服务；除了上面几个配置文件，还会生成一个管理相关的<code class="highlighter-rouge">admin.conf</code>文件。</li>
-  <li>如果参数中包含<code class="highlighter-rouge">--feature-gates=DynamicKubeletConfig</code>，会把kubelet的初始化配置文件写入<code class="highlighter-rouge">/var/lib/kubelet/config/init/kubelet</code>这个文件；官方给出一坨文字解释，这里先不探究了，因为我没有用到。。。</li>
-  <li>接下来就是创建一些 <a href="https://kubernetes.io/docs/tasks/administer-cluster/static-pod/">静态pod</a> 的配置文件了，包括API-server、controller-manager和scheduler。假如没有提供外部<a href="https://coreos.com/etcd/">etcd</a>，还会另外生成一个etcd的静态Pod配置文件。这些静态pod会被写入<code class="highlighter-rouge">/etc/kubernetes/manifests</code>，<code class="highlighter-rouge">kubelet</code>进程会监控这个目录，从而创建相关的pod。</li>
+  <li>首先会运行一系列预检代码来检查系统的状态；大部分的检查只会抛出一个警告，也有一部分会抛出异常错误从而导致工作流推出（比如没有关闭swap或者没有安装docker）。官方给出一个参数<code class="language-plaintext highlighter-rouge">--ignore-preflight-errors=&lt;list-of-errors&gt;</code>， 我估计八成大家用不到，除非真的明白自己在做啥。。。</li>
+  <li>生成一个用来认证k8s组件间调用的自签名的CA（Certificate Authority，证书授权）；这个证书也可以通过<code class="language-plaintext highlighter-rouge">--cert-dir</code>（默认是/etc/kubernetets/pki）的方式传入，那么这一步就会跳过。</li>
+  <li>把kubelet、controller-manager和scheduler等组件的配置文件写到<code class="language-plaintext highlighter-rouge">/etc/kubernets/</code>目录，这几个组件会使用这些配置文件来连接API-server的服务；除了上面几个配置文件，还会生成一个管理相关的<code class="language-plaintext highlighter-rouge">admin.conf</code>文件。</li>
+  <li>如果参数中包含<code class="language-plaintext highlighter-rouge">--feature-gates=DynamicKubeletConfig</code>，会把kubelet的初始化配置文件写入<code class="language-plaintext highlighter-rouge">/var/lib/kubelet/config/init/kubelet</code>这个文件；官方给出一坨文字解释，这里先不探究了，因为我没有用到。。。</li>
+  <li>接下来就是创建一些 <a href="https://kubernetes.io/docs/tasks/administer-cluster/static-pod/">静态pod</a> 的配置文件了，包括API-server、controller-manager和scheduler。假如没有提供外部<a href="https://coreos.com/etcd/">etcd</a>，还会另外生成一个etcd的静态Pod配置文件。这些静态pod会被写入<code class="language-plaintext highlighter-rouge">/etc/kubernetes/manifests</code>，<code class="language-plaintext highlighter-rouge">kubelet</code>进程会监控这个目录，从而创建相关的pod。</li>
   <li>假如第五步比较顺利，这个时候k8s的控制面进程（api-server、controller-manager、scheduler）就全都起来了。</li>
-  <li>如果传入了参数<code class="highlighter-rouge">--feature-gates=DynamicKubeletConfig</code>，又会对kubelet进行一坨操作，因为没有用到，所以这里不做详细探究。</li>
+  <li>如果传入了参数<code class="language-plaintext highlighter-rouge">--feature-gates=DynamicKubeletConfig</code>，又会对kubelet进行一坨操作，因为没有用到，所以这里不做详细探究。</li>
   <li>给当前的节点（Master节点）打label和taints，从而防止其他的负载在这个节点运行。</li>
   <li>生成token，其他节点如果想加入当前节点（Master）所在的k8s集群，会用到这个token。</li>
   <li>进行一些允许节点以 <a href="https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/">Bootstrap Tokens</a>) 和 <a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/">TLS bootstrapping </a>方式加入集群的必要的操作：
@@ -225,34 +225,34 @@ Author: Ray-Eldath
   <li>到这里基本上就告一段落了。</li>
 </ol>
 
-<p>就这样，把<code class="highlighter-rouge">kubeadm init</code>命令具体的操作流程过了一遍，其实完全可以使用<code class="highlighter-rouge">--dry-run</code>参数，通过观察输出来看看到底包含哪些流程。上面的流程是按照最新的文档（截止到北京时间2018-11-28晚23时），关于其他版本（比如<a href="https://github.com/kubernetes/website/blob/release-1.8/docs/reference/generated/kubeadm.md">1.8</a> ）都可以到github上查找。</p>
+<p>就这样，把<code class="language-plaintext highlighter-rouge">kubeadm init</code>命令具体的操作流程过了一遍，其实完全可以使用<code class="language-plaintext highlighter-rouge">--dry-run</code>参数，通过观察输出来看看到底包含哪些流程。上面的流程是按照最新的文档（截止到北京时间2018-11-28晚23时），关于其他版本（比如<a href="https://github.com/kubernetes/website/blob/release-1.8/docs/reference/generated/kubeadm.md">1.8</a> ）都可以到github上查找。</p>
 
 <h3 id="其他">其他</h3>
 <p>这里只列出几个作者比较感兴趣的点，其他的点大家可以到官网去查看。</p>
 
-<h4 id="通过传入配置文件的方式来运行kubeadm-init">通过传入配置文件的方式来运行<code class="highlighter-rouge">kubeadm init</code></h4>
-<p>就像前面描述的，<code class="highlighter-rouge">kubeadm init</code>可以通过配置<code class="highlighter-rouge">--config</code>参数来传入配置文件。从官网描述来看，这个特性还不怎么稳定，不过就实践经验来看，其实是可以用的。</p>
+<h4 id="通过传入配置文件的方式来运行kubeadm-init">通过传入配置文件的方式来运行<code class="language-plaintext highlighter-rouge">kubeadm init</code></h4>
+<p>就像前面描述的，<code class="language-plaintext highlighter-rouge">kubeadm init</code>可以通过配置<code class="language-plaintext highlighter-rouge">--config</code>参数来传入配置文件。从官网描述来看，这个特性还不怎么稳定，不过就实践经验来看，其实是可以用的。</p>
 
 <h4 id="使用自己定制的镜像">使用自己定制的镜像</h4>
-<p>默认情况下<code class="highlighter-rouge">kubeadm</code>会到<code class="highlighter-rouge">k8s.gcr.io</code>拉取镜像，不过对于一些私有化部署（比如国内存在墙的情况下，上面的地址是访问不到的），就需要自定义镜像地址了。
+<p>默认情况下<code class="language-plaintext highlighter-rouge">kubeadm</code>会到<code class="language-plaintext highlighter-rouge">k8s.gcr.io</code>拉取镜像，不过对于一些私有化部署（比如国内存在墙的情况下，上面的地址是访问不到的），就需要自定义镜像地址了。
 这种方式需要通过配置文件的方式才能实现，允许传入的参数包括：</p>
 
 <ul>
-  <li>通过 <code class="highlighter-rouge">imageRepository</code>参数来覆盖默认的<code class="highlighter-rouge">k8s.gcr.io</code>。</li>
-  <li>通过<code class="highlighter-rouge">unifiedControlPlaneImage</code>来让所有的控制平面组件（api-server、controller-manager、scheduler等）使用统一的镜像而不是分离开的镜像（应该适用于自定义镜像的情况）。</li>
-  <li>通过<code class="highlighter-rouge">etcd.image</code>来定义etcd所使用的镜像。</li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">imageRepository</code>参数来覆盖默认的<code class="language-plaintext highlighter-rouge">k8s.gcr.io</code>。</li>
+  <li>通过<code class="language-plaintext highlighter-rouge">unifiedControlPlaneImage</code>来让所有的控制平面组件（api-server、controller-manager、scheduler等）使用统一的镜像而不是分离开的镜像（应该适用于自定义镜像的情况）。</li>
+  <li>通过<code class="language-plaintext highlighter-rouge">etcd.image</code>来定义etcd所使用的镜像。</li>
 </ul>
 
-<p>需要注意，配置文件中的<code class="highlighter-rouge">kubernetesVersion</code>字段或者命令行传入的<code class="highlighter-rouge">--kubernetes-version</code>会影响镜像的版本。</p>
+<p>需要注意，配置文件中的<code class="language-plaintext highlighter-rouge">kubernetesVersion</code>字段或者命令行传入的<code class="language-plaintext highlighter-rouge">--kubernetes-version</code>会影响镜像的版本。</p>
 
 <h4 id="kubeadm内置的kubelet相关配置文件">kubeadm内置的kubelet相关配置文件</h4>
-<p><code class="highlighter-rouge">kubeadm</code>的安装包事先配置了<code class="highlighter-rouge">kubelet</code>的运行方式，定义了比较多的参数来定制化<code class="highlighter-rouge">kubelet</code>的运行。这里不细描述了，感兴趣可以自行钻研。</p>
+<p><code class="language-plaintext highlighter-rouge">kubeadm</code>的安装包事先配置了<code class="language-plaintext highlighter-rouge">kubelet</code>的运行方式，定义了比较多的参数来定制化<code class="language-plaintext highlighter-rouge">kubelet</code>的运行。这里不细描述了，感兴趣可以自行钻研。</p>
 
 <h4 id="配置cri运行时">配置CRI运行时</h4>
 <p>即可以通过改写kubelet的启动文件来设置容器运行时，目前可以选择的有Docker、cri-containerd、rkt等，默认是docker。建议使用docker就好了，除非知道自己在做什么，可以尝试其他的容器运行时环境。</p>
 
 <h2 id="小结">小结</h2>
-<p>文本简单介绍了kubeadm的子命令<code class="highlighter-rouge">kubeadm init</code>以及此命令的工作流程。主要参考了英文的官方文档内容，进行了简单的翻译。如果大家对<code class="highlighter-rouge">kubeadm init</code>感兴趣想要详细钻研，建议到官网页面进行探究；不过本文作为中文材料，作者有选择性的把一些点列出来，对于初学者来说也具有一定的参考价值。</p>
+<p>文本简单介绍了kubeadm的子命令<code class="language-plaintext highlighter-rouge">kubeadm init</code>以及此命令的工作流程。主要参考了英文的官方文档内容，进行了简单的翻译。如果大家对<code class="language-plaintext highlighter-rouge">kubeadm init</code>感兴趣想要详细钻研，建议到官网页面进行探究；不过本文作为中文材料，作者有选择性的把一些点列出来，对于初学者来说也具有一定的参考价值。</p>
 
 <h2 id="参考">参考</h2>
 <ul>
@@ -340,7 +340,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

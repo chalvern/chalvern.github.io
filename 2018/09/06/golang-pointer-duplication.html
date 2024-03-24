@@ -214,7 +214,7 @@ Author: Ray-Eldath
 <span class="k">end</span>
 </code></pre></div></div>
 
-<p>先来看一下Ruby中的一个函数(出处见<a href="https://github.com/rails/rails/blob/53be0132c3f66dd8510921215d940641bbfd9588/activesupport/lib/active_support/json/decoding.rb#L22">这里</a>)。在rails的源码中，有一段对JSON进行解码的函数，它的意思是把json进行解析以后，返回<code class="highlighter-rouge">data</code>这个对象。(Ruby中JSON的parse函数参考<a href="http://ruby-doc.org/stdlib-2.5.1/libdoc/json/rdoc/JSON.html#method-i-parse">这里</a>)</p>
+<p>先来看一下Ruby中的一个函数(出处见<a href="https://github.com/rails/rails/blob/53be0132c3f66dd8510921215d940641bbfd9588/activesupport/lib/active_support/json/decoding.rb#L22">这里</a>)。在rails的源码中，有一段对JSON进行解码的函数，它的意思是把json进行解析以后，返回<code class="language-plaintext highlighter-rouge">data</code>这个对象。(Ruby中JSON的parse函数参考<a href="http://ruby-doc.org/stdlib-2.5.1/libdoc/json/rdoc/JSON.html#method-i-parse">这里</a>)</p>
 
 <p>初看很自然对不对？<strong>那么考虑一下，这里为什么直接返回了data，而不是返回data的指针呢</strong>？</p>
 
@@ -233,9 +233,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>注意上面的源码可以发现，这里的<code class="highlighter-rouge">dec *Decoder</code>使用了指针的形式；假如函数的声明是<code class="highlighter-rouge">func (dec Decoder) Decode(v interface{}) error</code>会怎么样呢？</p>
+<p>注意上面的源码可以发现，这里的<code class="language-plaintext highlighter-rouge">dec *Decoder</code>使用了指针的形式；假如函数的声明是<code class="language-plaintext highlighter-rouge">func (dec Decoder) Decode(v interface{}) error</code>会怎么样呢？</p>
 
-<p>其实答案很简单，如果使用<code class="highlighter-rouge">(dec Decoder)</code>的方式，Decode函数将不起任何作用。因为这种情况下在调用<code class="highlighter-rouge">dec.Decode(v)</code>时，会在内存中生成一个<code class="highlighter-rouge">dec</code>的副本，其方法作用的值也会保存在这个副本中；函数一旦结束，这个副本所在的内存被GC（垃圾回收器）回收掉，原来的<code class="highlighter-rouge">dec</code>根本感觉不到任何的变化，因此这里应该使用指针的方式。</p>
+<p>其实答案很简单，如果使用<code class="language-plaintext highlighter-rouge">(dec Decoder)</code>的方式，Decode函数将不起任何作用。因为这种情况下在调用<code class="language-plaintext highlighter-rouge">dec.Decode(v)</code>时，会在内存中生成一个<code class="language-plaintext highlighter-rouge">dec</code>的副本，其方法作用的值也会保存在这个副本中；函数一旦结束，这个副本所在的内存被GC（垃圾回收器）回收掉，原来的<code class="language-plaintext highlighter-rouge">dec</code>根本感觉不到任何的变化，因此这里应该使用指针的方式。</p>
 
 <p>当然，<strong>当使用指针的方式，dec.Decode(v)方法调用时，dec的指针也会被复制一份，但是由于两个指针指向同一份数据，因此函数会作用到dec的本体上面</strong>。</p>
 
@@ -348,7 +348,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

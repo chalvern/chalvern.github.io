@@ -171,7 +171,7 @@ Author: Ray-Eldath
 
 <p>LInux的Namespace分不同的种类，有 Mount (2.4.19)、UTS (2.6.19)、IPC (2.6.19)、PID (2.6.24)、Network (2.6.29)、User (3.8)等几种（括号中为引入的版本号），而且各自在Linux内核中引入的时间是不一样的。</p>
 
-<p>这就使得在新声明一个进程P时，如果只指定了<code class="highlighter-rouge">CLONE_NEWPID</code>的命名空间，那么<code class="highlighter-rouge">Mount、Network、UTS</code>等维度的资源进程P所看到的与父进程所看到的是一致的。如果想声明一个<strong>洁净</strong>的环境，可以通过 <code class="highlighter-rouge">CLONE_NEWPID|CLONE_NEWUTS|CLONE_NEWIPC...</code>类似的方式显式指定，这时候生成的子进程P1只能看到自己的资源，看不到父进程所在命名空间的资源了；假如父进程用相同的方法创建了子进程P2，P1与P2之间逻辑上也是隔离互不可见的。</p>
+<p>这就使得在新声明一个进程P时，如果只指定了<code class="language-plaintext highlighter-rouge">CLONE_NEWPID</code>的命名空间，那么<code class="language-plaintext highlighter-rouge">Mount、Network、UTS</code>等维度的资源进程P所看到的与父进程所看到的是一致的。如果想声明一个<strong>洁净</strong>的环境，可以通过 <code class="language-plaintext highlighter-rouge">CLONE_NEWPID|CLONE_NEWUTS|CLONE_NEWIPC...</code>类似的方式显式指定，这时候生成的子进程P1只能看到自己的资源，看不到父进程所在命名空间的资源了；假如父进程用相同的方法创建了子进程P2，P1与P2之间逻辑上也是隔离互不可见的。</p>
 
 <h3 id="linux中的cgroup技术">Linux中的CGroup技术</h3>
 <p>使用Linux的Namespace技术从逻辑上为新创建的进程隔离了各种资源，但是新创建的进程共享同一份物理资源，比如CPU、内存、网络等。大家使用同一份资源，如果不加限制就有可能所有的资源（比如CPU）被同一个命名空间的进程耗尽，这就失去命名空间的意义了。</p>
@@ -289,7 +289,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

@@ -169,9 +169,9 @@ Author: Ray-Eldath
 
 <h2 id="接口interfaces">接口（Interfaces）</h2>
 
-<p>在 Go 中，可以用接口来指定一个对象的行为：如果一个对象可以做<strong>某件事情</strong>，那么它就可以用在<strong>某个指定的地方</strong>。之前已经看到过几个简单的例子：① 实现 <code class="highlighter-rouge">String</code> 方法可以自定义类型的打印格式，② <code class="highlighter-rouge">Fprintf</code> 可以向任何实现了 <code class="highlighter-rouge">Write</code> 方法的类型打印内容。在 Go 源码中，有很多只包含一两个方法的接口，一般情况下这些接口的名称直接衍生自他们所包含的方法，比如只有一个 <code class="highlighter-rouge">Write</code> 方法的 <code class="highlighter-rouge">io.Writer</code> 接口。</p>
+<p>在 Go 中，可以用接口来指定一个对象的行为：如果一个对象可以做<strong>某件事情</strong>，那么它就可以用在<strong>某个指定的地方</strong>。之前已经看到过几个简单的例子：① 实现 <code class="language-plaintext highlighter-rouge">String</code> 方法可以自定义类型的打印格式，② <code class="language-plaintext highlighter-rouge">Fprintf</code> 可以向任何实现了 <code class="language-plaintext highlighter-rouge">Write</code> 方法的类型打印内容。在 Go 源码中，有很多只包含一两个方法的接口，一般情况下这些接口的名称直接衍生自他们所包含的方法，比如只有一个 <code class="language-plaintext highlighter-rouge">Write</code> 方法的 <code class="language-plaintext highlighter-rouge">io.Writer</code> 接口。</p>
 
-<p>一个类型可以实现多个接口。比如包 <code class="highlighter-rouge">sort</code> 可以给实现了 <code class="highlighter-rouge">sort.Interface</code> 接口的集合进行排序，也就是只要集合类型实现 <code class="highlighter-rouge">Len()</code>, <code class="highlighter-rouge">Less(i, j int) bool</code>, 和 <code class="highlighter-rouge">Swap(i, j int)</code> 方法，就可以使用 <code class="highlighter-rouge">sort.Sort</code> 进行排序了；在实现了 <code class="highlighter-rouge">sort.Interface</code> 接口后，集合还可以通过实现 <code class="highlighter-rouge">fmt.Stringer</code> 接口来自定义输出格式。下面的 <code class="highlighter-rouge">Sequence</code> 同时实现了 <code class="highlighter-rouge">sort.Interface</code> 和 <code class="highlighter-rouge">fmt.Stringer</code> 两个接口：</p>
+<p>一个类型可以实现多个接口。比如包 <code class="language-plaintext highlighter-rouge">sort</code> 可以给实现了 <code class="language-plaintext highlighter-rouge">sort.Interface</code> 接口的集合进行排序，也就是只要集合类型实现 <code class="language-plaintext highlighter-rouge">Len()</code>, <code class="language-plaintext highlighter-rouge">Less(i, j int) bool</code>, 和 <code class="language-plaintext highlighter-rouge">Swap(i, j int)</code> 方法，就可以使用 <code class="language-plaintext highlighter-rouge">sort.Sort</code> 进行排序了；在实现了 <code class="language-plaintext highlighter-rouge">sort.Interface</code> 接口后，集合还可以通过实现 <code class="language-plaintext highlighter-rouge">fmt.Stringer</code> 接口来自定义输出格式。下面的 <code class="language-plaintext highlighter-rouge">Sequence</code> 同时实现了 <code class="language-plaintext highlighter-rouge">sort.Interface</code> 和 <code class="language-plaintext highlighter-rouge">fmt.Stringer</code> 两个接口：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Sequence</span> <span class="p">[]</span><span class="kt">int</span>
 
@@ -209,7 +209,7 @@ Author: Ray-Eldath
 
 <h2 id="类型转换conversions">类型转换（Conversions）</h2>
 
-<p>上面 <code class="highlighter-rouge">Sequence</code> 的 <code class="highlighter-rouge">String</code> 方法（复杂度为 O(N²)）做了很多 <code class="highlighter-rouge">Sprint</code> 已经做完的事情——<code class="highlighter-rouge">Sprint</code> 函数内置了打印集合类型值的功能。因此如果调用 <code class="highlighter-rouge">Sprint</code> 前我们把 <code class="highlighter-rouge">Sequence</code> 转换为普通的 <code class="highlighter-rouge">[]int</code>，就可以避免重复的工作同时还会加快执行速度。</p>
+<p>上面 <code class="language-plaintext highlighter-rouge">Sequence</code> 的 <code class="language-plaintext highlighter-rouge">String</code> 方法（复杂度为 O(N²)）做了很多 <code class="language-plaintext highlighter-rouge">Sprint</code> 已经做完的事情——<code class="language-plaintext highlighter-rouge">Sprint</code> 函数内置了打印集合类型值的功能。因此如果调用 <code class="language-plaintext highlighter-rouge">Sprint</code> 前我们把 <code class="language-plaintext highlighter-rouge">Sequence</code> 转换为普通的 <code class="language-plaintext highlighter-rouge">[]int</code>，就可以避免重复的工作同时还会加快执行速度。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="n">Sequence</span><span class="p">)</span> <span class="n">String</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">Copy</span><span class="p">()</span>
@@ -218,9 +218,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>这个方法是另一个在 <code class="highlighter-rouge">String</code> 方法中安全调用 <code class="highlighter-rouge">Sprintf</code> 函数的例子（不会触发循环调用）。因为 <code class="highlighter-rouge">Sequence</code> 和 <code class="highlighter-rouge">[]int</code> 这两个类型只是类型名不同，其底层的数据结构是一模一样的，因此这两个类型的变量可以相互进行转换。这里的类型转换并不会创建新的值，它只是临时把一个存在的值作为另一种类型的值来看待（有特例，比如 go 允许整数转换成为浮点数，而这种转换会产生一个新的值。）</p>
+<p>这个方法是另一个在 <code class="language-plaintext highlighter-rouge">String</code> 方法中安全调用 <code class="language-plaintext highlighter-rouge">Sprintf</code> 函数的例子（不会触发循环调用）。因为 <code class="language-plaintext highlighter-rouge">Sequence</code> 和 <code class="language-plaintext highlighter-rouge">[]int</code> 这两个类型只是类型名不同，其底层的数据结构是一模一样的，因此这两个类型的变量可以相互进行转换。这里的类型转换并不会创建新的值，它只是临时把一个存在的值作为另一种类型的值来看待（有特例，比如 go 允许整数转换成为浮点数，而这种转换会产生一个新的值。）</p>
 
-<p>在 Go 中，我们可以通过类型转换的方式获取新类型上的方法的调用权限，这种方式算是一种惯用手法吧。比如，我们可以使用已经存在的类型 <code class="highlighter-rouge">sort.IntSlice</code> 来减少代码量：</p>
+<p>在 Go 中，我们可以通过类型转换的方式获取新类型上的方法的调用权限，这种方式算是一种惯用手法吧。比如，我们可以使用已经存在的类型 <code class="language-plaintext highlighter-rouge">sort.IntSlice</code> 来减少代码量：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Sequence</span> <span class="p">[]</span><span class="kt">int</span>
 
@@ -232,11 +232,11 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>上面的代码把 <code class="highlighter-rouge">Sequence</code> 转换为不同的类型从而使用每种类型包含的功能，每种转换完成一部分的工作，一起达成最后期望的效果；语句 <code class="highlighter-rouge">sort.IntSlice(s)</code> 把 <code class="highlighter-rouge">s</code> 转换为 <code class="highlighter-rouge">sort.IntSlice</code> 类型，这种类型实现了 <code class="highlighter-rouge">sort.Interface</code> 接口，因此可以直接调用 <code class="highlighter-rouge">Sort()</code> 方法，就避免我们自己在定义 <code class="highlighter-rouge">Len/Less/Swap</code> 方法了。这种类型变来变去的用法看起来不同寻常，但是写起来很高效。</p>
+<p>上面的代码把 <code class="language-plaintext highlighter-rouge">Sequence</code> 转换为不同的类型从而使用每种类型包含的功能，每种转换完成一部分的工作，一起达成最后期望的效果；语句 <code class="language-plaintext highlighter-rouge">sort.IntSlice(s)</code> 把 <code class="language-plaintext highlighter-rouge">s</code> 转换为 <code class="language-plaintext highlighter-rouge">sort.IntSlice</code> 类型，这种类型实现了 <code class="language-plaintext highlighter-rouge">sort.Interface</code> 接口，因此可以直接调用 <code class="language-plaintext highlighter-rouge">Sort()</code> 方法，就避免我们自己在定义 <code class="language-plaintext highlighter-rouge">Len/Less/Swap</code> 方法了。这种类型变来变去的用法看起来不同寻常，但是写起来很高效。</p>
 
 <h2 id="接口转换与类型断言interface-conversions-and-type-assertions">接口转换与类型断言（Interface conversions and type assertions）</h2>
 
-<p><strong>类型 switch</strong> 语法是类型转换的一种方式：他首先接收某个<strong>接口变量</strong>，然后在每个 case 里把接口变量转换为对应的类型。下面的代码是简化版的 <code class="highlighter-rouge">fmt.Printf</code> 方法，用来展示如何通过类型 switch 把一个接口变量转换成字符串。如果接口变量已经是一个字符串，只需要把这个字符串值返回就可以了；否则假如它实现了 <code class="highlighter-rouge">String</code> 方法（实现了 <code class="highlighter-rouge">Stringer</code> 接口），我们可以通过调用这个方法并返回其结果。</p>
+<p><strong>类型 switch</strong> 语法是类型转换的一种方式：他首先接收某个<strong>接口变量</strong>，然后在每个 case 里把接口变量转换为对应的类型。下面的代码是简化版的 <code class="language-plaintext highlighter-rouge">fmt.Printf</code> 方法，用来展示如何通过类型 switch 把一个接口变量转换成字符串。如果接口变量已经是一个字符串，只需要把这个字符串值返回就可以了；否则假如它实现了 <code class="language-plaintext highlighter-rouge">String</code> 方法（实现了 <code class="language-plaintext highlighter-rouge">Stringer</code> 接口），我们可以通过调用这个方法并返回其结果。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Stringer</span> <span class="k">interface</span> <span class="p">{</span>
     <span class="n">String</span><span class="p">()</span> <span class="kt">string</span>
@@ -251,19 +251,19 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>上面的代码里，第一个 <code class="highlighter-rouge">case</code> 直接使用了接口变量的底层数据；第二个 <code class="highlighter-rouge">case</code> 把一个接口转换成另一个接口（<code class="highlighter-rouge">interface{}</code> 的值转换为 <code class="highlighter-rouge">Stringer</code> 类型的值），在 Go 中这种把类型杂糅在一起使用的场景也是比较多见的。</p>
+<p>上面的代码里，第一个 <code class="language-plaintext highlighter-rouge">case</code> 直接使用了接口变量的底层数据；第二个 <code class="language-plaintext highlighter-rouge">case</code> 把一个接口转换成另一个接口（<code class="language-plaintext highlighter-rouge">interface{}</code> 的值转换为 <code class="language-plaintext highlighter-rouge">Stringer</code> 类型的值），在 Go 中这种把类型杂糅在一起使用的场景也是比较多见的。</p>
 
-<p>为了转换类型上面大动干戈地使用了 <code class="highlighter-rouge">switch...case...</code>语句，假如我们知道某个值保存的是 <code class="highlighter-rouge">string</code> 类型的值，该怎么直接把这个值解析出来？当然可以使用只有一个 <code class="highlighter-rouge">case</code> 的 <code class="highlighter-rouge">switch</code> 语句来实现，但是可以更简单地通过<strong>类型断言</strong>来实现。类型断言可以在接口类型的值上面抽取特定类型的值。它的语法是从 <strong>类型 switch</strong> 中借鉴的，但是 switch 中使用的是 <code class="highlighter-rouge">value.(type)</code>，类型断言的括号中直接显式指定类型 <code class="highlighter-rouge">value.(typeName)</code>。</p>
+<p>为了转换类型上面大动干戈地使用了 <code class="language-plaintext highlighter-rouge">switch...case...</code>语句，假如我们知道某个值保存的是 <code class="language-plaintext highlighter-rouge">string</code> 类型的值，该怎么直接把这个值解析出来？当然可以使用只有一个 <code class="language-plaintext highlighter-rouge">case</code> 的 <code class="language-plaintext highlighter-rouge">switch</code> 语句来实现，但是可以更简单地通过<strong>类型断言</strong>来实现。类型断言可以在接口类型的值上面抽取特定类型的值。它的语法是从 <strong>类型 switch</strong> 中借鉴的，但是 switch 中使用的是 <code class="language-plaintext highlighter-rouge">value.(type)</code>，类型断言的括号中直接显式指定类型 <code class="language-plaintext highlighter-rouge">value.(typeName)</code>。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">value</span><span class="o">.</span><span class="p">(</span><span class="n">typeName</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">value.(typeName)</code> 的结果是静态类型 <code class="highlighter-rouge">typeName</code> 对应的新值。这个静态类型要么是接口变量的底层数据类型，要么是接口变量的底层数据类型实现的另一个接口。如果我们已经知道某个值存储的是字符串，直接通过 <code class="highlighter-rouge">str := value.(string)</code> 就可以获取到。</p>
+<p><code class="language-plaintext highlighter-rouge">value.(typeName)</code> 的结果是静态类型 <code class="language-plaintext highlighter-rouge">typeName</code> 对应的新值。这个静态类型要么是接口变量的底层数据类型，要么是接口变量的底层数据类型实现的另一个接口。如果我们已经知道某个值存储的是字符串，直接通过 <code class="language-plaintext highlighter-rouge">str := value.(string)</code> 就可以获取到。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">str</span> <span class="o">:=</span> <span class="n">value</span><span class="o">.</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>类似 <code class="highlighter-rouge">str := value.(string)</code> 的写法很简单很易用，但是如果在 <code class="highlighter-rouge">value</code> 中保存的不是一个字符串，会产生运行时错误导致代码崩溃。为了避免这种情况，可以使用 “逗号与ok” 的惯用语法来检测相应的值是否是字符串：</p>
+<p>类似 <code class="language-plaintext highlighter-rouge">str := value.(string)</code> 的写法很简单很易用，但是如果在 <code class="language-plaintext highlighter-rouge">value</code> 中保存的不是一个字符串，会产生运行时错误导致代码崩溃。为了避免这种情况，可以使用 “逗号与ok” 的惯用语法来检测相应的值是否是字符串：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">str</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">value</span><span class="o">.</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">ok</span> <span class="p">{</span>
@@ -273,9 +273,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>如果类型断言失败了，<code class="highlighter-rouge">str</code> 依然存在且是字符串类型，只不过它的值会是空字符串。</p>
+<p>如果类型断言失败了，<code class="language-plaintext highlighter-rouge">str</code> 依然存在且是字符串类型，只不过它的值会是空字符串。</p>
 
-<p>为了说明这种 “逗号与ok” 形式的类型断言的功能，下面的 <code class="highlighter-rouge">if - else</code> 表达式与上面的类型 switch 示例实现了相同的功能。</p>
+<p>为了说明这种 “逗号与ok” 形式的类型断言的功能，下面的 <code class="language-plaintext highlighter-rouge">if - else</code> 表达式与上面的类型 switch 示例实现了相同的功能。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">str</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">value</span><span class="o">.</span><span class="p">(</span><span class="kt">string</span><span class="p">);</span> <span class="n">ok</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">str</span>
@@ -288,11 +288,11 @@ Author: Ray-Eldath
 
 <p>如果类型的存在只是为了实现某个接口，除了接口中限定必须要实现的方法没有其他需要导出的方法，此时就没有必要导出这个类型，只需导出对应接口即可，表明这个类型的值除了接口里定义的方法外没有其他的方法。假如对同一个接口有不同的实现，这种做法还能避免重复地给方法写文档（只需要在接口里注明每种方法的作用、用法，各个类型实现这些方法的时候只需要简单注明是哪个接口的方法就可以了）。</p>
 
-<p>在这种模式下，类型的构造器应该返回接口的值而不是相应的类型的值。比如，在哈希库 <code class="highlighter-rouge">crc32.NewIEEE</code> 和 <code class="highlighter-rouge">adler32.New</code> 两个构造器返回的是 <code class="highlighter-rouge">hash.Hash32</code> 接口类型的值。如果要把 CRC-32 的算法替代为 Adler-32 的算法，只需要改变一下调用的构造器，其他的不需要任何改变。</p>
+<p>在这种模式下，类型的构造器应该返回接口的值而不是相应的类型的值。比如，在哈希库 <code class="language-plaintext highlighter-rouge">crc32.NewIEEE</code> 和 <code class="language-plaintext highlighter-rouge">adler32.New</code> 两个构造器返回的是 <code class="language-plaintext highlighter-rouge">hash.Hash32</code> 接口类型的值。如果要把 CRC-32 的算法替代为 Adler-32 的算法，只需要改变一下调用的构造器，其他的不需要任何改变。</p>
 
-<p>同样的，可以让不同 <code class="highlighter-rouge">crypto</code> 包中的流密码算法与块加密算法分开。在 <code class="highlighter-rouge">crypto/cipher</code> 包中的 <code class="highlighter-rouge">Block</code> 接口限定了块加密算法对某个独立的数据块进行加密的行为；为了通用性，使用实现 <code class="highlighter-rouge">Block</code> 接口的加密包来创建流加密器，从而封装块密码算法的细节，把使用者的注意力解放出来；最后为了通用性，返回 <code class="highlighter-rouge">Stream</code> 接口类型的数据。</p>
+<p>同样的，可以让不同 <code class="language-plaintext highlighter-rouge">crypto</code> 包中的流密码算法与块加密算法分开。在 <code class="language-plaintext highlighter-rouge">crypto/cipher</code> 包中的 <code class="language-plaintext highlighter-rouge">Block</code> 接口限定了块加密算法对某个独立的数据块进行加密的行为；为了通用性，使用实现 <code class="language-plaintext highlighter-rouge">Block</code> 接口的加密包来创建流加密器，从而封装块密码算法的细节，把使用者的注意力解放出来；最后为了通用性，返回 <code class="language-plaintext highlighter-rouge">Stream</code> 接口类型的数据。</p>
 
-<p>接口 <code class="highlighter-rouge">crypto/cipher</code> 的源码如下：</p>
+<p>接口 <code class="language-plaintext highlighter-rouge">crypto/cipher</code> 的源码如下：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Block</span> <span class="k">interface</span> <span class="p">{</span>
     <span class="n">BlockSize</span><span class="p">()</span> <span class="kt">int</span>
@@ -312,18 +312,18 @@ Author: Ray-Eldath
 <span class="k">func</span> <span class="n">NewCTR</span><span class="p">(</span><span class="n">block</span> <span class="n">Block</span><span class="p">,</span> <span class="n">iv</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="n">Stream</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">NewCTR</code> 不局限应用到某种特定的加密算法和数据源，它能够应用在所有实现了 <code class="highlighter-rouge">Block</code> 接口和 <code class="highlighter-rouge">Stream</code> 接口的加密算法上面。同时因为 <code class="highlighter-rouge">NewCTR</code> 返回的是 <code class="highlighter-rouge">Stream</code> 接口类型，因此用其他的加密算法替代 <code class="highlighter-rouge">CTR</code> 算法也很简单，只需要把调用了 <code class="highlighter-rouge">NewCTR</code> 的地方替换成为其他加密算法的构造器就可以了。</p>
+<p><code class="language-plaintext highlighter-rouge">NewCTR</code> 不局限应用到某种特定的加密算法和数据源，它能够应用在所有实现了 <code class="language-plaintext highlighter-rouge">Block</code> 接口和 <code class="language-plaintext highlighter-rouge">Stream</code> 接口的加密算法上面。同时因为 <code class="language-plaintext highlighter-rouge">NewCTR</code> 返回的是 <code class="language-plaintext highlighter-rouge">Stream</code> 接口类型，因此用其他的加密算法替代 <code class="language-plaintext highlighter-rouge">CTR</code> 算法也很简单，只需要把调用了 <code class="language-plaintext highlighter-rouge">NewCTR</code> 的地方替换成为其他加密算法的构造器就可以了。</p>
 
 <h2 id="接口与方法interfaces-and-methods">接口与方法（Interfaces and methods）</h2>
 
-<p>在 Go 中几乎所有东西都可以关联方法，都可以满足某个接口。其中一个例子是定义了 <code class="highlighter-rouge">Handler</code> 接口的 <code class="highlighter-rouge">http</code> 包：任何实现了 <code class="highlighter-rouge">Handler</code> 接口的对象都可以处理 HTTP 请求。</p>
+<p>在 Go 中几乎所有东西都可以关联方法，都可以满足某个接口。其中一个例子是定义了 <code class="language-plaintext highlighter-rouge">Handler</code> 接口的 <code class="language-plaintext highlighter-rouge">http</code> 包：任何实现了 <code class="language-plaintext highlighter-rouge">Handler</code> 接口的对象都可以处理 HTTP 请求。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Handler</span> <span class="k">interface</span> <span class="p">{</span>
     <span class="n">ServeHTTP</span><span class="p">(</span><span class="n">ResponseWriter</span><span class="p">,</span> <span class="o">*</span><span class="n">Request</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>其中 <code class="highlighter-rouge">ResponseWriter</code> 本身就是一个接口，它提供了响应客户端的几个方法，包含标准的 <code class="highlighter-rouge">Write</code> 方法，因此 <code class="highlighter-rouge">http.ResponseWriter</code> 可以被使用在任何应用 <code class="highlighter-rouge">io.Writer</code> 的地方。<code class="highlighter-rouge">Request</code> 是一个结构体，包含了从客户端解析出来的请求体。</p>
+<p>其中 <code class="language-plaintext highlighter-rouge">ResponseWriter</code> 本身就是一个接口，它提供了响应客户端的几个方法，包含标准的 <code class="language-plaintext highlighter-rouge">Write</code> 方法，因此 <code class="language-plaintext highlighter-rouge">http.ResponseWriter</code> 可以被使用在任何应用 <code class="language-plaintext highlighter-rouge">io.Writer</code> 的地方。<code class="language-plaintext highlighter-rouge">Request</code> 是一个结构体，包含了从客户端解析出来的请求体。</p>
 
 <p>为了简化，让我们忽略 POSTs 并且假设 HTTP 请求只有 GETs。下面是一个短小但是完整的 HTTP 请求处理器（实现了 ServerHTTP 方法），它能够用于计数页面被查看的次数。</p>
 
@@ -338,7 +338,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>（感兴趣的话可以探索一下 <code class="highlighter-rouge">Fprintf</code> 是如何把内容打印到 <code class="highlighter-rouge">http.ResponseWriter</code> 的）</p>
+<p>（感兴趣的话可以探索一下 <code class="language-plaintext highlighter-rouge">Fprintf</code> 是如何把内容打印到 <code class="language-plaintext highlighter-rouge">http.ResponseWriter</code> 的）</p>
 
 <p>作为参考，下面的代码展示了如果把这样的服务绑定到 URL 树上的：</p>
 
@@ -348,7 +348,7 @@ Author: Ray-Eldath
 <span class="n">http</span><span class="o">.</span><span class="n">Handle</span><span class="p">(</span><span class="s">"/counter"</span><span class="p">,</span> <span class="n">ctr</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>在这个例子里其实整数类型也可以满足需求，那为什么还要把 <code class="highlighter-rouge">Counter</code> 声明成一个结构体呢？（这里需要注意接收者必须是指针才可以让调用者感知到它的增加）</p>
+<p>在这个例子里其实整数类型也可以满足需求，那为什么还要把 <code class="language-plaintext highlighter-rouge">Counter</code> 声明成一个结构体呢？（这里需要注意接收者必须是指针才可以让调用者感知到它的增加）</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Simpler counter server.</span>
 <span class="k">type</span> <span class="n">Counter</span> <span class="kt">int</span>
@@ -371,14 +371,14 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>最后，如果我们想展示服务器启动时在 <code class="highlighter-rouge">/args</code> 路径里传递的参数，可以很容易地写一个函数来打印这些参数。</p>
+<p>最后，如果我们想展示服务器启动时在 <code class="language-plaintext highlighter-rouge">/args</code> 路径里传递的参数，可以很容易地写一个函数来打印这些参数。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">ArgServer</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Args</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>那我们该怎么把它变成一个 HTTP 服务呢？我们可以定义任意的类型并给这个类型写一个 <code class="highlighter-rouge">ArgServer</code> 方法，然后不使用接收者的值就可以了，但是有一个更好的方法：因为我们可以给任何类型（除了指针和接口）定义方法，因此我们可以给函数定义方法。在 <code class="highlighter-rouge">http</code> 中就包含这样的代码：</p>
+<p>那我们该怎么把它变成一个 HTTP 服务呢？我们可以定义任意的类型并给这个类型写一个 <code class="language-plaintext highlighter-rouge">ArgServer</code> 方法，然后不使用接收者的值就可以了，但是有一个更好的方法：因为我们可以给任何类型（除了指针和接口）定义方法，因此我们可以给函数定义方法。在 <code class="language-plaintext highlighter-rouge">http</code> 中就包含这样的代码：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// The HandlerFunc type is an adapter to allow the use of</span>
 <span class="c">// ordinary functions as HTTP handlers.  If f is a function</span>
@@ -392,9 +392,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">HandlerFunc</code> 类型定义了 <code class="highlighter-rouge">ServeHTTP</code> 方法，因此这个类型的值可以处理 HTTP 请求。可以琢磨一下上面代码中 <code class="highlighter-rouge">ServeHTTP</code> 这个方法的使用：接受者是一个函数 <code class="highlighter-rouge">f</code>，在 <code class="highlighter-rouge">ServeHTTP</code> 方法的内部调用了 <code class="highlighter-rouge">f</code>。可能这看起来有一点奇怪，但是这和 “接收者是信道并且在对应的方法中向信道中发送内容” 是一样的设计模式。</p>
+<p><code class="language-plaintext highlighter-rouge">HandlerFunc</code> 类型定义了 <code class="language-plaintext highlighter-rouge">ServeHTTP</code> 方法，因此这个类型的值可以处理 HTTP 请求。可以琢磨一下上面代码中 <code class="language-plaintext highlighter-rouge">ServeHTTP</code> 这个方法的使用：接受者是一个函数 <code class="language-plaintext highlighter-rouge">f</code>，在 <code class="language-plaintext highlighter-rouge">ServeHTTP</code> 方法的内部调用了 <code class="language-plaintext highlighter-rouge">f</code>。可能这看起来有一点奇怪，但是这和 “接收者是信道并且在对应的方法中向信道中发送内容” 是一样的设计模式。</p>
 
-<p>为了让 <code class="highlighter-rouge">ArgServer</code> 注册为 HTTP 服务器，我们可以先修改它让它有正确的签名：</p>
+<p>为了让 <code class="language-plaintext highlighter-rouge">ArgServer</code> 注册为 HTTP 服务器，我们可以先修改它让它有正确的签名：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Argument server.</span>
 <span class="k">func</span> <span class="n">ArgServer</span><span class="p">(</span><span class="n">w</span> <span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span> <span class="n">req</span> <span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="p">{</span>
@@ -402,12 +402,12 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>上面的代码中 <code class="highlighter-rouge">ArgServer</code> 和 <code class="highlighter-rouge">HandlerFunc</code> 有相同的签名，因此我们可以把它转换为<code class="highlighter-rouge">HandlerFunc</code> 类型从而可以使用这个类型的方法，就好像我们把 <code class="highlighter-rouge">Sequence</code> 转换为 <code class="highlighter-rouge">IntSlice</code> 使用 <code class="highlighter-rouge">IntSlice.Sort</code> 一样。下面的代码简洁明了：</p>
+<p>上面的代码中 <code class="language-plaintext highlighter-rouge">ArgServer</code> 和 <code class="language-plaintext highlighter-rouge">HandlerFunc</code> 有相同的签名，因此我们可以把它转换为<code class="language-plaintext highlighter-rouge">HandlerFunc</code> 类型从而可以使用这个类型的方法，就好像我们把 <code class="language-plaintext highlighter-rouge">Sequence</code> 转换为 <code class="language-plaintext highlighter-rouge">IntSlice</code> 使用 <code class="language-plaintext highlighter-rouge">IntSlice.Sort</code> 一样。下面的代码简洁明了：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">http</span><span class="o">.</span><span class="n">Handle</span><span class="p">(</span><span class="s">"/args"</span><span class="p">,</span> <span class="n">http</span><span class="o">.</span><span class="n">HandlerFunc</span><span class="p">(</span><span class="n">ArgServer</span><span class="p">))</span>
 </code></pre></div></div>
 
-<p>这样当有人访问了页面 <code class="highlighter-rouge">/args</code>，处理器在这个页面安装了类型为 <code class="highlighter-rouge">HandlerFunc</code> 的 <code class="highlighter-rouge">ArgServer</code>，因此 HTTP 服务器会触发 <code class="highlighter-rouge">HandlerFunc</code> 类型的方法 <code class="highlighter-rouge">ServeHTTP</code>，上面的代码里对应的接收器是 <code class="highlighter-rouge">ArgServer</code>，并且会通过 <code class="highlighter-rouge">HandlerFunc.ServeHTTP</code> 内的 <code class="highlighter-rouge">f(w, req)</code>）调用 <code class="highlighter-rouge">ArgServer</code> 方法，如此参数就被展示出来。</p>
+<p>这样当有人访问了页面 <code class="language-plaintext highlighter-rouge">/args</code>，处理器在这个页面安装了类型为 <code class="language-plaintext highlighter-rouge">HandlerFunc</code> 的 <code class="language-plaintext highlighter-rouge">ArgServer</code>，因此 HTTP 服务器会触发 <code class="language-plaintext highlighter-rouge">HandlerFunc</code> 类型的方法 <code class="language-plaintext highlighter-rouge">ServeHTTP</code>，上面的代码里对应的接收器是 <code class="language-plaintext highlighter-rouge">ArgServer</code>，并且会通过 <code class="language-plaintext highlighter-rouge">HandlerFunc.ServeHTTP</code> 内的 <code class="language-plaintext highlighter-rouge">f(w, req)</code>）调用 <code class="language-plaintext highlighter-rouge">ArgServer</code> 方法，如此参数就被展示出来。</p>
 
 <p>在这一小节中我们在结构体、整数、信道和函数上面分别创建了 HTTP 服务器，可以做到这一切都是因为接口的纯粹性：① 接口只关注方法，②可以给几乎所有的类型（除了指针和接口）关联方法从而实现接口。</p>
 
@@ -488,7 +488,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

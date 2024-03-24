@@ -190,17 +190,17 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>当我们使用 Go <strong>编写</strong>业务逻辑（比如上面的<code class="highlighter-rouge">hello world</code>代码）并执行 <code class="highlighter-rouge">go run main.go</code> 的时候，Go 开发工具链隐含地帮我们首先<strong>编译并链接源码</strong>生成可以执行的二进制文件，紧接着<strong>运行</strong>这个二进制文件。也就是说，<code class="highlighter-rouge">go run main.go</code> 等效于 ①<code class="highlighter-rouge">go build main.go</code> + ②<code class="highlighter-rouge">./mian</code> 这两个命令操作。</p>
+<p>当我们使用 Go <strong>编写</strong>业务逻辑（比如上面的<code class="language-plaintext highlighter-rouge">hello world</code>代码）并执行 <code class="language-plaintext highlighter-rouge">go run main.go</code> 的时候，Go 开发工具链隐含地帮我们首先<strong>编译并链接源码</strong>生成可以执行的二进制文件，紧接着<strong>运行</strong>这个二进制文件。也就是说，<code class="language-plaintext highlighter-rouge">go run main.go</code> 等效于 ①<code class="language-plaintext highlighter-rouge">go build main.go</code> + ②<code class="language-plaintext highlighter-rouge">./mian</code> 这两个命令操作。</p>
 
-<p>我们可以简单地认为 <code class="highlighter-rouge">go build main.go</code> 是 Go 代码的编译时，产物是一个可执行的二进制文件 <code class="highlighter-rouge">main</code>；命令<code class="highlighter-rouge">./main</code> 是 Go 代码的运行时，此时我们编写的逻辑<em>开始</em>在 CPU 上执行。</p>
+<p>我们可以简单地认为 <code class="language-plaintext highlighter-rouge">go build main.go</code> 是 Go 代码的编译时，产物是一个可执行的二进制文件 <code class="language-plaintext highlighter-rouge">main</code>；命令<code class="language-plaintext highlighter-rouge">./main</code> 是 Go 代码的运行时，此时我们编写的逻辑<em>开始</em>在 CPU 上执行。</p>
 
 <h4 id="212-动态语言的编写-解释执行过程">2.1.2 动态语言的①编写-②解释执行过程</h4>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># cat hello.py
-</span><span class="k">print</span><span class="p">(</span><span class="s">"hello world"</span><span class="p">)</span>
+</span><span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">hello world</span><span class="sh">"</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>当我们使用 Python <strong>编写</strong>业务逻辑(比如上面的代码)，在执行 <code class="highlighter-rouge">python hello.py</code> 的时候，Python 解释器直接帮我们<strong>解释并执行</strong>业务逻辑。由于人与机器之间的隔阂，python 源码最终也要变成机器可以执行的代码；但是相对于静态语言，<strong>动态语言不存在编译后机器可执行的二进制产物</strong>。换句话说，Python 的解释器一边编译源码，一边执行编译生成的代码。</p>
+<p>当我们使用 Python <strong>编写</strong>业务逻辑(比如上面的代码)，在执行 <code class="language-plaintext highlighter-rouge">python hello.py</code> 的时候，Python 解释器直接帮我们<strong>解释并执行</strong>业务逻辑。由于人与机器之间的隔阂，python 源码最终也要变成机器可以执行的代码；但是相对于静态语言，<strong>动态语言不存在编译后机器可执行的二进制产物</strong>。换句话说，Python 的解释器一边编译源码，一边执行编译生成的代码。</p>
 
 <h3 id="22-人生苦短快用python">2.2 人生苦短，快用Python</h3>
 
@@ -314,7 +314,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

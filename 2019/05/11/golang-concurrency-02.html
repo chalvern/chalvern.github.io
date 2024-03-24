@@ -163,12 +163,12 @@ Author: Ray-Eldath
 <h2 id="写在前面">写在前面</h2>
 <p>过去 Web 开发的工作比较少涉及到并发的问题，每个用户请求在独立的线程里面进行，偶尔涉及到异步任务但是线程间数据同步模型非常简单，因此并未深入探究过并发这一块。最近在写游戏相关的服务端代码时发现数据的并发同步场景非常多，因此花了一点时间来探索。这是一个系列文章，本文为第二篇。</p>
 
-<p>本文通过一个例子来引出 Golang 中的数据并发同步问题，并通过使用 <code class="highlighter-rouge">atomic</code> 包的方式来避免数据竞争问题。</p>
+<p>本文通过一个例子来引出 Golang 中的数据并发同步问题，并通过使用 <code class="language-plaintext highlighter-rouge">atomic</code> 包的方式来避免数据竞争问题。</p>
 
 <h2 id="原子性及-go-中-atomic-包的使用">原子性及 Go 中 atomic 包的使用</h2>
 <h3 id="再提非常原始的数据竞争问题">再提非常原始的数据竞争问题</h3>
 
-<p>下面的代码模拟了为一个用户（<code class="highlighter-rouge">Person</code>）发放金币（<code class="highlighter-rouge">Money</code>）的代码，其中金币发放与读取分别再不同的线程里完成（读取在主线程，发放在一个子线程）。</p>
+<p>下面的代码模拟了为一个用户（<code class="language-plaintext highlighter-rouge">Person</code>）发放金币（<code class="language-plaintext highlighter-rouge">Money</code>）的代码，其中金币发放与读取分别再不同的线程里完成（读取在主线程，发放在一个子线程）。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
 <span class="k">package</span> <span class="n">main</span>
@@ -191,7 +191,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">go run</code> 时使用 <code class="highlighter-rouge">-race</code> 标志运行上面的代码可以发现数据竞争提醒：</p>
+<p><code class="language-plaintext highlighter-rouge">go run</code> 时使用 <code class="language-plaintext highlighter-rouge">-race</code> 标志运行上面的代码可以发现数据竞争提醒：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 添加 -race 后检测竞争状态，可以看到 race 的提醒</span>
 go run <span class="nt">-race</span> main.go
@@ -202,7 +202,7 @@ go run <span class="nt">-race</span> main.go
 <span class="c"># Previous read at 0x00c00001c0a0 by main goroutine</span>
 </code></pre></div></div>
 
-<p>根据《 <a href="http://yanyiwu.com/work/2015/02/07/golang-concurrency-safety.html">谈谈go语言编程的并发安全</a>》 和 《 <a href="https://software.intel.com/en-us/blogs/2013/01/06/benign-data-races-what-could-possibly-go-wrong">benign-data-races-what-could-possibly-go-wrong</a> 》的讨论，上面的代码无法保证 <code class="highlighter-rouge">fmt.Printf("Money: %d\n", p.Money)</code> 这一句会输出什么，同时存在严重的问题（高并发下可能出现严重问题导致代码崩溃），因此有必要通过一定的措施避免这种不确定性。</p>
+<p>根据《 <a href="http://yanyiwu.com/work/2015/02/07/golang-concurrency-safety.html">谈谈go语言编程的并发安全</a>》 和 《 <a href="https://software.intel.com/en-us/blogs/2013/01/06/benign-data-races-what-could-possibly-go-wrong">benign-data-races-what-could-possibly-go-wrong</a> 》的讨论，上面的代码无法保证 <code class="language-plaintext highlighter-rouge">fmt.Printf("Money: %d\n", p.Money)</code> 这一句会输出什么，同时存在严重的问题（高并发下可能出现严重问题导致代码崩溃），因此有必要通过一定的措施避免这种不确定性。</p>
 
 <h3 id="原子性概念及其实现原理">原子性概念及其实现原理</h3>
 
@@ -210,13 +210,13 @@ go run <span class="nt">-race</span> main.go
 
 <p>对于编程语言中变量的修改，可以认为原子操作需满足下面的条件：① 变量的读写过程不可中断（不可以读到一半做其他事情，也不可写到一半做其他事情），② 变量的读写过程不可同时进行（不可以写变量的同时读取变量，防止读取到仅更新了一半的变量值；也不可以写变量的同时另一个线程也在写这个变量，防止其中一个更新无效）。</p>
 
-<p>根据 Golang 官方 <a href="https://golang.google.cn/ref/mem">内存模型</a> 文档中的描述  <code class="highlighter-rouge">Programs that modify data being simultaneously accessed by multiple goroutines must serialize such access.</code>  以及 <a href="https://golang.google.cn/pkg/sync/atomic/">atomic</a> 包的存在，可以认为 Golang 对同一块内存的并发读写访问<strong>并不是原子性</strong>的。简而言之，Golang 中对一个变量进行更新时，另一个线程可以并发地读这个变量的值，而读取到的值是内存不确定的（即不一定读到什么东西）。</p>
+<p>根据 Golang 官方 <a href="https://golang.google.cn/ref/mem">内存模型</a> 文档中的描述  <code class="language-plaintext highlighter-rouge">Programs that modify data being simultaneously accessed by multiple goroutines must serialize such access.</code>  以及 <a href="https://golang.google.cn/pkg/sync/atomic/">atomic</a> 包的存在，可以认为 Golang 对同一块内存的并发读写访问<strong>并不是原子性</strong>的。简而言之，Golang 中对一个变量进行更新时，另一个线程可以并发地读这个变量的值，而读取到的值是内存不确定的（即不一定读到什么东西）。</p>
 
 <h3 id="使用-atomic-包来避免数据竞争">使用 atomic 包来避免数据竞争</h3>
 
-<p>上篇文章《 <a href="/2019/05/11/golang-concurrency-01.html">浅谈 Golang 中数据的并发同步问题（一）</a> 》采用 <strong>添加读写锁</strong> 的方式避免了数据竞争。对于 <strong>用户</strong>-&gt;<strong>金币</strong> 这种模型（金币是一个数值而非其他的复杂类型），其实也可以采用 <code class="highlighter-rouge">atomic</code> 包来避免数据竞争问题。</p>
+<p>上篇文章《 <a href="/2019/05/11/golang-concurrency-01.html">浅谈 Golang 中数据的并发同步问题（一）</a> 》采用 <strong>添加读写锁</strong> 的方式避免了数据竞争。对于 <strong>用户</strong>-&gt;<strong>金币</strong> 这种模型（金币是一个数值而非其他的复杂类型），其实也可以采用 <code class="language-plaintext highlighter-rouge">atomic</code> 包来避免数据竞争问题。</p>
 
-<p>下面的代码引入了 <code class="highlighter-rouge">atomic</code> 的使用，由于其仅支持 <code class="highlighter-rouge">int32</code> 和 <code class="highlighter-rouge">int64</code> 这种显式定义字节长度的类型，因此代码中把 <code class="highlighter-rouge">Money</code> 修改为了 <code class="highlighter-rouge">int64</code> 类型。</p>
+<p>下面的代码引入了 <code class="language-plaintext highlighter-rouge">atomic</code> 的使用，由于其仅支持 <code class="language-plaintext highlighter-rouge">int32</code> 和 <code class="language-plaintext highlighter-rouge">int64</code> 这种显式定义字节长度的类型，因此代码中把 <code class="language-plaintext highlighter-rouge">Money</code> 修改为了 <code class="language-plaintext highlighter-rouge">int64</code> 类型。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
@@ -239,7 +239,7 @@ go run <span class="nt">-race</span> main.go
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">go run -race main.go</code> 运行上面的代码可以发现数据竞争的提醒消失了：</p>
+<p><code class="language-plaintext highlighter-rouge">go run -race main.go</code> 运行上面的代码可以发现数据竞争的提醒消失了：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 添加 -race 后检测竞争状态，可以看到 race 的提醒</span>
 go run <span class="nt">-race</span> main.go
@@ -247,11 +247,11 @@ go run <span class="nt">-race</span> main.go
 </code></pre></div></div>
 
 <h2 id="小结">小结</h2>
-<p><a href="https://golang.google.cn/pkg/sync/atomic/">atomic</a> 包主要局限在 <strong>数值类型</strong> 的赋值、修改、读取、交换等操作，不可以处理像 <code class="highlighter-rouge">struct</code>、<code class="highlighter-rouge">map</code> 这种高级类型，因此 <code class="highlighter-rouge">atomic</code> 的使用具有比较大的局限性。</p>
+<p><a href="https://golang.google.cn/pkg/sync/atomic/">atomic</a> 包主要局限在 <strong>数值类型</strong> 的赋值、修改、读取、交换等操作，不可以处理像 <code class="language-plaintext highlighter-rouge">struct</code>、<code class="language-plaintext highlighter-rouge">map</code> 这种高级类型，因此 <code class="language-plaintext highlighter-rouge">atomic</code> 的使用具有比较大的局限性。</p>
 
-<p>就像文档中描述的： <code class="highlighter-rouge">These functions (of atomics) require great care to be used correctly. Except for special, low-level applications, synchronization is better done with channels or the facilities of the sync package. Share memory by communicating; don't communicate by sharing memory.</code></p>
+<p>就像文档中描述的： <code class="language-plaintext highlighter-rouge">These functions (of atomics) require great care to be used correctly. Except for special, low-level applications, synchronization is better done with channels or the facilities of the sync package. Share memory by communicating; don't communicate by sharing memory.</code></p>
 
-<p>除非知道自己在做什么，否则更推荐使用 <code class="highlighter-rouge">channel</code>（通道） 和 <code class="highlighter-rouge">sync</code>（锁）的方式处理数据同步问题。</p>
+<p>除非知道自己在做什么，否则更推荐使用 <code class="language-plaintext highlighter-rouge">channel</code>（通道） 和 <code class="language-plaintext highlighter-rouge">sync</code>（锁）的方式处理数据同步问题。</p>
 
 <h2 id="参考">参考</h2>
 <ul>
@@ -339,7 +339,7 @@ go run <span class="nt">-race</span> main.go
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

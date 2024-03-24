@@ -170,7 +170,7 @@ Author: Ray-Eldath
 
 <p>在 ubuntu 中下载安装 git 还是比较简单的，</p>
 
-<p>我们可以打开 terminal 终端，首先敲击 <code class="highlighter-rouge">git</code> 命令，如果我们系统还没有安装 git， console 会提示我们“尚未安装 git”，并且给出 <code class="highlighter-rouge">sudo apt install git</code> 的命令，这个时候我们只需要复制这条命令，然后粘贴到命令行执行就可以了。</p>
+<p>我们可以打开 terminal 终端，首先敲击 <code class="language-plaintext highlighter-rouge">git</code> 命令，如果我们系统还没有安装 git， console 会提示我们“尚未安装 git”，并且给出 <code class="language-plaintext highlighter-rouge">sudo apt install git</code> 的命令，这个时候我们只需要复制这条命令，然后粘贴到命令行执行就可以了。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt <span class="nb">install </span>git 
 
@@ -200,19 +200,19 @@ Author: Ray-Eldath
 <p><img src="/assets/pic/003_git_concepts_02.png" alt="git命令图示" title="Git命令及各环节流转" /></p>
 
 <ol>
-  <li>整个仓库可以来自于某个远端仓库，比如 github 里的 <a href="https://github.com/chalver/book.git">https://github.com/chalver/book.git</a> 仓库，我们可以直接 <code class="highlighter-rouge">git clone remote-repository</code> 到我们的本地；</li>
-  <li>除此之外呢我们也可以在我们的工作目录直接通过 <code class="highlighter-rouge">git init</code> 命令初始化一个本地的仓库。</li>
+  <li>整个仓库可以来自于某个远端仓库，比如 github 里的 <a href="https://github.com/chalver/book.git">https://github.com/chalver/book.git</a> 仓库，我们可以直接 <code class="language-plaintext highlighter-rouge">git clone remote-repository</code> 到我们的本地；</li>
+  <li>除此之外呢我们也可以在我们的工作目录直接通过 <code class="language-plaintext highlighter-rouge">git init</code> 命令初始化一个本地的仓库。</li>
 </ol>
 
-<p>大家可以看到 workspace 就是我们正常编写内容的工作区域。当我们打开一个由 git 管理的项目的时候，里面可能已经包含了很多的代码，而且代码是以文件的形式分模块存在的。我们可能会在已有的某几个模块修改已有的函数或者提交几个新的函数，为了把我们修改的内容提交到 git 仓库，我们首先需要把我们的修改 <code class="highlighter-rouge">git add</code> 到 stage 暂存空间，我们可以每修改一点内容都 <code class="highlighter-rouge">git add</code> 到整个空间，从而为我们创建新的 commit 提交做准备。</p>
+<p>大家可以看到 workspace 就是我们正常编写内容的工作区域。当我们打开一个由 git 管理的项目的时候，里面可能已经包含了很多的代码，而且代码是以文件的形式分模块存在的。我们可能会在已有的某几个模块修改已有的函数或者提交几个新的函数，为了把我们修改的内容提交到 git 仓库，我们首先需要把我们的修改 <code class="language-plaintext highlighter-rouge">git add</code> 到 stage 暂存空间，我们可以每修改一点内容都 <code class="language-plaintext highlighter-rouge">git add</code> 到整个空间，从而为我们创建新的 commit 提交做准备。</p>
 
-<p>在 stage 空间，工作区域分散在各处的修改点被整合到一起。我们可以通过 <code class="highlighter-rouge">git status</code> 命令查看 stage 空间里暂存的内容。</p>
+<p>在 stage 空间，工作区域分散在各处的修改点被整合到一起。我们可以通过 <code class="language-plaintext highlighter-rouge">git status</code> 命令查看 stage 空间里暂存的内容。</p>
 
-<p>当我们对工作区域的修改感到满意了，把内容全部添加到缓存区，那么我们就可以通过 <code class="highlighter-rouge">git commit</code> 来把我们的修改提交到本地仓库了。这里我们可以通过在 <code class="highlighter-rouge">git commit -m "本次提交的内容"</code> 后添加注释来注明本地提交了什么内容。</p>
+<p>当我们对工作区域的修改感到满意了，把内容全部添加到缓存区，那么我们就可以通过 <code class="language-plaintext highlighter-rouge">git commit</code> 来把我们的修改提交到本地仓库了。这里我们可以通过在 <code class="language-plaintext highlighter-rouge">git commit -m "本次提交的内容"</code> 后添加注释来注明本地提交了什么内容。</p>
 
-<p>如果我们本地的仓库来自于一个远端仓库，或者我们本地初始化的仓库配置了对应的远端仓库，我们可以通过 <code class="highlighter-rouge">git push</code> 来把本地仓库的更新同步到远端仓库。</p>
+<p>如果我们本地的仓库来自于一个远端仓库，或者我们本地初始化的仓库配置了对应的远端仓库，我们可以通过 <code class="language-plaintext highlighter-rouge">git push</code> 来把本地仓库的更新同步到远端仓库。</p>
 
-<p>当多人协作的时候，可能出现多人同时编写同一个仓库的情况，我们 <code class="highlighter-rouge">git push</code> 本地仓库的时候可能远端的仓库已经被别人更新过了，此时我们就没有办法 push 仓库了。不过这个时候我们可以通过 <code class="highlighter-rouge">git pull</code> 来 merge 别人的更改，这样就可以继续 push 我们的代码到远端了。</p>
+<p>当多人协作的时候，可能出现多人同时编写同一个仓库的情况，我们 <code class="language-plaintext highlighter-rouge">git push</code> 本地仓库的时候可能远端的仓库已经被别人更新过了，此时我们就没有办法 push 仓库了。不过这个时候我们可以通过 <code class="language-plaintext highlighter-rouge">git pull</code> 来 merge 别人的更改，这样就可以继续 push 我们的代码到远端了。</p>
 
 <p>git 中还存在分支的概念，尤其在多人协作的时候尤其重要。不过这部分的内容比较复杂且对开发者的实践要求比较高，我会在后面的课程里再单独拎出来介绍。大家可以先尝试熟练掌握本节的内容。</p>
 
@@ -228,7 +228,7 @@ Author: Ray-Eldath
 
 <h3 id="通过图形界面实战">通过图形界面实战</h3>
 <ol>
-  <li>克隆 <code class="highlighter-rouge">https://github.com/chalvern/books.git</code></li>
+  <li>克隆 <code class="language-plaintext highlighter-rouge">https://github.com/chalvern/books.git</code></li>
   <li>修改内容并添加到暂缓区</li>
   <li>提交</li>
   <li>推到远端</li>
@@ -238,10 +238,10 @@ Author: Ray-Eldath
 <h3 id="通过命令行实战">通过命令行实战</h3>
 
 <ol>
-  <li><code class="highlighter-rouge">git clone https://github.com/chalvern/books.git</code></li>
-  <li><code class="highlighter-rouge">git add .</code></li>
-  <li><code class="highlighter-rouge">git commit -m "add sth"</code></li>
-  <li><code class="highlighter-rouge">git push</code></li>
+  <li><code class="language-plaintext highlighter-rouge">git clone https://github.com/chalvern/books.git</code></li>
+  <li><code class="language-plaintext highlighter-rouge">git add .</code></li>
+  <li><code class="language-plaintext highlighter-rouge">git commit -m "add sth"</code></li>
+  <li><code class="language-plaintext highlighter-rouge">git push</code></li>
   <li>课堂展示。</li>
 </ol>
 
@@ -333,7 +333,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

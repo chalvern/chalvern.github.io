@@ -402,11 +402,11 @@ Benchmark_MarshalLevel3-4   100000   14319 ns/op   4720 B/op   105 allocs/op
   <li>在 Go 中，Marshal 比 Unmarshal 更消耗时间；</li>
   <li>随着处理深度的增加，消耗的 CPU 时间越来越多，应该是 For 循环以及更多的 Marshal 过程消耗了大量的时间；</li>
   <li>从上面的数据，时间按照  11107 =&gt; 12399 =&gt; 13297 =&gt; 14319 递增 （每个阶段约 10% 的增加）；</li>
-  <li>可以通过增加 JSON 字符串长度、修改 <code class="highlighter-rouge">go test -count=2 -benchtime 3.1s -benchmem . -bench .</code> 的参数获取更为精确的数据（ go test 用法很多=。=）。</li>
+  <li>可以通过增加 JSON 字符串长度、修改 <code class="language-plaintext highlighter-rouge">go test -count=2 -benchtime 3.1s -benchmem . -bench .</code> 的参数获取更为精确的数据（ go test 用法很多=。=）。</li>
 </ol>
 
 <h2 id="小结">小结</h2>
-<p>以前在写业务代码的时候，记得有一次对接 <code class="highlighter-rouge">C#</code> 技术栈的一个服务，其返回的数据格式是本文中提到的 “大于第 x 层的内容转换为字符串” 类似的存在，当时一直想不明白为什么要有这样的设计。现在来看，很可能是开发者把本该用在日志上的规范用到了 api 接口规范。</p>
+<p>以前在写业务代码的时候，记得有一次对接 <code class="language-plaintext highlighter-rouge">C#</code> 技术栈的一个服务，其返回的数据格式是本文中提到的 “大于第 x 层的内容转换为字符串” 类似的存在，当时一直想不明白为什么要有这样的设计。现在来看，很可能是开发者把本该用在日志上的规范用到了 api 接口规范。</p>
 
 <ul>
   <li>理论上来说，对于 api 接口，规规矩矩地返回 JSON 就好了嘛，就不要玩嵌套了，避免给调用接口的开发者制造不痛快。</li>
@@ -503,7 +503,7 @@ Benchmark_MarshalLevel3-4   100000   14319 ns/op   4720 B/op   105 allocs/op
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

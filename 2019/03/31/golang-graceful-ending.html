@@ -175,16 +175,16 @@ Author: Ray-Eldath
 
 <h2 id="代码级支持优雅中止是必要的">代码级支持优雅中止是必要的</h2>
 <h3 id="优雅中止的含义">优雅中止的含义</h3>
-<p>所谓“优雅中止”，是指应用接收到特定的中止信号（比如 <code class="highlighter-rouge">INT</code>、<code class="highlighter-rouge">TERM</code>）后，不再接受外部的新请求，也不再创建内部的新任务，保持应用进程运行直到旧需求和旧任务执行完成后再终止退出。</p>
+<p>所谓“优雅中止”，是指应用接收到特定的中止信号（比如 <code class="language-plaintext highlighter-rouge">INT</code>、<code class="language-plaintext highlighter-rouge">TERM</code>）后，不再接受外部的新请求，也不再创建内部的新任务，保持应用进程运行直到旧需求和旧任务执行完成后再终止退出。</p>
 
 <h3 id="kubernetes-中-pod-的终止机制">Kubernetes 中 Pod 的终止机制</h3>
-<p>作为高可靠的服务平台，k8s 定义了终止   <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods">Pod</a> （业务进程在 Pod 中运行）的基本步骤：当主动删除 pod 时，系统会在强制终止 Pod 之前将 <code class="highlighter-rouge">TERM</code> 信号发送到每个容器中的主进程，过一段时间后（默认为 30 秒），再把 <code class="highlighter-rouge">KILL</code> 信号发送到这些进程。除此之外， k8s 还通过钩子方法提供了对 <a href="https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/">容器生命周期</a> 的管理能力，允许用户通过自定义的方式配置容器启动后或终止前执行的操作。</p>
+<p>作为高可靠的服务平台，k8s 定义了终止   <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods">Pod</a> （业务进程在 Pod 中运行）的基本步骤：当主动删除 pod 时，系统会在强制终止 Pod 之前将 <code class="language-plaintext highlighter-rouge">TERM</code> 信号发送到每个容器中的主进程，过一段时间后（默认为 30 秒），再把 <code class="language-plaintext highlighter-rouge">KILL</code> 信号发送到这些进程。除此之外， k8s 还通过钩子方法提供了对 <a href="https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/">容器生命周期</a> 的管理能力，允许用户通过自定义的方式配置容器启动后或终止前执行的操作。</p>
 
 <p>当打包进镜像的应用运行在 k8s 中的时候，如果应用实现了优雅中止的机制，就可以充分利用上面提到的 k8s 的能力，在升级应用（发新版本）和管理 Pod （宿主机维护时把 Pod 漂移到另一个宿主机，或者在闲时动态地收缩 Pod 数量从而把资源省出来另作他用）的过程中实现服务的零中断。</p>
 
 <h3 id="优雅中止的-go-代码示例">优雅中止的 Go 代码示例</h3>
 
-<p>下面的代码定义了两个定时任务：<code class="highlighter-rouge">mySecondJobs</code> 每秒钟会触发一次，每次持续约 1 秒钟；<code class="highlighter-rouge">myMinuteJobs</code> 每分钟会触发一次，每次持续约 2 秒钟。具体地可以阅读下面的代码（可以直接复制下面的代码到自己的环境中运行）：</p>
+<p>下面的代码定义了两个定时任务：<code class="language-plaintext highlighter-rouge">mySecondJobs</code> 每秒钟会触发一次，每次持续约 1 秒钟；<code class="language-plaintext highlighter-rouge">myMinuteJobs</code> 每分钟会触发一次，每次持续约 2 秒钟。具体地可以阅读下面的代码（可以直接复制下面的代码到自己的环境中运行）：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
@@ -240,21 +240,21 @@ Author: Ray-Eldath
 
 <h3 id="源码解读-优雅中止的处理思路">源码解读-优雅中止的处理思路</h3>
 <ol>
-  <li>通过 <code class="highlighter-rouge">signal.Notify</code> 捕获特定的信号；</li>
-  <li>通过 <code class="highlighter-rouge">for + select</code> 来实现循环任务，同时检测上步中欲捕获的信号；</li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">signal.Notify</code> 捕获特定的信号；</li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">for + select</code> 来实现循环任务，同时检测上步中欲捕获的信号；</li>
   <li>如果定时器被触发，则执行对应的任务；</li>
-  <li>如果发现收到了指定的信号，则跳出 <code class="highlighter-rouge">for</code> 循环，并采取一定措施结束异步任务。</li>
+  <li>如果发现收到了指定的信号，则跳出 <code class="language-plaintext highlighter-rouge">for</code> 循环，并采取一定措施结束异步任务。</li>
 </ol>
 
 <h3 id="源码解读-值得关注的几个点">源码解读-值得关注的几个点</h3>
 <ol>
-  <li>代码中采用了 <code class="highlighter-rouge">go mySecondJobs()</code> 和 <code class="highlighter-rouge">go myMinuteJobs()</code> 异步任务的方式；如果采用同步的方式将无法捕获信号，因为此时主线程在处理业务逻辑，没有空闲处理信号捕获逻辑。</li>
+  <li>代码中采用了 <code class="language-plaintext highlighter-rouge">go mySecondJobs()</code> 和 <code class="language-plaintext highlighter-rouge">go myMinuteJobs()</code> 异步任务的方式；如果采用同步的方式将无法捕获信号，因为此时主线程在处理业务逻辑，没有空闲处理信号捕获逻辑。</li>
   <li>源码中偷懒地采取简单等待的方式来保证异步任务正常结束，非普适方法，实际开发中需要根据情况做定制。</li>
-  <li><code class="highlighter-rouge">time.Ticker</code> 的使用是有注意事项的，当 <code class="highlighter-rouge">select</code> 语句中同一时刻有多个分支满足条件时会随机取一个执行，从而导致信息丢失（参考文献中最后一篇有讲到），不过本文的代码不会触发这个问题，大家可以思考一下原因。</li>
+  <li><code class="language-plaintext highlighter-rouge">time.Ticker</code> 的使用是有注意事项的，当 <code class="language-plaintext highlighter-rouge">select</code> 语句中同一时刻有多个分支满足条件时会随机取一个执行，从而导致信息丢失（参考文献中最后一篇有讲到），不过本文的代码不会触发这个问题，大家可以思考一下原因。</li>
 </ol>
 
 <h2 id="小结">小结</h2>
-<p>默认情况下，Go 应用在接收到 <code class="highlighter-rouge">TERM</code> 信号后直接退出主进程，如果此时有过程没处理完（比如 接收到外部请求后尚未返回响应，或者内部的异步任务尚未结束），则会导致过程的异常中断，影响服务质量。通过在代码中显式地捕获 <code class="highlighter-rouge">TERM</code> 信号及其他信号，感知操作系统对进程的处理，可以主动采取措施优雅地结束应用进程。</p>
+<p>默认情况下，Go 应用在接收到 <code class="language-plaintext highlighter-rouge">TERM</code> 信号后直接退出主进程，如果此时有过程没处理完（比如 接收到外部请求后尚未返回响应，或者内部的异步任务尚未结束），则会导致过程的异常中断，影响服务质量。通过在代码中显式地捕获 <code class="language-plaintext highlighter-rouge">TERM</code> 信号及其他信号，感知操作系统对进程的处理，可以主动采取措施优雅地结束应用进程。</p>
 
 <p>随着 k8s 的普及，考虑到其对进程生命周期的规范化管理，<strong>应用支持代码级的优雅中止</strong>（尤其是容器化的应用）有必要成为一种开发规范，值得引起每一位开发者的注意。</p>
 <h2 id="参考">参考</h2>
@@ -347,7 +347,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

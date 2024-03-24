@@ -182,7 +182,7 @@ Author: Ray-Eldath
 <p>如果大家对闭包的细节感兴趣希望深入理解其设计，可以自行查阅资料；本文中提到的闭包可以简单地理解为“匿名函数”。</p>
 
 <h3 id="先看一段代码">先看一段代码</h3>
-<p>下面的代码中定义了一个匿名函数并赋值给 <code class="highlighter-rouge">myfunc</code> 变量，同时在代码的后面连续调用了两次 <code class="highlighter-rouge">myfunc</code> 函数。大家可以先考虑一下代码的输出是什么，然后再查看文章后面的内容。</p>
+<p>下面的代码中定义了一个匿名函数并赋值给 <code class="language-plaintext highlighter-rouge">myfunc</code> 变量，同时在代码的后面连续调用了两次 <code class="language-plaintext highlighter-rouge">myfunc</code> 函数。大家可以先考虑一下代码的输出是什么，然后再查看文章后面的内容。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// cat main.go</span>
 <span class="k">package</span> <span class="n">main</span>
@@ -212,9 +212,9 @@ a1: 11, a2:22, <span class="nb">sum</span>: 33
 </code></pre></div></div>
 
 <h3 id="golang-闭包内的外部变量-1">Golang 闭包内的外部变量</h3>
-<p>在上面的代码中， myfunc 指向了一个匿名函数（闭包），在这个匿名函数中，<code class="highlighter-rouge">a1</code> 和 <code class="highlighter-rouge">a2</code> 均是外部变量。</p>
+<p>在上面的代码中， myfunc 指向了一个匿名函数（闭包），在这个匿名函数中，<code class="language-plaintext highlighter-rouge">a1</code> 和 <code class="language-plaintext highlighter-rouge">a2</code> 均是外部变量。</p>
 
-<p>从上面代码的运行输出可以知道，<strong>闭包内的外部变量并不是被“锁死”的，而是会随着外部变量的变化而变化</strong>。这个特性应该与函数参数的传值特性进行区分：① Golang 中函数的参数以及返回都是数值的传递，而非引用的传递；也就是说，即使入参是一个指针，在函数运行的时候起作用的也是一个被拷贝出来的指针。② 闭包内的外部变量会跟随外部变量的变化，就<strong>好像</strong>在闭包内引用的永远是变量的指针（哪怕变量是一个普普通通的数值）；比如上面代码中 <code class="highlighter-rouge">a1</code> 和  <code class="highlighter-rouge">a2</code> 均是 <code class="highlighter-rouge">int</code> 类型的值，但在闭包内的使用就好像是指针。</p>
+<p>从上面代码的运行输出可以知道，<strong>闭包内的外部变量并不是被“锁死”的，而是会随着外部变量的变化而变化</strong>。这个特性应该与函数参数的传值特性进行区分：① Golang 中函数的参数以及返回都是数值的传递，而非引用的传递；也就是说，即使入参是一个指针，在函数运行的时候起作用的也是一个被拷贝出来的指针。② 闭包内的外部变量会跟随外部变量的变化，就<strong>好像</strong>在闭包内引用的永远是变量的指针（哪怕变量是一个普普通通的数值）；比如上面代码中 <code class="language-plaintext highlighter-rouge">a1</code> 和  <code class="language-plaintext highlighter-rouge">a2</code> 均是 <code class="language-plaintext highlighter-rouge">int</code> 类型的值，但在闭包内的使用就好像是指针。</p>
 
 <h2 id="汇编代码的分析">汇编代码的分析</h2>
 <p>如果想要进一步分析闭包内外部变量的作用方式，可以在汇编层面进行进一步的探究，研究其本质。</p>
@@ -234,9 +234,9 @@ go tool objdump <span class="nt">-S</span> testl <span class="o">&gt;</span> obj
 </code></pre></div></div>
 
 <h3 id="mainmain-函数的汇编代码">main.main 函数的汇编代码</h3>
-<p>函数体对应的汇编语言如下，大家可以看里面的注释进行理解。<strong>需要重点关注的点</strong>是：在 myfunc 函数定义的地方， <code class="highlighter-rouge">a1</code> 与 <code class="highlighter-rouge">a2</code> 都是地址传递（地址传递）而非数值传递。</p>
+<p>函数体对应的汇编语言如下，大家可以看里面的注释进行理解。<strong>需要重点关注的点</strong>是：在 myfunc 函数定义的地方， <code class="language-plaintext highlighter-rouge">a1</code> 与 <code class="language-plaintext highlighter-rouge">a2</code> 都是地址传递（地址传递）而非数值传递。</p>
 
-<p>从下面的汇编代码还可以看出第二次调用 myfunc 函数与第一次调用的方式不一样，主要考虑是 <code class="highlighter-rouge">DX</code> 寄存器的纯粹性，第一次调用 <code class="highlighter-rouge">myfunc</code> 时 <code class="highlighter-rouge">DX</code> 是满足需求的，第二次就需要专门置位了。</p>
+<p>从下面的汇编代码还可以看出第二次调用 myfunc 函数与第一次调用的方式不一样，主要考虑是 <code class="language-plaintext highlighter-rouge">DX</code> 寄存器的纯粹性，第一次调用 <code class="language-plaintext highlighter-rouge">myfunc</code> 时 <code class="language-plaintext highlighter-rouge">DX</code> 是满足需求的，第二次就需要专门置位了。</p>
 
 <div class="language-as highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">TEXT</span> <span class="nx">main</span><span class="p">.</span><span class="nx">main</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span> <span class="o">/</span><span class="nx">golang</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">jingwei</span><span class="p">.</span><span class="nx">link</span><span class="o">/</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span>
 <span class="nx">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
@@ -288,7 +288,7 @@ go tool objdump <span class="nt">-S</span> testl <span class="o">&gt;</span> obj
 
 <h3 id="myfunc-匿名函数的汇编代码">myfunc （匿名函数）的汇编代码</h3>
 
-<p>从下面的汇编代码可以看到，匿名函数在每次调用时，都会 ① 首先根据闭包内的外部变量的地址（<code class="highlighter-rouge">a1</code> 和 <code class="highlighter-rouge">a2</code> 的地址）获取得到外部变量的值，然后才 ② 利用获取得到的值进行闭包内逻辑的运算。</p>
+<p>从下面的汇编代码可以看到，匿名函数在每次调用时，都会 ① 首先根据闭包内的外部变量的地址（<code class="language-plaintext highlighter-rouge">a1</code> 和 <code class="language-plaintext highlighter-rouge">a2</code> 的地址）获取得到外部变量的值，然后才 ② 利用获取得到的值进行闭包内逻辑的运算。</p>
 
 <div class="language-as highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">TEXT</span> <span class="nx">main</span><span class="p">.</span><span class="nx">main</span><span class="p">.</span><span class="nx">func1</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span> <span class="o">/</span><span class="nx">golang</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">jingwei</span><span class="p">.</span><span class="nx">link</span><span class="o">/</span><span class="nx">main</span><span class="p">.</span><span class="nx">go</span>
 	<span class="nl">myfunc</span> <span class="p">:</span><span class="o">=</span> <span class="nx">func</span><span class="p">()</span> <span class="p">{</span>
@@ -401,7 +401,7 @@ go tool objdump <span class="nt">-S</span> testl <span class="o">&gt;</span> obj
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

@@ -170,7 +170,7 @@ Author: Ray-Eldath
 <h3 id="理想中的测试">理想中的测试</h3>
 <p>理想中，测试用例场景应该是这样的：我们编写了一个A函数，为了确保A的正确性，我们写了一个ATest函数，专门对A进行测试；ATest函数PASS了，说明A函数是按照期望运行的。</p>
 
-<p>比如下面的<code class="highlighter-rouge">MyLoveAge</code>函数，我们假设固定返回<strong>18</strong>岁，为了保证<code class="highlighter-rouge">MyLoveAge</code>的正确性，再写一个<code class="highlighter-rouge">TestMyLoveAge</code>的函数。</p>
+<p>比如下面的<code class="language-plaintext highlighter-rouge">MyLoveAge</code>函数，我们假设固定返回<strong>18</strong>岁，为了保证<code class="language-plaintext highlighter-rouge">MyLoveAge</code>的正确性，再写一个<code class="language-plaintext highlighter-rouge">TestMyLoveAge</code>的函数。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// MyLoveAge returns mylover's age</span>
 <span class="k">func</span> <span class="n">MyLoveAge</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
@@ -178,7 +178,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>下面的<code class="highlighter-rouge">TestMyLoveAge</code>断言了<code class="highlighter-rouge">MyLoveAge</code>函数的输出，如果是<strong>18</strong>岁测试用例就通过，否则就失败。</p>
+<p>下面的<code class="language-plaintext highlighter-rouge">TestMyLoveAge</code>断言了<code class="language-plaintext highlighter-rouge">MyLoveAge</code>函数的输出，如果是<strong>18</strong>岁测试用例就通过，否则就失败。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
 	<span class="s">"testing"</span>
@@ -224,7 +224,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>比如，<code class="highlighter-rouge">MyLoveAge2</code>调用了<code class="highlighter-rouge">TimeFlying</code>函数，这时候如果想使得<code class="highlighter-rouge">TestMyLoveAge2</code>能一直保持正常工作，我们有两种选择：1）Mock一个<code class="highlighter-rouge">TimeFlying</code>函数，让整个函数永远返回<strong>0</strong>；2）Mock一个<code class="highlighter-rouge">rand.Intn</code>函数，让它永远返回<strong>0</strong>。<strong>很可惜，对于Golang来说，这两种方式实施起来都没有那么容易，甚至无法实现。</strong></p>
+<p>比如，<code class="language-plaintext highlighter-rouge">MyLoveAge2</code>调用了<code class="language-plaintext highlighter-rouge">TimeFlying</code>函数，这时候如果想使得<code class="language-plaintext highlighter-rouge">TestMyLoveAge2</code>能一直保持正常工作，我们有两种选择：1）Mock一个<code class="language-plaintext highlighter-rouge">TimeFlying</code>函数，让整个函数永远返回<strong>0</strong>；2）Mock一个<code class="language-plaintext highlighter-rouge">rand.Intn</code>函数，让它永远返回<strong>0</strong>。<strong>很可惜，对于Golang来说，这两种方式实施起来都没有那么容易，甚至无法实现。</strong></p>
 
 <p>当代码量进一步增加，各个函数的依赖关系更为复杂时，实现起来将更为棘手。</p>
 
@@ -232,7 +232,7 @@ Author: Ray-Eldath
 
 <p>那么，相对于Golang来说，为什么编写Ruby的测试用例能方便一些呢？这真的要归功于Ruby的元编程语言特性。</p>
 
-<p>Ruby的语言特性，决定了它的灵活性：1）一切皆对象；2）任何对象均可以在运行时拆解并允许重新组装。比如上面提到的<code class="highlighter-rouge">TimeFlying</code>函数，Ruby很方便对其进行Mock（本质是对Module中的方法进行Mock，当然Module已被看做一个对象）。</p>
+<p>Ruby的语言特性，决定了它的灵活性：1）一切皆对象；2）任何对象均可以在运行时拆解并允许重新组装。比如上面提到的<code class="language-plaintext highlighter-rouge">TimeFlying</code>函数，Ruby很方便对其进行Mock（本质是对Module中的方法进行Mock，当然Module已被看做一个对象）。</p>
 
 <p>和Ruby类似的思想，Golang中出现了一个<a href="https://github.com/prashantv/gostub">gostub</a>的工具，它的思想就是想办法把Golang中一切想Mock的东西变成变量，然后就可以对这个变量进行赋值仿造了。但是因为其需要对业务代码进行改造（比如需要把函数声明成变量），而改造以后就不像是Go的风格，因此并没有被普遍接受。</p>
 
@@ -242,7 +242,7 @@ Author: Ray-Eldath
 <p>通过查看其源码，大概能得到一些启示：</p>
 
 <ul>
-  <li>当一个函数（或方法）在运行过程中没有新状态（传入的参数不算新状态）引入时，这个函数的测试用例编写起来是简单的。比如<code class="highlighter-rouge">MyLoveAge</code>函数，简单地返回一个年龄值，没有其他状态引入，因此测试用例写起来很简单。</li>
+  <li>当一个函数（或方法）在运行过程中没有新状态（传入的参数不算新状态）引入时，这个函数的测试用例编写起来是简单的。比如<code class="language-plaintext highlighter-rouge">MyLoveAge</code>函数，简单地返回一个年龄值，没有其他状态引入，因此测试用例写起来很简单。</li>
   <li>当一个函数（或方法）在运行过程中引入新状态时，需要对这个状态进行Mock，测试用例写起来会比较复杂。</li>
   <li>如果一个C函数在运行过程中引入了新的状态，而另一个A函数调用了C，那么A也会变成一个带状态的函数，需要对C函数或者C函数中引入的新状态进行Mock才能实现测试用例的编写。</li>
 </ul>
@@ -266,7 +266,7 @@ Author: Ray-Eldath
   <li>把引入的新状态变成参数，以参数传入的方式使用。这个参数可以保存在最顶层的调用函数中，或者保存在包的全局变量中，可以根据数量和规模进行选择；</li>
   <li>受到Golang语言特性的限制，现存的一些第三方测试框架，均没有解决Mock的问题，可以不必偏执某个测试框架，选择顺手的即可；</li>
   <li>官方的GoMock本质上是对变量的Mock，如果想使用它，需要做到第一条；</li>
-  <li>使用VsCode编写Golang，多编写<code class="highlighter-rouge">myTestXxx</code>的测试函数，这种函数在<code class="highlighter-rouge">go test</code>时不会运行，如果想打断点进行调试，临时删除<code class="highlighter-rouge">my</code>留下<code class="highlighter-rouge">TestXxx</code>即可。（对此项不要太依赖，尽量编写能通过的测试用例！）</li>
+  <li>使用VsCode编写Golang，多编写<code class="language-plaintext highlighter-rouge">myTestXxx</code>的测试函数，这种函数在<code class="language-plaintext highlighter-rouge">go test</code>时不会运行，如果想打断点进行调试，临时删除<code class="language-plaintext highlighter-rouge">my</code>留下<code class="language-plaintext highlighter-rouge">TestXxx</code>即可。（对此项不要太依赖，尽量编写能通过的测试用例！）</li>
 </ul>
 
 <h2 id="参考">参考</h2>
@@ -359,7 +359,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

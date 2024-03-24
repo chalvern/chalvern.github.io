@@ -173,7 +173,7 @@ Author: Ray-Eldath
 
 <h3 id="go中的不定参数">Go中的不定参数</h3>
 
-<p>在Golang的<a href="https://golang.google.cn/ref/spec#Passing_arguments_to_..._parameters">语言特性文档</a>中，对不定参数（… 参数）进行了专门的讲解。当在函数定义中声明了一个不定参数<strong>…T</strong>（比如 <code class="highlighter-rouge">func Greeting(prefix string, who ...string)</code>）时，在函数内部就相当于有了一个类型为<strong>[]T</strong>的变量（比如在<code class="highlighter-rouge">Greeting</code>函数内，存在一个类型为<code class="highlighter-rouge">[]string</code>的<code class="highlighter-rouge">who</code>）。</p>
+<p>在Golang的<a href="https://golang.google.cn/ref/spec#Passing_arguments_to_..._parameters">语言特性文档</a>中，对不定参数（… 参数）进行了专门的讲解。当在函数定义中声明了一个不定参数<strong>…T</strong>（比如 <code class="language-plaintext highlighter-rouge">func Greeting(prefix string, who ...string)</code>）时，在函数内部就相当于有了一个类型为<strong>[]T</strong>的变量（比如在<code class="language-plaintext highlighter-rouge">Greeting</code>函数内，存在一个类型为<code class="language-plaintext highlighter-rouge">[]string</code>的<code class="language-plaintext highlighter-rouge">who</code>）。</p>
 
 <p>如果有下面的Greeting函数：</p>
 
@@ -185,9 +185,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>那么可以通过<code class="highlighter-rouge">Greeting("nobody")</code>和<code class="highlighter-rouge">Greeting("hello:", "KiKi", "Joe", "Anna")</code>来调用<code class="highlighter-rouge">Greeting</code>方法。对于前者用法来说，<code class="highlighter-rouge">who</code>的值为<code class="highlighter-rouge">nil</code>； 对于后者用法来说，<code class="highlighter-rouge">who</code>的值为<code class="highlighter-rouge">[]string{"KiKi", "Joe", "Anna"}</code>。</p>
+<p>那么可以通过<code class="language-plaintext highlighter-rouge">Greeting("nobody")</code>和<code class="language-plaintext highlighter-rouge">Greeting("hello:", "KiKi", "Joe", "Anna")</code>来调用<code class="language-plaintext highlighter-rouge">Greeting</code>方法。对于前者用法来说，<code class="language-plaintext highlighter-rouge">who</code>的值为<code class="language-plaintext highlighter-rouge">nil</code>； 对于后者用法来说，<code class="language-plaintext highlighter-rouge">who</code>的值为<code class="language-plaintext highlighter-rouge">[]string{"KiKi", "Joe", "Anna"}</code>。</p>
 
-<p>这里需要注意两点：1）<strong>不能直接传入字符串切片调用</strong><code class="highlighter-rouge">Greeting("hello:", []string{"KiKi", "Joe", "Anna"})</code>，否则编译器会报错。2）也<strong>不能这么调用</strong><code class="highlighter-rouge">Greeting(prefix, who[1:])</code>，必须要传入<code class="highlighter-rouge">who[1:]...</code>。这两点基本上能揭露出不定参数的本质，<strong>它更像是声明运算过程而非数据类型，①当在函数声明中使用时，做的是把函数调用时传入的参数组装成为切片（slice）；②当在函数体内部传参使用时，代表的是把切片中的数据拆组成为单个元素</strong>。恩，基本上就是这样了。</p>
+<p>这里需要注意两点：1）<strong>不能直接传入字符串切片调用</strong><code class="language-plaintext highlighter-rouge">Greeting("hello:", []string{"KiKi", "Joe", "Anna"})</code>，否则编译器会报错。2）也<strong>不能这么调用</strong><code class="language-plaintext highlighter-rouge">Greeting(prefix, who[1:])</code>，必须要传入<code class="language-plaintext highlighter-rouge">who[1:]...</code>。这两点基本上能揭露出不定参数的本质，<strong>它更像是声明运算过程而非数据类型，①当在函数声明中使用时，做的是把函数调用时传入的参数组装成为切片（slice）；②当在函数体内部传参使用时，代表的是把切片中的数据拆组成为单个元素</strong>。恩，基本上就是这样了。</p>
 
 <h3 id="gorm简介">GORM简介</h3>
 <p>对于一个编写Web应用的开发者，应该对ORM框架非常熟悉。比如Java中有名的Hibernate、Mybatis， Ruby中的Rails Model，Python中的SQLAlchemy，以及 Golang中的 GORM，等等。</p>
@@ -218,11 +218,11 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>为了根据用户ID（UserID）获取到相应的话题（Topic），我们定义了一个<code class="highlighter-rouge">QueryByUserID </code>的方法，为了表意这里刻意传入了一个参数；好像这个函数已经能帮我们解决model层与controller的分离。但是如果真正使用时会发现，其实这个函数有很大的局限性：它只能获取某个UserID的所有的话题，却无法实现对这个UserID下话题的进一步筛选（比如获取最近七天发布的话题）。</p>
+<p>为了根据用户ID（UserID）获取到相应的话题（Topic），我们定义了一个<code class="language-plaintext highlighter-rouge">QueryByUserID </code>的方法，为了表意这里刻意传入了一个参数；好像这个函数已经能帮我们解决model层与controller的分离。但是如果真正使用时会发现，其实这个函数有很大的局限性：它只能获取某个UserID的所有的话题，却无法实现对这个UserID下话题的进一步筛选（比如获取最近七天发布的话题）。</p>
 
 <p>那么应该如何定义这个Query函数，使得我们使用时既优雅又功能强大呢？<strong>答案便是不定参数</strong>。</p>
 
-<p>试想，我们把<code class="highlighter-rouge">QueryByUserID</code>函数以如下的方式定义：</p>
+<p>试想，我们把<code class="language-plaintext highlighter-rouge">QueryByUserID</code>函数以如下的方式定义：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// QueryByUserID 根据UserID获取话题</span>
 <span class="k">func</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">Topic</span><span class="p">)</span> <span class="n">QueryByUserID</span><span class="p">(</span><span class="n">userID</span> <span class="kt">int</span><span class="p">,</span> <span class="n">args</span> <span class="o">...</span><span class="k">interface</span><span class="p">{})</span> <span class="p">(</span><span class="n">topics</span> <span class="p">[]</span><span class="n">Topic</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
@@ -237,9 +237,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>我们这里在<code class="highlighter-rouge">QueryByUserID</code>的最后强行添加了一个<code class="highlighter-rouge">args</code>不定参数，从而接受调用时传入的附加的参数。同时在函数体内，我们根据<code class="highlighter-rouge">args</code>的长度对它进行不同方式的应用，这就非常优雅地扩展了<code class="highlighter-rouge">QueryByUserID</code>的功能。根据GORM的特性，大量使用了Go的反射特性，查看源码后知道这种用法完全可行。</p>
+<p>我们这里在<code class="language-plaintext highlighter-rouge">QueryByUserID</code>的最后强行添加了一个<code class="language-plaintext highlighter-rouge">args</code>不定参数，从而接受调用时传入的附加的参数。同时在函数体内，我们根据<code class="language-plaintext highlighter-rouge">args</code>的长度对它进行不同方式的应用，这就非常优雅地扩展了<code class="language-plaintext highlighter-rouge">QueryByUserID</code>的功能。根据GORM的特性，大量使用了Go的反射特性，查看源码后知道这种用法完全可行。</p>
 
-<p>在添加了不定参数的情况下，再调用<code class="highlighter-rouge">QueryByUserID</code>的时候，想要进一步精细地搜索话题，就方便多了。比如，想要获取<code class="highlighter-rouge">UserID为1</code>且最近一周发布的话题，可以这么写了：</p>
+<p>在添加了不定参数的情况下，再调用<code class="language-plaintext highlighter-rouge">QueryByUserID</code>的时候，想要进一步精细地搜索话题，就方便多了。比如，想要获取<code class="language-plaintext highlighter-rouge">UserID为1</code>且最近一周发布的话题，可以这么写了：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">topics</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">Topic</span><span class="p">{})</span><span class="o">.</span><span class="n">QueryByUserID</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="s">"created_at &gt; ?"</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="o">-</span><span class="m">7</span><span class="o">*</span><span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span>
 <span class="c">// ... 其他对topics 与 err 的处理</span>
@@ -337,7 +337,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

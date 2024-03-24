@@ -197,32 +197,32 @@ edit /etc/hostconfig and remove the line <span class="nv">MYSQLCOM</span><span c
 
 <p>看到这一长列的内容，一般人有两个反应：1）真的有这么多东西要删除吗？2）会不会有更多的东西需要清理而没有包含在列表中？</p>
 
-<p>可以大体把上面给出的路径分成 <code class="highlighter-rouge">/usr/local/</code> 、 <code class="highlighter-rouge">/Library/</code> 、 <code class="highlighter-rouge">~/Library/</code> 和 <code class="highlighter-rouge">/private/var/db/receipts</code> 三个目录。</p>
+<p>可以大体把上面给出的路径分成 <code class="language-plaintext highlighter-rouge">/usr/local/</code> 、 <code class="language-plaintext highlighter-rouge">/Library/</code> 、 <code class="language-plaintext highlighter-rouge">~/Library/</code> 和 <code class="language-plaintext highlighter-rouge">/private/var/db/receipts</code> 三个目录。</p>
 
 <h3 id="涉及到的目录">涉及到的目录</h3>
 <h4 id="usrlocal">/usr/local/</h4>
-<p>因为 macOS  是类 Unix 的系统，因此继承了很多 Unix 的特性。其中 <code class="highlighter-rouge">/usr</code> 并不是 user 的缩写，而是 <strong>Unix Software Resource</strong> 的缩写， 也就是 Unix 操作系统软件资源所放置的目录；所有系统默认的软件都会放置到 <code class="highlighter-rouge">/usr</code> 。用户自行安装的软件，一般统一安装到 <code class="highlighter-rouge">/usr/local</code>，这样就很容易管理。</p>
+<p>因为 macOS  是类 Unix 的系统，因此继承了很多 Unix 的特性。其中 <code class="language-plaintext highlighter-rouge">/usr</code> 并不是 user 的缩写，而是 <strong>Unix Software Resource</strong> 的缩写， 也就是 Unix 操作系统软件资源所放置的目录；所有系统默认的软件都会放置到 <code class="language-plaintext highlighter-rouge">/usr</code> 。用户自行安装的软件，一般统一安装到 <code class="language-plaintext highlighter-rouge">/usr/local</code>，这样就很容易管理。</p>
 
-<p>因为 MySQL 是我自己安装的，因此它所有的执行文件、大部分的配置文件等都在 <code class="highlighter-rouge">/usr/local/</code> 中，卸载 MySQL 的时候自然要检查这个目录中相关的文件。</p>
+<p>因为 MySQL 是我自己安装的，因此它所有的执行文件、大部分的配置文件等都在 <code class="language-plaintext highlighter-rouge">/usr/local/</code> 中，卸载 MySQL 的时候自然要检查这个目录中相关的文件。</p>
 
 <h4 id="library-和-library">/Library 和 ~/Library</h4>
-<p>是 macOS 专有的目录，存放系统资源库以及用户资源库相关的文件。<code class="highlighter-rouge">/Library/StartupItems</code> 定义了系统启动过程中运行的程序，<code class="highlighter-rouge">/Library/LaunchAgents</code> 定义了登录启动项，<code class="highlighter-rouge">/Library/PreferencePanes</code> 定义了系统偏好设置面板中的配置项，<code class="highlighter-rouge">/Library/Receipts</code>  存储的是应用的”票据“，类似于权限配置文件，以此类推 <code class="highlighter-rouge">/private/var/db/receipts/</code> 里存放的也是类似的权限配置文件。</p>
+<p>是 macOS 专有的目录，存放系统资源库以及用户资源库相关的文件。<code class="language-plaintext highlighter-rouge">/Library/StartupItems</code> 定义了系统启动过程中运行的程序，<code class="language-plaintext highlighter-rouge">/Library/LaunchAgents</code> 定义了登录启动项，<code class="language-plaintext highlighter-rouge">/Library/PreferencePanes</code> 定义了系统偏好设置面板中的配置项，<code class="language-plaintext highlighter-rouge">/Library/Receipts</code>  存储的是应用的”票据“，类似于权限配置文件，以此类推 <code class="language-plaintext highlighter-rouge">/private/var/db/receipts/</code> 里存放的也是类似的权限配置文件。</p>
 
 <h4 id="librarycache">~/Library/Cache/</h4>
-<p>值得关注的是 <code class="highlighter-rouge">~/Library/Cache/</code> 这个目录存放的是一些缓存文件，理论上这些文件都是可以删除的。如果电脑运行的时间够久，这个目录里回包含比较多的垃圾文件，如果磁盘空间比较紧张，可以考虑清理这里的文件。（可通过 ` du -h -d 1` 命令查看这个目录占用了多少空间）</p>
+<p>值得关注的是 <code class="language-plaintext highlighter-rouge">~/Library/Cache/</code> 这个目录存放的是一些缓存文件，理论上这些文件都是可以删除的。如果电脑运行的时间够久，这个目录里回包含比较多的垃圾文件，如果磁盘空间比较紧张，可以考虑清理这里的文件。（可通过 ` du -h -d 1` 命令查看这个目录占用了多少空间）</p>
 
 <h3 id="brew-安装-mysql">brew 安装 MySQL</h3>
-<p>在 macOS 中，<code class="highlighter-rouge">brew</code> 应该算是一款非常大众的包管理工具了，而且它安装软件的套路也比较固定。由 <code class="highlighter-rouge">brew</code> 安装的软件会被安装在  <code class="highlighter-rouge">/usr/local/Cellar</code> 目录，然后通过软连接的形式软链到 <code class="highlighter-rouge">/usr/local/bin</code> 目录（有的软件可能不会软链），软件的配置文件一般在目录 <code class="highlighter-rouge">/usr/local/etc/</code>，日志文件一般在目录 <code class="highlighter-rouge">/usr/local/var/log/</code>，数据文件则直接放在目录 <code class="highlighter-rouge">/usr/local/var</code>。</p>
+<p>在 macOS 中，<code class="language-plaintext highlighter-rouge">brew</code> 应该算是一款非常大众的包管理工具了，而且它安装软件的套路也比较固定。由 <code class="language-plaintext highlighter-rouge">brew</code> 安装的软件会被安装在  <code class="language-plaintext highlighter-rouge">/usr/local/Cellar</code> 目录，然后通过软连接的形式软链到 <code class="language-plaintext highlighter-rouge">/usr/local/bin</code> 目录（有的软件可能不会软链），软件的配置文件一般在目录 <code class="language-plaintext highlighter-rouge">/usr/local/etc/</code>，日志文件一般在目录 <code class="language-plaintext highlighter-rouge">/usr/local/var/log/</code>，数据文件则直接放在目录 <code class="language-plaintext highlighter-rouge">/usr/local/var</code>。</p>
 
-<p>还可以通过 <code class="highlighter-rouge">brew services start/stop</code>  等命令来启动由 <code class="highlighter-rouge">brew</code> 安装的软件，同时注册开机启动。这一点还是挺方便的。</p>
+<p>还可以通过 <code class="language-plaintext highlighter-rouge">brew services start/stop</code>  等命令来启动由 <code class="language-plaintext highlighter-rouge">brew</code> 安装的软件，同时注册开机启动。这一点还是挺方便的。</p>
 
 <ol>
-  <li>搜索可以安装的 mysql 版本。通过运行 <code class="highlighter-rouge">brew search mysql</code> 可以搜索可供安装的 mysql 包。</li>
-  <li>安装 <code class="highlighter-rouge">mysql@5.7</code>。通过运行 <code class="highlighter-rouge">brew install mysql@5.7</code> 安装版本为 <code class="highlighter-rouge">5.7</code> 的 mysql，如果不指定版本，则会安装最新版本的 mysql。</li>
+  <li>搜索可以安装的 mysql 版本。通过运行 <code class="language-plaintext highlighter-rouge">brew search mysql</code> 可以搜索可供安装的 mysql 包。</li>
+  <li>安装 <code class="language-plaintext highlighter-rouge">mysql@5.7</code>。通过运行 <code class="language-plaintext highlighter-rouge">brew install mysql@5.7</code> 安装版本为 <code class="language-plaintext highlighter-rouge">5.7</code> 的 mysql，如果不指定版本，则会安装最新版本的 mysql。</li>
 </ol>
 
 <h2 id="小结">小结</h2>
-<p>本文简单介绍了 <code class="highlighter-rouge">Mac + MySQL</code> 技术栈中 MySQL 的卸载与安装。</p>
+<p>本文简单介绍了 <code class="language-plaintext highlighter-rouge">Mac + MySQL</code> 技术栈中 MySQL 的卸载与安装。</p>
 
 <h2 id="参考">参考</h2>
 <ul>
@@ -308,7 +308,7 @@ edit /etc/hostconfig and remove the line <span class="nv">MYSQLCOM</span><span c
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

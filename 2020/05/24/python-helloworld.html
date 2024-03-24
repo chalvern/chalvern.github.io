@@ -171,19 +171,19 @@ Author: Ray-Eldath
 
 <h2 id="简易版的-helloworld">简易版的 helloworld</h2>
 
-<p>在前面安装 vscode 的那一节我们已经编写过 <code class="highlighter-rouge">python</code> 的 helloworld。</p>
+<p>在前面安装 vscode 的那一节我们已经编写过 <code class="language-plaintext highlighter-rouge">python</code> 的 helloworld。</p>
 
 <p>由于 ubuntu18.04 系统已经默认安装了 python3 解释器，因此可以很方便写出并运行 helloworld。简单讲分成几步：</p>
 
 <ol>
-  <li>创建一个项目目录，比如我们在家目录下面使用命令 <code class="highlighter-rouge">mkdir</code> 创建对应的目录；然后通过 <code class="highlighter-rouge">code .</code> 命令打开对应的目录作为工作目录。</li>
+  <li>创建一个项目目录，比如我们在家目录下面使用命令 <code class="language-plaintext highlighter-rouge">mkdir</code> 创建对应的目录；然后通过 <code class="language-plaintext highlighter-rouge">code .</code> 命令打开对应的目录作为工作目录。</li>
   <li>检查 vscode 是否安装 Python 插件；</li>
-  <li>创建 helloworld.py 文件并编写内容 <code class="highlighter-rouge">print("hello world")</code>;</li>
+  <li>创建 helloworld.py 文件并编写内容 <code class="language-plaintext highlighter-rouge">print("hello world")</code>;</li>
   <li>配置对应的解释器，可以直接执行输出结果。</li>
-  <li>也可以在命令行使用 <code class="highlighter-rouge">python3 helloworld.py</code> 来执行对应的文件得出结果。</li>
+  <li>也可以在命令行使用 <code class="language-plaintext highlighter-rouge">python3 helloworld.py</code> 来执行对应的文件得出结果。</li>
 </ol>
 
-<p>上面简易版的 helloworld 直接使用了 ubuntu 系统默认带的 python3 环境，具体的是 <code class="highlighter-rouge">python 3.6.9</code> 版本，版本比较老。另一方面，在我们实际项目的开发过程中，大部分会指定特定的 python 版本进行开发，这个时候就需要我们在我们的本地安装对应的版本，搭建匹配的开发环境。接下来就让我们看一下如何从源码安装特定版本的 python。</p>
+<p>上面简易版的 helloworld 直接使用了 ubuntu 系统默认带的 python3 环境，具体的是 <code class="language-plaintext highlighter-rouge">python 3.6.9</code> 版本，版本比较老。另一方面，在我们实际项目的开发过程中，大部分会指定特定的 python 版本进行开发，这个时候就需要我们在我们的本地安装对应的版本，搭建匹配的开发环境。接下来就让我们看一下如何从源码安装特定版本的 python。</p>
 
 <h2 id="高级版-helloworld">高级版 helloworld</h2>
 
@@ -199,20 +199,20 @@ Author: Ray-Eldath
 
 <ol>
   <li>
-    <p>首先选择一个合适的目录，然后从官网找到对应的链接后复制，通过 <code class="highlighter-rouge">wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz</code> 进行下载。</p>
+    <p>首先选择一个合适的目录，然后从官网找到对应的链接后复制，通过 <code class="language-plaintext highlighter-rouge">wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz</code> 进行下载。</p>
   </li>
   <li>
-    <p>下载完成后得到的是一个为方便传输的压缩包，需要我们把它解压缩，通过在当前目录执行 <code class="highlighter-rouge">tar -xzf Python-3.8.3.tgz</code> 即可完成，在当前目录生成一个 <code class="highlighter-rouge">Python-3.8.3</code> 的目录。</p>
+    <p>下载完成后得到的是一个为方便传输的压缩包，需要我们把它解压缩，通过在当前目录执行 <code class="language-plaintext highlighter-rouge">tar -xzf Python-3.8.3.tgz</code> 即可完成，在当前目录生成一个 <code class="language-plaintext highlighter-rouge">Python-3.8.3</code> 的目录。</p>
   </li>
   <li>
-    <p>我们可以通过 <code class="highlighter-rouge">code Python-3.8.3</code> 来打开对应的目录，简单预览一下 python 的源码项目（源码阅读一般流程）。</p>
+    <p>我们可以通过 <code class="language-plaintext highlighter-rouge">code Python-3.8.3</code> 来打开对应的目录，简单预览一下 python 的源码项目（源码阅读一般流程）。</p>
 
     <ol>
       <li>
         <p>大概浏览一下，咦，发现 python 源码库里有好多 c 语言文件，可以知道 python 是基于 c 语言进行开发的，是不是很神奇 ^_^；</p>
       </li>
       <li>
-        <p>查看对应的 README，可以看到 源码库中有一个 README.rst 文件，查看一遍说了什么（英文学习多么重要啊）。我们目前只关注安装相关的内容，因此找到一段命令做参考，并看到有 <code class="highlighter-rouge">./configure --help</code>，那我们有必要探索一番。（在命令行环境多打 <code class="highlighter-rouge">--help</code> 是一个好习惯）</p>
+        <p>查看对应的 README，可以看到 源码库中有一个 README.rst 文件，查看一遍说了什么（英文学习多么重要啊）。我们目前只关注安装相关的内容，因此找到一段命令做参考，并看到有 <code class="language-plaintext highlighter-rouge">./configure --help</code>，那我们有必要探索一番。（在命令行环境多打 <code class="language-plaintext highlighter-rouge">--help</code> 是一个好习惯）</p>
       </li>
       <li>
         <p>其他的我们暂时不关注，先放着不管，不过可以看到原来一个牛x的项目是这个样子的。</p>
@@ -220,34 +220,34 @@ Author: Ray-Eldath
     </ol>
   </li>
   <li>
-    <p>通过 <code class="highlighter-rouge">./configure --help</code> 查看配置项，然后通过 <code class="highlighter-rouge">./configure --prefix=$HOME/software/mypy</code> 进行配置；也可以有选择地添加建议的参数，比如添加优化参数保证使用所有稳定的优化方案 <code class="highlighter-rouge">./configure --prefix=$HOME/software/mypy --enable-optimizations</code>。</p>
+    <p>通过 <code class="language-plaintext highlighter-rouge">./configure --help</code> 查看配置项，然后通过 <code class="language-plaintext highlighter-rouge">./configure --prefix=$HOME/software/mypy</code> 进行配置；也可以有选择地添加建议的参数，比如添加优化参数保证使用所有稳定的优化方案 <code class="language-plaintext highlighter-rouge">./configure --prefix=$HOME/software/mypy --enable-optimizations</code>。</p>
   </li>
   <li>
-    <p>通过 <code class="highlighter-rouge">make</code> 和 <code class="highlighter-rouge">make install</code> 来编译并安装源码。在整个过程中可能会有一些警告的提示或者错误的提示，静待看最后的总结报告。</p>
+    <p>通过 <code class="language-plaintext highlighter-rouge">make</code> 和 <code class="language-plaintext highlighter-rouge">make install</code> 来编译并安装源码。在整个过程中可能会有一些警告的提示或者错误的提示，静待看最后的总结报告。</p>
   </li>
   <li>
     <p>安装依赖（整个需要我们通过比较久的经验做积累才可以慢慢理解为什么需要这些依赖）。这里我积累了几个必要的，大家先安装一下。如果未来在项目开发过程中使用到了其他的依赖，则可以按照类似的步骤进行安装。</p>
 
     <ol>
       <li>
-        <p>通过 <code class="highlighter-rouge">sudo apt install zlib1g.dev</code> 安装 zlib 依赖（整个是在安装 python 的时候就会需要）</p>
+        <p>通过 <code class="language-plaintext highlighter-rouge">sudo apt install zlib1g.dev</code> 安装 zlib 依赖（整个是在安装 python 的时候就会需要）</p>
       </li>
       <li>
-        <p>通过 <code class="highlighter-rouge">sudo apt install libssl-dev</code> 安装 ssl 依赖（编写 web 相关的服务的时候会用到）</p>
+        <p>通过 <code class="language-plaintext highlighter-rouge">sudo apt install libssl-dev</code> 安装 ssl 依赖（编写 web 相关的服务的时候会用到）</p>
       </li>
       <li>
-        <p>通过 <code class="highlighter-rouge">sudo apt install libffi-dev</code> 安装 libffi 依赖（当 pip install 的时候会用到）</p>
+        <p>通过 <code class="language-plaintext highlighter-rouge">sudo apt install libffi-dev</code> 安装 libffi 依赖（当 pip install 的时候会用到）</p>
       </li>
     </ol>
   </li>
   <li>
-    <p>重新通过 <code class="highlighter-rouge">./configure --prefix=$HOME/software/mypy</code> 来配置生成对应的 make 文件。并通过 <code class="highlighter-rouge">make</code> 和 <code class="highlighter-rouge">make install</code> 编译安装。</p>
+    <p>重新通过 <code class="language-plaintext highlighter-rouge">./configure --prefix=$HOME/software/mypy</code> 来配置生成对应的 make 文件。并通过 <code class="language-plaintext highlighter-rouge">make</code> 和 <code class="language-plaintext highlighter-rouge">make install</code> 编译安装。</p>
   </li>
   <li>
-    <p>安装完成以后，就可以通过 <code class="highlighter-rouge">~/software/mypy/bin/python3</code> 和 <code class="highlighter-rouge">~/software/mypy/bin/pip3</code>把玩了。</p>
+    <p>安装完成以后，就可以通过 <code class="language-plaintext highlighter-rouge">~/software/mypy/bin/python3</code> 和 <code class="language-plaintext highlighter-rouge">~/software/mypy/bin/pip3</code>把玩了。</p>
   </li>
   <li>
-    <p>为了便利性，我们可以把新安装的 python 的 bin 目录添加到 PATH 中去，这样就可以直接使用 <code class="highlighter-rouge">python3</code> 和 <code class="highlighter-rouge">pip3</code> 命令了。具体地，在 <code class="highlighter-rouge">$HOME/.bashrc</code> 文件的最后添加 <code class="highlighter-rouge">export PATH="$HOME/software/mypy/bin:$PATH"</code>，然后重启终端或对应的服务即可。</p>
+    <p>为了便利性，我们可以把新安装的 python 的 bin 目录添加到 PATH 中去，这样就可以直接使用 <code class="language-plaintext highlighter-rouge">python3</code> 和 <code class="language-plaintext highlighter-rouge">pip3</code> 命令了。具体地，在 <code class="language-plaintext highlighter-rouge">$HOME/.bashrc</code> 文件的最后添加 <code class="language-plaintext highlighter-rouge">export PATH="$HOME/software/mypy/bin:$PATH"</code>，然后重启终端或对应的服务即可。</p>
   </li>
 </ol>
 
@@ -339,7 +339,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

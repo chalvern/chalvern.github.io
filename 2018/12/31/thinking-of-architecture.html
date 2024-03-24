@@ -237,7 +237,7 @@ Author: Ray-Eldath
 <h4 id="一个关键点控制反转">一个关键点——控制反转</h4>
 <p>依赖规则里规定“只能外层的代码依赖内层代码”，但是在实际代码中势必会出现这种场景：外层的代码调用内层的代码处理数据，数据经过内层代码作用后需要再反传给外层进行其他处理（比如把处理好的数据保存到数据库，保存到数据库的逻辑在外层）。Clean-Architectrue架构图的右下角给出了一种示意，那么如何让这种场景满足依赖规则呢？答案就是控制反转。</p>
 
-<p>对于 Go 语言来说，大体的实现是在内层定义一个 <code class="highlighter-rouge">Interface</code> 类型的数据，内层代码通过操作 <code class="highlighter-rouge">Interface</code> 的方法来实现业务逻辑，在外层实现这个 <code class="highlighter-rouge">Interface</code> 类型所包含的方法，从而达到反向控制的目的。其实这是一种设计模式，有点类似<strong>工厂方法模式或者抽象工厂模式</strong>，不是 Go 的专属，其他语言（比如 Java）均可以实现。</p>
+<p>对于 Go 语言来说，大体的实现是在内层定义一个 <code class="language-plaintext highlighter-rouge">Interface</code> 类型的数据，内层代码通过操作 <code class="language-plaintext highlighter-rouge">Interface</code> 的方法来实现业务逻辑，在外层实现这个 <code class="language-plaintext highlighter-rouge">Interface</code> 类型所包含的方法，从而达到反向控制的目的。其实这是一种设计模式，有点类似<strong>工厂方法模式或者抽象工厂模式</strong>，不是 Go 的专属，其他语言（比如 Java）均可以实现。</p>
 
 <h3 id="知己知彼以后我设计的架构有问题吗">知己知彼以后，我设计的架构有问题吗</h3>
 <p>在领悟了整洁架构的思想后，我又把小王同学给我的<a href="https://manuel.kiessling.net/2012/09/28/applying-the-clean-architecture-to-go-applications/">又臭又长的博客</a>读了两遍，然后思考我做的项目架构以及参与制定的开发模板是否有必要修改，假如要修改的话如何修改？如果不需要修改的话理由是什么？</p>
@@ -261,7 +261,7 @@ Author: Ray-Eldath
 <h4 id="istio-架构图">ISTIO 架构图</h4>
 <p><img src="/assets/pic/thinking-of-architecture-03.jpg" alt="" /></p>
 
-<p>业界提到 Service Mesh 的时候必提 ISTIO，它的架构如上图所示。可以注意到在 ISTIO 的架构中，所有的流量都通过 <code class="highlighter-rouge">Proxy</code> 进行接管，而 <code class="highlighter-rouge">Proxy</code> 是作为一个独立的进程与业务进程运行在同一个实例中（多指k8s 里的 Pod），那么对这个 <code class="highlighter-rouge">Sidecar</code> 就有比较多的要求了，比如要轻量级、高效、便于配置部署等等。由架构图我们也可以反推得出，在微服务化改造的过程中，应该控制自己业务的复杂度不能拆的太细碎，否则边界成本会变得非常大。</p>
+<p>业界提到 Service Mesh 的时候必提 ISTIO，它的架构如上图所示。可以注意到在 ISTIO 的架构中，所有的流量都通过 <code class="language-plaintext highlighter-rouge">Proxy</code> 进行接管，而 <code class="language-plaintext highlighter-rouge">Proxy</code> 是作为一个独立的进程与业务进程运行在同一个实例中（多指k8s 里的 Pod），那么对这个 <code class="language-plaintext highlighter-rouge">Sidecar</code> 就有比较多的要求了，比如要轻量级、高效、便于配置部署等等。由架构图我们也可以反推得出，在微服务化改造的过程中，应该控制自己业务的复杂度不能拆的太细碎，否则边界成本会变得非常大。</p>
 
 <h4 id="vxlan虚拟网络架构图">VxLAN虚拟网络架构图</h4>
 <p><img src="/assets/pic/vlan-and-vxlan-02.jpg" alt="" /></p>
@@ -391,7 +391,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

@@ -165,9 +165,9 @@ Author: Ray-Eldath
 
 <h2 id="分配器-new">分配器 new</h2>
 
-<p>Go 语言有两个可以分配内存的命令，分别是内建的函数 <code class="highlighter-rouge">new</code> 和 <code class="highlighter-rouge">make</code>。他们做的事情不一样，能分配的类型也不一样，很容易搞混，不过 <code class="highlighter-rouge">new</code> 和 <code class="highlighter-rouge">make</code> 的使用规则还算容易记住。这一小节首先讨论 <code class="highlighter-rouge">new</code> 函数。<code class="highlighter-rouge">new</code> 是一个用来分配内存的内建函数，但是和其他语言中的 <code class="highlighter-rouge">new</code> 函数不同，Go 语言中的 <code class="highlighter-rouge">new</code> 函数只把内存块全部置零，除此之外不做任何其他的初始化操作。换句话说，<code class="highlighter-rouge">new(T)</code> 给类型为 <code class="highlighter-rouge">T</code> 的实体分配一块全是 0 的内存，然后返回这块内存的地址（返回值的类型为 <code class="highlighter-rouge">*T</code>）。在 Go 语言的术语里，<code class="highlighter-rouge">new</code> 返回类型 <code class="highlighter-rouge">T</code> 的指针，并且这个指针指向的是一块类型为 <code class="highlighter-rouge">T</code> 的全零值内存。</p>
+<p>Go 语言有两个可以分配内存的命令，分别是内建的函数 <code class="language-plaintext highlighter-rouge">new</code> 和 <code class="language-plaintext highlighter-rouge">make</code>。他们做的事情不一样，能分配的类型也不一样，很容易搞混，不过 <code class="language-plaintext highlighter-rouge">new</code> 和 <code class="language-plaintext highlighter-rouge">make</code> 的使用规则还算容易记住。这一小节首先讨论 <code class="language-plaintext highlighter-rouge">new</code> 函数。<code class="language-plaintext highlighter-rouge">new</code> 是一个用来分配内存的内建函数，但是和其他语言中的 <code class="language-plaintext highlighter-rouge">new</code> 函数不同，Go 语言中的 <code class="language-plaintext highlighter-rouge">new</code> 函数只把内存块全部置零，除此之外不做任何其他的初始化操作。换句话说，<code class="language-plaintext highlighter-rouge">new(T)</code> 给类型为 <code class="language-plaintext highlighter-rouge">T</code> 的实体分配一块全是 0 的内存，然后返回这块内存的地址（返回值的类型为 <code class="language-plaintext highlighter-rouge">*T</code>）。在 Go 语言的术语里，<code class="language-plaintext highlighter-rouge">new</code> 返回类型 <code class="language-plaintext highlighter-rouge">T</code> 的指针，并且这个指针指向的是一块类型为 <code class="language-plaintext highlighter-rouge">T</code> 的全零值内存。</p>
 
-<p>因为 <code class="highlighter-rouge">new</code> 返回的是全零值的内存地址，因此如果你的数据结构可以直接使用内存里的这些零值（不需要其他的初始化过程），使用 new 就很方便；这意味着通过 <code class="highlighter-rouge">new</code> 创建完实例马上就可以用它干活了（不需要其他的操作）。比如，<code class="highlighter-rouge">bytes.Buffer</code> 的文档中就注明了：<code class="highlighter-rouge">Buffer</code> 的零值是一个可以直接使用的空缓存。同样的，<code class="highlighter-rouge">sync.Mutex</code> 这个结构体并没有显式的构造器也没有相关的 <code class="highlighter-rouge">Init</code> 函数，因为它的零值就是一个没有上锁的互斥锁。</p>
+<p>因为 <code class="language-plaintext highlighter-rouge">new</code> 返回的是全零值的内存地址，因此如果你的数据结构可以直接使用内存里的这些零值（不需要其他的初始化过程），使用 new 就很方便；这意味着通过 <code class="language-plaintext highlighter-rouge">new</code> 创建完实例马上就可以用它干活了（不需要其他的操作）。比如，<code class="language-plaintext highlighter-rouge">bytes.Buffer</code> 的文档中就注明了：<code class="language-plaintext highlighter-rouge">Buffer</code> 的零值是一个可以直接使用的空缓存。同样的，<code class="language-plaintext highlighter-rouge">sync.Mutex</code> 这个结构体并没有显式的构造器也没有相关的 <code class="language-plaintext highlighter-rouge">Init</code> 函数，因为它的零值就是一个没有上锁的互斥锁。</p>
 
 <p><strong>“零值即可用”</strong> 的属性在工程上很有实践意义。考虑下面的类型：</p>
 
@@ -177,7 +177,7 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">SyncedBuffer</code> 类型的值一旦声明（被分配到内存）就可以使用了，不需要等其他的初始化操作。下面的代码片段里，<code class="highlighter-rouge">p</code> 和 <code class="highlighter-rouge">v</code> 都可以直接工作，</p>
+<p><code class="language-plaintext highlighter-rouge">SyncedBuffer</code> 类型的值一旦声明（被分配到内存）就可以使用了，不需要等其他的初始化操作。下面的代码片段里，<code class="language-plaintext highlighter-rouge">p</code> 和 <code class="language-plaintext highlighter-rouge">v</code> 都可以直接工作，</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="n">SyncedBuffer</span><span class="p">)</span>  <span class="c">// type *SyncedBuffer</span>
 <span class="k">var</span> <span class="n">v</span> <span class="n">SyncedBuffer</span>      <span class="c">// type  SyncedBuffer</span>
@@ -185,7 +185,7 @@ Author: Ray-Eldath
 
 <h2 id="构造函数与复合字面语句">构造函数与复合字面语句</h2>
 
-<p>有时候类型的零值不能直接使用，这时候就需要构造函数了，比如下面从 <code class="highlighter-rouge">os</code> 包里抽取出来的例子：</p>
+<p>有时候类型的零值不能直接使用，这时候就需要构造函数了，比如下面从 <code class="language-plaintext highlighter-rouge">os</code> 包里抽取出来的例子：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">NewFile</span><span class="p">(</span><span class="n">fd</span> <span class="kt">int</span><span class="p">,</span> <span class="n">name</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="n">File</span> <span class="p">{</span>
     <span class="k">if</span> <span class="n">fd</span> <span class="o">&lt;</span> <span class="m">0</span> <span class="p">{</span>
@@ -215,14 +215,14 @@ Author: Ray-Eldath
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">return</span> <span class="o">&amp;</span><span class="n">File</span><span class="p">{</span><span class="n">fd</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="no">nil</span><span class="p">,</span> <span class="m">0</span><span class="p">}</span>
 </code></pre></div></div>
 
-<p>如上面所示的样式，复合字面语句的字段必须要按定义时的顺序<strong>依次</strong>、且<strong>全部</strong>给出来。不过，如果通过 <strong>“字段 : 值”</strong> 的形式显式地指定元素值，就可以以任意顺序传入值了，此时如果有字段不指定默认值就会被设置为对应的零值，因此上面的代码还可以简化为（只有 <code class="highlighter-rouge">fd</code> 和 <code class="highlighter-rouge">name</code> 两个字段，因为 <code class="highlighter-rouge">dirinfo</code> 和 <code class="highlighter-rouge">nepipe</code> 均为零值）：</p>
+<p>如上面所示的样式，复合字面语句的字段必须要按定义时的顺序<strong>依次</strong>、且<strong>全部</strong>给出来。不过，如果通过 <strong>“字段 : 值”</strong> 的形式显式地指定元素值，就可以以任意顺序传入值了，此时如果有字段不指定默认值就会被设置为对应的零值，因此上面的代码还可以简化为（只有 <code class="language-plaintext highlighter-rouge">fd</code> 和 <code class="language-plaintext highlighter-rouge">name</code> 两个字段，因为 <code class="language-plaintext highlighter-rouge">dirinfo</code> 和 <code class="language-plaintext highlighter-rouge">nepipe</code> 均为零值）：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">return</span> <span class="o">&amp;</span><span class="n">File</span><span class="p">{</span><span class="n">fd</span><span class="o">:</span> <span class="n">fd</span><span class="p">,</span> <span class="n">name</span><span class="o">:</span> <span class="n">name</span><span class="p">}</span>
 </code></pre></div></div>
 
-<p>作为一种限定，如果复合字面表达式中不包含任何的字段，它也会创建一个零值的实例，此时 <code class="highlighter-rouge">new(File)</code> 和 <code class="highlighter-rouge">&amp;File{}</code> 就是等价的。</p>
+<p>作为一种限定，如果复合字面表达式中不包含任何的字段，它也会创建一个零值的实例，此时 <code class="language-plaintext highlighter-rouge">new(File)</code> 和 <code class="language-plaintext highlighter-rouge">&amp;File{}</code> 就是等价的。</p>
 
-<p>除了结构体，还可以通过复合字面语句来创建数组、切片、映射（map），这个时候 <strong>“字段标签”</strong> 就变成了切片的索引或者映射的键。在下面的例子中，只要 <code class="highlighter-rouge">Enone</code>, <code class="highlighter-rouge">Eio</code>, 和 <code class="highlighter-rouge">Einval</code>值不一样，都可以进行正常的初始化。</p>
+<p>除了结构体，还可以通过复合字面语句来创建数组、切片、映射（map），这个时候 <strong>“字段标签”</strong> 就变成了切片的索引或者映射的键。在下面的例子中，只要 <code class="language-plaintext highlighter-rouge">Enone</code>, <code class="language-plaintext highlighter-rouge">Eio</code>, 和 <code class="language-plaintext highlighter-rouge">Einval</code>值不一样，都可以进行正常的初始化。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 可以定义下面的常量，此时</span>
 <span class="c">// a 被初始化为长度为 31 的数组，</span>
@@ -240,14 +240,14 @@ Author: Ray-Eldath
 
 <h2 id="分配器-make">分配器 make</h2>
 
-<p>继续内存分配的话题。内建函数 <code class="highlighter-rouge">make(T, args)</code> 和 <code class="highlighter-rouge">new(T)</code> 不一样：<code class="highlighter-rouge">make</code> 函数<strong>只能</strong>用来创建切片、映射（map） 和 信道，返回的是一个被初始化、类型为 <code class="highlighter-rouge">T</code> 的值（内存不是全零）。造成这种区别的原因是，切片、映射和信道 这三个类型的数据底层引用了其他的数据结构，而这些底层的数据结构在使用前必须先初始化才可以工作。比如，切片是一个<strong>包含三个组件</strong>的描述符，包含指向具体数据的指针（指向数组）、切片长度、切片容量。在这些组件被初始化之前，切片的值是 <code class="highlighter-rouge">nil</code>。对于切片、映射、信道来说，<code class="highlighter-rouge">make</code> 初始化了他们底层的数据结构继而他们的值才可以使用。比如：</p>
+<p>继续内存分配的话题。内建函数 <code class="language-plaintext highlighter-rouge">make(T, args)</code> 和 <code class="language-plaintext highlighter-rouge">new(T)</code> 不一样：<code class="language-plaintext highlighter-rouge">make</code> 函数<strong>只能</strong>用来创建切片、映射（map） 和 信道，返回的是一个被初始化、类型为 <code class="language-plaintext highlighter-rouge">T</code> 的值（内存不是全零）。造成这种区别的原因是，切片、映射和信道 这三个类型的数据底层引用了其他的数据结构，而这些底层的数据结构在使用前必须先初始化才可以工作。比如，切片是一个<strong>包含三个组件</strong>的描述符，包含指向具体数据的指针（指向数组）、切片长度、切片容量。在这些组件被初始化之前，切片的值是 <code class="language-plaintext highlighter-rouge">nil</code>。对于切片、映射、信道来说，<code class="language-plaintext highlighter-rouge">make</code> 初始化了他们底层的数据结构继而他们的值才可以使用。比如：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>上面的语句初始化了一个包含 100 个整数的<strong>数组</strong>，同时创建了一个长度为 10、容量为 100 、指向<strong>这个数组</strong> 的前 10 个元素的切片（当创建切片的时候，其容量是可以省略的，可到“切片小节”查看更多内容）。作为对比，<code class="highlighter-rouge">new([]int)</code> 返回了一个新创建且被置零的切片的指针，指针指向的是值为 <code class="highlighter-rouge">nil</code> 的切片值。</p>
+<p>上面的语句初始化了一个包含 100 个整数的<strong>数组</strong>，同时创建了一个长度为 10、容量为 100 、指向<strong>这个数组</strong> 的前 10 个元素的切片（当创建切片的时候，其容量是可以省略的，可到“切片小节”查看更多内容）。作为对比，<code class="language-plaintext highlighter-rouge">new([]int)</code> 返回了一个新创建且被置零的切片的指针，指针指向的是值为 <code class="language-plaintext highlighter-rouge">nil</code> 的切片值。</p>
 
-<p>下面的例子描述了 <code class="highlighter-rouge">new</code> 和 <code class="highlighter-rouge">make</code> 之间的区别。</p>
+<p>下面的例子描述了 <code class="language-plaintext highlighter-rouge">new</code> 和 <code class="language-plaintext highlighter-rouge">make</code> 之间的区别。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">p</span> <span class="o">*</span><span class="p">[]</span><span class="kt">int</span> <span class="o">=</span> <span class="nb">new</span><span class="p">([]</span><span class="kt">int</span><span class="p">)</span>       <span class="c">// allocates slice structure; *p == nil; rarely useful</span>
 <span class="k">var</span> <span class="n">v</span>  <span class="p">[]</span><span class="kt">int</span> <span class="o">=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span> <span class="c">// the slice v now refers to a new array of 100 ints</span>
@@ -260,7 +260,7 @@ Author: Ray-Eldath
 <span class="n">v</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p><strong>记住</strong>，<code class="highlighter-rouge">make</code> 只可以作用于 切片、映射和信道，并且返回的不是指针。如果想得到指针，可以使用 <code class="highlighter-rouge">new</code> 函数，或者显式地取变量的地址获得。</p>
+<p><strong>记住</strong>，<code class="language-plaintext highlighter-rouge">make</code> 只可以作用于 切片、映射和信道，并且返回的不是指针。如果想得到指针，可以使用 <code class="language-plaintext highlighter-rouge">new</code> 函数，或者显式地取变量的地址获得。</p>
 
 <h2 id="数组">数组</h2>
 
@@ -271,7 +271,7 @@ Author: Ray-Eldath
 <ul>
   <li>数组是值；如果把一个数组赋值给另一个数组会把所有的元素复制一份；</li>
   <li>如果一个函数的参数是数组，调用函数的时候得到的是数组的完全拷贝而不是数组的指针；</li>
-  <li>数组的大小属于数组的类型的一部分，比如类型 <code class="highlighter-rouge">[10]int</code> 和 <code class="highlighter-rouge">[20]int</code> 不一样。</li>
+  <li>数组的大小属于数组的类型的一部分，比如类型 <code class="language-plaintext highlighter-rouge">[10]int</code> 和 <code class="language-plaintext highlighter-rouge">[20]int</code> 不一样。</li>
 </ul>
 
 <p>传数值的特性可能很有用，但是应用的代价也可能很高；如果想得到 C 语言中的数组那样的用法和效率，可以在 Go 中使用数组的指针，如下面的示例代码：</p>
@@ -291,12 +291,12 @@ Author: Ray-Eldath
 <h2 id="切片">切片</h2>
 <p>切片封装了数组，并为操作数据序列提供了更通用、更有效、也更方便的操作接口（方法）。除了具有明确维数的场景（比如线性代数中的变换矩阵），数组相关的操作，在 Go 中大部分情况会使用切片，而不会使用数组。</p>
 
-<p>切片保存了底层数组的引用，如果把一个切片赋值给另一个切片，这两个切片会指向同一个数组。如果函数把切片作为参数传入，然后在函数内部修改了切片的某个元素，函数的调用者将会感知到这种变化，其效果就好像是传入了数组的指针一样。因此，<code class="highlighter-rouge">Read</code> 函数可以接收一个切片类型的参数，这样就能避免传入一个指针变量和一个表示数量的变量；对切片而言，切片的长度是指能够读取的元素的最大数量。下面是包 <code class="highlighter-rouge">os</code> 中类型 <code class="highlighter-rouge">File</code> 的 <code class="highlighter-rouge">Read</code> 方法的声明：</p>
+<p>切片保存了底层数组的引用，如果把一个切片赋值给另一个切片，这两个切片会指向同一个数组。如果函数把切片作为参数传入，然后在函数内部修改了切片的某个元素，函数的调用者将会感知到这种变化，其效果就好像是传入了数组的指针一样。因此，<code class="language-plaintext highlighter-rouge">Read</code> 函数可以接收一个切片类型的参数，这样就能避免传入一个指针变量和一个表示数量的变量；对切片而言，切片的长度是指能够读取的元素的最大数量。下面是包 <code class="language-plaintext highlighter-rouge">os</code> 中类型 <code class="language-plaintext highlighter-rouge">File</code> 的 <code class="language-plaintext highlighter-rouge">Read</code> 方法的声明：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span><span class="n">File</span><span class="p">)</span> <span class="n">Read</span><span class="p">(</span><span class="n">buf</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="n">n</span> <span class="kt">int</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">Read</code> 方法返回一个读取的字节数量和一个错误值（存在错误的情况）。如果有一个很大的缓存 <code class="highlighter-rouge">buf</code> ，但是只想读取它前 32 个字节的数据，这时候我们可以把 <code class="highlighter-rouge">buf</code> <strong>切</strong>一部分出来：</p>
+<p><code class="language-plaintext highlighter-rouge">Read</code> 方法返回一个读取的字节数量和一个错误值（存在错误的情况）。如果有一个很大的缓存 <code class="language-plaintext highlighter-rouge">buf</code> ，但是只想读取它前 32 个字节的数据，这时候我们可以把 <code class="language-plaintext highlighter-rouge">buf</code> <strong>切</strong>一部分出来：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">n</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">f</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buf</span><span class="p">[</span><span class="m">0</span><span class="o">:</span><span class="m">32</span><span class="p">])</span>
 </code></pre></div></div>
@@ -315,7 +315,7 @@ Author: Ray-Eldath
     <span class="p">}</span>
 </code></pre></div></div>
 
-<p>因为切片里的数据主要保存在底层数组里，而数组一旦声明后其长度是无法改变的，因此只要不超出底层数组的容量，切片的长度可以任意改变。可以通过内建函数 <code class="highlighter-rouge">cap</code> 来得到切片的<strong>容量</strong>，即当前切片能达到的最大长度。虽然切片有容量的说法，但并不意味着切片的长度不能大于这个容量；内建的 <code class="highlighter-rouge">append</code> 函数可以用来给切片追加元素，如果在追加元素的过程中元素的个数超过了切片的容量，切片会被重新进行内存分配，并返回一个新的切片（整个过程中涉及到了元素的复制）。如果切片值为 nil，使用 <code class="highlighter-rouge">len</code> 和 <code class="highlighter-rouge">cap</code> 也是合法的，都会得到 <code class="highlighter-rouge">0</code> 的结果。</p>
+<p>因为切片里的数据主要保存在底层数组里，而数组一旦声明后其长度是无法改变的，因此只要不超出底层数组的容量，切片的长度可以任意改变。可以通过内建函数 <code class="language-plaintext highlighter-rouge">cap</code> 来得到切片的<strong>容量</strong>，即当前切片能达到的最大长度。虽然切片有容量的说法，但并不意味着切片的长度不能大于这个容量；内建的 <code class="language-plaintext highlighter-rouge">append</code> 函数可以用来给切片追加元素，如果在追加元素的过程中元素的个数超过了切片的容量，切片会被重新进行内存分配，并返回一个新的切片（整个过程中涉及到了元素的复制）。如果切片值为 nil，使用 <code class="language-plaintext highlighter-rouge">len</code> 和 <code class="language-plaintext highlighter-rouge">cap</code> 也是合法的，都会得到 <code class="language-plaintext highlighter-rouge">0</code> 的结果。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">Append</span><span class="p">(</span><span class="n">slice</span><span class="p">,</span> <span class="n">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">[]</span><span class="kt">byte</span> <span class="p">{</span>
     <span class="n">l</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">slice</span><span class="p">)</span>
@@ -332,9 +332,9 @@ Author: Ray-Eldath
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>上面的 <code class="highlighter-rouge">Apend</code> 函数最后返回了一个切片，这个返回是必要的；虽然 <code class="highlighter-rouge">Append</code> 会修改 <code class="highlighter-rouge">slice</code> 的元素，但是 slice （运行时的数据结构里包含了底层数组的指针、切片的大小和容量）是以传值的方式到达函数内部的，如果切片的底层数组指针、大小、容量发生了改变必须通过返回值通知调用方，否则调用方将感知不到这种变化。</p>
+<p>上面的 <code class="language-plaintext highlighter-rouge">Apend</code> 函数最后返回了一个切片，这个返回是必要的；虽然 <code class="language-plaintext highlighter-rouge">Append</code> 会修改 <code class="language-plaintext highlighter-rouge">slice</code> 的元素，但是 slice （运行时的数据结构里包含了底层数组的指针、切片的大小和容量）是以传值的方式到达函数内部的，如果切片的底层数组指针、大小、容量发生了改变必须通过返回值通知调用方，否则调用方将感知不到这种变化。</p>
 
-<p>给切片追加元素的场景非常普遍，Go 语言中有一个内建的函数 <code class="highlighter-rouge">append</code>，它的实现和上面的函数的逻辑类似。不过如果想理解 <code class="highlighter-rouge">append</code> 函数设计的更多细节，我们还需要更多的知识储备，后面的小节再继续聊。</p>
+<p>给切片追加元素的场景非常普遍，Go 语言中有一个内建的函数 <code class="language-plaintext highlighter-rouge">append</code>，它的实现和上面的函数的逻辑类似。不过如果想理解 <code class="language-plaintext highlighter-rouge">append</code> 函数设计的更多细节，我们还需要更多的知识储备，后面的小节再继续聊。</p>
 
 <h2 id="两维切片">两维切片</h2>
 
@@ -344,7 +344,7 @@ Author: Ray-Eldath
 <span class="k">type</span> <span class="n">LinesOfText</span> <span class="p">[][]</span><span class="kt">byte</span>     <span class="c">// A slice of byte slices.</span>
 </code></pre></div></div>
 
-<p>因为切片的长度可变，因此二维切片的内部的切片可以有不同的长度，这种情况还是很常见的，比如下面 <code class="highlighter-rouge">LinesOfText</code> 的例子，其中每行的长度都是不一样的。</p>
+<p>因为切片的长度可变，因此二维切片的内部的切片可以有不同的长度，这种情况还是很常见的，比如下面 <code class="language-plaintext highlighter-rouge">LinesOfText</code> 的例子，其中每行的长度都是不一样的。</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">text</span> <span class="o">:=</span> <span class="n">LinesOfText</span><span class="p">{</span>
 	<span class="p">[]</span><span class="kt">byte</span><span class="p">(</span><span class="s">"Now is the time"</span><span class="p">),</span>
@@ -452,7 +452,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

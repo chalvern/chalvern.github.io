@@ -258,7 +258,7 @@ apt <span class="nb">install</span> <span class="nt">-y</span> iputils-ping
 docker <span class="nb">exec</span> <span class="nt">-it</span> jingwei bash
 </code></pre></div></div>
 
-<p>当然，因为我们已经在容器中安装了ssh服务，且把它的22端口进行了映射（60630），理论上我们可以通过在主机上<code class="highlighter-rouge">ssh -p 60630 root@localhost</code>进行远程连接。但是需要进行一些特殊处理，把<code class="highlighter-rouge">/etc/ssh/ssh_config</code>中的<code class="highlighter-rouge">PermitRootLogin</code>设置成<code class="highlighter-rouge">yes</code>，参考<a href="https://www.cnblogs.com/hslzju/p/5839913.html">SSH远程登陆docker容器</a>。</p>
+<p>当然，因为我们已经在容器中安装了ssh服务，且把它的22端口进行了映射（60630），理论上我们可以通过在主机上<code class="language-plaintext highlighter-rouge">ssh -p 60630 root@localhost</code>进行远程连接。但是需要进行一些特殊处理，把<code class="language-plaintext highlighter-rouge">/etc/ssh/ssh_config</code>中的<code class="language-plaintext highlighter-rouge">PermitRootLogin</code>设置成<code class="language-plaintext highlighter-rouge">yes</code>，参考<a href="https://www.cnblogs.com/hslzju/p/5839913.html">SSH远程登陆docker容器</a>。</p>
 
 <h2 id="再起一个容器并和第一个容器交互">再起一个容器并和第一个容器交互</h2>
 <p>在开发的过程中，容器之间的交互很是常见，比如写一个web服务，依赖一个mysql的服务，那么怎么让容器中的web服务调用容器中的mysql服务呢？</p>
@@ -270,7 +270,7 @@ docker <span class="nb">exec</span> <span class="nt">-it</span> jingwei bash
 docker run <span class="nt">-it</span> <span class="nt">--rm</span> <span class="nt">--link</span> jingwei:mykk <span class="nt">--name</span> iamsecond ubuntu:16.04 bash
 </code></pre></div></div>
 
-<p>我们通过<code class="highlighter-rouge">--link</code>把已命名的<code class="highlighter-rouge">jingwei</code>给链接到了第二个容器里。进一步，我们可以通过在第二个容器的<code class="highlighter-rouge">hosts</code>查看发生了啥：</p>
+<p>我们通过<code class="language-plaintext highlighter-rouge">--link</code>把已命名的<code class="language-plaintext highlighter-rouge">jingwei</code>给链接到了第二个容器里。进一步，我们可以通过在第二个容器的<code class="language-plaintext highlighter-rouge">hosts</code>查看发生了啥：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@fd64c29001eb:/# <span class="nb">cat</span> /etc/hosts
 127.0.0.1	localhost
@@ -284,7 +284,7 @@ ff02::2	ip6-allrouters
 root@fd64c29001eb:/#
 </code></pre></div></div>
 
-<p>其中<code class="highlighter-rouge">172.17.0.2	mykk c5f123ecc767 jingwei</code>标明了第一个容器的地址，这样我们就可以在第二个容器里通过 <code class="highlighter-rouge">mykk</code>或者<code class="highlighter-rouge">jingwei</code>甚至<code class="highlighter-rouge">c5f123ecc767 </code>（只要你不怕麻烦）来访问第一个容器了。</p>
+<p>其中<code class="language-plaintext highlighter-rouge">172.17.0.2	mykk c5f123ecc767 jingwei</code>标明了第一个容器的地址，这样我们就可以在第二个容器里通过 <code class="language-plaintext highlighter-rouge">mykk</code>或者<code class="language-plaintext highlighter-rouge">jingwei</code>甚至<code class="language-plaintext highlighter-rouge">c5f123ecc767 </code>（只要你不怕麻烦）来访问第一个容器了。</p>
 
 <h3 id="通过ssh登录到第一个容器">通过ssh登录到第一个容器</h3>
 <p>比如我们可以通过下面的命令，从第二个容器ssh到第一个容器：</p>
@@ -393,7 +393,7 @@ ssh root@mykk
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

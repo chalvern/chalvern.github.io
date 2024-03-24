@@ -217,7 +217,7 @@ Author: Ray-Eldath
 <p>在异步编程这里提内核态与用户态的概念，是因为<strong>异步编程既可以在内核态实现，也可以在用户态实现</strong>。如果 ① 顺着内核态实现的思路，可以推演出<strong>内核线程</strong>存在的必要性，而内核线程又是<strong>轻量级进程（LWP，用户可操作的内核态线程）</strong>的实现基础；而如果 ② 顺着用户态实现的思路，则可以推演出<strong>事件驱动、非阻塞式 I/O 的模型</strong>，这又是 NodeJs 及类似框架实现的基础。</p>
 
 <h3 id="内核线程与轻量级进程lwp">内核线程与轻量级进程（LWP）</h3>
-<p>前面提到，<code class="highlighter-rouge">进程 = 数据集合 + 运行逻辑</code>。如果不对进程进行特殊抽象处理，采用子进程的方式进行<strong>异步编程</strong>会导致<strong>冗余的数据集合</strong>，占用大量的内存空间<strong>同时</strong>消耗大量的 CPU 时间初始化这些内存空间。异步编程大多数期望的是<strong>不同的运行逻辑处理同一份数据集合</strong>，那么为什么还要创建那么多<strong>数据集合</strong>呢？这时候轻量级进程（LWP）出现了；可以认为它是一种侧重<strong>运行逻辑</strong>的进程（包含的数据非常少），也可以认为它是一种<strong>运行在内核态、但用户可操作的线程</strong>。</p>
+<p>前面提到，<code class="language-plaintext highlighter-rouge">进程 = 数据集合 + 运行逻辑</code>。如果不对进程进行特殊抽象处理，采用子进程的方式进行<strong>异步编程</strong>会导致<strong>冗余的数据集合</strong>，占用大量的内存空间<strong>同时</strong>消耗大量的 CPU 时间初始化这些内存空间。异步编程大多数期望的是<strong>不同的运行逻辑处理同一份数据集合</strong>，那么为什么还要创建那么多<strong>数据集合</strong>呢？这时候轻量级进程（LWP）出现了；可以认为它是一种侧重<strong>运行逻辑</strong>的进程（包含的数据非常少），也可以认为它是一种<strong>运行在内核态、但用户可操作的线程</strong>。</p>
 
 <p>需要说明的是，轻量级进程需要内核的支持，这种支持上的抽象便是<strong>内核线程</strong>。简单讲，<strong>内核线程是内核的分身</strong>，一个分身可以处理一件特定事情。因为内核线程唯一使用的资源就是内核栈和上下文切换时保存寄存器的空间，因此<strong>它的使用是廉价的</strong>。</p>
 
@@ -278,7 +278,7 @@ Author: Ray-Eldath
 <p>具体的细节大家可以参考  <a href="http://morsmachine.dk/go-scheduler">The Go scheduler</a> ，如果英文不太好，可以参考《<a href="https://www.cnblogs.com/wdliu/p/9272220.html">golang核武器goroutine调度原理、channel详解</a>》相关部分的内容，或自行查找其他博文；理解了本文的内容后，Go 调度器相关的文章理解起来应该都会比较简单。</p>
 
 <h2 id="小结">小结</h2>
-<p>本文在《 <a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析</a>》的基础上进一步分析了进程、轻量级进程（线程）、时间片、调度等概念，给出了 <code class="highlighter-rouge">进程 = 数据集合 + 运行逻辑</code> 和 <code class="highlighter-rouge">轻量级进程 = 内核态线程 ≈ 大家所谓的线程</code> 两个简易公式，并在最后引出了 Go 语言中 Goroutine 的概念及其调度相关的问题，希望能给大家一些帮助。</p>
+<p>本文在《 <a href="https://jingwei.link/2018/12/30/linux-process-thread-schedule.html">Linux系统调度原理浅析</a>》的基础上进一步分析了进程、轻量级进程（线程）、时间片、调度等概念，给出了 <code class="language-plaintext highlighter-rouge">进程 = 数据集合 + 运行逻辑</code> 和 <code class="language-plaintext highlighter-rouge">轻量级进程 = 内核态线程 ≈ 大家所谓的线程</code> 两个简易公式，并在最后引出了 Go 语言中 Goroutine 的概念及其调度相关的问题，希望能给大家一些帮助。</p>
 
 <p>节后的几天假期马上就要结束了，没想到临行前天上飘起了小雪，老话讲“瑞雪兆丰年”，希望自己未来的这一年里一切都顺利吧。</p>
 
@@ -375,7 +375,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>

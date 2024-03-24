@@ -191,7 +191,7 @@ Author: Ray-Eldath
 <h3 id="service服务">Service（服务）</h3>
 <p>当访问量很多的时候，如果只有一个Pod可能不够用，利用k8s可以很方便地扩展出几个甚至几十个Pod。当Pod很多的时候，就需要一个提供负载均衡的地方，能够把用户的请求发送到这些Pod。Service便可以实现这个功能。</p>
 
-<p>Service能够根据标签找到所有相关的Pod，并把这些Pod的<code class="highlighter-rouge">IP</code>收集记录下来，当有请求发送到Service时，Service会再把请求负载均衡到各个Pod。</p>
+<p>Service能够根据标签找到所有相关的Pod，并把这些Pod的<code class="language-plaintext highlighter-rouge">IP</code>收集记录下来，当有请求发送到Service时，Service会再把请求负载均衡到各个Pod。</p>
 
 <h3 id="volume卷">Volume（卷）</h3>
 <p>每个Pod被k8s调度，当其中一个因为故障重启，里面的文件也会随之”蒸发“掉，这时候就需要把其中的文件给持久化到某个地方。</p>
@@ -201,7 +201,7 @@ Author: Ray-Eldath
 <h3 id="namespace命名空间">Namespace（命名空间）</h3>
 <p>如果把所有的应用部署在k8s上，当应用多的时候，很难区分哪个是哪个。</p>
 
-<p>Namespace可以从逻辑上把不同的应用区分开，比如小组A开发所有应用部署在<code class="highlighter-rouge">group-a</code>命名空间，小组B开发的所有应用部署在<code class="highlighter-rouge">group-b</code>命名空间，通过设置让小组A的成员只能访问<code class="highlighter-rouge">group-a</code>，小组B的成员只能访问<code class="highlighter-rouge">group-b</code>，这样管理起来就方便很多了。</p>
+<p>Namespace可以从逻辑上把不同的应用区分开，比如小组A开发所有应用部署在<code class="language-plaintext highlighter-rouge">group-a</code>命名空间，小组B开发的所有应用部署在<code class="language-plaintext highlighter-rouge">group-b</code>命名空间，通过设置让小组A的成员只能访问<code class="language-plaintext highlighter-rouge">group-a</code>，小组B的成员只能访问<code class="language-plaintext highlighter-rouge">group-b</code>，这样管理起来就方便很多了。</p>
 
 <h2 id="小结">小结</h2>
 <p>本文简单介绍了k8s中的几个静态的概念：Cluster、Node、Pod、Service、Volume以及Namespace。不过k8s中还包含成百上千的概念，只知道上面几个概念远远不够的。</p>
@@ -297,7 +297,7 @@ Author: Ray-Eldath
     2018
     -
   
-  2021
+  2024
   <a href="/rss.xml">RSS订阅</a>
   </section>
 </footer>
