@@ -5,9 +5,139 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 20 Apr 2024 20:02:15 +0800</pubDate>
-    <lastBuildDate>Sat, 20 Apr 2024 20:02:15 +0800</lastBuildDate>
+    <pubDate>Thu, 02 May 2024 22:25:00 +0800</pubDate>
+    <lastBuildDate>Thu, 02 May 2024 22:25:00 +0800</lastBuildDate>
     <generator>Jekyll v4.3.3</generator>
+    
+      <item>
+        <title>自签名证书中的 CA 证书以及 TLS 证书</title>
+        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#正文&quot; id=&quot;markdown-toc-正文&quot;&gt;正文&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#生成自签名证书的流程&quot; id=&quot;markdown-toc-生成自签名证书的流程&quot;&gt;生成自签名证书的流程&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#关于-tls-非对称加密协议的几个问题&quot; id=&quot;markdown-toc-关于-tls-非对称加密协议的几个问题&quot;&gt;关于 tls 非对称加密协议的几个问题&lt;/a&gt;        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;#为什么存在私钥和公钥两个密钥只要一个密钥行不行呀&quot; id=&quot;markdown-toc-为什么存在私钥和公钥两个密钥只要一个密钥行不行呀&quot;&gt;为什么存在私钥和公钥两个密钥（只要一个密钥行不行呀）&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#既然有了私钥和公钥为什么还要-ca-证书的参与&quot; id=&quot;markdown-toc-既然有了私钥和公钥为什么还要-ca-证书的参与&quot;&gt;既然有了私钥和公钥为什么还要 ca 证书的参与？&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#如何拿到不属于自己的-ca-公钥证书呢&quot; id=&quot;markdown-toc-如何拿到不属于自己的-ca-公钥证书呢&quot;&gt;如何拿到不属于自己的 ca 公钥证书呢？&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#证书生成命令行参考&quot; id=&quot;markdown-toc-证书生成命令行参考&quot;&gt;证书生成命令行参考&lt;/a&gt;        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;#生成-ca-证书私钥以及公钥&quot; id=&quot;markdown-toc-生成-ca-证书私钥以及公钥&quot;&gt;生成 ca 证书私钥以及公钥&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#生成业务需要的私钥及签名对应的公钥&quot; id=&quot;markdown-toc-生成业务需要的私钥及签名对应的公钥&quot;&gt;生成业务需要的私钥及签名对应的公钥&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#查看证书中的内容&quot; id=&quot;markdown-toc-查看证书中的内容&quot;&gt;查看证书中的内容&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#双向认证&quot; id=&quot;markdown-toc-双向认证&quot;&gt;双向认证&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
+&lt;p&gt;为了保证连接的安全性，一般实践中会采用 tls 协议进行加密。本文不论证 tls 这种非对称协议的安全性等问题，只涉及在具体实践中会遇到的 ca 证书、&lt;/p&gt;
+
+&lt;h2 id=&quot;正文&quot;&gt;正文&lt;/h2&gt;
+
+&lt;h3 id=&quot;生成自签名证书的流程&quot;&gt;生成自签名证书的流程&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/pic/how_ca_tls_work_1.jpg&quot; alt=&quot;子签名证书涉及到的几个概念&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我们可以通过一张图简单示意自签名证书的生成过程，如上图所示。其中 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ca-key.pem&lt;/code&gt; 和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ca.pem&lt;/code&gt; 分别表示 ca 证书的私钥以及公钥， &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;server-key.pem&lt;/code&gt; 和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;server-cert.pem&lt;/code&gt; 则表示被 ca 证书签名的证书（未来用在 server 服务中）的私钥和公钥。图中 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;server.csr&lt;/code&gt; 表示签名证书的请求（certificate signing request）中间文件。&lt;/p&gt;
+
+&lt;h3 id=&quot;关于-tls-非对称加密协议的几个问题&quot;&gt;关于 tls 非对称加密协议的几个问题&lt;/h3&gt;
+
+&lt;h4 id=&quot;为什么存在私钥和公钥两个密钥只要一个密钥行不行呀&quot;&gt;为什么存在私钥和公钥两个密钥（只要一个密钥行不行呀）&lt;/h4&gt;
+&lt;p&gt;首先网络传输中密钥的存在主要是为了加密端到端的信息传输，避免网络链路中存在第三方监听而消息被窃取。传统的对称加密算法有一个致命的问题——密钥不方便分发；也就是对于网络上的客户端，除非事先和服务端商量好，否则无法在网络中协商密钥（协商的过程被监听，那么协商出来的密钥就没有任何安全意义了）。&lt;/p&gt;
+
+&lt;p&gt;非对称加密的概念中，公钥可以在任意网络环境中传输。客户端在发起请求前，只要想办法拿到服务端的公钥 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;server-cert.pem&lt;/code&gt;，就可以使用这个公钥加密自己的请求消息，而被加密的消息只有拥有私钥 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;server-key.pem&lt;/code&gt; 的服务端才可以解密拿到明文请求，即使网络被监听也可以避免明文泄露。&lt;/p&gt;
+
+&lt;h4 id=&quot;既然有了私钥和公钥为什么还要-ca-证书的参与&quot;&gt;既然有了私钥和公钥为什么还要 ca 证书的参与？&lt;/h4&gt;
+
+&lt;p&gt;虽然公钥的存在一定程度降低了密钥分发的难度，但是通过非安全的网络拿到公钥的客户端却无法确定自己拿到的公钥是合法的公钥；如果网络中存在拦截，那么拿到的公钥可能是被伪造的，从而导致使用公钥加密的明文消息被泄露。&lt;/p&gt;
+
+&lt;p&gt;当存在 ca 证书的时候，因为公钥生成的时候 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ca.pem&lt;/code&gt; 被签过名（签名信息是一串二进制被附加到证书中），因此客户端可以在拿到公钥 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;server-cert.pem&lt;/code&gt; 后使用自己本地的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ca.pem&lt;/code&gt; 证书进行签名验证，如果验证通过则说明拿到的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;server-cert.pem&lt;/code&gt; 是合法的，从而进行接下来的消息加密、传输。&lt;/p&gt;
+
+&lt;p&gt;所谓&lt;strong&gt;自签名&lt;/strong&gt;，其实指的就是用&lt;strong&gt;属于自己&lt;/strong&gt;的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ca.pem&lt;/code&gt; 签名其他业务证书的机制。&lt;/p&gt;
+
+&lt;h4 id=&quot;如何拿到不属于自己的-ca-公钥证书呢&quot;&gt;如何拿到不属于自己的 ca 公钥证书呢？&lt;/h4&gt;
+&lt;p&gt;互联网上很多公开的服务，比如 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https://baidu.com&lt;/code&gt;、&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https://taobao.com&lt;/code&gt; 等，都基于 tls 协议加密信息传输，他们所使用的证书都不是自签名的，为了验证他们服务端返回的公钥的合法性，应该怎么获取对应的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ca&lt;/code&gt; 证书进行签名验证呢？其实这个问题也很简单，那就是客户端所在的操作系统已经内嵌了这些证书；比如 android 系统、ios系统、windows系统等在装机的时候就已经包含了这些 ca 证书（一般被称为 ca根证书）。&lt;/p&gt;
+
+&lt;p&gt;当我们从互联网上拿到一个公钥，从公钥中拿到签名信息，其中包含签名的 ca 证书信息，只要从本地的证书列表中找到对应的 ca 证书（这些证书属于公钥的一种，而且由于是提前内置的因此我们选择无条件信任，除非你的系统被黑客破坏过），就可以对其进行签名验证了。&lt;/p&gt;
+
+&lt;h3 id=&quot;证书生成命令行参考&quot;&gt;证书生成命令行参考&lt;/h3&gt;
+
+&lt;p&gt;为了方便，这里采用了直接搬了 &lt;a href=&quot;https://docs.docker.com/engine/security/protect-access/&quot;&gt;Protect the Docker daemon socket&lt;/a&gt; 文档中的内容。&lt;/p&gt;
+
+&lt;h4 id=&quot;生成-ca-证书私钥以及公钥&quot;&gt;生成 ca 证书私钥以及公钥&lt;/h4&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 生成 ca 私钥&lt;/span&gt;
+openssl genrsa &lt;span class=&quot;nt&quot;&gt;-aes256&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-out&lt;/span&gt; ca-key.pem 4096
+
+&lt;span class=&quot;c&quot;&gt;# 生成 ca 公钥（有效时间 365 天，这里只是用来示例，实际中需要根据具体业务进行选择）&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 且下面命令运行后会要求输入一系列的内容（比如国家、省份、域名、邮箱等）&lt;/span&gt;
+openssl req &lt;span class=&quot;nt&quot;&gt;-new&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-x509&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-days&lt;/span&gt; 365 &lt;span class=&quot;nt&quot;&gt;-key&lt;/span&gt; ca-key.pem &lt;span class=&quot;nt&quot;&gt;-sha256&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-out&lt;/span&gt; ca.pem
+&lt;span class=&quot;c&quot;&gt;# &lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;生成业务需要的私钥及签名对应的公钥&quot;&gt;生成业务需要的私钥及签名对应的公钥&lt;/h4&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 生成业务（比如服务端）需要的私钥&lt;/span&gt;
+openssl genrsa &lt;span class=&quot;nt&quot;&gt;-out&lt;/span&gt; server-key.pem 4096
+
+&lt;span class=&quot;c&quot;&gt;# 生成证书签名请求文件（certificate signing request, CSR）&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 下面命令参考 docker 文档，其中的 $HOST 修改成自己 docker daemon 主机的 dns 名&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 非 docker 业务可能不需要&lt;/span&gt;
+openssl req &lt;span class=&quot;nt&quot;&gt;-subj&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/CN=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HOST&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sha256&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-new&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-key&lt;/span&gt; server-key.pem &lt;span class=&quot;nt&quot;&gt;-out&lt;/span&gt; server.csr
+
+
+&lt;span class=&quot;c&quot;&gt;# tls 连接可以通过域名建立，也可以通过 ip 建立，这里是追加域名和ip信息&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# $HOST 同上面的情况&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;subjectAltName &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; DNS:&lt;span class=&quot;nv&quot;&gt;$HOST&lt;/span&gt;,IP:10.10.10.20,IP:127.0.0.1 &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; extfile.cnf
+&lt;span class=&quot;nb&quot;&gt;echo &lt;/span&gt;extendedKeyUsage &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; serverAuth &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; extfile.cnf &lt;span class=&quot;c&quot;&gt;# docker 专用的吧？&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+openssl x509 &lt;span class=&quot;nt&quot;&gt;-req&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-days&lt;/span&gt; 365 &lt;span class=&quot;nt&quot;&gt;-sha256&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-in&lt;/span&gt; server.csr &lt;span class=&quot;nt&quot;&gt;-CA&lt;/span&gt; ca.pem &lt;span class=&quot;nt&quot;&gt;-CAkey&lt;/span&gt; ca-key.pem &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;-CAcreateserial&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-out&lt;/span&gt; server-cert.pem &lt;span class=&quot;nt&quot;&gt;-extfile&lt;/span&gt; extfile.cnf
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;查看证书中的内容&quot;&gt;查看证书中的内容&lt;/h4&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+openssl x509 &lt;span class=&quot;nt&quot;&gt;-in&lt;/span&gt; certificate.pem &lt;span class=&quot;nt&quot;&gt;-text&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-noout&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# -in certificate.pem 指定要查看的PEM证书文件。&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# -text 表示输出证书的文本信息。&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# -noout 表示不输出证书的编码信息&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;双向认证&quot;&gt;双向认证&lt;/h3&gt;
+
+&lt;p&gt;双向认证，顾名思义，客户端和服务器端都需要验证对方的身份，在建立HTTPS连接的过程中，握手的流程比单向认证多了几步。单向认证的过程，客户端从服务器端下载服务器端公钥证书进行验证，然后建立安全通信通道。双向通信流程，客户端除了需要从服务器端下载服务器的公钥证书进行验证外，还需要把客户端的公钥证书上传到服务器端给服务器端进行验证，等双方都认证通过了，才开始建立安全通信通道进行数据传输。（摘自《&lt;a href=&quot;https://help.aliyun.com/zh/api-gateway/user-guide/mutual-tls-authentication&quot;&gt;HTTPS双向认证&lt;/a&gt;》）&lt;/p&gt;
+
+&lt;p&gt;在实践过程中，大部分采用的都是单向认证，比如通过浏览器发起的大部分请求都是如此。单向认证并不意味着只客户端侧的请求加密而服务端的请求不加密，而只是意味客户端对服务端身份一个方向的验证，服务端则选择无条件相信客户端的合法性（好比现实中开门做生意，顾客怕老板跑路的多，很少有老板怕顾客跑路的）。&lt;/p&gt;
+
+&lt;p&gt;双向认证中自签名证书涉及到的几个文件如下图所示：
+&lt;img src=&quot;/assets/pic/how_ca_tls_work_2.jpg&quot; alt=&quot;子签名证书涉及到的几个概念&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://docs.docker.com/config/daemon/remote-access/&quot;&gt;Configure remote access for Docker daemon&lt;/a&gt; 配置 dockerd 支持远程访问&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://docs.docker.com/engine/security/protect-access/&quot;&gt;Protect the Docker daemon socket&lt;/a&gt; 配置安全访问 dockerd 服务（配置 ssl 证书）&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://help.aliyun.com/zh/api-gateway/user-guide/mutual-tls-authentication&quot;&gt;HTTPS双向认证&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Thu, 02 May 2024 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2024/05/02/how-ca-tls-work.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2024/05/02/how-ca-tls-work.html</guid>
+        
+        <category>实用</category>
+        
+        <category>容器</category>
+        
+        <category>基础</category>
+        
+        
+        <category>经验</category>
+        
+      </item>
     
       <item>
         <title>多年输入后回归输出，文字依然是我喜欢</title>
@@ -856,68 +986,6 @@ L0（low-level knowledge&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
         
         
         <category>编程</category>
-        
-      </item>
-    
-      <item>
-        <title>如何为 Go 语言源码仓库贡献代码</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#为-go-语言源码仓库贡献代码&quot; id=&quot;markdown-toc-为-go-语言源码仓库贡献代码&quot;&gt;为 Go 语言源码仓库贡献代码&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#我们往往忽略了官方材料的学习&quot; id=&quot;markdown-toc-我们往往忽略了官方材料的学习&quot;&gt;我们往往忽略了官方材料的学习&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#如何为-go-语言源码仓库贡献代码&quot; id=&quot;markdown-toc-如何为-go-语言源码仓库贡献代码&quot;&gt;如何为 Go 语言源码仓库贡献代码&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
-
-&lt;p&gt;二零一九年（2019）利用业余的时间做了一套&lt;a href=&quot;https://github.com/chalvern/books/tree/master/go/official_go_learning&quot;&gt;《原汁原味Go语言学习》&lt;/a&gt;的视频课程，主要涉及到 Go 官方的几个文档资料的学习。在翻译官方文档的过程中发现有一处错误（前前后后看了很多遍，每次看到都觉得不爽），调研后发现是 Go 源码仓库中的文档，于是心血来潮修正错误并提交了 commit，私心里还琢磨着如果代码被合并自己以后岂不就可以吹嘘是&lt;strong&gt;Go语言源码的贡献者&lt;/strong&gt;了？&lt;/p&gt;
-
-&lt;p&gt;按照官方指引，春节放假前提交修正并得到管理员的正反馈，然后一直关注了好久但不见代码被合并，一度以为自己的这个提交被忽略了，不过最近看到已经被合并到了&lt;a href=&quot;https://github.com/golang/go/commit/34830beffa6396129bd9d9da58afb7a046775d49&quot;&gt;Go主分支&lt;/a&gt;。开心😸。&lt;/p&gt;
-
-&lt;p&gt;其实整个提交过程还是比较流畅的，现在简单总结记录一下供自己以及他人参考。&lt;/p&gt;
-
-&lt;h2 id=&quot;为-go-语言源码仓库贡献代码&quot;&gt;为 Go 语言源码仓库贡献代码&lt;/h2&gt;
-
-&lt;h3 id=&quot;我们往往忽略了官方材料的学习&quot;&gt;我们往往忽略了官方材料的学习&lt;/h3&gt;
-
-&lt;p&gt;由于每个人学习编程的方式不同，可能无法评估出编程的最佳学习方式；但是作为熟练程度的基准，语言的官方文档理应是其最佳的学习资料。以 Go 语言为例，可能市面上存在很多 Go 语言相关的书籍，但是任何一本书都无法让自己精通 Go 语言编程（如果有类似标榜的书籍，千万不要买）；从这个角度讲，书籍只能作为编程语言学习的指引者——激起学习者的学习热情，启发学习者的学习路径——其他的技术细节和技巧仍然需要学习者自己去探索体会。&lt;/p&gt;
-
-&lt;p&gt;不过虽说编程语言的官方文档是最佳的学习资料，但是官方文档往往是枯燥无趣的，因此也难怪很多人都不喜欢读。可是，编程语言的学习与掌握本就是一个枯燥无趣的过程，又有什么办法……&lt;/p&gt;
-
-&lt;h3 id=&quot;如何为-go-语言源码仓库贡献代码&quot;&gt;如何为 Go 语言源码仓库贡献代码&lt;/h3&gt;
-
-&lt;p&gt;只需参考 《&lt;a href=&quot;https://golang.google.cn/doc/contribute.html&quot;&gt;Contribution Guide 官方文档&lt;/a&gt;》即可。&lt;/p&gt;
-
-&lt;p&gt;大家可以看到整个文档都是英文资料，且在提交代码让别人审核的过程中也都是英文沟通交流，因此这里关键的点或许是把英文学好……&lt;/p&gt;
-
-&lt;p&gt;从我个人的经验看，只要英文够好，确实发现了源码中不合理的地方，又觉得自己有好点子，都可以为 Go 语言贡献代码。为了破除大家对提交代码这件事情的神秘感，这里简单罗列一下&lt;a href=&quot;https://golang.google.cn/doc/contribute.html&quot;&gt;官方文档&lt;/a&gt;里介绍的几个点：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;首先准备好账户并签署贡献者协议（Google账户、Gerrit账户）；&lt;/li&gt;
-  &lt;li&gt;配置自己本地的环境（配置 git、配置 gerrit，后者是谷歌官方提供的一个小工具，可以保持自己的 commit 信息的规范）；&lt;/li&gt;
-  &lt;li&gt;修改完代码后就可以使用 gerrit 提交了;&lt;/li&gt;
-  &lt;li&gt;提交完成后到 https://go.googlesource.com/ 可以观察进度，甚至可能需要根据修改意见进行内容上的阐述、修改等；&lt;/li&gt;
-  &lt;li&gt;等提交的内容被完全认同以后，剩下的就是耐心等着被合并到 Master 主分支了。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
-
-&lt;p&gt;自己的代码被合并到主仓库，好像这份开心慢慢地也消散了。终于还是要踏踏实实地解决业务问题，如此自己的创造才是有价值的。&lt;/p&gt;
-
-</description>
-        <pubDate>Sun, 15 Mar 2020 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2020/03/15/contribute_golang_process.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2020/03/15/contribute_golang_process.html</guid>
-        
-        <category>golang</category>
-        
-        <category>最佳实践</category>
-        
-        
-        <category>golang</category>
         
       </item>
     

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自签名证书中的 CA 证书以及 TLS 证书 - 敬维</title>
+    <meta name="author"  content="Jing维">
+    <meta name="description" content="自签名证书中的 CA 证书以及 TLS 证书">
+    <meta name="keywords"  content="实用, 容器, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="自签名证书中的 CA 证书以及 TLS 证书 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2024/05/02/how-ca-tls-work.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%B9%E5%99%A8" class="post-tag">容器</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>自签名证书中的 CA 证书以及 TLS 证书</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">Jing维</a></></span>
+        <time class="post-meta-item" datetime="24-05-02"><i class="iconfont icon-date"></i>02 May 2024</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">介绍自签名证书使用中的几个核心概念</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#正文" id="markdown-toc-正文">正文</a>    <ul>
+      <li><a href="#生成自签名证书的流程" id="markdown-toc-生成自签名证书的流程">生成自签名证书的流程</a></li>
+      <li><a href="#关于-tls-非对称加密协议的几个问题" id="markdown-toc-关于-tls-非对称加密协议的几个问题">关于 tls 非对称加密协议的几个问题</a>        <ul>
+          <li><a href="#为什么存在私钥和公钥两个密钥只要一个密钥行不行呀" id="markdown-toc-为什么存在私钥和公钥两个密钥只要一个密钥行不行呀">为什么存在私钥和公钥两个密钥（只要一个密钥行不行呀）</a></li>
+          <li><a href="#既然有了私钥和公钥为什么还要-ca-证书的参与" id="markdown-toc-既然有了私钥和公钥为什么还要-ca-证书的参与">既然有了私钥和公钥为什么还要 ca 证书的参与？</a></li>
+          <li><a href="#如何拿到不属于自己的-ca-公钥证书呢" id="markdown-toc-如何拿到不属于自己的-ca-公钥证书呢">如何拿到不属于自己的 ca 公钥证书呢？</a></li>
+        </ul>
+      </li>
+      <li><a href="#证书生成命令行参考" id="markdown-toc-证书生成命令行参考">证书生成命令行参考</a>        <ul>
+          <li><a href="#生成-ca-证书私钥以及公钥" id="markdown-toc-生成-ca-证书私钥以及公钥">生成 ca 证书私钥以及公钥</a></li>
+          <li><a href="#生成业务需要的私钥及签名对应的公钥" id="markdown-toc-生成业务需要的私钥及签名对应的公钥">生成业务需要的私钥及签名对应的公钥</a></li>
+          <li><a href="#查看证书中的内容" id="markdown-toc-查看证书中的内容">查看证书中的内容</a></li>
+        </ul>
+      </li>
+      <li><a href="#双向认证" id="markdown-toc-双向认证">双向认证</a></li>
+    </ul>
+  </li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+<p>为了保证连接的安全性，一般实践中会采用 tls 协议进行加密。本文不论证 tls 这种非对称协议的安全性等问题，只涉及在具体实践中会遇到的 ca 证书、</p>
+
+<h2 id="正文">正文</h2>
+
+<h3 id="生成自签名证书的流程">生成自签名证书的流程</h3>
+
+<p><img src="/assets/pic/how_ca_tls_work_1.jpg" alt="子签名证书涉及到的几个概念" /></p>
+
+<p>我们可以通过一张图简单示意自签名证书的生成过程，如上图所示。其中 <code class="language-plaintext highlighter-rouge">ca-key.pem</code> 和 <code class="language-plaintext highlighter-rouge">ca.pem</code> 分别表示 ca 证书的私钥以及公钥， <code class="language-plaintext highlighter-rouge">server-key.pem</code> 和 <code class="language-plaintext highlighter-rouge">server-cert.pem</code> 则表示被 ca 证书签名的证书（未来用在 server 服务中）的私钥和公钥。图中 <code class="language-plaintext highlighter-rouge">server.csr</code> 表示签名证书的请求（certificate signing request）中间文件。</p>
+
+<h3 id="关于-tls-非对称加密协议的几个问题">关于 tls 非对称加密协议的几个问题</h3>
+
+<h4 id="为什么存在私钥和公钥两个密钥只要一个密钥行不行呀">为什么存在私钥和公钥两个密钥（只要一个密钥行不行呀）</h4>
+<p>首先网络传输中密钥的存在主要是为了加密端到端的信息传输，避免网络链路中存在第三方监听而消息被窃取。传统的对称加密算法有一个致命的问题——密钥不方便分发；也就是对于网络上的客户端，除非事先和服务端商量好，否则无法在网络中协商密钥（协商的过程被监听，那么协商出来的密钥就没有任何安全意义了）。</p>
+
+<p>非对称加密的概念中，公钥可以在任意网络环境中传输。客户端在发起请求前，只要想办法拿到服务端的公钥 <code class="language-plaintext highlighter-rouge">server-cert.pem</code>，就可以使用这个公钥加密自己的请求消息，而被加密的消息只有拥有私钥 <code class="language-plaintext highlighter-rouge">server-key.pem</code> 的服务端才可以解密拿到明文请求，即使网络被监听也可以避免明文泄露。</p>
+
+<h4 id="既然有了私钥和公钥为什么还要-ca-证书的参与">既然有了私钥和公钥为什么还要 ca 证书的参与？</h4>
+
+<p>虽然公钥的存在一定程度降低了密钥分发的难度，但是通过非安全的网络拿到公钥的客户端却无法确定自己拿到的公钥是合法的公钥；如果网络中存在拦截，那么拿到的公钥可能是被伪造的，从而导致使用公钥加密的明文消息被泄露。</p>
+
+<p>当存在 ca 证书的时候，因为公钥生成的时候 <code class="language-plaintext highlighter-rouge">ca.pem</code> 被签过名（签名信息是一串二进制被附加到证书中），因此客户端可以在拿到公钥 <code class="language-plaintext highlighter-rouge">server-cert.pem</code> 后使用自己本地的 <code class="language-plaintext highlighter-rouge">ca.pem</code> 证书进行签名验证，如果验证通过则说明拿到的 <code class="language-plaintext highlighter-rouge">server-cert.pem</code> 是合法的，从而进行接下来的消息加密、传输。</p>
+
+<p>所谓<strong>自签名</strong>，其实指的就是用<strong>属于自己</strong>的 <code class="language-plaintext highlighter-rouge">ca.pem</code> 签名其他业务证书的机制。</p>
+
+<h4 id="如何拿到不属于自己的-ca-公钥证书呢">如何拿到不属于自己的 ca 公钥证书呢？</h4>
+<p>互联网上很多公开的服务，比如 <code class="language-plaintext highlighter-rouge">https://baidu.com</code>、<code class="language-plaintext highlighter-rouge">https://taobao.com</code> 等，都基于 tls 协议加密信息传输，他们所使用的证书都不是自签名的，为了验证他们服务端返回的公钥的合法性，应该怎么获取对应的 <code class="language-plaintext highlighter-rouge">ca</code> 证书进行签名验证呢？其实这个问题也很简单，那就是客户端所在的操作系统已经内嵌了这些证书；比如 android 系统、ios系统、windows系统等在装机的时候就已经包含了这些 ca 证书（一般被称为 ca根证书）。</p>
+
+<p>当我们从互联网上拿到一个公钥，从公钥中拿到签名信息，其中包含签名的 ca 证书信息，只要从本地的证书列表中找到对应的 ca 证书（这些证书属于公钥的一种，而且由于是提前内置的因此我们选择无条件信任，除非你的系统被黑客破坏过），就可以对其进行签名验证了。</p>
+
+<h3 id="证书生成命令行参考">证书生成命令行参考</h3>
+
+<p>为了方便，这里采用了直接搬了 <a href="https://docs.docker.com/engine/security/protect-access/">Protect the Docker daemon socket</a> 文档中的内容。</p>
+
+<h4 id="生成-ca-证书私钥以及公钥">生成 ca 证书私钥以及公钥</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 生成 ca 私钥</span>
+openssl genrsa <span class="nt">-aes256</span> <span class="nt">-out</span> ca-key.pem 4096
+
+<span class="c"># 生成 ca 公钥（有效时间 365 天，这里只是用来示例，实际中需要根据具体业务进行选择）</span>
+<span class="c"># 且下面命令运行后会要求输入一系列的内容（比如国家、省份、域名、邮箱等）</span>
+openssl req <span class="nt">-new</span> <span class="nt">-x509</span> <span class="nt">-days</span> 365 <span class="nt">-key</span> ca-key.pem <span class="nt">-sha256</span> <span class="nt">-out</span> ca.pem
+<span class="c"># </span>
+</code></pre></div></div>
+
+<h4 id="生成业务需要的私钥及签名对应的公钥">生成业务需要的私钥及签名对应的公钥</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 生成业务（比如服务端）需要的私钥</span>
+openssl genrsa <span class="nt">-out</span> server-key.pem 4096
+
+<span class="c"># 生成证书签名请求文件（certificate signing request, CSR）</span>
+<span class="c"># 下面命令参考 docker 文档，其中的 $HOST 修改成自己 docker daemon 主机的 dns 名</span>
+<span class="c"># 非 docker 业务可能不需要</span>
+openssl req <span class="nt">-subj</span> <span class="s2">"/CN=</span><span class="nv">$HOST</span><span class="s2">"</span> <span class="nt">-sha256</span> <span class="nt">-new</span> <span class="nt">-key</span> server-key.pem <span class="nt">-out</span> server.csr
+
+
+<span class="c"># tls 连接可以通过域名建立，也可以通过 ip 建立，这里是追加域名和ip信息</span>
+<span class="c"># $HOST 同上面的情况</span>
+<span class="nb">echo </span>subjectAltName <span class="o">=</span> DNS:<span class="nv">$HOST</span>,IP:10.10.10.20,IP:127.0.0.1 <span class="o">&gt;&gt;</span> extfile.cnf
+<span class="nb">echo </span>extendedKeyUsage <span class="o">=</span> serverAuth <span class="o">&gt;&gt;</span> extfile.cnf <span class="c"># docker 专用的吧？</span>
+<span class="c">#</span>
+openssl x509 <span class="nt">-req</span> <span class="nt">-days</span> 365 <span class="nt">-sha256</span> <span class="nt">-in</span> server.csr <span class="nt">-CA</span> ca.pem <span class="nt">-CAkey</span> ca-key.pem <span class="se">\</span>
+  <span class="nt">-CAcreateserial</span> <span class="nt">-out</span> server-cert.pem <span class="nt">-extfile</span> extfile.cnf
+</code></pre></div></div>
+
+<h4 id="查看证书中的内容">查看证书中的内容</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+openssl x509 <span class="nt">-in</span> certificate.pem <span class="nt">-text</span> <span class="nt">-noout</span>
+
+<span class="c"># -in certificate.pem 指定要查看的PEM证书文件。</span>
+<span class="c"># -text 表示输出证书的文本信息。</span>
+<span class="c"># -noout 表示不输出证书的编码信息</span>
+</code></pre></div></div>
+
+<h3 id="双向认证">双向认证</h3>
+
+<p>双向认证，顾名思义，客户端和服务器端都需要验证对方的身份，在建立HTTPS连接的过程中，握手的流程比单向认证多了几步。单向认证的过程，客户端从服务器端下载服务器端公钥证书进行验证，然后建立安全通信通道。双向通信流程，客户端除了需要从服务器端下载服务器的公钥证书进行验证外，还需要把客户端的公钥证书上传到服务器端给服务器端进行验证，等双方都认证通过了，才开始建立安全通信通道进行数据传输。（摘自《<a href="https://help.aliyun.com/zh/api-gateway/user-guide/mutual-tls-authentication">HTTPS双向认证</a>》）</p>
+
+<p>在实践过程中，大部分采用的都是单向认证，比如通过浏览器发起的大部分请求都是如此。单向认证并不意味着只客户端侧的请求加密而服务端的请求不加密，而只是意味客户端对服务端身份一个方向的验证，服务端则选择无条件相信客户端的合法性（好比现实中开门做生意，顾客怕老板跑路的多，很少有老板怕顾客跑路的）。</p>
+
+<p>双向认证中自签名证书涉及到的几个文件如下图所示：
+<img src="/assets/pic/how_ca_tls_work_2.jpg" alt="子签名证书涉及到的几个概念" /></p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://docs.docker.com/config/daemon/remote-access/">Configure remote access for Docker daemon</a> 配置 dockerd 支持远程访问</li>
+  <li><a href="https://docs.docker.com/engine/security/protect-access/">Protect the Docker daemon socket</a> 配置安全访问 dockerd 服务（配置 ssl 证书）</li>
+  <li><a href="https://help.aliyun.com/zh/api-gateway/user-guide/mutual-tls-authentication">HTTPS双向认证</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">Jing维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2024/03/23/what-i-want-todo-later.html" class="read-next-link"></a>
+          <section>
+            <span>多年输入后回归输出，文字依然是我喜欢</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2024
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
