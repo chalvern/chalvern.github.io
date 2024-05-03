@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "SSL 证书链的认证",
+      "tags"     : "实用 基础",
+      "url"      : "/2024/05/03/what-is-ca-chain.html"
+    } ,
+  
+    {
       "title"    : "自签名证书中的 CA 证书以及 TLS 证书",
       "tags"     : "实用 容器 基础",
       "url"      : "/2024/05/02/how-ca-tls-work.html"

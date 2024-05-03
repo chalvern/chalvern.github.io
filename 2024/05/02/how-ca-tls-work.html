@@ -167,11 +167,12 @@ Author: Ray-Eldath
       <li><a href="#双向认证" id="markdown-toc-双向认证">双向认证</a></li>
     </ul>
   </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
   <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
 </ul>
 
 <h2 id="写在前面">写在前面</h2>
-<p>为了保证连接的安全性，一般实践中会采用 tls 协议进行加密。本文不论证 tls 这种非对称协议的安全性等问题，只涉及在具体实践中会遇到的 ca 证书、</p>
+<p>为了保证连接的安全性，一般实践中会采用 tls 协议进行加密。本文不论证 tls 这种非对称协议的安全性等问题，只涉及在具体实践中会遇到的 ca 证书及其签名。</p>
 
 <h2 id="正文">正文</h2>
 
@@ -254,6 +255,9 @@ openssl x509 <span class="nt">-in</span> certificate.pem <span class="nt">-text<
 <p>双向认证中自签名证书涉及到的几个文件如下图所示：
 <img src="/assets/pic/how_ca_tls_work_2.jpg" alt="子签名证书涉及到的几个概念" /></p>
 
+<h2 id="小结">小结</h2>
+<p>简单简单介绍了 tls 协议中自签名证书的几个概念。</p>
+
 <h2 id="参考">参考</h2>
 <ul>
   <li><a href="https://docs.docker.com/config/daemon/remote-access/">Configure remote access for Docker daemon</a> 配置 dockerd 支持远程访问</li>
@@ -298,6 +302,18 @@ openssl x509 <span class="nt">-in</span> certificate.pem <span class="nt">-text<
       
     </section>
     <section class="post-footer-item read-next">
+      
+      <div class="read-next-item">
+        <a href="/2024/05/03/what-is-ca-chain.html" class="read-next-link"></a>
+        <section>
+          <span>SSL 证书链的认证</span>
+          <p></p>
+        </section>
+        
+        <div class="filter"></div>
+        <img src="" alt="">
+        
+     </div>
       
 
       

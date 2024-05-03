@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSL 证书链的认证 - 敬维</title>
+    <meta name="author"  content="Jing维">
+    <meta name="description" content="SSL 证书链的认证">
+    <meta name="keywords"  content="实用, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="SSL 证书链的认证 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2024/05/03/what-is-ca-chain.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>SSL 证书链的认证</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">Jing维</a></></span>
+        <time class="post-meta-item" datetime="24-05-03"><i class="iconfont icon-date"></i>03 May 2024</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">以 go 语言demo为例进行断点验证</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#正文" id="markdown-toc-正文">正文</a>    <ul>
+      <li><a href="#以-baiducom-为例" id="markdown-toc-以-baiducom-为例">以 baidu.com 为例</a></li>
+      <li><a href="#源码参考" id="markdown-toc-源码参考">源码参考</a>        <ul>
+          <li><a href="#demo源码" id="markdown-toc-demo源码">demo源码</a></li>
+          <li><a href="#涉及到的几个断点" id="markdown-toc-涉及到的几个断点">涉及到的几个断点</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+
+<p>在 《<a href="./2024/05/02/how-ca-tls-work.html">自签名证书中的 CA 证书以及 TLS 证书</a>》中我们知道，ca 根证书一般在装机的时候便已经被安装，因此系统可以发起签名认证。但是喜欢观察的同学应该会注意到，我们在 https 协议中使用的公钥证书都不是由根证书直接签名，而是经过中间证书的签名。那么这又是一种什么样的机制呢？</p>
+
+<h2 id="正文">正文</h2>
+
+<p><img src="/assets/pic/what-is-ca-chain_1.jpg" alt="中间证书涉及到的几个概念" /></p>
+
+<p>如上图所示，我们可以把 <code class="language-plaintext highlighter-rouge">ca-key.pem</code> 和 <code class="language-plaintext highlighter-rouge">ca.pem</code> 密钥称为根证书，而 <code class="language-plaintext highlighter-rouge">ca-key2.pem</code> 和 <code class="language-plaintext highlighter-rouge">ca2.pem</code> 密钥称为中间证书。按照上图的示例，根证书签名得到中间证书，而中间证书签名得到业务证书（在实践中，中间证书可以存在多层，以此串联起来形成证书链）。</p>
+
+<p>接下来我们以一个具体的例子 https://baidu.com 为例简单分析一下。</p>
+<h3 id="以-baiducom-为例">以 baidu.com 为例</h3>
+
+<p><img src="/assets/pic/what-is-ca-chain_2.png" alt="百度网页证书示例" /></p>
+
+<p>上图是 baidu.com 证书的几个信息，通过 safari 浏览器截取。通过上面的图我们可以看出来，<code class="language-plaintext highlighter-rouge">baidu.com</code> 证书是由 <code class="language-plaintext highlighter-rouge">GlobalSign RSA OV SSL CA 2018</code> 中间证书进行签发，而后者又是由 <code class="language-plaintext highlighter-rouge">GlobalSign</code> 进行签发。</p>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">GlobalSign（GlobalSign Root CA - R3）</code> 可以在我本地的<code class="language-plaintext highlighter-rouge">钥匙串（mac系统管理密钥的工具）</code>中找到，那么中间证书是如何拿到的呢？</p>
+
+<p>通过 《<a href="https://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_certificate">ngx_http_ssl_module - ssl_certificate</a>》 我们可以知道，在 nginx 的配置中，中间证书会要求和业务证书放置在一起。这样方便浏览器或者其他的客户端在获取业务公钥的同时获取到中间证书的公钥，从而便利地验证证书链。</p>
+
+<h3 id="源码参考">源码参考</h3>
+
+<p>为了方便确认，可以基于 go 语言的一小段源码进行断点调试，确认 tls 连接建立过程中公钥的获取与分析。</p>
+
+<h4 id="demo源码">demo源码</h4>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"net/http"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">rsp</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">http</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="s">"https://baidu.com"</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"get error err=%s"</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">Error</span><span class="p">())</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="n">contents</span> <span class="o">:=</span> <span class="p">[</span><span class="m">1024</span><span class="p">]</span><span class="kt">byte</span><span class="p">{}</span>
+	<span class="nb">len</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">rsp</span><span class="o">.</span><span class="n">Body</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">contents</span><span class="p">[</span><span class="o">:</span><span class="p">])</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Read error err=%s"</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">Error</span><span class="p">())</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"body=%s"</span><span class="p">,</span> <span class="n">contents</span><span class="p">[</span><span class="o">:</span><span class="nb">len</span><span class="p">])</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="涉及到的几个断点">涉及到的几个断点</h4>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c">// src/net/http/transport.go</span>
+<span class="c">// 建立连接</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">Transport</span><span class="p">)</span> <span class="n">dialConn</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">cm</span> <span class="n">connectMethod</span><span class="p">)</span> <span class="p">(</span><span class="n">pconn</span> <span class="o">*</span><span class="n">persistConn</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+
+
+<span class="c">// src/net/http/transport.go</span>
+<span class="c">// 添加证书</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">pconn</span> <span class="o">*</span><span class="n">persistConn</span><span class="p">)</span> <span class="n">addTLS</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">name</span> <span class="kt">string</span><span class="p">,</span> <span class="n">trace</span> <span class="o">*</span><span class="n">httptrace</span><span class="o">.</span><span class="n">ClientTrace</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="c">// src/crypto/tls/handshake_client.go</span>
+<span class="c">// tls 协议中的握手流程</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">Conn</span><span class="p">)</span> <span class="n">clientHandshake</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="p">(</span><span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="c">// src/crypto/tls/handshake_client.go</span>
+<span class="c">// tls 协议总的握手全部流程，其中就会尝试从 tpc 连接中获取公钥证书</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">hs</span> <span class="o">*</span><span class="n">clientHandshakeState</span><span class="p">)</span> <span class="n">doFullHandshake</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="c">// src/crypto/tls/handshake_client.go</span>
+<span class="c">// 对公钥进行验证</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">Conn</span><span class="p">)</span> <span class="n">verifyServerCertificate</span><span class="p">(</span><span class="n">certificates</span> <span class="p">[][]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="小结">小结</h2>
+
+<p>本文简单介绍了 ssl 证书链的几个概念以及运行机制。最后提供了一个 go 语言的例子及断点方法，方便读者自行 debug。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://zhuanlan.zhihu.com/p/400267748">什么是SSL证书链？</a></li>
+  <li><a href="https://nginx.org/en/docs/http/configuring_https_servers.html#chains">Nginx configuring_https_servers - SSL certificate chains</a></li>
+  <li><a href="https://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_certificate">ngx_http_ssl_module - ssl_certificate</a></li>
+  <li><a href="https://www.ietf.org/rfc/rfc2560.txt">rfc2560</a></li>
+  <li><a href="https://www.ietf.org/rfc/rfc2459.txt">rfc2459</a></li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">Jing维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2024/05/02/how-ca-tls-work.html" class="read-next-link"></a>
+          <section>
+            <span>自签名证书中的 CA 证书以及 TLS 证书</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2024
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
