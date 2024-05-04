@@ -1,6 +1,12 @@
 [
   
     {
+      "title"    : "go 语言 pprof 入门",
+      "tags"     : "golang 实用 基础",
+      "url"      : "/2024/05/04/golang-pprof.html"
+    } ,
+  
+    {
       "title"    : "SSL 证书链的认证",
       "tags"     : "实用 基础",
       "url"      : "/2024/05/03/what-is-ca-chain.html"

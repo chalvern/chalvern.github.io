@@ -5,9 +5,139 @@
     <description>一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。</description>
     <link>https://jingwei.link//</link>
     <atom:link href="https://jingwei.link/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 03 May 2024 10:21:25 +0800</pubDate>
-    <lastBuildDate>Fri, 03 May 2024 10:21:25 +0800</lastBuildDate>
+    <pubDate>Sat, 04 May 2024 08:56:17 +0800</pubDate>
+    <lastBuildDate>Sat, 04 May 2024 08:56:17 +0800</lastBuildDate>
     <generator>Jekyll v4.3.3</generator>
+    
+      <item>
+        <title>go 语言 pprof 入门</title>
+        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#写在前面&quot; id=&quot;markdown-toc-写在前面&quot;&gt;写在前面&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#正文&quot; id=&quot;markdown-toc-正文&quot;&gt;正文&lt;/a&gt;    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#在工程中加入-pprof-监控&quot; id=&quot;markdown-toc-在工程中加入-pprof-监控&quot;&gt;在工程中加入 pprof 监控&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#一个-pprofgoroutine-的例子&quot; id=&quot;markdown-toc-一个-pprofgoroutine-的例子&quot;&gt;一个 pprof/goroutine 的例子&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#各个数字的含义&quot; id=&quot;markdown-toc-各个数字的含义&quot;&gt;各个数字的含义&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#一个-pprofheap-的例子&quot; id=&quot;markdown-toc-一个-pprofheap-的例子&quot;&gt;一个 pprof/heap 的例子&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#小结&quot; id=&quot;markdown-toc-小结&quot;&gt;小结&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#参考&quot; id=&quot;markdown-toc-参考&quot;&gt;参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;写在前面&quot;&gt;写在前面&lt;/h2&gt;
+
+&lt;p&gt;在进行 go 项目开发过程中，精度要求比较高的情况下，需要对 go 的运行时进行分析。go 语言原生默认提供了 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ip:host/debug/pprof&lt;/code&gt; 工具，通过分析其提供的数据可以一定程度了解运行时状态。&lt;/p&gt;
+
+&lt;p&gt;比如通过分析运行时状态，可以了解资源泄露情况、探究代码中的死锁情况等。&lt;/p&gt;
+
+&lt;p&gt;本文将提供几个小例子的分析，用来帮助大家熟悉 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pprof/goroutine&lt;/code&gt; 和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pprof/heap&lt;/code&gt; 的指标。&lt;/p&gt;
+
+&lt;h2 id=&quot;正文&quot;&gt;正文&lt;/h2&gt;
+
+&lt;h3 id=&quot;在工程中加入-pprof-监控&quot;&gt;在工程中加入 pprof 监控&lt;/h3&gt;
+
+&lt;p&gt;比如下面的工程，在 web 项目中引入 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_ &quot;net/http/pprof&quot;&lt;/code&gt; 即可（由于 pprof 是通过 web 接口暴露出去的，因此项目必须启动一个 web 服务才可以）。&lt;/p&gt;
+
+&lt;div class=&quot;language-golang highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+	&lt;span class=&quot;s&quot;&gt;&quot;io&quot;&lt;/span&gt;
+	&lt;span class=&quot;s&quot;&gt;&quot;math/rand&quot;&lt;/span&gt;
+	&lt;span class=&quot;s&quot;&gt;&quot;net/http&quot;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;net/http/pprof&quot;&lt;/span&gt;
+	&lt;span class=&quot;s&quot;&gt;&quot;strconv&quot;&lt;/span&gt;
+	&lt;span class=&quot;s&quot;&gt;&quot;time&quot;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+	&lt;span class=&quot;n&quot;&gt;helloHandler&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ResponseWriter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;no&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rand&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Int63n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;56&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;noStr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strconv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Itoa&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;no&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WriteString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Hello, &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;noStr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Minute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;// 查看多个协程的存在&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;HandleFunc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/hello&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;helloHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ListenAndServe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;localhost:8848&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的代码启动后，即可通过多次 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;curl localhost:8848/hello&lt;/code&gt; 创建多个 goroutine，从而方便查看 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pprof/goroutine&lt;/code&gt; 中的内容。&lt;/p&gt;
+
+&lt;h3 id=&quot;一个-pprofgoroutine-的例子&quot;&gt;一个 pprof/goroutine 的例子&lt;/h3&gt;
+
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;goroutine profile: total 7
+2 @ 0x102e51e90 0x102e4b668 0x102e7df24 0x102f56b94 0x102f56c24 0x102f57c18 0x102fed624 0x102ffcbcc 0x1030ec474 0x102e83ab4
+#	0x102e7df23	internal/poll.runtime_pollWait+0x43		/opt/homebrew/Cellar/go/1.21.1/libexec/src/runtime/netpoll.go:343
+#	0x102f56b93	internal/poll.(*pollDesc).wait+0x83		/opt/homebrew/Cellar/go/1.21.1/libexec/src/internal/poll/fd_poll_runtime.go:84
+#	0x102f56c23	internal/poll.(*pollDesc).waitRead+0x33		/opt/homebrew/Cellar/go/1.21.1/libexec/src/internal/poll/fd_poll_runtime.go:89
+#	0x102f57c17	internal/poll.(*FD).Read+0x307			/opt/homebrew/Cellar/go/1.21.1/libexec/src/internal/poll/fd_unix.go:164
+#	0x102fed623	net.(*netFD).Read+0x53				/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/fd_posix.go:55
+#	0x102ffcbcb	net.(*conn).Read+0x6b				/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/net.go:179
+#	0x1030ec473	net/http.(*connReader).backgroundRead+0x73	/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go:683
+
+2 @ 0x102e51e90 0x102e80648 0x1031618dc 0x1030f5cd4 0x1030f80a0 0x1030f9270 0x1030f4fec 0x102e83ab4
+#	0x102e80647	time.Sleep+0x107			/opt/homebrew/Cellar/go/1.21.1/libexec/src/runtime/time.go:195
+#	0x1031618db	main.main.func1+0xbb			/Users/chenman/developer/golang/hello/pprof/main.go:18
+#	0x1030f5cd3	net/http.HandlerFunc.ServeHTTP+0x43	/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go:2136
+#	0x1030f809f	net/http.(*ServeMux).ServeHTTP+0x15f	/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go:2514
+#	0x1030f926f	net/http.serverHandler.ServeHTTP+0x29f	/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go:2938
+#	0x1030f4feb	net/http.(*conn).serve+0x155b		/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go:2009
+... (其他的隐掉)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的内容表示当前总共有 7 个 goroutine, 其中有 2 个 goroutine 的在执行 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;poll.runtime_pollWait&lt;/code&gt; 方法，同时有 2 个 goroutine 在执行 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;time.Sleep&lt;/code&gt; 方法。&lt;/p&gt;
+
+&lt;p&gt;具体可以参考 &lt;a href=&quot;https://github.com/golang/go/blob/3f4af1ff0e0c3a83bc48faee3d1f0282ef4d02f2/src/runtime/pprof/pprof.go#L528&quot;&gt;printStackRecord&lt;/a&gt; 方法，下面我们详细讨论几个细节。&lt;/p&gt;
+
+&lt;h3 id=&quot;各个数字的含义&quot;&gt;各个数字的含义&lt;/h3&gt;
+
+&lt;p&gt;在上面的内容中，存在比较多的数字，比如第 2 行的十六进制数组 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x102e51e90 0x102e4b668 0x102e7df24 0x102f56b94 0x102f56c24 0x102f57c18 0x102fed624 0x102ffcbcc 0x1030ec474 0x102e83ab4&lt;/code&gt;, 比如第 3 行的十六进制 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x102e7df23&lt;/code&gt;、&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x43&lt;/code&gt;以及十进制 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;343&lt;/code&gt; 等等。&lt;/p&gt;
+
+&lt;p&gt;根据源码分析，其中第 2 行的十六进制数组表示的是当前 goroutine 堆栈栈帧的 PC 列表，也就是在监控拉取的瞬间，总共有 2 个栈帧地址为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x102e51e90 0x102e4b668 ... 0x1030ec474 0x102e83ab4&lt;/code&gt; 的 goroutine；这个数值列表目前笔者尚未使用过，看起来只是 pprof 用来做统计使用的。&lt;/p&gt;
+
+&lt;p&gt;第 3 行的十六进制 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x102e7df23&lt;/code&gt; 对应的是堆栈栈帧的 PC 值，和第 2 行中的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x102e7df24&lt;/code&gt; 相差 1，之所以会相差 1 好像是个历史问题，目前应该不需要深究。而第 3 行中的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x43&lt;/code&gt; 目前笔者也未曾使用过，这个值是 PC 和 栈帧入口 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Entry&lt;/code&gt; 的差值。最后十进制 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;343&lt;/code&gt; 表示的是源码 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src/runtime/netpoll.go&lt;/code&gt; 的第 343 行。&lt;/p&gt;
+
+&lt;p&gt;简单总结一下，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pprof/goroutine&lt;/code&gt; 中十六进制表示运行时栈帧的状态，十进制表示的是源码中对应的行数。&lt;/p&gt;
+
+&lt;p&gt;在实践中，我们可以通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pprof/goroutine&lt;/code&gt; 了解项目运行时的状态，比如上面的内容表示有 2 个 goroutine 卡在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;time.Sleep&lt;/code&gt;，即 demo 源码的第 18 行（当然，这里是我们刻意为之，工程实践中是我们需要关注可能存在优化空间的点）。笔者实际项目中经常通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pprof/goroutine&lt;/code&gt; 寻找业务逻辑中的死锁，屡试不爽的体验😄。&lt;/p&gt;
+
+&lt;h2 id=&quot;一个-pprofheap-的例子&quot;&gt;一个 pprof/heap 的例子&lt;/h2&gt;
+
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;heap profile: 1: 704 [1: 705] @ heap/1048576
+1: 704 [1: 704] @ 0x102e239f4 0x102e2382c 0x103103db0 0x10310185c 0x102e5e6c4 0x102e5e5a8 0x102e519d4 0x102e83ab4
+#	0x103103daf	net/http.map.init.0+0x2f	/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/h2_bundle.go:1189
+#	0x10310185b	net/http.init+0x3ab		/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/h2_bundle.go:1189
+#	0x102e5e6c3	runtime.doInit1+0xd3		/opt/homebrew/Cellar/go/1.21.1/libexec/src/runtime/proc.go:6740
+#	0x102e5e5a7	runtime.doInit+0x37		/opt/homebrew/Cellar/go/1.21.1/libexec/src/runtime/proc.go:6707
+#	0x102e519d3	runtime.main+0x1e3		/opt/homebrew/Cellar/go/1.21.1/libexec/src/runtime/proc.go:249
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上面第 1 行的内容表示当前有 1 个使用用的对象（活跃的对象），占用了 704 个字节。中括号&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;[1: 705]&lt;/code&gt;中的数字表示历史上总共分配过 1 个对象，总共分配了 705 个字节。最后 1048576 表示平均每分配 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1048576&lt;/code&gt; 个字节进行一次内存分配的采样，这也意味着对象相关的所有数据都是采样获得到的，仅保证统计意义上的准确性，具体数值会存在一些波动。
+第 2 行的内容表示运行时堆栈 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x102e239f4 0x102e2382c 0x103103db0 0x10310185c 0x102e5e6c4 0x102e5e5a8 0x102e519d4 0x102e83ab4&lt;/code&gt; 表示的过程当前有 1 个活跃的对象，占用 704 字节；中括号中的数字历史上总共分配了 1 个对象，总共约 705 个字节。&lt;/p&gt;
+
+&lt;p&gt;如果项目中存在明显的内存泄露，可以结合 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pprof/goroutine&lt;/code&gt; 和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pprof/heap&lt;/code&gt; 进行初步的排查（看看有没有协程泄露？有没有内存泄露？）。&lt;/p&gt;
+&lt;h2 id=&quot;小结&quot;&gt;小结&lt;/h2&gt;
+&lt;p&gt;本文简单介绍了 go 语言中原生的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;net/http/pprof&lt;/code&gt; 包的使用，并研究了 pprof 中 goroutine 和 heap 统计数据。通过源码层面的分析，读者若能举一反三应该很容易理解 pprof 中提供的其他内容，在工程中遇到疑难杂症时不妨在 pprof 中找找答案。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/golang/go/blob/3f4af1ff0e0c3a83bc48faee3d1f0282ef4d02f2/src/runtime/pprof/pprof.go#L528&quot;&gt;go源码 - printStackRecord&lt;/a&gt; 打印 goroutine 内容的方法&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/golang/go/blob/3f4af1ff0e0c3a83bc48faee3d1f0282ef4d02f2/src/runtime/pprof/pprof.go#L581&quot;&gt;go源码 - writeHeapInternal&lt;/a&gt; 打印 heap 内容的方法&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sat, 04 May 2024 00:00:00 +0800</pubDate>
+        <link>https://jingwei.link/2024/05/04/golang-pprof.html</link>
+        <guid isPermaLink="true">https://jingwei.link/2024/05/04/golang-pprof.html</guid>
+        
+        <category>golang</category>
+        
+        <category>实用</category>
+        
+        <category>基础</category>
+        
+        
+        <category>经验</category>
+        
+      </item>
     
       <item>
         <title>SSL 证书链的认证</title>
@@ -926,112 +1056,6 @@ openssl x509 &lt;span class=&quot;nt&quot;&gt;-in&lt;/span&gt; certificate.pem &
         
         
         <category>碎碎念</category>
-        
-      </item>
-    
-      <item>
-        <title>人生苦短，快用 Python</title>
-        <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#1-写在前面&quot; id=&quot;markdown-toc-1-写在前面&quot;&gt;1. 写在前面&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#2-编程语言是为业务场景服务的&quot; id=&quot;markdown-toc-2-编程语言是为业务场景服务的&quot;&gt;2. 编程语言是为业务场景服务的&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#21-静态语言与动态语言&quot; id=&quot;markdown-toc-21-静态语言与动态语言&quot;&gt;2.1 静态语言与动态语言&lt;/a&gt;        &lt;ul&gt;
-          &lt;li&gt;&lt;a href=&quot;#211-静态语言的编写-编译并链接-执行过程&quot; id=&quot;markdown-toc-211-静态语言的编写-编译并链接-执行过程&quot;&gt;2.1.1 静态语言的①编写-②编译并链接-③执行过程&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href=&quot;#212-动态语言的编写-解释执行过程&quot; id=&quot;markdown-toc-212-动态语言的编写-解释执行过程&quot;&gt;2.1.2 动态语言的①编写-②解释执行过程&lt;/a&gt;&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#22-人生苦短快用python&quot; id=&quot;markdown-toc-22-人生苦短快用python&quot;&gt;2.2 人生苦短，快用Python&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#3-小结&quot; id=&quot;markdown-toc-3-小结&quot;&gt;3 小结&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;1-写在前面&quot;&gt;1. 写在前面&lt;/h2&gt;
-
-&lt;p&gt;从 &lt;a href=&quot;https://www.ruby-lang.org/&quot;&gt;Ruby&lt;/a&gt; 语言到 &lt;a href=&quot;https://golang.google.cn/&quot;&gt;Go&lt;/a&gt; 语言，目前终于开始使用 &lt;a href=&quot;https://www.python.org/&quot;&gt;Python&lt;/a&gt; 进行编码。&lt;/p&gt;
-
-&lt;p&gt;对于&lt;strong&gt;职场新手&lt;/strong&gt;，可能首先会提出一个问题：难道 &lt;strong&gt;Ruby&lt;/strong&gt;/&lt;strong&gt;Go&lt;/strong&gt; 不香吗？难道 &lt;strong&gt;Python&lt;/strong&gt; 比其他两个语言好？其实都不是。如果我们认同&lt;strong&gt;“技术是为业务服务的”&lt;/strong&gt;这个论调，那么&lt;strong&gt;“编程语言应该为业务场景服务”&lt;/strong&gt;，仅此而已。&lt;/p&gt;
-
-&lt;h2 id=&quot;2-编程语言是为业务场景服务的&quot;&gt;2. 编程语言是为业务场景服务的&lt;/h2&gt;
-
-&lt;p&gt;根据业务场景选择合适的编程语言，使得当前场景的开发收益最大化。当用户量不是很多（机器没什么压力）而业务逻辑却比较繁杂（开发者编码有压力）的情况下，使用 Python 编码或许是一个较为明智的选择。&lt;/p&gt;
-
-&lt;h3 id=&quot;21-静态语言与动态语言&quot;&gt;2.1 静态语言与动态语言&lt;/h3&gt;
-
-&lt;p&gt;所谓静态语言，是指代码在编译的时候（简称&lt;strong&gt;编译时&lt;/strong&gt;）变量的类型就可以确定的语言，比如 C/C++、Java、Go、Object-C 等；所谓静态语言，是指代码在运行的时候（简称&lt;strong&gt;运行时&lt;/strong&gt;）变量的类型才可以确定的语言，比如 Python、Ruby、JavaScript、PHP、SQL等。&lt;/p&gt;
-
-&lt;p&gt;进一步，所以&lt;strong&gt;编译时&lt;/strong&gt;，是指把代码文本转换为机器可执行文件的环境上下文，它会&lt;strong&gt;产出&lt;/strong&gt;一个机器可以执行的二进制文件。所谓&lt;strong&gt;运行时&lt;/strong&gt;，是指可执行的二进制文件在 CPU 上真实执行的上下文。&lt;/p&gt;
-
-&lt;h4 id=&quot;211-静态语言的编写-编译并链接-执行过程&quot;&gt;2.1.1 静态语言的①编写-②编译并链接-③执行过程&lt;/h4&gt;
-
-&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;// cat main.go&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;fmt&quot;&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello world&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;当我们使用 Go &lt;strong&gt;编写&lt;/strong&gt;业务逻辑（比如上面的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hello world&lt;/code&gt;代码）并执行 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;go run main.go&lt;/code&gt; 的时候，Go 开发工具链隐含地帮我们首先&lt;strong&gt;编译并链接源码&lt;/strong&gt;生成可以执行的二进制文件，紧接着&lt;strong&gt;运行&lt;/strong&gt;这个二进制文件。也就是说，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;go run main.go&lt;/code&gt; 等效于 ①&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;go build main.go&lt;/code&gt; + ②&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./mian&lt;/code&gt; 这两个命令操作。&lt;/p&gt;
-
-&lt;p&gt;我们可以简单地认为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;go build main.go&lt;/code&gt; 是 Go 代码的编译时，产物是一个可执行的二进制文件 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;main&lt;/code&gt;；命令&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./main&lt;/code&gt; 是 Go 代码的运行时，此时我们编写的逻辑&lt;em&gt;开始&lt;/em&gt;在 CPU 上执行。&lt;/p&gt;
-
-&lt;h4 id=&quot;212-动态语言的编写-解释执行过程&quot;&gt;2.1.2 动态语言的①编写-②解释执行过程&lt;/h4&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# cat hello.py
-&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;hello world&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;当我们使用 Python &lt;strong&gt;编写&lt;/strong&gt;业务逻辑(比如上面的代码)，在执行 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;python hello.py&lt;/code&gt; 的时候，Python 解释器直接帮我们&lt;strong&gt;解释并执行&lt;/strong&gt;业务逻辑。由于人与机器之间的隔阂，python 源码最终也要变成机器可以执行的代码；但是相对于静态语言，&lt;strong&gt;动态语言不存在编译后机器可执行的二进制产物&lt;/strong&gt;。换句话说，Python 的解释器一边编译源码，一边执行编译生成的代码。&lt;/p&gt;
-
-&lt;h3 id=&quot;22-人生苦短快用python&quot;&gt;2.2 人生苦短，快用Python&lt;/h3&gt;
-
-&lt;p&gt;仅仅缺省编译链接过程并不能成为选择动态语言 Python 的理由，原因很简单：但凡使用 Python 能够解决的问题，均可以使用其他非 Python 的方案解决。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;我们可以使用 Python 处理文件（重命名、修改内容），也可以使用 Go 或者 Java 等完成同样的任务；&lt;/li&gt;
-  &lt;li&gt;我们可以使用 Python 处理表格数据，也可以使用 Go 或者 Java 等处理表格数据并达到同样的效果；&lt;/li&gt;
-  &lt;li&gt;我们可以使用 Python 编写爬虫工具，也可以使用 GO 或者 Java 等实现爬虫工具；&lt;/li&gt;
-  &lt;li&gt;我们可以使用 Python 编写 Web 服务，而使用 Go 或者 Java 等也可以编写 Web 服务甚至生态更完整；&lt;/li&gt;
-  &lt;li&gt;我们可以使用 Python 实践 AI 算法，而其他的语言也可以完成类似的工作（只不过生态不如 Python）；&lt;/li&gt;
-  &lt;li&gt;其他……&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;基于上面的事实，并不存在必学 Python 的理由。可能 Python 只是一些细节上让完成上面列出的任务更简单，比如文件的读取、类型的转换（字符串与数字的互转）、序列号与反序列化（json字符串与json对象之间互转），等等；Python 语言本身封装了一些工具方法很容易地完成这些事情，而 Python 的第三方包进一步扩展了整个生态。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Python 可以更简单地处理文件（重命名、修改内容），比如几行代码就可以实现文件的打开、读取、写入、关闭；&lt;/li&gt;
-  &lt;li&gt;Python 可以更快地处理表格数据，比如可以方便地循环迭代每一行每一个格子，也可以很方便地对表格数据进行格式转换；&lt;/li&gt;
-  &lt;li&gt;Python 可以更快地处理爬取到的数据，比如可以方便地把 json 字符串转换成为 json 对象进行进一步的处理；&lt;/li&gt;
-  &lt;li&gt;Python 在 AI 算法实践领域几乎是霸权地位（因为那些懂算法的人更喜欢写 Python 代码），使得 Python 技术栈几乎包含了所有 AI 相关的算法；&lt;/li&gt;
-  &lt;li&gt;其他……&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;基于上面的考虑，其实可以尝试学一下 Python。&lt;/p&gt;
-
-&lt;h2 id=&quot;3-小结&quot;&gt;3 小结&lt;/h2&gt;
-
-&lt;p&gt;因为 Python 提供的一些便利性，当用户量不是很多（机器没什么压力）而业务逻辑却比较繁杂（开发者编码有压力）的情况下，使用 Python 编码是一个较为明智的选择：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;释放开发者把注意力放在业务逻辑的理解与梳理；&lt;/li&gt;
-  &lt;li&gt;很容易地扩充编码队伍（容易培养或招纳新成员）.&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        <pubDate>Sat, 18 Apr 2020 00:00:00 +0800</pubDate>
-        <link>https://jingwei.link/2020/04/18/use-python-quickly.html</link>
-        <guid isPermaLink="true">https://jingwei.link/2020/04/18/use-python-quickly.html</guid>
-        
-        <category>python</category>
-        
-        <category>基础</category>
-        
-        <category>实用</category>
-        
-        
-        <category>编程</category>
         
       </item>
     

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>go 语言 pprof 入门 - 敬维</title>
+    <meta name="author"  content="Jing维">
+    <meta name="description" content="go 语言 pprof 入门">
+    <meta name="keywords"  content="golang, 实用, 基础">
+    <!-- Open Graph -->
+    <meta property="og:title" content="go 语言 pprof 入门 - 敬维">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingwei.link/2024/05/04/golang-pprof.html">
+    <meta property="og:description" content="一个喜欢涂涂画画的人，曾经的Rubist，一个CI/CD的践行者，一个探寻最佳实践的人。">
+    <meta property="og:site_name" content="敬维">
+    <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
+    <link rel="stylesheet" href="/assets/css/github-markdown.css">
+    <link rel="stylesheet" href="/assets/css/prism.css">
+    <link rel="stylesheet" href="/assets/css/share.min.css">
+    <link rel="stylesheet" href="/assets/css/app.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!--
+Author: Ray-Eldath
+refer to:
+ - http://docs.mathjax.org/en/latest/options/index.html
+-->
+
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
+
+	
+    <!--
+Author: Ray-Eldath
+-->
+<style>
+    .markdown-body .anchor{
+        float: left;
+        margin-top: -8px;
+        margin-left: -20px;
+        padding-right: 4px;
+        line-height: 1;
+        opacity: 0;
+    }
+    
+    .markdown-body .anchor .anchor-icon{
+        font-size: 15px
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let nodes = document.querySelector(".markdown-body").querySelectorAll("h1,h2,h3")
+        for(let node of nodes) {
+            var anchor = document.createElement("a")
+            var anchorIcon = document.createElement("i")
+            anchorIcon.setAttribute("class", "fa fa-anchor fa-lg anchor-icon")
+            anchorIcon.setAttribute("aria-hidden", true)
+            anchor.setAttribute("class", "anchor")
+            anchor.setAttribute("href", "#" + node.getAttribute("id"))
+            
+            anchor.onmouseover = function() {
+                this.style.opacity = "0.4"
+            }
+            
+            anchor.onmouseout = function() {
+                this.style.opacity = "0"
+            }
+            
+            anchor.appendChild(anchorIcon)
+            node.appendChild(anchor)
+        }
+    })
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121993438-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121993438-1');
+    </script>
+</head>
+
+
+<body>
+  <!--[if lt IE 10]>
+<div class="alert-danger" role="alert">你的浏览器实在太太太旧了，放学别走，升级完浏览器再说！<a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+<![endif]-->
+  <input id="nm-switch" type="hidden" value="true"> <header class="g-header">
+    <div class="g-logo">
+      <a href="/"></a>
+    </div>
+    <i id="menu-toggle" class="iconfont icon-menu"></i>
+    <nav class="g-nav">
+        <ul>
+            
+            <li><a href="/">home</a></li>
+            
+            <li><a href="/tags.html">tags</a></li>
+            
+        </ul>
+    </nav>
+</header>
+
+
+  <header class="g-banner post-header post-pattern-circuitBoard bgcolor-default " data-theme="default">
+    <div class="post-wrapper">
+      <div class="post-tags">
+        
+          
+            <a href="https://jingwei.link/tags#golang" class="post-tag">golang</a>
+          
+            <a href="https://jingwei.link/tags#%E5%AE%9E%E7%94%A8" class="post-tag">实用</a>
+          
+            <a href="https://jingwei.link/tags#%E5%9F%BA%E7%A1%80" class="post-tag">基础</a>
+          
+        
+      </div>
+      <h1>go 语言 pprof 入门</h1>
+      <div class="post-meta">
+        <span class="post-meta-item"><i class="iconfont icon-author"></i><a href="https://jingwei.link" target="_blank" rel="author">Jing维</a></></span>
+        <time class="post-meta-item" datetime="24-05-04"><i class="iconfont icon-date"></i>04 May 2024</time>
+      </div>
+    </div>
+    
+    <div class="filter"></div>
+      <div class="post-cover" style="background: url('') center no-repeat; background-size: cover;"></div>
+    
+  </header>
+
+  <div class="post-content visible">
+    
+    <h2 class="post-subtitle">简单介绍 pprof 工具中 goroutine 以及 heap 工具</h2>
+    
+
+    <article class="markdown-body">
+      <ul id="markdown-toc">
+  <li><a href="#写在前面" id="markdown-toc-写在前面">写在前面</a></li>
+  <li><a href="#正文" id="markdown-toc-正文">正文</a>    <ul>
+      <li><a href="#在工程中加入-pprof-监控" id="markdown-toc-在工程中加入-pprof-监控">在工程中加入 pprof 监控</a></li>
+      <li><a href="#一个-pprofgoroutine-的例子" id="markdown-toc-一个-pprofgoroutine-的例子">一个 pprof/goroutine 的例子</a></li>
+      <li><a href="#各个数字的含义" id="markdown-toc-各个数字的含义">各个数字的含义</a></li>
+    </ul>
+  </li>
+  <li><a href="#一个-pprofheap-的例子" id="markdown-toc-一个-pprofheap-的例子">一个 pprof/heap 的例子</a></li>
+  <li><a href="#小结" id="markdown-toc-小结">小结</a></li>
+  <li><a href="#参考" id="markdown-toc-参考">参考</a></li>
+</ul>
+
+<h2 id="写在前面">写在前面</h2>
+
+<p>在进行 go 项目开发过程中，精度要求比较高的情况下，需要对 go 的运行时进行分析。go 语言原生默认提供了 <code class="language-plaintext highlighter-rouge">ip:host/debug/pprof</code> 工具，通过分析其提供的数据可以一定程度了解运行时状态。</p>
+
+<p>比如通过分析运行时状态，可以了解资源泄露情况、探究代码中的死锁情况等。</p>
+
+<p>本文将提供几个小例子的分析，用来帮助大家熟悉 <code class="language-plaintext highlighter-rouge">pprof/goroutine</code> 和 <code class="language-plaintext highlighter-rouge">pprof/heap</code> 的指标。</p>
+
+<h2 id="正文">正文</h2>
+
+<h3 id="在工程中加入-pprof-监控">在工程中加入 pprof 监控</h3>
+
+<p>比如下面的工程，在 web 项目中引入 <code class="language-plaintext highlighter-rouge">_ "net/http/pprof"</code> 即可（由于 pprof 是通过 web 接口暴露出去的，因此项目必须启动一个 web 服务才可以）。</p>
+
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+	<span class="s">"io"</span>
+	<span class="s">"math/rand"</span>
+	<span class="s">"net/http"</span>
+	<span class="n">_</span> <span class="s">"net/http/pprof"</span>
+	<span class="s">"strconv"</span>
+	<span class="s">"time"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+
+	<span class="n">helloHandler</span> <span class="o">:=</span> <span class="k">func</span><span class="p">(</span><span class="n">w</span> <span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span> <span class="n">req</span> <span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">no</span> <span class="o">:=</span> <span class="n">rand</span><span class="o">.</span><span class="n">Int63n</span><span class="p">(</span><span class="m">1</span> <span class="o">&lt;&lt;</span> <span class="m">56</span><span class="p">)</span>
+		<span class="n">noStr</span> <span class="o">:=</span> <span class="n">strconv</span><span class="o">.</span><span class="n">Itoa</span><span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="n">no</span><span class="p">))</span>
+		<span class="n">io</span><span class="o">.</span><span class="n">WriteString</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="s">"Hello, "</span><span class="o">+</span><span class="n">noStr</span><span class="p">)</span>
+		<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Minute</span><span class="p">)</span> <span class="c">// 查看多个协程的存在</span>
+	<span class="p">}</span>
+	<span class="n">http</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s">"/hello"</span><span class="p">,</span> <span class="n">helloHandler</span><span class="p">)</span>
+	<span class="n">http</span><span class="o">.</span><span class="n">ListenAndServe</span><span class="p">(</span><span class="s">"localhost:8848"</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>上面的代码启动后，即可通过多次 <code class="language-plaintext highlighter-rouge">curl localhost:8848/hello</code> 创建多个 goroutine，从而方便查看 <code class="language-plaintext highlighter-rouge">pprof/goroutine</code> 中的内容。</p>
+
+<h3 id="一个-pprofgoroutine-的例子">一个 pprof/goroutine 的例子</h3>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>goroutine profile: total 7
+2 @ 0x102e51e90 0x102e4b668 0x102e7df24 0x102f56b94 0x102f56c24 0x102f57c18 0x102fed624 0x102ffcbcc 0x1030ec474 0x102e83ab4
+#	0x102e7df23	internal/poll.runtime_pollWait+0x43		/opt/homebrew/Cellar/go/1.21.1/libexec/src/runtime/netpoll.go:343
+#	0x102f56b93	internal/poll.(*pollDesc).wait+0x83		/opt/homebrew/Cellar/go/1.21.1/libexec/src/internal/poll/fd_poll_runtime.go:84
+#	0x102f56c23	internal/poll.(*pollDesc).waitRead+0x33		/opt/homebrew/Cellar/go/1.21.1/libexec/src/internal/poll/fd_poll_runtime.go:89
+#	0x102f57c17	internal/poll.(*FD).Read+0x307			/opt/homebrew/Cellar/go/1.21.1/libexec/src/internal/poll/fd_unix.go:164
+#	0x102fed623	net.(*netFD).Read+0x53				/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/fd_posix.go:55
+#	0x102ffcbcb	net.(*conn).Read+0x6b				/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/net.go:179
+#	0x1030ec473	net/http.(*connReader).backgroundRead+0x73	/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go:683
+
+2 @ 0x102e51e90 0x102e80648 0x1031618dc 0x1030f5cd4 0x1030f80a0 0x1030f9270 0x1030f4fec 0x102e83ab4
+#	0x102e80647	time.Sleep+0x107			/opt/homebrew/Cellar/go/1.21.1/libexec/src/runtime/time.go:195
+#	0x1031618db	main.main.func1+0xbb			/Users/chenman/developer/golang/hello/pprof/main.go:18
+#	0x1030f5cd3	net/http.HandlerFunc.ServeHTTP+0x43	/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go:2136
+#	0x1030f809f	net/http.(*ServeMux).ServeHTTP+0x15f	/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go:2514
+#	0x1030f926f	net/http.serverHandler.ServeHTTP+0x29f	/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go:2938
+#	0x1030f4feb	net/http.(*conn).serve+0x155b		/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go:2009
+... (其他的隐掉)
+</code></pre></div></div>
+
+<p>上面的内容表示当前总共有 7 个 goroutine, 其中有 2 个 goroutine 的在执行 <code class="language-plaintext highlighter-rouge">poll.runtime_pollWait</code> 方法，同时有 2 个 goroutine 在执行 <code class="language-plaintext highlighter-rouge">time.Sleep</code> 方法。</p>
+
+<p>具体可以参考 <a href="https://github.com/golang/go/blob/3f4af1ff0e0c3a83bc48faee3d1f0282ef4d02f2/src/runtime/pprof/pprof.go#L528">printStackRecord</a> 方法，下面我们详细讨论几个细节。</p>
+
+<h3 id="各个数字的含义">各个数字的含义</h3>
+
+<p>在上面的内容中，存在比较多的数字，比如第 2 行的十六进制数组 <code class="language-plaintext highlighter-rouge">0x102e51e90 0x102e4b668 0x102e7df24 0x102f56b94 0x102f56c24 0x102f57c18 0x102fed624 0x102ffcbcc 0x1030ec474 0x102e83ab4</code>, 比如第 3 行的十六进制 <code class="language-plaintext highlighter-rouge">0x102e7df23</code>、<code class="language-plaintext highlighter-rouge">0x43</code>以及十进制 <code class="language-plaintext highlighter-rouge">343</code> 等等。</p>
+
+<p>根据源码分析，其中第 2 行的十六进制数组表示的是当前 goroutine 堆栈栈帧的 PC 列表，也就是在监控拉取的瞬间，总共有 2 个栈帧地址为 <code class="language-plaintext highlighter-rouge">0x102e51e90 0x102e4b668 ... 0x1030ec474 0x102e83ab4</code> 的 goroutine；这个数值列表目前笔者尚未使用过，看起来只是 pprof 用来做统计使用的。</p>
+
+<p>第 3 行的十六进制 <code class="language-plaintext highlighter-rouge">0x102e7df23</code> 对应的是堆栈栈帧的 PC 值，和第 2 行中的 <code class="language-plaintext highlighter-rouge">0x102e7df24</code> 相差 1，之所以会相差 1 好像是个历史问题，目前应该不需要深究。而第 3 行中的 <code class="language-plaintext highlighter-rouge">0x43</code> 目前笔者也未曾使用过，这个值是 PC 和 栈帧入口 <code class="language-plaintext highlighter-rouge">Entry</code> 的差值。最后十进制 <code class="language-plaintext highlighter-rouge">343</code> 表示的是源码 <code class="language-plaintext highlighter-rouge">src/runtime/netpoll.go</code> 的第 343 行。</p>
+
+<p>简单总结一下，<code class="language-plaintext highlighter-rouge">pprof/goroutine</code> 中十六进制表示运行时栈帧的状态，十进制表示的是源码中对应的行数。</p>
+
+<p>在实践中，我们可以通过 <code class="language-plaintext highlighter-rouge">pprof/goroutine</code> 了解项目运行时的状态，比如上面的内容表示有 2 个 goroutine 卡在 <code class="language-plaintext highlighter-rouge">time.Sleep</code>，即 demo 源码的第 18 行（当然，这里是我们刻意为之，工程实践中是我们需要关注可能存在优化空间的点）。笔者实际项目中经常通过 <code class="language-plaintext highlighter-rouge">pprof/goroutine</code> 寻找业务逻辑中的死锁，屡试不爽的体验😄。</p>
+
+<h2 id="一个-pprofheap-的例子">一个 pprof/heap 的例子</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>heap profile: 1: 704 [1: 705] @ heap/1048576
+1: 704 [1: 704] @ 0x102e239f4 0x102e2382c 0x103103db0 0x10310185c 0x102e5e6c4 0x102e5e5a8 0x102e519d4 0x102e83ab4
+#	0x103103daf	net/http.map.init.0+0x2f	/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/h2_bundle.go:1189
+#	0x10310185b	net/http.init+0x3ab		/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/h2_bundle.go:1189
+#	0x102e5e6c3	runtime.doInit1+0xd3		/opt/homebrew/Cellar/go/1.21.1/libexec/src/runtime/proc.go:6740
+#	0x102e5e5a7	runtime.doInit+0x37		/opt/homebrew/Cellar/go/1.21.1/libexec/src/runtime/proc.go:6707
+#	0x102e519d3	runtime.main+0x1e3		/opt/homebrew/Cellar/go/1.21.1/libexec/src/runtime/proc.go:249
+</code></pre></div></div>
+
+<p>上面第 1 行的内容表示当前有 1 个使用用的对象（活跃的对象），占用了 704 个字节。中括号<code class="language-plaintext highlighter-rouge">[1: 705]</code>中的数字表示历史上总共分配过 1 个对象，总共分配了 705 个字节。最后 1048576 表示平均每分配 <code class="language-plaintext highlighter-rouge">1048576</code> 个字节进行一次内存分配的采样，这也意味着对象相关的所有数据都是采样获得到的，仅保证统计意义上的准确性，具体数值会存在一些波动。
+第 2 行的内容表示运行时堆栈 <code class="language-plaintext highlighter-rouge">0x102e239f4 0x102e2382c 0x103103db0 0x10310185c 0x102e5e6c4 0x102e5e5a8 0x102e519d4 0x102e83ab4</code> 表示的过程当前有 1 个活跃的对象，占用 704 字节；中括号中的数字历史上总共分配了 1 个对象，总共约 705 个字节。</p>
+
+<p>如果项目中存在明显的内存泄露，可以结合 <code class="language-plaintext highlighter-rouge">pprof/goroutine</code> 和 <code class="language-plaintext highlighter-rouge">pprof/heap</code> 进行初步的排查（看看有没有协程泄露？有没有内存泄露？）。</p>
+<h2 id="小结">小结</h2>
+<p>本文简单介绍了 go 语言中原生的 <code class="language-plaintext highlighter-rouge">net/http/pprof</code> 包的使用，并研究了 pprof 中 goroutine 和 heap 统计数据。通过源码层面的分析，读者若能举一反三应该很容易理解 pprof 中提供的其他内容，在工程中遇到疑难杂症时不妨在 pprof 中找找答案。</p>
+
+<h2 id="参考">参考</h2>
+<ul>
+  <li><a href="https://github.com/golang/go/blob/3f4af1ff0e0c3a83bc48faee3d1f0282ef4d02f2/src/runtime/pprof/pprof.go#L528">go源码 - printStackRecord</a> 打印 goroutine 内容的方法</li>
+  <li><a href="https://github.com/golang/go/blob/3f4af1ff0e0c3a83bc48faee3d1f0282ef4d02f2/src/runtime/pprof/pprof.go#L581">go源码 - writeHeapInternal</a> 打印 heap 内容的方法</li>
+</ul>
+
+    </article>
+
+    
+    <div class="social-share-wrapper">
+      <div class="social-share"></div>
+    </div>
+    
+  </div>
+
+  <section class="author-detail">
+    <section class="post-footer-item author-card">
+      <div class="avatar">
+        <img src="https://jingwei.link/assets/img/profile.png" alt="">
+      </div>
+      <div class="author-name" rel="author">Jing维</div>
+      <div class="bio">
+        <p>Stay hungry, stay foolish</p>
+      </div>
+      
+      <ul class="sns-links">
+        
+        <li>
+          <a href="mailto:zhjw43@163.com" target="_blank">
+                    <i class="iconfont icon-email"></i>
+                </a>
+        </li>
+        
+        <li>
+          <a href="https://github.com/chalvern" target="_blank">
+                    <i class="iconfont icon-github"></i>
+                </a>
+        </li>
+        
+      </ul>
+      
+    </section>
+    <section class="post-footer-item read-next">
+      
+
+      
+      <div class="read-next-item">
+        <a href="/2024/05/03/what-is-ca-chain.html" class="read-next-link"></a>
+          <section>
+            <span>SSL 证书链的认证</span>
+            <p></p>
+          </section>
+          
+          <div class="filter"></div>
+          <img src="" alt="">
+          
+      </div>
+      
+    </section>
+    <section class="post-footer-item comment">
+      <div id="disqus_thread"></div>
+    </section>
+  </section>
+
+  <footer class="g-footer">
+  <section>敬维 ©
+  
+  
+    2018
+    -
+  
+  2024
+  <a href="/rss.xml">RSS订阅</a>
+  </section>
+</footer>
+
+
+  <script src="/assets/js/social-share.min.js"></script>
+  <script>
+    socialShare('.social-share', {
+      sites: [
+        
+          'wechat'
+          ,
+          
+        
+          'weibo'
+          ,
+          
+        
+          'douban'
+          ,
+          
+        
+          'twitter'
+          
+        
+      ],
+      wechatQrcodeTitle: "分享到微信朋友圈",
+      wechatQrcodeHelper: '<p>扫码后点击右上角</p><p>将本文分享至朋友圈</p>'
+    });
+  </script>
+
+  
+
+  <script src="/assets/js/prism.js"></script>
+  <script src="/assets/js/index.min.js"></script>
+</body>
+
+</html>
